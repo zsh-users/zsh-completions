@@ -1,0 +1,165 @@
+#compdef ack ack-grep
+# ------------------------------------------------------------------------------
+# Copyright (c) 2011 zsh-users
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of the zsh-users nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL ZSH-USERS BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Julien Nicoulaud <julien.nicoulaud@gmail.com>
+#
+# ------------------------------------------------------------------------------
+# Status
+# ------
+#
+#  See FIXME and TODO tags.
+#
+# ------------------------------------------------------------------------------
+# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
+# vim: ft=zsh sw=2 ts=2 et
+# ------------------------------------------------------------------------------
+
+
+_ack() {
+  local curcontext="$curcontext" state line cmds ret=1
+
+  _arguments -C \
+    '(- 1 *)--version[Display version and copyright information.]' \
+    '(- 1 *)--help[Print a short help statement.]' \
+    '(- 1 *)--man[Print the manual page.]' \
+    '(-a --all -u --unrestricted)'{-a,--all}'[Operate on all files, regardless of type (but still skip directories like blib, CVS, etc.)]' \
+    '(-A --after-context -C --context)'{-A,--after-context}'[Print NUM lines of trailing context after matching lines.]:number' \
+    '(-B --before-context -C --context)'{-B,--before-context}'[Print NUM lines of leading context before matching lines.]:number' \
+    '(-C --context -A --after-context -B --before-context)'{-C,--context}'[Print NUM lines (default 2) of context around matching lines.]:number' \
+    '(-c --count)'{-c,--count}'[Suppress normal output; instead print a count of matching lines for each input file.]' \
+    '(--color --nocolor)--color[Highlight the matching text.]' \
+    '(--nocolor --color --color-filename --color-match --color-lineno)--nocolor[Supress the color.]' \
+    '(--color-filename --nocolor --color)--color-filename[Sets the color to be used for filenames.]:color:_ack_colors' \
+    '(--color-match --nocolor --color)--color-match[Sets the color to be used for matches.]:color:_ack_colors' \
+    '(--color-lineno --nocolor --color)--color-lineno[Sets the color to be used for line numbers.]:color:_ack_colors' \
+    '(--column)--column[Show the column number of the first match.  This is helpful for editors that can place your cursor at a given position.]' \
+    '(--env --noenv)--env[Enable environment processing.]' \
+    '(--noenv --env)--noenv[Disable all environment processing. No .ackrc is read and all environment variables are ignored.]' \
+    '(--flush)--flush[Flush output immediately.]' \
+    '(-f)-f[Only print the files that would be searched, without actually doing any searching.]' \
+    '(--follow --nofollow)--follow[Follow symlinks.]' \
+    '(--nofollow --follow)--nofollow[Don'\''t follow symlinks.]' \
+    '(-G)-G[Only paths matching REGEX are included in the search.]:regex' \
+    '(-g)-g[Print files where the relative path + filename matches REGEX.]:regex' \
+    '(--group --nogroup)--group[Group matches by file name.]' \
+    '(--nogroup --group)--nogroup[Do not group matches by file name.]' \
+    '(-H --with-filename -h --no-filename)'{-H,--with-filename}'[Print the filename for each match.]' \
+    '(-h --no-filename -H --with-filename)'{-h,--no-filename}'[Suppress the prefixing of filenames on output when multiple files are searched.]' \
+    '(-i --ignore-case)'{-i,--ignore-case}'[Ignore case in the search strings.]' \
+    '(--ignore-dir)--ignore-dir[Ignore directory.]:directory:_files -/' \
+    '(--noignore-dir)--noignore-dir[Don'\''t ignore directory.]:directory:_files -/' \
+    '(--line)--line[Only print line NUM of each file.]:number' \
+    '(-l --files-with-matches -L --files-without-matches)'{-l,--files-with-matches}'[Only print the filenames of matching files, instead of the matching text.]' \
+    '(-L --files-without-matches -l --files-with-matches)'{-L,--files-without-matches}'[Only print the filenames of files that do NOT match.]' \
+    '(--match)--match[Specify the REGEX explicitly.]:regex' \
+    '(-m --max-count)'{-m,--max-count}'[Stop reading a file after NUM matches.]:number' \
+    '(-r -R --recurse -n --no-recurse)'{-r,-R,--recurse}'[Recurse into sub-directories.]' \
+    '(-n --no-recurse -r -R --recurse)'{-n,--no-recurse}'[No descending into subdirectories.]' \
+    '(-o)-o[Show only the part of each line matching PATTERN (turns off text highlighting)]:pattern' \
+    '(--output)--output[Output the evaluation of expr for each line (turns off text highlighting)]:expression' \
+    '(--pager)--pager[Direct ack'\''s output through program.]:pager program:_command_names' \
+    '(--passthru)--passthru[Prints all lines, whether or not they match the expression.]' \
+    '(--print0)--print0[The filenames are output separated with a null byte instead of the usual newline.]' \
+    '(-Q --literal)'{-Q,--literal}'[Quote all metacharacters in PATTERN, it is treated as a literal.]' \
+    '(--smart-case --no-smart-case)--smart-case[Ignore case in the search strings if PATTERN contains no uppercase characters.]' \
+    '(--no-smart-case --smart-case)--no-smart-case[Disable --smart-case option.]' \
+    '(--sort-files)--sort-files[Sorts the found files lexically.]' \
+    '(--show-types)--show-types[Outputs the filetypes that ack associates with each file.]' \
+    '(--thpppt)--thpppt[Display the all-important Bill The Cat logo.  Note that the exact spelling of --thpppppt is not important.  It'\''s checked against a regular expression.]' \
+    '--type[Specify the types of files to include or exclude from a search.]:type:_ack_types' \
+    '--type-add[Files with the given EXTENSION(s) are recognized as being of type TYPE.]:type-def:_ack_type_defs' \
+    '--type-set[Files with the given EXTENSION(s) are recognized as being of type TYPE.]:type-def:_ack_type_defs' \
+    '(-u --unrestricted -a --all)'{-u,--unrestricted}'[All files and directories (including blib/, core.*, ...) are searched, nothing is skipped.]' \
+    '(-v --invert-match)'{-v,--invert-match}'[Invert match: select non-matching lines.]' \
+    '(-w --word-regexp)'{-w,--word-regexp}'[Force PATTERN to match only whole words.]' \
+    '(-1)-1[Stops after reporting first match of any kind.]' \
+    '1: :->patterns' \
+    '*: :_files' \
+  && ret=0
+
+  case $state in
+    patterns)
+      _ack_patterns && ret=0
+    ;;
+  esac
+
+  return ret
+}
+
+_ack_patterns() {
+  local ret=1
+  _message -e patterns 'pattern' && ret=0
+  return ret
+}
+
+_ack_colors() {
+  local ret=1 colors
+  colors=(
+    'black'      'on_black'
+    'red'        'on_red'
+    'green'      'on_green'
+    'yellow'     'on_yellow'
+    'blue'       'on_blue'
+    'magenta'    'on_magenta'
+    'cyan'       'on_cyan'
+    'white'      'on_white'
+    'clear'
+    'reset'
+    'dark'
+    'bold'
+    'underline'
+    'underscore'
+    'blink'
+    'reverse'
+    'concealed'
+  )
+  _describe -t 'colors' "color" colors && ret=0
+  return ret
+}
+
+_ack_type_defs() {
+  local ret=1
+  if compset -P '*='; then
+    _message -e extensions 'extensions list' && ret=0 // TODO Provide the extensions of the files in the current dir here ?
+  else
+    _message -e type-name 'type name' && ret=0
+  fi
+  return ret
+}
+
+_ack_types() {
+  local ret=1 types
+  types=(${${(S)${(f)${${"$(_call_program types $words[1] --help=types)"}#*--\[no\]}}#*no\]}/ ##/:})
+  types+=("no"$types)
+  _describe -t "types" "type" types && ret=0
+  return ret
+}
+
+_ack "$@"
