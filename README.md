@@ -8,7 +8,7 @@ The scripts are meant to be contributed to the Zsh project when stable enough.
 
 Status
 ------
-See [issues](issues) for details on each completion definition.
+See [issues](zsh-completions/issues) for details on each completion definition.
 
 
 Usage
