@@ -25,16 +25,16 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for ack (http://betterthangrep.com).
+#
+# ------------------------------------------------------------------------------
 # Authors
 # -------
 #
 #  * Julien Nicoulaud <julien.nicoulaud@gmail.com>
-#
-# ------------------------------------------------------------------------------
-# Status
-# ------
-#
-#  See FIXME and TODO tags.
 #
 # ------------------------------------------------------------------------------
 # -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
@@ -147,7 +147,7 @@ _ack_colors() {
 _ack_type_defs() {
   local ret=1
   if compset -P '*='; then
-    _message -e extensions 'extensions list' && ret=0 // TODO Provide the extensions of the files in the current dir here ?
+    _message -e extensions 'extensions list' && ret=0 # TODO Provide the extensions of the files in the current dir here ?
   else
     _message -e type-name 'type name' && ret=0
   fi

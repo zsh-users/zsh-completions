@@ -25,16 +25,18 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for Play! framework (http://www.playframework.org).
+#
+#  Status: Incomplete, see FIXME and TODO tags.
+#
+# ------------------------------------------------------------------------------
 # Authors
 # -------
 #
 #  * Julien Nicoulaud <julien.nicoulaud@gmail.com>
-#
-# ------------------------------------------------------------------------------
-# Status
-# ------
-#
-#  See FIXME and TODO tags.
 #
 # ------------------------------------------------------------------------------
 # -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-

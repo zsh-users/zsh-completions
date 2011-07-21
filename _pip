@@ -1,4 +1,21 @@
 #compdef pip
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for pip (http://pypi.python.org/pypi/pip).
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Dmitry Gladkov (https://github.com/dgladkov)
+#
+# ------------------------------------------------------------------------------
+# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
+# vim: ft=zsh sw=2 ts=2 et
+# ------------------------------------------------------------------------------
+
 
 local subcmds
 
