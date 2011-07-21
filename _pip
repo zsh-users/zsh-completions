@@ -1,0 +1,36 @@
+#compdef pip
+
+local subcmds
+
+_arguments -C '*::command:->command' && return 0
+
+case $state in
+	command)
+	if [[ $CURRENT != 1 && $words[$CURRENT] != -* && $words[$CURRENT-1] != "-r" ]]; then
+		state=packages
+	elif [[ $words[$CURRENT-1] == "-r" ]]; then
+		state=files
+	else
+	    state=subcommands
+	fi
+	;;
+esac
+
+case $state in
+	subcommands)
+	reply=($( COMP_WORDS="$service $words[*]" \
+			COMP_CWORD=0 \
+			PIP_AUTO_COMPLETE=1 $service ))
+	_describe -t commands 'pip commands' reply
+	;;
+	packages)
+	if [[ -n $words[CURRENT] ]]; then
+		packages=($( pip search "$words[CURRENT]" | \
+					grep -i "^$words[CURRENT]" | \
+					cut -d ' ' -f 1 | tr '[A-Z]' '[a-z]' ))
+		_describe -t commands 'packages' packages
+	fi
+	;;
+	files)
+	_arguments -C '*:input file:_files' && return 0
+esac
