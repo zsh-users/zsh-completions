@@ -1,0 +1,79 @@
+#compdef showoff
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for Showoff (https://github.com/schacon/showoff).
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Bruno Michel (https://github.com/nono)
+#
+# ------------------------------------------------------------------------------
+# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
+# vim: ft=zsh sw=2 ts=2 et
+# ------------------------------------------------------------------------------
+
+
+local curcontext="$curcontext" state line cmds ret=1
+
+_arguments -C \
+	'1: :->cmds' \
+	'*: :->args' && ret=0
+
+case $state in
+	cmds)
+		cmds=(
+		'add:Add a new slide at the end in a given dir'
+		'new:Add a new slide at the end in a given dir'
+		'create:Create new showoff presentation'
+		'init:Create new showoff presentation'
+		'help:Shows list of commands or help for one command'
+		'heroku:Setup your presentation to serve on Heroku'
+		'serve:Serves the showoff presentation in the current directory'
+		'static:Generate static version of presentation'
+		)
+		_describe -t commands 'showoff command' cmds && ret=0
+		;;
+	args)
+		case $line[1] in
+			(add|new)
+				_arguments \
+					'(-d --dir)'{-d,--dir}'=[Slide dir (where to put a new slide file)]:directory:_files' \
+					'(-n --name)'{-n,--name}'=[Slide name (name of the new slide file)]:basename' \
+					{-s,--source}'=[Include code from the given file as the slide body]:file:_files' \
+					'(-t --style --type)'{-t,--style,--type}'=[Slide Type/Style (default: title)]:style' \
+					'(-u --no-number)'{-u,--no-number}'[Dont number the slide, use the given name verbatim]' \
+					'1:title' && ret=0
+				;;
+			(create|init)
+				_arguments \
+					'(-d --slidedir)'{-d,--slidedir}'=[Sample slide directory name (default: one)]:arg' \
+					'(-n --nosamples)'{-n,--nosamples}'=[Dont create sample slides]' \
+					'1:dir_name' && ret=0
+				;;
+			help)
+				_values 'commands' add new create init help heroku serve static && ret=0
+				;;
+			heroku)
+				_message 'please entrer an heroku_name' && ret=0
+				;;
+			serve)
+				_arguments \
+					'(-h --host)'{-h,--host}'=[Host or ip to run on (default: localhost)]:host' \
+					'(-p --port)'{-p,--port}'=[Port on which to run (default: 9090)]:port' \
+					'1:title' && ret=0
+				;;
+			static)
+				_message 'please entrer a name' && ret=0
+				;;
+			*)
+				(( ret )) && _message 'no more arguments'
+				;;
+		esac
+		;;
+esac
+
+return ret
