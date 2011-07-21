@@ -1,0 +1,270 @@
+#compdef play
+# ------------------------------------------------------------------------------
+# Copyright (c) 2011 zsh-users
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of the zsh-users nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL ZSH-USERS BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Julien Nicoulaud <julien.nicoulaud@gmail.com>
+#
+# ------------------------------------------------------------------------------
+# Status
+# ------
+#
+#  See FIXME and TODO tags.
+#
+# ------------------------------------------------------------------------------
+# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
+# vim: ft=zsh sw=2 ts=2 et
+# ------------------------------------------------------------------------------
+
+
+_play() {
+  local curcontext="$curcontext" state line cmds ret=1
+
+  _arguments -C '*::arg:->args' && return
+
+  case $state in
+    (args)
+      if (( CURRENT == 1 )); then
+        _play_cmds && ret=0
+      else
+        curcontext="${curcontext%:*:*}:play-cmd-$words[1]:"
+        (( $+functions[_play_cmd_$words[1]] )) && _play_cmd_$words[1] && ret=0
+      fi
+      ;;
+  esac
+
+  return ret
+}
+
+_play_cmds() {
+  local ret=1 commands
+  # FIXME Parse 'play help' output instead of hard-coding.
+  # FIXME Those are only the core commands, the framework is extensible through a module system...
+  commands=(
+    'auto-test:Automatically run all application tests'
+    'build-module:Build and package a module'
+    'check:Check for a release newer than the current one'
+    {classpath,cp}':Display the computed classpath'
+    'clean:Delete temporary files (including the bytecode cache)'
+    {eclipsify,ec}':Create all Eclipse configuration files'
+    'help:Display help on a specific command'
+    'id:Define the framework ID'
+    {idealize,idea}':Create all IntelliJ Idea configuration files'
+    'install:Install a module'
+    {javadoc,jd}':Generate your application Javadoc'
+    {list-modules,lm}':List modules available from the central modules repository'
+    'modules:Display the computed modules list'
+    {netbeansify,nb}':Create all NetBeans configuration files'
+    'new:Create a new application'
+    'new-module:Create a module'
+    'out:Follow logs/system.out file'
+    'pid:Show the PID of the running application'
+    'precompile:Precompile all Java sources and templates to speed up application start-up'
+    'restart:Restart the running application'
+    'run:Run the application in the current shell'
+    'secret:Generate a new secret key'
+    'start:Start the application in the background'
+    {status,st}':Display the running application status'
+    'stop:Stop the running application'
+    'test:Run the application in test mode in the current shell'
+    'war:Export the application as a standalone WAR archive'
+  )
+  _describe -t commands 'play command' commands && ret=0
+  return ret
+}
+
+_play_cmd_auto-test() {
+  local ret=1
+  (( CURRENT == 2 )) && _play_apps && ret=0
+  return ret
+}
+
+_play_cmd_build-module() {
+  return 1
+}
+
+_play_cmd_check() {
+  return 1
+}
+
+_play_cmd_classpath _play_cmd_cp() {
+  local ret=1
+  (( CURRENT == 2 )) && _play_apps && ret=0
+  return ret
+}
+
+_play_cmd_clean() {
+  local ret=1
+  (( CURRENT == 2 )) && _play_apps && ret=0
+  return ret
+}
+
+_play_cmd_eclipsify _play_cmd_ec() {
+  local ret=1
+  (( CURRENT == 2 )) && _play_apps && ret=0
+  return ret
+}
+
+_play_cmd_help() {
+  local ret=1
+  (( CURRENT == 2 )) && _play_cmds && ret=0
+  return ret
+}
+
+_play_cmd_id() {
+  return 1
+}
+
+_play_cmd_idealize _play_cmd_idea() {
+  local ret=1
+  (( CURRENT == 2 )) && _play_apps && ret=0
+  return ret
+}
+
+_play_cmd_install() {
+  local ret=1 commands
+  # TODO Not implemented. Parse 'play list-modules' output.
+  return ret
+}
+
+_play_cmd_javadoc _play_cmd_jd() {
+  local ret=1
+  (( CURRENT == 2 )) && _play_apps && ret=0
+  return ret
+}
+
+_play_cmd_list-modules _play_cmd_lm() {
+  return 1
+}
+
+_play_cmd_modules() {
+  local ret=1
+  (( CURRENT == 2 )) && _play_apps && ret=0
+  return ret
+}
+
+_play_cmd_netbeansify _play_cmd_nb() {
+  local ret=1
+  (( CURRENT == 2 )) && _play_apps && ret=0
+  return ret
+}
+
+_play_cmd_new() {
+  local ret=1
+  # TODO --with module_list option
+  (( CURRENT == 2 )) && _play_apps && ret=0
+  return ret
+}
+
+_play_cmd_new-module() {
+  local ret=1 commands
+  # TODO Not implemented
+  return ret
+}
+
+_play_cmd_out() {
+  local ret=1
+  (( CURRENT == 2 )) && _play_apps && ret=0
+  return ret
+}
+
+_play_cmd_pid() {
+  local ret=1
+  (( CURRENT == 2 )) && _play_apps && ret=0
+  return ret
+}
+
+_play_cmd_precompile() {
+  local ret=1
+  # TODO --deps / --%fwk_id options
+  (( CURRENT == 2 )) && _play_apps && ret=0
+  return ret
+}
+
+_play_cmd_restart() {
+  local ret=1
+  # TODO --deps / --%fwk_id / JAVA_OPTS options
+  (( CURRENT == 2 )) && _play_apps && ret=0
+  return ret
+}
+
+_play_cmd_run() {
+  local ret=1
+  # TODO --deps / --%fwk_id / -f / JAVA_OPTS options
+  (( CURRENT == 2 )) && _play_apps && ret=0
+  return ret
+}
+
+_play_cmd_secret() {
+  local ret=1
+  (( CURRENT == 2 )) && _play_apps && ret=0
+  return ret
+}
+
+_play_cmd_start() {
+  local ret=1
+  # TODO --deps / --%fwk_id / JAVA_OPTS options
+  (( CURRENT == 2 )) && _play_apps && ret=0
+  return ret
+}
+
+_play_cmd_status _play_cmd_st() {
+  local ret=1
+  # TODO --url / --secret options
+  (( CURRENT == 2 )) && _play_apps && ret=0
+  return ret
+}
+
+_play_cmd_stop() {
+  local ret=1
+  (( CURRENT == 2 )) && _play_apps && ret=0
+  return ret
+}
+
+_play_cmd_test() {
+  local ret=1
+  # TODO --deps / -f / JAVA_OPTS options
+  (( CURRENT == 2 )) && _play_apps && ret=0
+  return ret
+}
+
+_play_cmd_war() {
+  local ret=1
+  # TODO --output / --zip / --deps / --%fwk_id / --exclude / JAVA_OPTS options
+  (( CURRENT == 2 )) && _play_apps && ret=0
+  return ret
+}
+
+_play_apps() {
+  local ret=1 commands
+  # FIXME Don't provide all directories but only real Play apps
+  _files -/ && ret=0
+  return ret
+}
+
+_play "$@"
