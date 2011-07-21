@@ -1,0 +1,51 @@
+#compdef cap
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for Capistrano (http://capify.org).
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Bruno Michel (https://github.com/nono)
+#
+# ------------------------------------------------------------------------------
+# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
+# vim: ft=zsh sw=2 ts=2 et
+# ------------------------------------------------------------------------------
+
+
+local curcontext="$curcontext" state line cmds ret=1
+
+_arguments -C \
+	{-d,--debug}'[Prompts before each remote command execution]' \
+    {-e,--explain}'[Displays help (if available) for the task]:task' \
+    {-F,--default-config}'[Always use default config, even with -f]' \
+    {-f,--file}'[A recipe file to load. May be given more than once]:file:_files' \
+    {-H,--long-help}'[Explain these options and environment variables]' \
+    {-h,--help}'[Display this help message]' \
+    {-l,--logger}'[Choose logger method. STDERR used by default]:file:_files' \
+    {-n,--dry-run}'[Prints out commands without running them]' \
+    {-p,--password}'[Immediately prompt for the password]' \
+    {-q,--quiet}'[Make the output as quiet as possible]' \
+    {-r,--preserve-roles}'[Preserve task roles]' \
+    {-S,--set-before}'[Set a variable before the recipes are loaded]:variable' \
+    {-s,--set}'[Set a variable after the recipes are loaded]:variable' \
+    {-T,--tasks}'[List all tasks (matching optional PATTERN) in the loaded recipe files]:pattern' \
+    {-t,--tool}'[Abbreviates the output of -T for tool integration]' \
+    {-V,--version}'[Display the Capistrano version, and exit]' \
+    {-v,--verbose}'[Be more verbose. May be given more than once]' \
+    {-X,--skip-system-config}'[Do not load the system config file (capistrano.conf)]' \
+    {-x,--skip-user-config}'[Do not load the user config file (.caprc)]' \
+	'*: :->cmds' && ret=0
+
+case $state in
+	cmds)
+		cmds=( ${(f)"$(_call_program commands cap -T 2> /dev/null | sed -e '/ # /!d; s/:/\\:/g; s/cap \([A-Za-z0-9\\:_-]*\) .*# /\1:/')"} )
+		_describe -t commands 'cap command' cmds && ret=0
+		;;
+esac
+
+return ret
