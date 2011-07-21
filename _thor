@@ -1,0 +1,23 @@
+#compdef thor
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for thor (https://github.com/wycats/thor).
+#
+#  Source: https://github.com/robbyrussell/oh-my-zsh/tree/master/plugins/thor
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Andrew Hodges (https://github.com/betawaffle)
+#
+# ------------------------------------------------------------------------------
+# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
+# vim: ft=zsh sw=2 ts=2 et
+# ------------------------------------------------------------------------------
+
+
+# FIXME This should be rewritten using up-to-date ZSH completion API.
+compadd `thor list | grep thor | cut -d " " -f 2`
