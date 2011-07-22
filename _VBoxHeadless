@@ -1,0 +1,27 @@
+#compdef VBoxHeadless
+
+# Author: Massimiliano Torromeo <massimiliano.torromeo@gmail.com>
+# This program is distributed under the terms of the BSD License.
+# See LICENSE file for details
+
+autoload vboxmachines
+
+_vboxheadless() {
+	local context state line expl
+	local -A opt_args
+
+	_arguments \
+		'(-s -startvm --startvm)'{-s,-startvm,--startvm}'[Start given VM]:machine:vboxmachines' \
+		'(-n --vnc)'{-n,--vnc}'[Enable the built in VNC server]' \
+		'(-m --vncport)'{-m,--vncport}'[TCP port number to use for the VNC server]:port:' \
+		'(-o --vncpass)'{-o,--vncpass}'[Set the VNC server password]:pw:' \
+		'(-v -vrde --vrde)'{-v,-vrde,--vrde}"[Enable (default) or disable the VRDE server or don't change the setting]::(on off config)" \
+		'(-e -vrdeproperty --vrdeproperty)'{-e,-vrdeproperty,--vrdeproperty}'[Set a VRDE property]: :' \
+		'(-c -capture --capture)'{-c,-capture,--capture}'[Record the VM screen output to a file]' \
+		'(-w --width)'{-w,--width}'[Frame width when recording]:width:' \
+		'(-h --height)'{-h,--height}'[Frame height when recording]:height:' \
+		'(-r --bitrate)'{-r,--bitrate}'[Recording bit rate when recording]:bitrate:' \
+		'(-f --filename)'{-f,--filename}'[File name when recording.  The codec used will be chosen based on the file extension]:filename:_files'
+}
+
+_vboxheadless "$@"

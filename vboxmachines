@@ -1,0 +1,6 @@
+# List virtualbox virtual machines
+vboxmachines() {
+	VBoxManage list vms | egrep -o '^"[^"]+"' 2>/dev/null | sed -e 's|"||g' | while read machine; do
+		_wanted 'machine' expl 'machine' compadd $machine
+	done
+}
