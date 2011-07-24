@@ -30,7 +30,7 @@
 #
 #  Completion script for Play! framework (http://www.playframework.org).
 #
-#  Status: Incomplete, see FIXME and TODO tags.
+#  Status: See FIXME and TODO tags.
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -45,29 +45,86 @@
 
 
 _play() {
-  local curcontext="$curcontext" state line cmds ret=1
+  local context curcontext="$curcontext" state line ret=1
+  typeset -A opt_args
 
-  _arguments -C '*::arg:->args' && return
+  _arguments -C \
+    '1: :_play_cmds' \
+    '*::arg:->args' \
+  && ret=0
 
   case $state in
     (args)
-      if (( CURRENT == 1 )); then
-        _play_cmds && ret=0
-      else
-        curcontext="${curcontext%:*:*}:play-cmd-$words[1]:"
-        (( $+functions[_play_cmd_$words[1]] )) && _play_cmd_$words[1] && ret=0
-      fi
-      ;;
+      curcontext="${curcontext%:*:*}:play-cmd-$words[1]:"
+      case $line[1] in
+        (build-module|list-modules|lm|check|id)
+          _message 'no more arguments' && ret=0
+        ;;
+        (auto-test|classpath|cp|clean|eclipsify|ec|idealize|idea|javadoc|jd|modules|netbeansify|nb|out|pid|secret|stop)
+          _arguments '1:: :_play_apps' && ret=0
+        ;;
+        (help)
+          _arguments '1: :_play_cmds -F "(cp ec idea jd st lm nb nm help)"' && ret=0
+        ;;
+        (status|st)
+          _arguments \
+            '1:: :_play_apps' \
+            '(--url)--url[If you want to monitor an application running on a remote server, specify the application URL using this option]:URL:_urls' \
+            '(--secret)--secret[You can provide your own secret key using this option]:Secret key' \
+          && ret=0
+        ;;
+        (new)
+          _arguments \
+            '1: :_play_apps' \
+            '(--with)--with[Automatically enable this set of module for the newly created application]:Modules list:_play_modules_list' \
+          && ret=0
+        ;;
+        (install)
+          _arguments '1:Play! module:_play_modules_dash_versions' && ret=0
+        ;;
+        (new-module)
+          _arguments '1:Module directory:_files -/' && ret=0
+        ;;
+        (test|precompile|run|start|war)
+          local cmd_args; cmd_args=(
+            '1:: :_play_apps'
+            '(--deps)--deps[Resolve and install dependencies before running the command]'
+          )
+          case $line[1] in
+            (precompile|run|start|restart|war)
+              local app_dir="$line[2]"
+              [[ -d "$app_dir" ]] || app_dir=.
+              [[ -f "$app_dir/conf/application.conf" ]] && cmd_args+=('--'${(u)${(M)$(<$app_dir/conf/application.conf):#%*}%%.*}'[Use this ID to run the application (override the default framework ID)]')
+            ;|
+            (test|run)
+              cmd_args+=('(-f)-f[Disable the JPDA port checking and force the jpda.port value]')
+            ;|
+            (war)
+              cmd_args+=(
+                '(-o --output)'{-o,--output}'[The path where the WAR directory will be created. The contents of this directory will first be deleted]:output directory:_files -/'
+                '(--zip)--zip[By default, the script creates an exploded WAR. If you want a zipped archive, specify the --zip option]'
+                '(--exclude)--exclude[Excludes a list of colon separated directories]:excluded directories list:_play_colon_dirs_list'
+              )
+            ;|
+            (test|run|start|restart|war)
+              cmd_args+=('*:Java option')
+            ;;
+          esac
+          _arguments "$cmd_args[@]" && ret=0
+        ;;
+        *)
+          _call_function ret _play_cmd_$words[1] && ret=0
+          (( ret )) && _message 'no more arguments'
+        ;;
+      esac
+    ;;
   esac
-
-  return ret
 }
 
+# FIXME Completes only core commands, some modules add commands too (eg Maven). Where do we get them ?
+# FIXME Parse 'play help' and 'play help <command>' (for aliases) instead of hard-coding.
 _play_cmds() {
-  local ret=1 commands
-  # FIXME Parse 'play help' output instead of hard-coding.
-  # FIXME Those are only the core commands, the framework is extensible through a module system...
-  commands=(
+  local commands; commands=(
     'auto-test:Automatically run all application tests'
     'build-module:Build and package a module'
     'check:Check for a release newer than the current one'
@@ -83,7 +140,7 @@ _play_cmds() {
     'modules:Display the computed modules list'
     {netbeansify,nb}':Create all NetBeans configuration files'
     'new:Create a new application'
-    'new-module:Create a module'
+    {new-module,nm}':Create a module'
     'out:Follow logs/system.out file'
     'pid:Show the PID of the running application'
     'precompile:Precompile all Java sources and templates to speed up application start-up'
@@ -96,177 +153,36 @@ _play_cmds() {
     'test:Run the application in test mode in the current shell'
     'war:Export the application as a standalone WAR archive'
   )
-  _describe -t commands 'play command' commands && ret=0
-  return ret
-}
-
-_play_cmd_auto-test() {
-  local ret=1
-  (( CURRENT == 2 )) && _play_apps && ret=0
-  return ret
-}
-
-_play_cmd_build-module() {
-  return 1
-}
-
-_play_cmd_check() {
-  return 1
-}
-
-_play_cmd_classpath _play_cmd_cp() {
-  local ret=1
-  (( CURRENT == 2 )) && _play_apps && ret=0
-  return ret
-}
-
-_play_cmd_clean() {
-  local ret=1
-  (( CURRENT == 2 )) && _play_apps && ret=0
-  return ret
-}
-
-_play_cmd_eclipsify _play_cmd_ec() {
-  local ret=1
-  (( CURRENT == 2 )) && _play_apps && ret=0
-  return ret
-}
-
-_play_cmd_help() {
-  local ret=1
-  (( CURRENT == 2 )) && _play_cmds && ret=0
-  return ret
-}
-
-_play_cmd_id() {
-  return 1
-}
-
-_play_cmd_idealize _play_cmd_idea() {
-  local ret=1
-  (( CURRENT == 2 )) && _play_apps && ret=0
-  return ret
-}
-
-_play_cmd_install() {
-  local ret=1 commands
-  # TODO Not implemented. Parse 'play list-modules' output.
-  return ret
-}
-
-_play_cmd_javadoc _play_cmd_jd() {
-  local ret=1
-  (( CURRENT == 2 )) && _play_apps && ret=0
-  return ret
-}
-
-_play_cmd_list-modules _play_cmd_lm() {
-  return 1
-}
-
-_play_cmd_modules() {
-  local ret=1
-  (( CURRENT == 2 )) && _play_apps && ret=0
-  return ret
-}
-
-_play_cmd_netbeansify _play_cmd_nb() {
-  local ret=1
-  (( CURRENT == 2 )) && _play_apps && ret=0
-  return ret
-}
-
-_play_cmd_new() {
-  local ret=1
-  # TODO --with module_list option
-  (( CURRENT == 2 )) && _play_apps && ret=0
-  return ret
-}
-
-_play_cmd_new-module() {
-  local ret=1 commands
-  # TODO Not implemented
-  return ret
-}
-
-_play_cmd_out() {
-  local ret=1
-  (( CURRENT == 2 )) && _play_apps && ret=0
-  return ret
-}
-
-_play_cmd_pid() {
-  local ret=1
-  (( CURRENT == 2 )) && _play_apps && ret=0
-  return ret
-}
-
-_play_cmd_precompile() {
-  local ret=1
-  # TODO --deps / --%fwk_id options
-  (( CURRENT == 2 )) && _play_apps && ret=0
-  return ret
-}
-
-_play_cmd_restart() {
-  local ret=1
-  # TODO --deps / --%fwk_id / JAVA_OPTS options
-  (( CURRENT == 2 )) && _play_apps && ret=0
-  return ret
-}
-
-_play_cmd_run() {
-  local ret=1
-  # TODO --deps / --%fwk_id / -f / JAVA_OPTS options
-  (( CURRENT == 2 )) && _play_apps && ret=0
-  return ret
-}
-
-_play_cmd_secret() {
-  local ret=1
-  (( CURRENT == 2 )) && _play_apps && ret=0
-  return ret
-}
-
-_play_cmd_start() {
-  local ret=1
-  # TODO --deps / --%fwk_id / JAVA_OPTS options
-  (( CURRENT == 2 )) && _play_apps && ret=0
-  return ret
-}
-
-_play_cmd_status _play_cmd_st() {
-  local ret=1
-  # TODO --url / --secret options
-  (( CURRENT == 2 )) && _play_apps && ret=0
-  return ret
-}
-
-_play_cmd_stop() {
-  local ret=1
-  (( CURRENT == 2 )) && _play_apps && ret=0
-  return ret
-}
-
-_play_cmd_test() {
-  local ret=1
-  # TODO --deps / -f / JAVA_OPTS options
-  (( CURRENT == 2 )) && _play_apps && ret=0
-  return ret
-}
-
-_play_cmd_war() {
-  local ret=1
-  # TODO --output / --zip / --deps / --%fwk_id / --exclude / JAVA_OPTS options
-  (( CURRENT == 2 )) && _play_apps && ret=0
-  return ret
+  _describe -t commands 'Play! command' commands "$@"
 }
 
 _play_apps() {
-  local ret=1 commands
-  # FIXME Don't provide all directories but only real Play apps
-  _files -/ && ret=0
-  return ret
+  _wanted application expl 'Play! application directory' _files -/
+}
+
+_play_modules() {
+  local modules; modules=(${(ps:,:)${${${(S)${(f)$(_call_program modules play list-modules)}//\]*\[/,}%%\]*}##*\[}})
+  _describe -t modules 'Play! module' modules "$@"
+}
+
+_play_modules_dash_versions() {
+  local ret=1
+  if compset -P '*-'; then
+    local versions; versions=(${(ps:,:)${${${${${(f)$(_call_program versions play list-modules)}##*${IPREFIX%-}\]}#*Versions:}%%"~"*}//[[:space:]]/}})
+    _describe -t module-versions "${IPREFIX%-} module versions" versions && ret=0
+  else
+    _wanted modules expl 'Play! module' _play_modules -qS- && ret=0
+  fi
+}
+
+_play_modules_list() {
+  compset -P '*,'; compset -S ',*'
+  _wanted module-list expl 'Play! modules list' _play_modules -qS,
+}
+
+_play_colon_dirs_list() {
+  compset -P '*:'; compset -S ':*'
+  _wanted directories-list expl 'Directories list' _files -/ -qS:
 }
 
 _play "$@"
