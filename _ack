@@ -149,7 +149,8 @@ _ack_colors() {
 _ack_type_defs() {
   local ret=1
   if compset -P '*='; then
-    _message -e extensions 'extensions list' && ret=0 # TODO Provide the extensions of the files in the current dir here ?
+    local extensions; extensions=(*.*(:e))
+    _values -s "," "file extensions" "."$extensions && ret=0
   else
     _message -e type-name 'type name' && ret=0
   fi
