@@ -66,8 +66,7 @@ _geany() {
     '(--vte-lib)--vte-lib[Filename of libvte.so]:libvte.so filename:_files -g "*.so"' \
     '(-v --verbose)'{-v,--verbose}'[Be verbose]' \
     '(--display)--display[X display to use]:X display:_x_display' \
-    '*: :_files' \
-  && return 0
+    '*: :_files'
 }
 
 _geany "$@"
