@@ -45,6 +45,7 @@
 _ack() {
   local curcontext="$curcontext" state line cmds ret=1
 
+  # FIXME Add directly --type/--notype
   _arguments -C \
     '(- 1 *)--version[Display version and copyright information.]' \
     '(- 1 *)--help[Print a short help statement.]' \
@@ -114,13 +115,11 @@ _ack() {
 }
 
 _ack_patterns() {
-  local ret=1
-  _message -e patterns 'pattern' && ret=0
-  return ret
+  _message -e patterns 'pattern'
 }
 
 _ack_colors() {
-  local ret=1 colors
+  local colors
   colors=(
     'black'      'on_black'
     'red'        'on_red'
@@ -140,8 +139,7 @@ _ack_colors() {
     'reverse'
     'concealed'
   )
-  _describe -t 'colors' "color" colors && ret=0
-  return ret
+  _describe -t 'colors' "color" colors
 }
 
 _ack_type_defs() {
@@ -155,11 +153,10 @@ _ack_type_defs() {
 }
 
 _ack_types() {
-  local ret=1 types
+  local types
   types=(${${(S)${(f)${${"$(_call_program types $words[1] --help=types)"}#*--\[no\]}}#*no\]}/ ##/:})
   types+=("no"$types)
-  _describe -t "types" "type" types && ret=0
-  return ret
+  _describe -t "types" "type" types
 }
 
 _ack "$@"
