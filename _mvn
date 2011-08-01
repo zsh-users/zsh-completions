@@ -159,7 +159,7 @@ _mvn_phases()
     'site:generates the projects site documentation'
     'site-deploy:deploys the generated site documentation to the specified web server'
   )
-  if zstyle -t ":completion:${curcontext}:" show-advanced-phases; then
+  if zstyle -t ":completion:${curcontext}:" show-advanced-phases || [[ $#PREFIX -gt 0 ]]; then
     phases+=(
       'pre-clean:executes processes needed prior to the actual project cleaning'
       'post-clean:executes processes needed to finalize the project cleaning'
@@ -202,7 +202,7 @@ _mvn_plugins()
 {
   local ret=1 plugins
   zstyle -a ":completion:${curcontext}:" plugins plugins
-  [[ ${#plugins} -gt 0 ]] || plugins=(
+  [[ $#plugins -gt 0 ]] || plugins=(
     'assembly:create archives of your projects sources, classes, dependencies etc. from flexible assembly descriptors'
     'release:release a project with Maven, saving a lot of repetitive, manual work'
     'help:provides goals aimed at helping to make sense out of the build environment.'
@@ -235,32 +235,28 @@ _mvn_goals()
   if ( [[ ${+goals} -eq 0 ]] || _cache_invalid "mvn/plugins/$plugin" ) && ! _retrieve_cache "mvn/plugins/$plugin"; then
     setopt localoptions extendedglob
     goals=(${(s:,,,:)${${${(f)${${${(f)${${${${(F)${(S)${(f)"$(_call_program goals $words[1] -N org.apache.maven.plugins:maven-help-plugin:2.1.1:describe -Dplugin=$plugin)"}//#$plugin:/,,,}}:#*BUILD FAILURE*}#*This plugin has*goals#:}%For more information, run \'mvn help:describe*}}//:/\\:}}}// ##/ }// Description\\: /:}})
-    [[ ${#goals} -gt 0 ]] && _store_cache "mvn/plugins/$plugin" goals
+    [[ $#goals -gt 0 ]] && _store_cache "mvn/plugins/$plugin" goals
   fi
 
-  [[ ${#goals} -gt 0 ]] && _describe -t "plugin-$plugin-goals" "$plugin plugin goal" goals && ret=0
+  [[ $#goals -gt 0 ]] && _describe -t "plugin-$plugin-goals" "$plugin plugin goal" goals && ret=0
 
-  return
+  return ret
 }
 
+# FIXME No idea what kind of value the "--reactor" option is supposed to take
 _mvn_reactors()
 {
-  # FIXME No idea what kind of value the "--reactor" option is supposed to take
-  local ret=1
-  _message -e reactors 'reactor' && ret=0
-  return ret
+  _message -e reactors 'reactor'
 }
 
 _mvn_passwords()
 {
-  local ret=1
-  _message -e passwords 'password' && ret=0
-  return ret
+  _message -e passwords 'password'
 }
 
 _mvn_thread_counts()
 {
-  local ret=1 thread_counts
+  local thread_counts
   thread_counts=(
     '1:build with 1 thread'  '1C:build with 1 thread per CPU core'
     '2:build with 2 threads' '2C:build with 2 threads per CPU core'
@@ -271,36 +267,27 @@ _mvn_thread_counts()
     '7:build with 7 threads' '7C:build with 7 threads per CPU core'
     '8:build with 8 threads' '8C:build with 8 threads per CPU core'
   )
-  _describe -t 'thread-counts' "thread count" thread_counts && ret=0
-  return ret
+  _describe -t 'thread-counts' "thread count" thread_counts
 }
 
 _mvn_pom_files()
 {
-  local ret=1
-  _files -g '*pom*\.xml*' && ret=0
-  return ret
+  _files -g '*pom*\.xml*'
 }
 
 _mvn_toolchains_files()
 {
-  local ret=1
-  _files && ret=0
-  return ret
+  _files
 }
 
 _mvn_settings_files()
 {
-  local ret=1
-  _files -g '*settings*\.xml*' && ret=0
-  return ret
+  _files -g '*settings*\.xml*'
 }
 
 _mvn_log_files()
 {
-  local ret=1
-  _files && ret=0
-  return ret
+  _files
 }
 
 _mvn_profiles_caching_policy()
@@ -326,16 +313,14 @@ _mvn_profiles()
 {
   # FIXME Use "mvn help:all-profiles" output instead of parsing...
   # Blocked on http://jira.codehaus.org/browse/MPH-82 and http://jira.codehaus.org/browse/MPH-83
-  local ret=1 profs update_policy index settings_file files parent_pom_file cache_name profiles_section
+  local ret=1 profs update_policy settings_file files parent_pom_file cache_name profiles_section
 
   zstyle -s ":completion:${curcontext}:" cache-policy update_policy
   [[ -z "$update_policy" ]] && zstyle ":completion:${curcontext}:" cache-policy _mvn_profiles_caching_policy
 
   profs=()
 
-  index=$words[(i)-s]
-  [[ $index -gt ${#words} ]] && index=$words[(i)--settings]
-  [[ $index -gt ${#words} ]] && settings_file=~/.m2/settings.xml || settings_file=$words[$index+1]
+  settings_file=${~opt_args[-s]:-${opt_args[--settings]:-~/.m2/settings.xml}}
 
   if [[ -f  $settings_file ]]; then
     unset profiles
@@ -348,14 +333,12 @@ _mvn_profiles()
           [[ -z ${(M)profiles:#"$profile"*} ]] && profiles+=("$profile"'['"in settings file"']')
         done
       fi
-      [[ ${#profiles} -gt 0 ]] && _store_cache "$cache_name" profiles
+      [[ $#profiles -gt 0 ]] && _store_cache "$cache_name" profiles
     fi
     profs+=($profiles)
   fi
 
-  index=$words[(i)-f]
-  [[ $index -gt ${#words} ]] && index=$words[(i)--file]
-  [[ $index -gt ${#words} ]] && parent_pom_file=pom.xml || parent_pom_file=$words[$index+1]
+  parent_pom_file=${~opt_args[-f]:-${opt_args[--file]:pom.xml}}
   while [[ -f ${parent_pom_file:a:h:h}/pom.xml ]]; do parent_pom_file=${parent_pom_file:a:h:h}/pom.xml; done
 
   if [[ -f  $parent_pom_file ]]; then
@@ -372,12 +355,12 @@ _mvn_profiles()
           done
         fi
       done
-      [[ ${#profiles} -gt 0 ]] && _store_cache "$cache_name" profiles
+      [[ $#profiles -gt 0 ]] && _store_cache "$cache_name" profiles
     fi
     profs+=($profiles)
   fi
 
-  [[ ${#profs} -gt 0 ]] && _values -s ',' 'profile' "$profs[@]" && ret=0
+  [[ $#profs -gt 0 ]] && _values -s ',' 'profile' "$profs[@]" && ret=0
 
   return ret
 }
@@ -385,18 +368,16 @@ _mvn_profiles()
 _mvn_projects()
 {
   # TODO projects can also be given in the form [groupId:]artifactId.
-  local ret=1 projects
+  local pom_file ret=1
 
-  index=$words[(i)-f]
-  [[ $index -gt ${#words} ]] && index=$words[(i)--file]
-  [[ $index -gt ${#words} ]] && pom_file=pom.xml || pom_file=$words[$index+1]
+  pom_file=${~opt_args[-f]:-${opt_args[--file]:-pom.xml}}
   while [[ -f ${pom_file:a:h:h}/pom.xml ]]; do pom_file=${pom_file:a:h:h}/pom.xml; done
 
   if [[ -f $pom_file ]]; then
     setopt localoptions extendedglob
-    projects=(${pom_file:h}/*/**/pom.xml~*target\/*)
-    projects=(${projects#.\/})
-    [[ ${#projects} -gt 0 ]] && _values "$@" 'project' "${projects[@]:h}" && ret=0
+    local projects; projects=(${pom_file:h}/*/**/pom.xml~*target\/*)
+    projects=(${${projects#.\/}:h})
+    [[ $#projects -gt 0 ]] && _values "$@" 'project' "${projects[@]}" && ret=0
   fi
 
   return ret
@@ -405,9 +386,7 @@ _mvn_projects()
 _mvn_properties()
 {
   # TODO Complete some very common props like -DskipTests, etc.
-  local ret=1
-  _message -e property-names 'property name' && ret=0
-  return ret
+  _message -e property-names 'property name'
 }
 
 _mvn "$@"
