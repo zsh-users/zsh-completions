@@ -358,21 +358,36 @@ _mvn_properties() {
     # TODO Add callback for plugin specific handlers
     _default && ret=0
   else
-    # TODO Split in several functions + _alternatives
-    local properties plugin_colon_goal
-    properties=(
-      'skipTests:skip tests execution'
-      'maven.test.skip=:skip tests compilation and execution'
-      'gpg.passphrase=:gpg passphrase'
-    )
-    for plugin_colon_goal in ${(M)words:#*:*}; do # FIXME pretty sure this matches more than just plugin:goals
-      # TODO Extract descriptions too
-      # FIXME Output seems to be truncated (eg release:prepare)
-      properties+=(${${${(M)${(f)"$(_call_program goals $words[1] -N org.apache.maven.plugins:maven-help-plugin:2.1.1:describe -Dplugin=${plugin_colon_goal%:*} -Dgoal=${plugin_colon_goal#*:} -Ddetail)"}:#*Expression: *}#*\{}%\}*}"=:$plugin_colon_goal parameter")
-    done
-    _describe -t 'property-names' "property name" properties && ret=0 # FIXME Don't add a space prefix
+    # FIXME Don't add a space prefix
+    _alternative \
+      'maven properties:maven property:_mvn_maven_properties' \
+      'plugins properties:plugin property:_mvn_plugins_goals_properties' \
+    && ret=0
   fi
   return ret
+}
+
+(( $+functions[_mvn_maven_properties] )) ||
+_mvn_maven_properties() {
+  local properties
+  properties=(
+    'skipTests:skip tests execution'
+    'maven.test.skip=:skip tests compilation and execution'
+    'gpg.passphrase=:gpg passphrase'
+  )
+  _describe -t 'maven-property-names' "Maven property name" properties
+}
+
+(( $+functions[_mvn_plugins_goals_properties] )) ||
+_mvn_plugins_goals_properties() {
+  local properties
+  properties=()
+  for plugin_colon_goal in ${(M)words:#*:*}; do # FIXME pretty sure this matches more than just plugin:goals
+      # TODO Extract descriptions too
+      # FIXME Output seems to be truncated (eg release:prepare)
+      properties+=(${${${(M)${(f)"$(_call_program goals $words[1] -N org.apache.maven.plugins:maven-help-plugin:2.1.1:describe -Dplugin=${plugin_colon_goal%:*} -Dgoal=${plugin_colon_goal#*:} -Ddetail)"}:#*Expression: *}#*\{}%\}*}"=:$plugin_colon_goal property")
+  done
+  _describe -t 'plugins-property-names' "Plugins properties names" properties # FIXME Don't add a space prefix
 }
 
 _mvn_goals_caching_policy() {
