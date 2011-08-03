@@ -281,7 +281,7 @@ _mvn_log_files() {
 
 (( $+functions[_mvn_profiles] )) ||
 _mvn_profiles() {
-  # FIXME Use "mvn help:all-profiles" output instead of parsing...
+  # FIXME Use "mvn help:all-profiles" output instead of parsing settings and pom files...
   # Blocked on http://jira.codehaus.org/browse/MPH-82 and http://jira.codehaus.org/browse/MPH-83
   local ret=1 profs update_policy settings_file files parent_pom_file cache_name profiles_section
 
@@ -357,16 +357,17 @@ _mvn_projects() {
 _mvn_properties() {
   local ret=1
   if compset -P '*='; then
-    case ${${IPREFIX%=}#-D} in
+    local property=${${IPREFIX%=}#-D}
+    case $property in
       file) _wanted file expl 'file' _files && ret=0;;
       pomFile) _wanted pom-file expl 'POM file' _mvn_pom_files && ret=0;;
       groupId) _wanted file expl 'groupId' _mvn_groupIds && ret=0;;
-      artifactId) _message -e artifactIds 'artifactId' && ret=0;; # TODO Not implemented
+      artifactId) _wanted file expl 'artifactId' _mvn_artifactIds && ret=0;;
       repositoryId) _message -e repositoryIds 'repositoryId' && ret=0;; # TODO Not implemented
       classifier) _message -e classifiers 'classifier' && ret=0;; # TODO Not implemented
       scope) _wanted scope expl 'scope' _mvn_scopes && ret=0;;
       *url*) _message -e urls 'url' && ret=0;; # TODO Not implemented
-      *pass*) _message -e passes 'pass' && ret=0;; # TODO Not implemented
+      *password|*passphrase) _wanted password expl $property _mvn_passwords && ret=0;;
       version) _message -e versions 'version' && ret=0;; # TODO Not implemented
       createChecksum|generatePom|maven.test.skip) _wanted boolean expl 'boolean' _mvn_booleans && ret=0;;
       user|username) _message -e usernames 'username' && ret=0;; # TODO Not implemented
@@ -435,6 +436,30 @@ _mvn_groupIds() {
   return ret
 }
 
+(( $+functions[_mvn_artifactIds] )) ||
+_mvn_artifactIds() {
+  local settings_file repository_location ret=1
+
+  # FIXME Duplicated code, see _mvn_groupIds
+  settings_file=${~opt_args[-s]:-${opt_args[--settings]:-$HOME/.m2/settings.xml}}
+  repository_location=${${${${(M)"$(<$settings_file)":#*<localRepository>*}:-$HOME/.m2/repository}##*<localRepository>}%%<\/localRepository>*}
+
+  # TODO Make it contextual to -DgroupIds
+  zstyle -s ":completion:${curcontext}:" cache-policy update_policy
+  [[ -z "$update_policy" ]] && zstyle ":completion:${curcontext}:" cache-policy _mvn_artifactIds_caching_policy
+
+  unset artifactIds
+  if ( [[ ${+artifactIds} -eq 0 ]] || _cache_invalid "mvn/repository/artifactIds" ) && ! _retrieve_cache "mvn/repository/artifactIds"; then
+    artifactIds=($repository_location/**/*.pom)
+    artifactIds=(${${${(u)artifactIds:h:h:t}#"$repository_location/"}//\//.})
+    [[ $#artifactIds -gt 0 ]] && _store_cache "mvn/repository/artifactIds" artifactIds
+  fi
+
+  [[ $#artifactIds -gt 0 ]] && _describe -t "artifactIds" "artifactId" artifactIds && ret=0
+
+  return ret
+}
+
 (( $+functions[_mvn_booleans] )) ||
 _mvn_booleans() {
   local booleans; booleans=(
@@ -473,6 +498,10 @@ _mvn_groupIds_caching_policy() {
   local -a oldp
   oldp=( "$1"(Nmh+1) )
   (( $#oldp ))
+}
+
+_mvn_artifactIds_caching_policy() {
+  _mvn_groupIds_caching_policy
 }
 
 _mvn_profiles_caching_policy() {
