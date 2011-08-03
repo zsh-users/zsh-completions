@@ -357,15 +357,21 @@ _mvn_projects() {
 _mvn_properties() {
   local ret=1
   if compset -P '*='; then
-    # TODO Add callback for plugin specific handlers
-    # TODO Add completion handlers for commonly used command line goals:
-    #   * help:describe
-    #   * release:prepare
-    #   * release:perform
-    #   * gpg:sign
-    #   * deploy:deploy-file
-    #   * install:install-file
-    _default && ret=0
+    case ${${IPREFIX%=}#-D} in
+      file) _wanted file expl 'file' _files && ret=0;;
+      pomFile) _wanted pom-file expl 'POM file' _mvn_pom_files && ret=0;;
+      groupId) _wanted file expl 'groupId' _mvn_groupIds && ret=0;;
+      artifactId) _message -e artifactIds 'artifactId' && ret=0;; # TODO Not implemented
+      repositoryId) _message -e repositoryIds 'repositoryId' && ret=0;; # TODO Not implemented
+      classifier) _message -e classifiers 'classifier' && ret=0;; # TODO Not implemented
+      scope) _wanted scope expl 'scope' _mvn_scopes && ret=0;;
+      *url*) _message -e urls 'url' && ret=0;; # TODO Not implemented
+      *pass*) _message -e passes 'pass' && ret=0;; # TODO Not implemented
+      version) _message -e versions 'version' && ret=0;; # TODO Not implemented
+      createChecksum|generatePom|maven.test.skip) _wanted boolean expl 'boolean' _mvn_booleans && ret=0;;
+      user|username) _message -e usernames 'username' && ret=0;; # TODO Not implemented
+      *) _default && ret=0;;
+    esac
   else
     local alternatives; alternatives=(
       'maven properties:maven property:_mvn_maven_properties'
@@ -392,7 +398,7 @@ _mvn_maven_properties() {
 (( $+functions[_mvn_plugins_goals_properties] )) ||
 _mvn_plugin_goal_properties() {
   local plugin="${(P)$(($# -1))}" goal="${(P)${#}}" update_policy ret=1
-  
+
   zstyle -s ":completion:${curcontext}:" cache-policy update_policy
   [[ -z "$update_policy" ]] && zstyle ":completion:${curcontext}:" cache-policy _mvn_plugin_goal_properties_caching_policy
 
@@ -407,6 +413,48 @@ _mvn_plugin_goal_properties() {
   return ret
 }
 
+(( $+functions[_mvn_groupIds] )) ||
+_mvn_groupIds() {
+  # TODO Read repository location from settings/project
+  local repository_location=$HOME/.m2/repository ret=1
+  
+  zstyle -s ":completion:${curcontext}:" cache-policy update_policy
+  [[ -z "$update_policy" ]] && zstyle ":completion:${curcontext}:" cache-policy _mvn_groupIds_caching_policy
+
+  unset groupIds
+  if ( [[ ${+groupIds} -eq 0 ]] || _cache_invalid "mvn/repository/groupIds" ) && ! _retrieve_cache "mvn/repository/groupIds"; then
+    groupIds=($repository_location/**/)
+    groupIds=(${${${(u)groupIds:h}#"$repository_location/"}//\//.})
+    [[ $#groupIds -gt 0 ]] && _store_cache "mvn/repository/groupIds" groupIds
+  fi
+
+  [[ $#groupIds -gt 0 ]] && _multi_parts . groupIds && ret=0
+
+  return ret
+}
+
+(( $+functions[_mvn_booleans] )) ||
+_mvn_booleans() {
+  local booleans; booleans=(
+    'true:"true" boolean value'
+    'false:"false" boolean value'
+  )
+  _describe -t "booleans" "boolean" booleans
+}
+
+(( $+functions[_mvn_scopes] )) ||
+_mvn_scopes() {
+  local scopes; scopes=(
+    'compile:default scope, used if none is specified. Compile dependencies are available in all classpaths of a project. Furthermore, those dependencies are propagated to dependent projects.'
+    'provided:much like compile, but indicates you expect the JDK or a container to provide the dependency at runtime. For example, when building a web application for the Java Enterprise Edition, you would set the dependency on the Servlet API and related Java EE APIs to scope provided because the web container provides those classes. This scope is only available on the compilation and test classpath, and is not transitive.'
+    'runtime:indicates that the dependency is not required for compilation, but is for execution. It is in the runtime and test classpaths, but not the compile classpath.'
+    'test:indicates that the dependency is not required for normal use of the application, and is only available for the test compilation and execution phases.'
+    'system:similar to provided except that you have to provide the JAR which contains it explicitly. The artifact is always available and is not looked up in a repository.'
+    'import:only used on a dependency of type pom in the <dependencyManagement> section. It indicates that the specified POM should be replaced with the dependencies in that POM'\''s <dependencyManagement> section. Since they are replaced, dependencies with a scope of import do not actually participate in limiting the transitivity of a dependency.'
+  )
+  _describe -t "scopes" "scope" scopes
+}
+
 _mvn_plugin_goals_caching_policy() {
   # Rebuild if cache is older than one month.
   local -a oldp
@@ -416,6 +464,13 @@ _mvn_plugin_goals_caching_policy() {
 
 _mvn_plugin_goal_properties_caching_policy() {
   _mvn_plugin_goals_caching_policy
+}
+
+_mvn_groupIds_caching_policy() {
+  # Rebuild if cache is older than one hour.
+  local -a oldp
+  oldp=( "$1"(Nmh+1) )
+  (( $#oldp ))
 }
 
 _mvn_profiles_caching_policy() {
