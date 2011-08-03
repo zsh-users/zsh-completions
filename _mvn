@@ -415,9 +415,11 @@ _mvn_plugin_goal_properties() {
 
 (( $+functions[_mvn_groupIds] )) ||
 _mvn_groupIds() {
-  # TODO Read repository location from settings/project
-  local repository_location=$HOME/.m2/repository ret=1
-  
+  local settings_file repository_location ret=1
+
+  settings_file=${~opt_args[-s]:-${opt_args[--settings]:-$HOME/.m2/settings.xml}}
+  repository_location=${${${${(M)"$(<$settings_file)":#*<localRepository>*}:-$HOME/.m2/repository}##*<localRepository>}%%<\/localRepository>*}
+
   zstyle -s ":completion:${curcontext}:" cache-policy update_policy
   [[ -z "$update_policy" ]] && zstyle ":completion:${curcontext}:" cache-policy _mvn_groupIds_caching_policy
 
