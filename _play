@@ -60,7 +60,13 @@ _play() {
         (build-module|list-modules|lm|check|id)
           _message 'no more arguments' && ret=0
         ;;
-        (auto-test|classpath|cp|clean|eclipsify|ec|idealize|idea|javadoc|jd|modules|netbeansify|nb|out|pid|secret|stop)
+        (auto-test|classpath|cp|eclipsify|ec|idealize|idea|modules|netbeansify|nb)
+          _arguments \
+            '1:: :_play_apps' \
+            '(--deps)--deps[Resolve and install dependencies before running the command]' \
+          && ret=0
+        ;;
+        (clean|javadoc|jd|out|pid|secret|stop)
           _arguments '1:: :_play_apps' && ret=0
         ;;
         (help)
