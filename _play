@@ -64,7 +64,7 @@ _play() {
           _arguments '1:: :_play_apps' && ret=0
         ;;
         (help)
-          _arguments '1: :_play_cmds -F "(cp ec idea jd st lm nb nm help)"' && ret=0
+          _arguments '1: :_play_cmds -F "(cp deps ec idea jd st lm nb nm help)"' && ret=0
         ;;
         (status|st)
           _arguments \
@@ -125,12 +125,18 @@ _play() {
 # FIXME Parse 'play help' and 'play help <command>' (for aliases) instead of hard-coding.
 _play_cmds() {
   local commands; commands=(
+    'antify:Create a build.xml file for this project'
     'auto-test:Automatically run all application tests'
     'build-module:Build and package a module'
     'check:Check for a release newer than the current one'
     {classpath,cp}':Display the computed classpath'
     'clean:Delete temporary files (including the bytecode cache)'
+    {dependencies,deps}':Resolve and retrieve project dependencies'
     {eclipsify,ec}':Create all Eclipse configuration files'
+    'evolutions:Run the evolution check'
+    'evolutions\:apply:Automatically apply pending evolutions'
+    'evolutions\:mark:AppliedMark pending evolutions as manually applied'
+    'evolutions\:resolve:Resolve partially applied evolution'
     'help:Display help on a specific command'
     'id:Define the framework ID'
     {idealize,idea}':Create all IntelliJ Idea configuration files'
