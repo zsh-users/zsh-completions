@@ -60,12 +60,6 @@ _play() {
         (build-module|list-modules|lm|check|id)
           _message 'no more arguments' && ret=0
         ;;
-        (auto-test|classpath|cp|eclipsify|ec|idealize|idea|modules|netbeansify|nb)
-          _arguments \
-            '1:: :_play_apps' \
-            '(--deps)--deps[Resolve and install dependencies before running the command]' \
-          && ret=0
-        ;;
         (dependencies|deps)
           _arguments \
             '1:: :_play_apps' \
@@ -100,7 +94,7 @@ _play() {
         (new-module)
           _arguments '1:Module directory:_files -/' && ret=0
         ;;
-        (test|precompile|run|start|war)
+        (test|precompile|run|start|war|auto-test|classpath|cp|eclipsify|ec|idealize|idea|modules|netbeansify|nb)
           local cmd_args; cmd_args=(
             '1:: :_play_apps'
             '(--deps)--deps[Resolve and install dependencies before running the command]'
