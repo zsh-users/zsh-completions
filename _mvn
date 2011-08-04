@@ -361,16 +361,16 @@ _mvn_properties() {
     case $property in
       file) _wanted file expl 'file' _files && ret=0;;
       pomFile) _wanted pom-file expl 'POM file' _mvn_pom_files && ret=0;;
-      groupId) _wanted file expl 'groupId' _mvn_groupIds && ret=0;;
-      artifactId) _wanted file expl 'artifactId' _mvn_artifactIds && ret=0;;
+      groupId) _wanted groupId expl 'groupId' _mvn_groupIds && ret=0;;
+      artifactId) _wanted artifactId expl 'artifactId' _mvn_artifactIds && ret=0;;
       repositoryId) _message -e repositoryIds 'repositoryId' && ret=0;; # TODO Not implemented
-      classifier) _message -e classifiers 'classifier' && ret=0;; # TODO Not implemented
+      classifier) _message -e classifiers 'classifier' && ret=0;;
       scope) _wanted scope expl 'scope' _mvn_scopes && ret=0;;
-      *url*) _message -e urls 'url' && ret=0;; # TODO Not implemented
+      *url*) _wanted url expl 'url' _urls && ret=0;; # TODO Use _alternative and add repository urls from settings + projects
       *password|*passphrase) _wanted password expl $property _mvn_passwords && ret=0;;
-      version) _message -e versions 'version' && ret=0;; # TODO Not implemented
+      version) _wanted version expl 'version' _mvn_versions && ret=0;;
       createChecksum|generatePom|maven.test.skip) _wanted boolean expl 'boolean' _mvn_booleans && ret=0;;
-      user|username) _message -e usernames 'username' && ret=0;; # TODO Not implemented
+      user|username) _wanted user expl 'user' _users && ret=0;; # TODO Use _alternative and add repository usernames from settings + projects
       *) _default && ret=0;;
     esac
   else
@@ -458,6 +458,12 @@ _mvn_artifactIds() {
   [[ $#artifactIds -gt 0 ]] && _describe -t "artifactIds" "artifactId" artifactIds && ret=0
 
   return ret
+}
+
+(( $+functions[_mvn_versions] )) ||
+_mvn_versions() {
+  # TODO Make it contextual to -DgroupIds/-DartifactIds
+  _message -e versions 'version'
 }
 
 (( $+functions[_mvn_booleans] )) ||
