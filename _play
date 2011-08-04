@@ -73,7 +73,7 @@ _play() {
           _arguments '1:: :_play_apps' && ret=0
         ;;
         (help)
-          _arguments '1: :_play_cmds -F "(cp deps ec idea jd st lm nb nm help)"' && ret=0
+          _arguments '1: :_play_cmds -F "(cp deps ec idea jd st lm nb nm help antify evolutions evolutions:apply evolutions:markApplied evolutions:resolve)"' && ret=0
         ;;
         (status|st)
           _arguments \
