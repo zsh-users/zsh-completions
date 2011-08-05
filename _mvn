@@ -28,9 +28,9 @@
 # Description
 # -----------
 #
-#  Completion script for Maven (http://maven.apache.org).
+#  Completion script for Maven 2/3 (http://maven.apache.org).
 #
-#  Status: Incomplete, see FIXME and TODO tags.
+#  Status: See FIXME and TODO tags.
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -45,7 +45,7 @@
 #   * By default only a few common utility plugins are displayed. To define your
 #     own list of plugins:
 #
-#       maven_plugins=('jboss' 'tomcat' 'gwt' 'android')
+#       maven_plugins=(jboss tomcat gwt android)
 #       zstyle ':completion:*:mvn:*' plugins $maven_plugins
 #
 #   * By default advanced phases are not displayed. To have them displayed:
@@ -117,13 +117,13 @@ _mvn() {
     "($excl_opts -fae --fail-at-end -ff --fail-fast -fn --fail-never)"{-fae,--fail-at-end}'[only fail the build afterwards, allow all non-impacted builds to continue]' \
     "($excl_opts -ff --fail-fast -fae --fail-at-end -fn --fail-never)"{-ff,--fail-fast}'[stop at first failure in reactorized builds]' \
     "($excl_opts -fn --fail-never -fae --fail-at-end -ff --fail-fast)"{-fn,--fail-never}'[nerver fail the build, regardless of project result]' \
-    "($excl_opts -P --activate-profiles)"{-P,--activate-profiles}'[comma-delimited list of profiles to activate]:profile:_mvn_profiles' \
+    "($excl_opts)*"{-P,--activate-profiles}'[comma-delimited list of profiles to activate]:profile:_mvn_profiles' \
     "($excl_opts -pl --projects)"{-pl,--projects}'[build specified reactor projects instead of all projects]:project list:_mvn_projects -s ,' \
     "($excl_opts -rf --resume-from)"{-rf,--resume-from}'[resume reactor from specified project]:project:_mvn_projects' \
     "($excl_opts -o --offline -U --update-snapshots -cpu --check-plugin-updates -up --update-plugins)"{-o,--offline}'[work offline]' \
     "($excl_opts -U --update-snapshots -nsu --no-snapshot-updates -o --offline)"{-U,--update-snapshots}'[force a check for updated releases and snapshots on remote repositories]' \
     "($excl_opts -nsu --no-snapshot-updates -U --update-snapshots -o --offline)"{-nsu,--no-snapshot-updates}'[Supress SNAPSHOT updates]' \
-    {-D-,--define}'[define a system property]:property:_mvn_properties' \
+    "*"{-D-,--define}'[define a system property]:property:_mvn_properties' \
     "$opts[@]" \
     "($excl_opts)*: :_mvn_args"
 }
@@ -132,7 +132,7 @@ _mvn() {
 _mvn_args() {
   _alternative \
     'phases:phase:_mvn_phases' \
-    'goals:goal:_mvn_plugin_colon_goals'
+    'plugin-colon-goals:plugin-colon-goal:_mvn_plugin_colon_goals'
 }
 
 (( $+functions[_mvn_phases] )) ||
@@ -210,7 +210,7 @@ _mvn_plugins() {
     : ${cache_dir:=${ZDOTDIR:-$HOME}/.zcompcache}
     plugins+=($cache_dir/mvn/plugins/*(:t))
   fi
-  _describe -t 'plugin' "plugin" plugins -S ':'
+  _describe -t 'plugins' 'plugin' plugins -S ':'
 }
 
 (( $+functions[_mvn_goals] )) ||
@@ -232,10 +232,9 @@ _mvn_goals() {
   return ret
 }
 
-# FIXME No idea what kind of value the "--reactor" option is supposed to take
 (( $+functions[_mvn_reactors] )) ||
 _mvn_reactors() {
-  _message -e reactors 'reactor'
+  _message -e reactors 'reactor' # FIXME No idea what kind of value the "--reactor" option is supposed to take
 }
 
 (( $+functions[_mvn_passwords] )) ||
@@ -381,7 +380,7 @@ _mvn_common_property_names() {
     'maven.test.skip:skip tests compilation and execution'
     'gpg.passphrase:gpg passphrase'
   )
-  _describe -t 'common-properties-names' "Common property name" properties -qS=
+  _describe -t 'common-properties-names' 'common property name' properties -qS=
 }
 
 (( $+functions[_mvn_plugin_goal_property_names] )) ||
@@ -393,6 +392,7 @@ _mvn_plugin_goal_property_names() {
 
   unset properties
   if ( [[ ${+properties} -eq 0 ]] || _cache_invalid "mvn/plugins/${plugin}/${goal}" ) && ! _retrieve_cache "mvn/plugins/${plugin}/${goal}"; then
+    # FIXME Does not work with android:apk
     properties=(${(M)${(ps:,,,:)${${${${(pj: :)${${${(f)${"$(_call_program properties $words[1] -N org.apache.maven.plugins:maven-help-plugin:2.1.1:describe -Dplugin=$plugin -Dgoal=$goal -Ddetail)"#*Available parameters:}%%\[INFO\]*}//#    [a-z]*/,,,}##*Expression: \$\{}}//\}[[:space:]]##/:}//[[:space:]]##/ }//[[:space:]]#,,,[[:space:]]#/,,,}}:#[a-zA-Z]##:*})
     [[ $#properties -gt 0 ]] && _store_cache "mvn/plugins/${plugin}/${goal}" properties
   fi
