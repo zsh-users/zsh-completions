@@ -155,7 +155,7 @@ _mvn_phases() {
     'site:generates the projects site documentation'
     'site-deploy:deploys the generated site documentation to the specified web server'
   )
-  if zstyle -t ":completion:${curcontext}:" show-advanced-phases || [[ $#PREFIX -gt 0 ]]; then
+  if [[ $#PREFIX -gt 0 ]] || zstyle -t ":completion:${curcontext}:" show-advanced-phases; then
     phases+=(
       'pre-clean:executes processes needed prior to the actual project cleaning'
       'post-clean:executes processes needed to finalize the project cleaning'
@@ -199,17 +199,19 @@ _mvn_plugins() {
   local plugins
   # TODO Add the plugins for which we have a cache
   zstyle -a ":completion:${curcontext}:" plugins plugins
-  [[ $#plugins -gt 0 ]] || plugins=(
-    'assembly:create archives of your projects sources, classes, dependencies etc. from flexible assembly descriptors'
-    'release:release a project with Maven, saving a lot of repetitive, manual work'
-    'help:provides goals aimed at helping to make sense out of the build environment.'
-    'versions:diagnose and update the versions of components in the POM'
-    'deploy:add your artifact(s) to a remote repository for sharing with other developers and project'
-    'dependency:provides the capability to manipulate artifacts'
-    'archetype:create a Maven project from an existing template called an archetype'
-    'site:generate a site for the project'
-    'install:copies the project artifacts to the local repository.'
-  )
+  if [[ $#plugins -eq 0 ]]; then
+    plugins=(
+      'assembly:create archives of your projects sources, classes, dependencies etc. from flexible assembly descriptors'
+      'release:release a project with Maven, saving a lot of repetitive, manual work'
+      'help:provides goals aimed at helping to make sense out of the build environment.'
+      'versions:diagnose and update the versions of components in the POM'
+      'deploy:add your artifact(s) to a remote repository for sharing with other developers and project'
+      'dependency:provides the capability to manipulate artifacts'
+      'archetype:create a Maven project from an existing template called an archetype'
+      'site:generate a site for the project'
+      'install:copies the project artifacts to the local repository.'
+    )
+  fi
   _describe -t 'plugin' "plugin" plugins -S ':'
 }
 
@@ -357,59 +359,71 @@ _mvn_projects() {
 _mvn_properties() {
   local ret=1
   if compset -P '*='; then
-    local property=${${IPREFIX%=}#-D}
-    case $property in
-      file) _wanted file expl 'file' _files && ret=0;;
-      pomFile) _wanted pom-file expl 'POM file' _mvn_pom_files && ret=0;;
-      groupId) _wanted groupId expl 'groupId' _mvn_groupIds && ret=0;;
-      artifactId) _wanted artifactId expl 'artifactId' _mvn_artifactIds && ret=0;;
-      repositoryId) _message -e repositoryIds 'repositoryId' && ret=0;; # TODO Not implemented
-      classifier) _message -e classifiers 'classifier' && ret=0;;
-      scope) _wanted scope expl 'scope' _mvn_scopes && ret=0;;
-      *url*) _wanted url expl 'url' _urls && ret=0;; # TODO Use _alternative and add repository urls from settings + projects
-      *password|*passphrase) _wanted password expl $property _mvn_passwords && ret=0;;
-      version) _wanted version expl 'version' _mvn_versions && ret=0;;
-      createChecksum|generatePom|maven.test.skip) _wanted boolean expl 'boolean' _mvn_booleans && ret=0;;
-      user|username) _wanted user expl 'user' _users && ret=0;; # TODO Use _alternative and add repository usernames from settings + projects
-      *) _default && ret=0;;
-    esac
+    _wanted property-value expl 'property value' _mvn_property_values ${${IPREFIX%=}#-D} && ret=0
   else
-    local alternatives; alternatives=(
-      'maven properties:maven property:_mvn_maven_properties'
-    )
-    for plugin_colon_goal in ${(M)words:#*:*}; do # FIXME pretty sure this matches more than just plugin:goals
-      alternatives+=("plugin properties:plugin property:_mvn_plugin_goal_properties '${plugin_colon_goal%:*}' '${plugin_colon_goal#*:}'")
-    done
-    _alternative "${alternatives[@]}" && ret=0
+    _wanted property-name expl 'property name' _mvn_property_names && ret=0
   fi
   return ret
 }
 
-(( $+functions[_mvn_maven_properties] )) ||
-_mvn_maven_properties() {
-  # TODO Split in properties with values/properties without
+(( $+functions[_mvn_property_names] )) ||
+_mvn_property_names() {
+  local alternatives; alternatives=(
+    'common property names:common property:_mvn_common_property_names'
+  )
+  for plugin_colon_goal in ${(M)words:#*:*}; do # FIXME pretty sure this matches more than just plugin:goals
+    alternatives+=("plugin property names:plugin property name:_mvn_plugin_goal_property_names '${plugin_colon_goal%:*}' '${plugin_colon_goal#*:}'")
+  done
+  _alternative "${alternatives[@]}"
+}
+
+(( $+functions[_mvn_common_property_names] )) ||
+_mvn_common_property_names() {
   local properties; properties=(
     'skipTests:skip tests execution'
     'maven.test.skip:skip tests compilation and execution'
     'gpg.passphrase:gpg passphrase'
   )
-  _describe -t 'maven-properties' "Maven property" properties -qS=
+  _describe -t 'common-properties-names' "Common property name" properties -qS=
 }
 
-(( $+functions[_mvn_plugins_goals_properties] )) ||
-_mvn_plugin_goal_properties() {
+(( $+functions[_mvn_plugin_goal_property_names] )) ||
+_mvn_plugin_goal_property_names() {
   local plugin="${(P)$(($# -1))}" goal="${(P)${#}}" update_policy ret=1
 
   zstyle -s ":completion:${curcontext}:" cache-policy update_policy
-  [[ -z "$update_policy" ]] && zstyle ":completion:${curcontext}:" cache-policy _mvn_plugin_goal_properties_caching_policy
+  [[ -z "$update_policy" ]] && zstyle ":completion:${curcontext}:" cache-policy _mvn_plugin_goal_property_names_caching_policy
 
   unset properties
   if ( [[ ${+properties} -eq 0 ]] || _cache_invalid "mvn/plugins/${plugin}/${goal}" ) && ! _retrieve_cache "mvn/plugins/${plugin}/${goal}"; then
-    properties=(${(M)${(ps:,,,:)${${${${(pj: :)${${${(f)${"$(_call_program goals $words[1] -N org.apache.maven.plugins:maven-help-plugin:2.1.1:describe -Dplugin=$plugin -Dgoal=$goal -Ddetail)"#*Available parameters:}%%\[INFO\]*}//#    [a-z]*/,,,}##*Expression: \$\{}}//\}[[:space:]]##/:}//[[:space:]]##/ }//[[:space:]]#,,,[[:space:]]#/,,,}}:#[a-zA-Z]##:*})
+    properties=(${(M)${(ps:,,,:)${${${${(pj: :)${${${(f)${"$(_call_program properties $words[1] -N org.apache.maven.plugins:maven-help-plugin:2.1.1:describe -Dplugin=$plugin -Dgoal=$goal -Ddetail)"#*Available parameters:}%%\[INFO\]*}//#    [a-z]*/,,,}##*Expression: \$\{}}//\}[[:space:]]##/:}//[[:space:]]##/ }//[[:space:]]#,,,[[:space:]]#/,,,}}:#[a-zA-Z]##:*})
     [[ $#properties -gt 0 ]] && _store_cache "mvn/plugins/${plugin}/${goal}" properties
   fi
 
-  [[ $#properties -gt 0 ]] && _describe -t "plugin-${plugin}-${goal}-properties" "${plugin}:${goal} property" properties -qS= && ret=0
+  [[ $#properties -gt 0 ]] && _describe -t "${plugin}-${goal}-property-names" "${plugin}:${goal} property name" properties -qS= && ret=0
+
+  return ret
+}
+
+(( $+functions[_mvn_property_values] )) ||
+_mvn_property_values() {
+  local property="${(P)${#}}" ret=1
+
+  case $property in
+    file) _wanted file expl 'file' _files && ret=0;;
+    pomFile) _wanted pom-file expl 'POM file' _mvn_pom_files && ret=0;;
+    groupId) _wanted groupId expl 'groupId' _mvn_groupIds && ret=0;;
+    artifactId) _wanted artifactId expl 'artifactId' _mvn_artifactIds && ret=0;;
+    repositoryId) _message -e repositoryIds 'repositoryId' && ret=0;; # TODO Not implemented
+    classifier) _message -e classifiers 'classifier' && ret=0;;
+    scope) _wanted scope expl 'scope' _mvn_scopes && ret=0;;
+    *url*) _wanted url expl 'url' _urls && ret=0;; # TODO Use _alternative and add repository urls from settings + projects
+    *password|*passphrase) _wanted password expl $property _mvn_passwords && ret=0;;
+    version) _wanted version expl 'version' _mvn_versions && ret=0;;
+    createChecksum|generatePom|maven.test.skip) _wanted boolean expl 'boolean' _mvn_booleans && ret=0;;
+    user|username) _wanted user expl 'user' _users && ret=0;; # TODO Use _alternative and add repository usernames from settings + projects
+    *) _default && ret=0;;
+  esac
 
   return ret
 }
@@ -495,7 +509,7 @@ _mvn_plugin_goals_caching_policy() {
   (( $#oldp ))
 }
 
-_mvn_plugin_goal_properties_caching_policy() {
+_mvn_plugin_goal_property_names_caching_policy() {
   _mvn_plugin_goals_caching_policy
 }
 
