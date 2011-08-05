@@ -266,7 +266,7 @@ _mvn_pom_files() {
 
 (( $+functions[_mvn_toolchains_files] )) ||
 _mvn_toolchains_files() {
-  _files
+  _files -g '*toolchains*\.xml*'
 }
 
 (( $+functions[_mvn_settings_files] )) ||
