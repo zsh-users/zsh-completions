@@ -45,12 +45,7 @@
 #   * By default only a few common utility plugins are displayed. To define your
 #     own list of plugins:
 #
-#       maven_plugins=(
-#         'jboss'
-#         'tomcat'
-#         'gwt:Maven plugin for the Google Web Toolkit'
-#         'android:Maven Plugin for Android'
-#       )
+#       maven_plugins=('jboss' 'tomcat' 'gwt' 'android')
 #       zstyle ':completion:*:mvn:*' plugins $maven_plugins
 #
 #   * By default advanced phases are not displayed. To have them displayed:
@@ -137,7 +132,7 @@ _mvn() {
 _mvn_args() {
   _alternative \
     'phases:phase:_mvn_phases' \
-    'goals:goal:_mvn_plugin_goals'
+    'goals:goal:_mvn_plugin_colon_goals'
 }
 
 (( $+functions[_mvn_phases] )) ||
@@ -182,8 +177,8 @@ _mvn_phases() {
   _describe -t 'phases' "phase" phases
 }
 
-(( $+functions[_mvn_plugin_goals] )) ||
-_mvn_plugin_goals() {
+(( $+functions[_mvn_plugin_colon_goals] )) ||
+_mvn_plugin_colon_goals() {
   local ret=1
   # TODO Plugin goals can also have the form groupId:artifactId:version:goal
   if compset -P '*:'; then
@@ -197,20 +192,23 @@ _mvn_plugin_goals() {
 (( $+functions[_mvn_plugins] )) ||
 _mvn_plugins() {
   local plugins
-  # TODO Add the plugins for which we have a cache
   zstyle -a ":completion:${curcontext}:" plugins plugins
   if [[ $#plugins -eq 0 ]]; then
     plugins=(
-      'assembly:create archives of your projects sources, classes, dependencies etc. from flexible assembly descriptors'
-      'release:release a project with Maven, saving a lot of repetitive, manual work'
-      'help:provides goals aimed at helping to make sense out of the build environment.'
-      'versions:diagnose and update the versions of components in the POM'
-      'deploy:add your artifact(s) to a remote repository for sharing with other developers and project'
-      'dependency:provides the capability to manipulate artifacts'
-      'archetype:create a Maven project from an existing template called an archetype'
-      'site:generate a site for the project'
-      'install:copies the project artifacts to the local repository.'
+      'assembly'
+      'release'
+      'help'
+      'versions'
+      'deploy'
+      'dependency'
+      'archetype'
+      'site'
+      'install'
     )
+    local cache_dir
+    zstyle -s ":completion:${curcontext}:" cache-path cache_dir
+    : ${cache_dir:=${ZDOTDIR:-$HOME}/.zcompcache}
+    plugins+=($cache_dir/mvn/plugins/*(:t))
   fi
   _describe -t 'plugin' "plugin" plugins -S ':'
 }
@@ -220,7 +218,7 @@ _mvn_goals() {
   local ret=1 plugin="$@" update_policy
 
   zstyle -s ":completion:${curcontext}:" cache-policy update_policy
-  [[ -z "$update_policy" ]] && zstyle ":completion:${curcontext}:" cache-policy _mvn_plugin_goals_caching_policy
+  [[ -z "$update_policy" ]] && zstyle ":completion:${curcontext}:" cache-policy _mvn_goals_caching_policy
 
   unset goals
   if ( [[ ${+goals} -eq 0 ]] || _cache_invalid "mvn/plugins/${plugin}/_goals" ) && ! _retrieve_cache "mvn/plugins/${plugin}/_goals"; then
@@ -247,8 +245,7 @@ _mvn_passwords() {
 
 (( $+functions[_mvn_thread_counts] )) ||
 _mvn_thread_counts() {
-  local thread_counts
-  thread_counts=(
+  local thread_counts; thread_counts=(
     '1:build with 1 thread'  '1C:build with 1 thread per CPU core'
     '2:build with 2 threads' '2C:build with 2 threads per CPU core'
     '3:build with 3 threads' '3C:build with 3 threads per CPU core'
@@ -392,7 +389,7 @@ _mvn_plugin_goal_property_names() {
   local plugin="${(P)$(($# -1))}" goal="${(P)${#}}" update_policy ret=1
 
   zstyle -s ":completion:${curcontext}:" cache-policy update_policy
-  [[ -z "$update_policy" ]] && zstyle ":completion:${curcontext}:" cache-policy _mvn_plugin_goal_property_names_caching_policy
+  [[ -z "$update_policy" ]] && zstyle ":completion:${curcontext}:" cache-policy _mvn_properties_caching_policy
 
   unset properties
   if ( [[ ${+properties} -eq 0 ]] || _cache_invalid "mvn/plugins/${plugin}/${goal}" ) && ! _retrieve_cache "mvn/plugins/${plugin}/${goal}"; then
@@ -408,7 +405,6 @@ _mvn_plugin_goal_property_names() {
 (( $+functions[_mvn_property_values] )) ||
 _mvn_property_values() {
   local property="${(P)${#}}" ret=1
-
   case $property in
     file) _wanted file expl 'file' _files && ret=0;;
     pomFile) _wanted pom-file expl 'POM file' _mvn_pom_files && ret=0;;
@@ -424,7 +420,6 @@ _mvn_property_values() {
     user|username) _wanted user expl 'user' _users && ret=0;; # TODO Use _alternative and add repository usernames from settings + projects
     *) _default && ret=0;;
   esac
-
   return ret
 }
 
@@ -502,15 +497,15 @@ _mvn_scopes() {
   _describe -t "scopes" "scope" scopes
 }
 
-_mvn_plugin_goals_caching_policy() {
+_mvn_goals_caching_policy() {
   # Rebuild if cache is older than one month.
   local -a oldp
   oldp=( "$1"(NmM+1) )
   (( $#oldp ))
 }
 
-_mvn_plugin_goal_property_names_caching_policy() {
-  _mvn_plugin_goals_caching_policy
+_mvn_properties_caching_policy() {
+  _mvn_goals_caching_policy
 }
 
 _mvn_groupIds_caching_policy() {
