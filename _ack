@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for ack (http://betterthangrep.com).
+#  Completion script for ack 1.94 (http://betterthangrep.com).
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -43,125 +43,131 @@
 
 
 _ack() {
-  local curcontext="$curcontext" state line cmds type_opts ret=1
+  local curcontext="$curcontext" state line cmds update_policy ret=1
 
-  # FIXME Somehow duplicates _ack_types
-  type_opts=(${${(S)${(f)${${"$(_call_program types $words[1] --help=types)"}#*--\[no\]}}#*no\]}/ ##/\[}"]")
-  type_opts=("--"$type_opts "--no"$type_opts)
+  zstyle -s ":completion:${curcontext}:" cache-policy update_policy
+  [[ -z "$update_policy" ]] && zstyle ":completion:${curcontext}:" cache-policy _ack_types_caching_policy
+
+  unset _ack_raw_types
+  if ( [[ ${+_ack_raw_types} -eq 0 ]] || _cache_invalid "ack-grep" ) && ! _retrieve_cache "ack-grep"; then
+    _ack_raw_types=(${(S)${(f)${${"$(_call_program types $words[1] --help=types)"}#*--\[no\]}}#*no\]})
+    [[ $#_ack_raw_types -gt 0 ]] && _store_cache "ack-grep" _ack_raw_types
+  fi
 
   _arguments -C \
-    '(- 1 *)--version[Display version and copyright information.]' \
-    '(- 1 *)--help[Print a short help statement.]' \
-    '(- 1 *)--man[Print the manual page.]' \
-    '(-a --all -u --unrestricted)'{-a,--all}'[Operate on all files, regardless of type (but still skip directories like blib, CVS, etc.)]' \
-    '(-A --after-context -C --context)'{-A,--after-context}'[Print NUM lines of trailing context after matching lines.]:number' \
-    '(-B --before-context -C --context)'{-B,--before-context}'[Print NUM lines of leading context before matching lines.]:number' \
-    '(-C --context -A --after-context -B --before-context)'{-C,--context}'[Print NUM lines (default 2) of context around matching lines.]:number' \
-    '(-c --count)'{-c,--count}'[Suppress normal output; instead print a count of matching lines for each input file.]' \
-    '(--color --nocolor)--color[Highlight the matching text.]' \
-    '(--nocolor --color --color-filename --color-match --color-lineno)--nocolor[Supress the color.]' \
-    '(--color-filename --nocolor --color)--color-filename[Sets the color to be used for filenames.]:color:_ack_colors' \
-    '(--color-match --nocolor --color)--color-match[Sets the color to be used for matches.]:color:_ack_colors' \
-    '(--color-lineno --nocolor --color)--color-lineno[Sets the color to be used for line numbers.]:color:_ack_colors' \
-    '(--column)--column[Show the column number of the first match.  This is helpful for editors that can place your cursor at a given position.]' \
-    '(--env --noenv)--env[Enable environment processing.]' \
-    '(--noenv --env)--noenv[Disable all environment processing. No .ackrc is read and all environment variables are ignored.]' \
-    '(--flush)--flush[Flush output immediately.]' \
-    '(-f)-f[Only print the files that would be searched, without actually doing any searching.]' \
-    '(--follow --nofollow)--follow[Follow symlinks.]' \
-    '(--nofollow --follow)--nofollow[Don'\''t follow symlinks.]' \
-    '(-G)-G[Only paths matching REGEX are included in the search.]:regex' \
-    '(-g)-g[Print files where the relative path + filename matches REGEX.]:regex' \
-    '(--group --nogroup)--group[Group matches by file name.]' \
-    '(--nogroup --group)--nogroup[Do not group matches by file name.]' \
-    '(-H --with-filename -h --no-filename)'{-H,--with-filename}'[Print the filename for each match.]' \
-    '(-h --no-filename -H --with-filename)'{-h,--no-filename}'[Suppress the prefixing of filenames on output when multiple files are searched.]' \
-    '(-i --ignore-case)'{-i,--ignore-case}'[Ignore case in the search strings.]' \
-    '(--ignore-dir)--ignore-dir[Ignore directory.]:directory:_files -/' \
-    '(--noignore-dir)--noignore-dir[Don'\''t ignore directory.]:directory:_files -/' \
-    '(--line)--line[Only print line NUM of each file.]:number' \
-    '(-l --files-with-matches -L --files-without-matches)'{-l,--files-with-matches}'[Only print the filenames of matching files, instead of the matching text.]' \
-    '(-L --files-without-matches -l --files-with-matches)'{-L,--files-without-matches}'[Only print the filenames of files that do NOT match.]' \
-    '(--match)--match[Specify the REGEX explicitly.]:regex' \
-    '(-m --max-count)'{-m,--max-count}'[Stop reading a file after NUM matches.]:number' \
-    '(-r -R --recurse -n --no-recurse)'{-r,-R,--recurse}'[Recurse into sub-directories.]' \
-    '(-n --no-recurse -r -R --recurse)'{-n,--no-recurse}'[No descending into subdirectories.]' \
-    '(-o)-o[Show only the part of each line matching PATTERN (turns off text highlighting)]:pattern' \
-    '(--output)--output[Output the evaluation of expr for each line (turns off text highlighting)]:expression' \
-    '(--pager)--pager[Direct ack'\''s output through program.]:pager program:_command_names' \
-    '(--passthru)--passthru[Prints all lines, whether or not they match the expression.]' \
-    '(--print0)--print0[The filenames are output separated with a null byte instead of the usual newline.]' \
-    '(-Q --literal)'{-Q,--literal}'[Quote all metacharacters in PATTERN, it is treated as a literal.]' \
-    '(--smart-case --no-smart-case)--smart-case[Ignore case in the search strings if PATTERN contains no uppercase characters.]' \
-    '(--no-smart-case --smart-case)--no-smart-case[Disable --smart-case option.]' \
-    '(--sort-files)--sort-files[Sorts the found files lexically.]' \
-    '(--show-types)--show-types[Outputs the filetypes that ack associates with each file.]' \
-    '(--thpppt)--thpppt[Display the all-important Bill The Cat logo.  Note that the exact spelling of --thpppppt is not important.  It'\''s checked against a regular expression.]' \
-    '--type[Specify the types of files to include or exclude from a search.]:type:_ack_types' \
-    '--type-add[Files with the given EXTENSION(s) are recognized as being of type TYPE.]:type-def:_ack_type_defs' \
-    '--type-set[Files with the given EXTENSION(s) are recognized as being of type TYPE.]:type-def:_ack_type_defs' \
-    '(-u --unrestricted -a --all)'{-u,--unrestricted}'[All files and directories (including blib/, core.*, ...) are searched, nothing is skipped.]' \
-    '(-v --invert-match)'{-v,--invert-match}'[Invert match: select non-matching lines.]' \
-    '(-w --word-regexp)'{-w,--word-regexp}'[Force PATTERN to match only whole words.]' \
-    '(-1)-1[Stops after reporting first match of any kind.]' \
-    "$type_opts[@]" \
+    '(- 1 *)--version[display version and copyright information]' \
+    '(- 1 *)--help[print a short help statement]' \
+    '(- 1 *)--man[print the manual page]' \
+    '(-a --all -u --unrestricted)'{-a,--all}'[operate on all files, regardless of type (but still skip directories like blib, CVS, etc.)]' \
+    '(-A --after-context -C --context)'{-A,--after-context}'[print N lines of trailing context after matching lines]:number' \
+    '(-B --before-context -C --context)'{-B,--before-context}'[print N lines of leading context before matching lines]:number' \
+    '(-C --context -A --after-context -B --before-context)'{-C,--context}'[print N lines (default 2) of context around matching lines]:number' \
+    '(-c --count)'{-c,--count}'[suppress normal output; instead print a count of matching lines for each input file]' \
+    '(--nocolor)--color[highlight the matching text]' \
+    '(--color --color-filename --color-match --color-lineno)--nocolor[supress the color]' \
+    '(--nocolor --color)--color-filename[sets the color to be used for filenames]:color:->colors' \
+    '(--nocolor --color)--color-match[sets the color to be used for matches]:color:->colors' \
+    '(--nocolor --color)--color-lineno[sets the color to be used for line numbers]:color:->colors' \
+    '--column[show the column number of the first match]' \
+    '(--noenv)--env[enable environment processing]' \
+    '(--env)--noenv[disable all environment processing, no .ackrc is read and all environment variables are ignored]' \
+    '--flush[flush output immediately]' \
+    '-f[only print the files that would be searched, without actually doing any searching]' \
+    '(--nofollow)--follow[follow symlinks]' \
+    '(--follow)--nofollow[don'\''t follow symlinks]' \
+    '-G[only paths matching the given regex are included in the search]:regex' \
+    '-g[print files where the relative path + filename matches the given regex]:regex' \
+    '(--nogroup)--group[group matches by file name]' \
+    '(--group)--nogroup[do not group matches by file name]' \
+    '(-H --with-filename -h --no-filename)'{-H,--with-filename}'[print the filename for each match]' \
+    '(-h --no-filename -H --with-filename)'{-h,--no-filename}'[suppress the prefixing of filenames on output when multiple files are searched]' \
+    '(-i --ignore-case)'{-i,--ignore-case}'[ignore case in the search strings]' \
+    '*--ignore-dir[ignore directory]:directory:_files -/' \
+    '*--noignore-dir[don'\''t ignore directory]:directory:_files -/' \
+    '--line[only print given line of each file]:number' \
+    '(-l --files-with-matches -L --files-without-matches)'{-l,--files-with-matches}'[only print the filenames of matching files, instead of the matching text]' \
+    '(-L --files-without-matches -l --files-with-matches)'{-L,--files-without-matches}'[only print the filenames of files that do NOT match]' \
+    '--match[specify the regular expression explicitly]:regex' \
+    '(-m --max-count)'{-m,--max-count}'[stop reading a file after N matches]:number' \
+    '(-r -R --recurse -n --no-recurse)'{-r,-R,--recurse}'[recurse into sub-directories]' \
+    '(-n --no-recurse -r -R --recurse)'{-n,--no-recurse}'[no descending into subdirectories]' \
+    '-o[show only the part of each line matching PATTERN (turns off text highlighting)]:pattern' \
+    '--output[output the evaluation of expr for each line (turns off text highlighting)]:expression' \
+    '--pager[direct ack'\''s output through program]:pager program:_command_names' \
+    '--passthru[prints all lines, whether or not they match the expression]' \
+    '--print0[the filenames are output separated with a null byte instead of the usual newline]' \
+    '(-Q --literal)'{-Q,--literal}'[quote all metacharacters in the pattern, it is treated as a literal]' \
+    '(--no-smart-case)--smart-case[ignore case in the search strings if pattern contains no uppercase characters]' \
+    '(--smart-case)--no-smart-case[disable --smart-case option]' \
+    '--sort-files[sorts the found files lexically]' \
+    '--show-types[outputs the filetypes that ack associates with each file]' \
+    '--thpppt[display the all-important Bill The Cat logo]' \
+    '*--type[specify the types of files to include or exclude from a search]:type:->types' \
+    '*--type-add[files with the given extensions are recognized as being of the given type]:type-def:->type-defs' \
+    '*--type-set[files with the given extensions are recognized as being of the given type]:type-def:->type-defs' \
+    '(-u --unrestricted -a --all)'{-u,--unrestricted}'[all files and directories (including blib/, core.*, ...) are searched, nothing is skipped]' \
+    '(-v --invert-match)'{-v,--invert-match}'[invert match: select non-matching lines]' \
+    '(-w --word-regexp)'{-w,--word-regexp}'[force the given pattern to match only whole words]' \
+    '-1[stops after reporting first match of any kind]' \
+    {'--','--no'}${_ack_raw_types/ ##/\[}']' \
     '1: :->patterns' \
     '*: :_files' \
   && ret=0
 
   case $state in
     patterns)
-      _ack_patterns && ret=0
+      _message -e patterns 'pattern' && ret=0
+    ;;
+    colors)
+      local colors; colors=(
+        'black'      'on_black'
+        'red'        'on_red'
+        'green'      'on_green'
+        'yellow'     'on_yellow'
+        'blue'       'on_blue'
+        'magenta'    'on_magenta'
+        'cyan'       'on_cyan'
+        'white'      'on_white'
+        'clear'
+        'reset'
+        'dark'
+        'bold'
+        'underline'
+        'underscore'
+        'blink'
+        'reverse'
+        'concealed'
+      )
+      _describe -t 'colors' 'color' colors && ret=0
+    ;;
+    type-defs)
+      if compset -P '*='; then
+        local extensions; extensions=(*.*(:e))
+        _values -s ',' 'file extension' '.'$extensions && ret=0
+      else
+        _message -e type-name 'type name' && ret=0
+      fi
+    ;;
+    types)
+      local types; types=({'','no'}${_ack_raw_types/ ##/:})
+      _describe -t 'types' 'type' types
     ;;
   esac
 
   return ret
 }
 
-_ack_patterns() {
-  _message -e patterns 'pattern'
-}
+_ack_types_caching_policy() {
 
-_ack_colors() {
-  local colors
-  colors=(
-    'black'      'on_black'
-    'red'        'on_red'
-    'green'      'on_green'
-    'yellow'     'on_yellow'
-    'blue'       'on_blue'
-    'magenta'    'on_magenta'
-    'cyan'       'on_cyan'
-    'white'      'on_white'
-    'clear'
-    'reset'
-    'dark'
-    'bold'
-    'underline'
-    'underscore'
-    'blink'
-    'reverse'
-    'concealed'
-  )
-  _describe -t 'colors' "color" colors
-}
+  # Rebuild if ackrc more recent than cache.
+  [[ -f $HOME/.ackrc && $$HOME/.ackrc -nt "$1" ]] && return 0
 
-_ack_type_defs() {
-  local ret=1
-  if compset -P '*='; then
-    local extensions; extensions=(*.*(:e))
-    _values -s "," "file extensions" "."$extensions && ret=0
-  else
-    _message -e type-name 'type name' && ret=0
-  fi
-  return ret
-}
+  # Rebuild if cache is older than one week.  
+  local -a oldp
+  oldp=( "$1"(Nmw+1) )
+  (( $#oldp )) && return 0
 
-_ack_types() {
-  local types
-  types=(${${(S)${(f)${${"$(_call_program types $words[1] --help=types)"}#*--\[no\]}}#*no\]}/ ##/:})
-  types+=("no"$types)
-  _describe -t "types" "type" types
+  return 1
 }
 
 _ack "$@"
