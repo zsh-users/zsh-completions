@@ -42,15 +42,17 @@
 # How to tweak
 # ------------
 #
-#   * By default only a few common utility plugins are displayed. To define your
+#   * By default a few common utility plugins are displayed, plus the ones for each
+#     the completion has already been called ("mvn plugin:<TAB>"). To define your
 #     own list of plugins:
 #
 #       maven_plugins=(jboss tomcat gwt android)
 #       zstyle ':completion:*:mvn:*' plugins $maven_plugins
 #
-#   * By default advanced phases are not displayed. To have them displayed:
+#   * By default advanced phases are displayed only if you start typing them. To have
+#     them always displayed:
 #
-#           zstyle ':completion:*:mvn:*' show-advanced-phases true
+#       zstyle ':completion:*:mvn:*' show-advanced-phases true
 #
 #   * To have a better presentation of completions:
 #
