@@ -134,7 +134,8 @@ _mvn() {
 _mvn_args() {
   _alternative \
     'phases:phase:_mvn_phases' \
-    'plugin-colon-goals:plugin-colon-goal:_mvn_plugin_colon_goals'
+    'plugin-prefix-colon-goals:plugin prefix colon goal:_mvn_plugin_prefix_colon_goals' \
+    'plugin-colon-goals:plugin colon goal:_mvn_plugin_colon_goals'
 }
 
 (( $+functions[_mvn_phases] )) ||
@@ -179,14 +180,41 @@ _mvn_phases() {
   _describe -t 'phases' "phase" phases
 }
 
+(( $+functions[_mvn_plugin_prefix_colon_goals] )) ||
+_mvn_plugin_prefix_colon_goals() {
+  local ret=1
+  if [[ $words[CURRENT] == *.* ]]; then
+    ret=1
+  elif compset -P '*:'; then
+    local plugin="${IPREFIX%:}"
+    _wanted "plugin-${plugin}-goals" expl "${plugin} plugin goal" _mvn_plugin_goals $plugin && ret=0
+  else
+    _wanted plugins expl 'plugin' _mvn_plugins && ret=0
+  fi
+  return ret
+}
+
 (( $+functions[_mvn_plugin_colon_goals] )) ||
 _mvn_plugin_colon_goals() {
   local ret=1
-  # TODO Plugin goals can also have the form groupId:artifactId:version:goal
   if compset -P '*:'; then
-    _mvn_goals "${IPREFIX%:}" && ret=0
+    local groupId="${IPREFIX%:}"
+    if compset -P '*:'; then
+      local artifactId="${IPREFIX%:}"
+      if compset -P '*:'; then
+        local version="${IPREFIX%:}"
+        _wanted "plugin-${groupId}-${artifactId}-${version}-goals" expl "${groupId}:${artifactId}:${version} plugin goal" _mvn_plugin_goals "${groupId}:${artifactId}:${version}" && ret=0
+      else
+        _alternative \
+          "versions:version:_mvn_versions" \
+          "plugin-${groupId}-${artifactId}-goals:plugin-${groupId}-${artifactId}-goal:_mvn_plugin_goals ${groupId}:${artifactId}" \
+        && ret=0
+      fi
+    else
+      _wanted 'artifactIds' expl 'artifactId' _mvn_artifactIds $groupId && ret=0
+    fi
   else
-    _mvn_plugins && ret=0
+    _wanted 'groupIds' expl 'groupId' _mvn_groupIds && ret=0
   fi
   return ret
 }
@@ -210,22 +238,23 @@ _mvn_plugins() {
     local cache_dir
     zstyle -s ":completion:${curcontext}:" cache-path cache_dir
     : ${cache_dir:=${ZDOTDIR:-$HOME}/.zcompcache}
-    plugins+=($cache_dir/mvn/plugins/*(:t))
+    plugins+=($cache_dir/mvn/plugins/[^:]#(:t))
   fi
   _describe -t 'plugins' 'plugin' plugins -S ':'
 }
 
-(( $+functions[_mvn_goals] )) ||
-_mvn_goals() {
+(( $+functions[_mvn_plugin_goals] )) ||
+_mvn_plugin_goals() {
   local ret=1 plugin="$@" update_policy
 
   zstyle -s ":completion:${curcontext}:" cache-policy update_policy
-  [[ -z "$update_policy" ]] && zstyle ":completion:${curcontext}:" cache-policy _mvn_goals_caching_policy
+  [[ -z "$update_policy" ]] && zstyle ":completion:${curcontext}:" cache-policy _mvn_plugin_goals_caching_policy
 
   unset goals
   if ( [[ ${+goals} -eq 0 ]] || _cache_invalid "mvn/plugins/${plugin}/_goals" ) && ! _retrieve_cache "mvn/plugins/${plugin}/_goals"; then
     setopt localoptions extendedglob
-    goals=(${(s:,,,:)${${${(f)${${${(f)${${${${(F)${(S)${(f)"$(_call_program goals $words[1] -N org.apache.maven.plugins:maven-help-plugin:2.1.1:describe -Dplugin=$plugin)"}//#$plugin:/,,,}}:#*BUILD FAILURE*}#*This plugin has*goals#:}%For more information, run \'mvn help:describe*}}//:/\\:}}}// ##/ }// Description\\: /:}})
+    local plugin_prefix=${${${plugin#*:}%-plugin*}/-#maven-#}
+    goals=(${(s:,,,:)${${${(f)${${${(f)${${${${(F)${(S)${(f)"$(_call_program goals $words[1] -N org.apache.maven.plugins:maven-help-plugin:2.1.1:describe -Dplugin=$plugin)"}//#$plugin_prefix:/,,,}}:#*BUILD FAILURE*}#*This plugin has*goals#:}%For more information, run \'mvn help:describe*}}//:/\\:}}}// ##/ }// Description\\: /:}})
     [[ $#goals -gt 0 ]] && _store_cache "mvn/plugins/${plugin}/_goals" goals
   fi
 
@@ -281,6 +310,7 @@ _mvn_log_files() {
 
 (( $+functions[_mvn_profiles] )) ||
 _mvn_profiles() {
+
   # FIXME Use "mvn help:all-profiles" output instead of parsing settings and pom files...
   # Blocked on http://jira.codehaus.org/browse/MPH-82 and http://jira.codehaus.org/browse/MPH-83
   local ret=1 profs update_policy settings_file files parent_pom_file cache_name profiles_section
@@ -329,6 +359,8 @@ _mvn_profiles() {
     fi
     profs+=($profiles)
   fi
+
+  compset -P '-'; compset -P '+'; compset -P '!' # FIXME Only works for the first profile
 
   [[ $#profs -gt 0 ]] && _values -s ',' 'profile' "$profs[@]" && ret=0
 
@@ -450,26 +482,15 @@ _mvn_groupIds() {
 
 (( $+functions[_mvn_artifactIds] )) ||
 _mvn_artifactIds() {
-  local settings_file repository_location ret=1
+  local settings_file repository_location groupId="${(P)${#}}"
 
   # FIXME Duplicated code, see _mvn_groupIds
   settings_file=${~opt_args[-s]:-${opt_args[--settings]:-$HOME/.m2/settings.xml}}
   repository_location=${${${${(M)"$(<$settings_file)":#*<localRepository>*}:-$HOME/.m2/repository}##*<localRepository>}%%<\/localRepository>*}
 
-  # TODO Make it contextual to -DgroupIds
-  zstyle -s ":completion:${curcontext}:" cache-policy update_policy
-  [[ -z "$update_policy" ]] && zstyle ":completion:${curcontext}:" cache-policy _mvn_artifactIds_caching_policy
-
-  unset artifactIds
-  if ( [[ ${+artifactIds} -eq 0 ]] || _cache_invalid "mvn/repository/artifactIds" ) && ! _retrieve_cache "mvn/repository/artifactIds"; then
-    artifactIds=($repository_location/**/*.pom)
-    artifactIds=(${${${(u)artifactIds:h:h:t}#"$repository_location/"}//\//.})
-    [[ $#artifactIds -gt 0 ]] && _store_cache "mvn/repository/artifactIds" artifactIds
-  fi
-
-  [[ $#artifactIds -gt 0 ]] && _describe -t "artifactIds" "artifactId" artifactIds && ret=0
-
-  return ret
+  local groupId_repository="${repository_location}/${groupId//\.//}"
+  artifactIds=($groupId_repository/*/*/*.pom(:h:h:t))
+  _describe -t "artifactIds" "artifactId" artifactIds
 }
 
 (( $+functions[_mvn_versions] )) ||
@@ -500,7 +521,7 @@ _mvn_scopes() {
   _describe -t "scopes" "scope" scopes
 }
 
-_mvn_goals_caching_policy() {
+_mvn_plugin_goals_caching_policy() {
   # Rebuild if cache is older than one month.
   local -a oldp
   oldp=( "$1"(NmM+1) )
@@ -508,7 +529,7 @@ _mvn_goals_caching_policy() {
 }
 
 _mvn_properties_caching_policy() {
-  _mvn_goals_caching_policy
+  _mvn_plugin_goals_caching_policy
 }
 
 _mvn_groupIds_caching_policy() {
