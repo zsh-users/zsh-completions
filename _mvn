@@ -91,8 +91,6 @@ _mvn() {
       "($excl_opts -npu --no-plugin-updates -cpu --check-plugin-updates -up --update-plugins)"{-npu,--no-plugin-updates}'[suppress upToDate check for any relevant registered plugins]'
       "($excl_opts -r --reactor)"{-r,--reactor}'[dynamically build reactor from subdirectories]:reactor:_mvn_reactors'
     )
-  else
-    return 1
   fi
 
   [[ -n ${(M)words:#"-pl"} || -n ${(M)words:#"--projects"} ]] && opts+=(
@@ -126,7 +124,7 @@ _mvn() {
     "($excl_opts -U --update-snapshots -nsu --no-snapshot-updates -o --offline)"{-U,--update-snapshots}'[force a check for updated releases and snapshots on remote repositories]' \
     "($excl_opts -nsu --no-snapshot-updates -U --update-snapshots -o --offline)"{-nsu,--no-snapshot-updates}'[Supress SNAPSHOT updates]' \
     "*"{-D-,--define}'[define a system property]:property:_mvn_properties' \
-    "$opts[@]" \
+    "${opts[@]}" \
     "($excl_opts)*: :_mvn_args"
 }
 
@@ -135,13 +133,12 @@ _mvn_args() {
   local alternatives; alternatives=(
     'phases:phase:_mvn_phases'
   )
-  # Complete full form plugins only after the groupId's first dot
   if [[ $words[CURRENT] == *.* ]]; then
     alternatives+=('full-form-plugin-colon-goals:full form plugin colon goal:_mvn_full_form_plugin_colon_goals')
   else
     alternatives+=('plugin-prefix-colon-goals:plugin prefix colon goal:_mvn_plugin_prefix_colon_goals')
   fi
-  _alternative $alternatives
+  _alternative "${alternatives[@]}"
 }
 
 (( $+functions[_mvn_phases] )) ||
@@ -221,7 +218,7 @@ _mvn_plugin_prefixes() {
     : ${cache_dir:=${ZDOTDIR:-$HOME}/.zcompcache}
     plugins+=($cache_dir/mvn/plugins/[^:]#(:t))
   fi
-  _describe -t 'plugins' 'plugin' plugins -S ':'
+  _describe -t 'plugin-prefixes' 'plugin prefix' plugins -S ':'
 }
 
 (( $+functions[_mvn_full_form_plugin_colon_goals] )) ||
@@ -453,8 +450,8 @@ _mvn_property_values() {
     ((#i)*pomFile*) _wanted pom-file expl 'POM file' _mvn_pom_files && ret=0;;
     ((#i)*file*) _wanted file expl 'file' _files && ret=0;;
     ((#i)*groupId*) _wanted groupId expl 'groupId' _mvn_groupIds && ret=0;;
-    ((#i)*artifactId*) _wanted artifactId expl 'artifactId' _mvn_groupId_artifactIds && ret=0;;
-    ((#i)*version*) _wanted version expl 'version' _mvn_artifact_versions && ret=0;;
+    ((#i)*artifactId*) _wanted artifactId expl 'artifactId' _mvn_groupId_artifactIds ${${(M)${(ps.:.)opt_args[(K)-D]}:#groupId=*}#groupId=} && ret=0;;
+    ((#i)*version*) _wanted version expl 'version' _mvn_artifact_versions ${${(M)${(ps.:.)opt_args[(K)-D]}:#groupId=*}#groupId=}:${${(M)${(ps.:.)opt_args[(K)-D]}:#artifactId=*}#artifactId=} && ret=0;;
     ((#i)*repositoryId*) _message -e repositoryIds 'repositoryId' && ret=0;; # TODO Not implemented
     ((#i)*classifier*) _message -e classifiers 'classifier' && ret=0;;
     ((#i)*scope*) _wanted scope expl 'scope' _mvn_scopes && ret=0;;
@@ -478,13 +475,13 @@ _mvn_groupIds() {
   [[ -z "$update_policy" ]] && zstyle ":completion:${curcontext}:" cache-policy _mvn_groupIds_caching_policy
 
   unset groupIds
-  if ( [[ ${+groupIds} -eq 0 ]] || _cache_invalid "mvn/repository/groupIds" ) && ! _retrieve_cache "mvn/repository/groupIds"; then
+  if ( [[ ${+groupIds} -eq 0 ]] || _cache_invalid "mvn/repositories/${repository_location}/groupIds" ) && ! _retrieve_cache "mvn/repositories/${repository_location}/groupIds"; then
     groupIds=($repository_location/**/)
     groupIds=(${${${(u)groupIds:h:h}#"$repository_location/"}//\//.})
-    [[ $#groupIds -gt 0 ]] && _store_cache "mvn/repository/groupIds" groupIds
+    [[ $#groupIds -gt 0 ]] && _store_cache "mvn/repositories/${repository_location}/groupIds" groupIds
   fi
 
-  [[ $#groupIds -gt 0 ]] && _multi_parts "$@" . groupIds && ret=0 #FIXME
+  [[ $#groupIds -gt 0 ]] && _multi_parts "$@" . groupIds && ret=0
 
   return ret
 }
@@ -500,7 +497,7 @@ _mvn_groupId_artifactIds() {
   # FIXME Handle case where no groupId given or invalid one
   local groupId_repository="${repository_location}/${groupId//\.//}"
   artifactIds=($groupId_repository/*/*/*.pom(:h:h:t))
-  _describe -t "artifactIds" "artifactId" artifactIds $@[0,-2]
+  _describe -t "artifactIds" "$groupId artifactId" artifactIds $@[0,-2]
 }
 
 (( $+functions[_mvn_artifact_versions] )) ||
@@ -551,9 +548,9 @@ _mvn_properties_caching_policy() {
 }
 
 _mvn_groupIds_caching_policy() {
-  # Rebuild if cache is older than one hour.
+  # Rebuild if cache is older than one month.
   local -a oldp
-  oldp=( "$1"(Nmh+1) )
+  oldp=( "$1"(NmM+1) )
   (( $#oldp ))
 }
 
