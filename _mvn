@@ -132,10 +132,16 @@ _mvn() {
 
 (( $+functions[_mvn_args] )) ||
 _mvn_args() {
-  _alternative \
-    'phases:phase:_mvn_phases' \
-    'plugin-prefix-colon-goals:plugin prefix colon goal:_mvn_plugin_prefix_colon_goals' \
-    'plugin-colon-goals:plugin colon goal:_mvn_plugin_colon_goals'
+  local alternatives; alternatives=(
+    'phases:phase:_mvn_phases'
+  )
+  # Complete full form plugins only after the groupId's first dot
+  if [[ $words[CURRENT] == *.* ]]; then
+    alternatives+=('full-form-plugin-colon-goals:full form plugin colon goal:_mvn_full_form_plugin_colon_goals')
+  else
+    alternatives+=('plugin-prefix-colon-goals:plugin prefix colon goal:_mvn_plugin_prefix_colon_goals')
+  fi
+  _alternative $alternatives
 }
 
 (( $+functions[_mvn_phases] )) ||
@@ -187,40 +193,15 @@ _mvn_plugin_prefix_colon_goals() {
     ret=1
   elif compset -P '*:'; then
     local plugin="${IPREFIX%:}"
-    _wanted "plugin-${plugin}-goals" expl "${plugin} plugin goal" _mvn_plugin_goals $plugin && ret=0
+    _wanted goals expl "${plugin} plugin goal" _mvn_plugin_goals $plugin && ret=0
   else
-    _wanted plugins expl 'plugin' _mvn_plugins && ret=0
+    _wanted plugin-prefixes expl 'plugin prefix' _mvn_plugin_prefixes && ret=0
   fi
   return ret
 }
 
-(( $+functions[_mvn_plugin_colon_goals] )) ||
-_mvn_plugin_colon_goals() {
-  local ret=1
-  if compset -P '*:'; then
-    local groupId="${IPREFIX%:}"
-    if compset -P '*:'; then
-      local artifactId="${IPREFIX%:}"
-      if compset -P '*:'; then
-        local version="${IPREFIX%:}"
-        _wanted "plugin-${groupId}-${artifactId}-${version}-goals" expl "${groupId}:${artifactId}:${version} plugin goal" _mvn_plugin_goals "${groupId}:${artifactId}:${version}" && ret=0
-      else
-        _alternative \
-          "versions:version:_mvn_versions" \
-          "plugin-${groupId}-${artifactId}-goals:plugin-${groupId}-${artifactId}-goal:_mvn_plugin_goals ${groupId}:${artifactId}" \
-        && ret=0
-      fi
-    else
-      _wanted 'artifactIds' expl 'artifactId' _mvn_artifactIds $groupId && ret=0
-    fi
-  else
-    _wanted 'groupIds' expl 'groupId' _mvn_groupIds && ret=0
-  fi
-  return ret
-}
-
-(( $+functions[_mvn_plugins] )) ||
-_mvn_plugins() {
+(( $+functions[_mvn_plugin_prefixes] )) ||
+_mvn_plugin_prefixes() {
   local plugins
   zstyle -a ":completion:${curcontext}:" plugins plugins
   if [[ $#plugins -eq 0 ]]; then
@@ -243,9 +224,34 @@ _mvn_plugins() {
   _describe -t 'plugins' 'plugin' plugins -S ':'
 }
 
+(( $+functions[_mvn_full_form_plugin_colon_goals] )) ||
+_mvn_full_form_plugin_colon_goals() {
+  local ret=1
+  if compset -P 1 '*:'; then
+    local groupId="${${IPREFIX%:}##*:}"
+    if compset -P 1 '*:'; then
+      local artifactId="${${IPREFIX%:}##*:}"
+      if compset -P 1 '*:'; then
+        local version="${${IPREFIX%:}##*:}"
+        _wanted goals expl "${artifactId}:${version} goal" _mvn_plugin_goals "${groupId}:${artifactId}:${version}" && ret=0
+      else
+        _alternative \
+          "versions:${artifactId} version:_mvn_artifact_versions -qS: ${groupId}:${artifactId}" \
+          "goals:${artifactId} goal:_mvn_plugin_goals ${groupId}:${artifactId}" \
+        && ret=0
+      fi
+    else
+      _wanted artifactIds expl "${groupId} artifactId" _mvn_groupId_artifactIds -qS: $groupId && ret=0
+    fi
+  else
+    _wanted groupIds expl "groupId" _mvn_groupIds -qS: && ret=0
+  fi
+  return ret
+}
+
 (( $+functions[_mvn_plugin_goals] )) ||
 _mvn_plugin_goals() {
-  local ret=1 plugin="$@" update_policy
+  local ret=1 plugin="$@[-1]" update_policy
 
   zstyle -s ":completion:${curcontext}:" cache-policy update_policy
   [[ -z "$update_policy" ]] && zstyle ":completion:${curcontext}:" cache-policy _mvn_plugin_goals_caching_policy
@@ -258,7 +264,7 @@ _mvn_plugin_goals() {
     [[ $#goals -gt 0 ]] && _store_cache "mvn/plugins/${plugin}/_goals" goals
   fi
 
-  [[ $#goals -gt 0 ]] && _describe -t "plugin-${plugin}-goals" "${plugin} plugin goal" goals && ret=0
+  [[ $#goals -gt 0 ]] && _describe -t "goals" "${plugin} goal" goals $@[0,-2] && ret=0
 
   return ret
 }
@@ -389,9 +395,9 @@ _mvn_projects() {
 _mvn_properties() {
   local ret=1
   if compset -P '*='; then
-    _wanted property-value expl 'property value' _mvn_property_values ${${IPREFIX%=}#-D} && ret=0
+    _wanted property-values expl 'property value' _mvn_property_values ${${IPREFIX%=}#-D} && ret=0
   else
-    _wanted property-name expl 'property name' _mvn_property_names && ret=0
+    _wanted property-names expl 'property name' _mvn_property_names -qS= && ret=0
   fi
   return ret
 }
@@ -399,10 +405,10 @@ _mvn_properties() {
 (( $+functions[_mvn_property_names] )) ||
 _mvn_property_names() {
   local alternatives; alternatives=(
-    'common property names:common property:_mvn_common_property_names'
+    "common-property-names:common property name:_mvn_common_property_names"
   )
-  for plugin_colon_goal in ${(M)words:#[^-]*:*}; do # FIXME pretty sure this matches more than just plugin:goals
-    alternatives+=("plugin property names:plugin property name:_mvn_plugin_goal_property_names '${plugin_colon_goal%:*}' '${plugin_colon_goal#*:}'")
+  for plugin_colon_goal in ${(M)words:#[^-]*:*}; do
+    alternatives+=("plugin-property-names:plugin property name:_mvn_plugin_goal_property_names ${plugin_colon_goal}")
   done
   _alternative "${alternatives[@]}"
 }
@@ -414,12 +420,15 @@ _mvn_common_property_names() {
     'maven.test.skip:skip tests compilation and execution'
     'gpg.passphrase:gpg passphrase'
   )
-  _describe -t 'common-properties-names' 'common property name' properties -qS=
+  _describe -t 'common-property-names' 'common property name' properties -qS=
 }
 
 (( $+functions[_mvn_plugin_goal_property_names] )) ||
 _mvn_plugin_goal_property_names() {
-  local plugin="${(P)$(($# -1))}" goal="${(P)${#}}" update_policy ret=1
+  local plugin_colon_goal="$@[-1]" plugin goal update_policy ret=1
+
+  plugin=${plugin_colon_goal%:*}
+  goal=${plugin_colon_goal##*:}
 
   zstyle -s ":completion:${curcontext}:" cache-policy update_policy
   [[ -z "$update_policy" ]] && zstyle ":completion:${curcontext}:" cache-policy _mvn_properties_caching_policy
@@ -431,21 +440,21 @@ _mvn_plugin_goal_property_names() {
     [[ $#properties -gt 0 ]] && _store_cache "mvn/plugins/${plugin}/${goal}" properties
   fi
 
-  [[ $#properties -gt 0 ]] && _describe -t "${plugin}-${goal}-property-names" "${plugin}:${goal} property name" properties -qS= && ret=0
+  [[ $#properties -gt 0 ]] && _describe -t "${plugin_colon_goal//:/-}-property-names" "${plugin_colon_goal} property name" properties -qS= && ret=0
 
   return ret
 }
 
 (( $+functions[_mvn_property_values] )) ||
 _mvn_property_values() {
-  local property="${(P)${#}}" ret=1
+  local property="$@[-1]" ret=1
   setopt localoptions extendedglob
   case $property in
     ((#i)*pomFile*) _wanted pom-file expl 'POM file' _mvn_pom_files && ret=0;;
     ((#i)*file*) _wanted file expl 'file' _files && ret=0;;
     ((#i)*groupId*) _wanted groupId expl 'groupId' _mvn_groupIds && ret=0;;
-    ((#i)*artifactId*) _wanted artifactId expl 'artifactId' _mvn_artifactIds && ret=0;;
-    ((#i)*version*) _wanted version expl 'version' _mvn_versions && ret=0;;
+    ((#i)*artifactId*) _wanted artifactId expl 'artifactId' _mvn_groupId_artifactIds && ret=0;;
+    ((#i)*version*) _wanted version expl 'version' _mvn_artifact_versions && ret=0;;
     ((#i)*repositoryId*) _message -e repositoryIds 'repositoryId' && ret=0;; # TODO Not implemented
     ((#i)*classifier*) _message -e classifiers 'classifier' && ret=0;;
     ((#i)*scope*) _wanted scope expl 'scope' _mvn_scopes && ret=0;;
@@ -471,32 +480,41 @@ _mvn_groupIds() {
   unset groupIds
   if ( [[ ${+groupIds} -eq 0 ]] || _cache_invalid "mvn/repository/groupIds" ) && ! _retrieve_cache "mvn/repository/groupIds"; then
     groupIds=($repository_location/**/)
-    groupIds=(${${${(u)groupIds:h}#"$repository_location/"}//\//.})
+    groupIds=(${${${(u)groupIds:h:h}#"$repository_location/"}//\//.})
     [[ $#groupIds -gt 0 ]] && _store_cache "mvn/repository/groupIds" groupIds
   fi
 
-  [[ $#groupIds -gt 0 ]] && _multi_parts . groupIds && ret=0
+  [[ $#groupIds -gt 0 ]] && _multi_parts "$@" . groupIds && ret=0 #FIXME
 
   return ret
 }
 
-(( $+functions[_mvn_artifactIds] )) ||
-_mvn_artifactIds() {
-  local settings_file repository_location groupId="${(P)${#}}"
+(( $+functions[_mvn_groupId_artifactIds] )) ||
+_mvn_groupId_artifactIds() {
+  local settings_file repository_location groupId="$@[-1]"
 
   # FIXME Duplicated code, see _mvn_groupIds
   settings_file=${~opt_args[-s]:-${opt_args[--settings]:-$HOME/.m2/settings.xml}}
   repository_location=${${${${(M)"$(<$settings_file)":#*<localRepository>*}:-$HOME/.m2/repository}##*<localRepository>}%%<\/localRepository>*}
 
+  # FIXME Handle case where no groupId given or invalid one
   local groupId_repository="${repository_location}/${groupId//\.//}"
   artifactIds=($groupId_repository/*/*/*.pom(:h:h:t))
-  _describe -t "artifactIds" "artifactId" artifactIds
+  _describe -t "artifactIds" "artifactId" artifactIds $@[0,-2]
 }
 
-(( $+functions[_mvn_versions] )) ||
-_mvn_versions() {
-  # TODO Make it contextual to -DgroupIds/-DartifactIds
-  _message -e versions 'version'
+(( $+functions[_mvn_artifact_versions] )) ||
+_mvn_artifact_versions() {
+  local settings_file repository_location artifact="$@[-1]" versions
+
+  # FIXME Duplicated code, see _mvn_groupIds
+  settings_file=${~opt_args[-s]:-${opt_args[--settings]:-$HOME/.m2/settings.xml}}
+  repository_location=${${${${(M)"$(<$settings_file)":#*<localRepository>*}:-$HOME/.m2/repository}##*<localRepository>}%%<\/localRepository>*}
+
+  # FIXME Handle case where no artifact given or invalid one
+  local artifact_repository="${repository_location}/${artifact//[\.:]//}"
+  versions=($artifact_repository/*/*.pom(:h:t))
+  _describe -t "versions" "version" versions $@[0,-2]
 }
 
 (( $+functions[_mvn_booleans] )) ||
@@ -537,10 +555,6 @@ _mvn_groupIds_caching_policy() {
   local -a oldp
   oldp=( "$1"(Nmh+1) )
   (( $#oldp ))
-}
-
-_mvn_artifactIds_caching_policy() {
-  _mvn_groupIds_caching_policy
 }
 
 _mvn_profiles_caching_policy() {
