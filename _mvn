@@ -204,7 +204,8 @@ _mvn_plugin_prefixes() {
     local cache_dir
     zstyle -s ":completion:${curcontext}:" cache-path cache_dir
     : ${cache_dir:=${ZDOTDIR:-$HOME}/.zcompcache}
-    plugins+=($cache_dir/mvn/plugins/[^:]#(:t))
+    local cached_plugins; cached_plugins=($cache_dir/mvn/plugins/*(:t))
+    plugins+=(${${${cached_plugins#*:}%-plugin*}/-#maven-#})
   fi
   _describe -t 'plugin-prefixes' 'plugin prefix' plugins -S ':'
 }
