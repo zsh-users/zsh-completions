@@ -239,6 +239,7 @@ _mvn_full_form_plugin_colon_goals() {
 _mvn_groupIds() {
   local settings_file repository_location ret=1
 
+  # FIXME Duplicated code, see _mvn_groupIds/_mvn_groupId_artifactIds/_mvn_artifact_versions
   settings_file=${~opt_args[-s]:-${opt_args[--settings]:-$HOME/.m2/settings.xml}}
   repository_location=${${${${(M)"$(<$settings_file)":#*<localRepository>*}:-$HOME/.m2/repository}##*<localRepository>}%%<\/localRepository>*}
 
@@ -261,7 +262,7 @@ _mvn_groupIds() {
 _mvn_groupId_artifactIds() {
   local settings_file repository_location groupId="$@[-1]"
 
-  # FIXME Duplicated code, see _mvn_groupIds
+  # FIXME Duplicated code, see _mvn_groupIds/_mvn_groupId_artifactIds/_mvn_artifact_versions
   settings_file=${~opt_args[-s]:-${opt_args[--settings]:-$HOME/.m2/settings.xml}}
   repository_location=${${${${(M)"$(<$settings_file)":#*<localRepository>*}:-$HOME/.m2/repository}##*<localRepository>}%%<\/localRepository>*}
 
@@ -275,7 +276,7 @@ _mvn_groupId_artifactIds() {
 _mvn_artifact_versions() {
   local settings_file repository_location artifact="$@[-1]" versions
 
-  # FIXME Duplicated code, see _mvn_groupIds
+  # FIXME Duplicated code, see _mvn_groupIds/_mvn_groupId_artifactIds/_mvn_artifact_versions
   settings_file=${~opt_args[-s]:-${opt_args[--settings]:-$HOME/.m2/settings.xml}}
   repository_location=${${${${(M)"$(<$settings_file)":#*<localRepository>*}:-$HOME/.m2/repository}##*<localRepository>}%%<\/localRepository>*}
 
@@ -318,6 +319,7 @@ _mvn_profiles() {
   profs=()
 
   # Resolve profiles from settings.xml
+  # FIXME Duplicated code, see _mvn_groupIds/_mvn_groupId_artifactIds/_mvn_artifact_versions
   settings_file=${~opt_args[-s]:-${opt_args[--settings]:-~/.m2/settings.xml}}
   if [[ -f  $settings_file ]]; then
     unset profiles
@@ -336,6 +338,7 @@ _mvn_profiles() {
   fi
 
   # Resolve project profiles
+  # FIXME Duplicated code, see _mvn_projects/_mvn_profiles
   parent_pom_file=${~opt_args[-f]:-${opt_args[--file]:-pom.xml}}
   while [[ -f ${parent_pom_file:a:h:h}/pom.xml ]]; do parent_pom_file=${parent_pom_file:a:h:h}/pom.xml; done
   if [[ -f  $parent_pom_file ]]; then
@@ -369,6 +372,7 @@ _mvn_projects() {
   # TODO projects can also be given in the form [groupId:]artifactId.
   local pom_file ret=1
 
+  # FIXME Duplicated code, see _mvn_projects/_mvn_profiles
   pom_file=${~opt_args[-f]:-${opt_args[--file]:-pom.xml}}
   while [[ -f ${pom_file:a:h:h}/pom.xml ]]; do pom_file=${pom_file:a:h:h}/pom.xml; done
 
@@ -438,18 +442,18 @@ _mvn_property_values() {
   local property="$@[-1]" ret=1
   setopt localoptions extendedglob
   case $property in
-    ((#i)*pomFile*) _wanted pom-file expl 'POM file' _mvn_pom_files && ret=0;;
-    ((#i)*file*) _wanted file expl 'file' _files && ret=0;;
-    ((#i)*groupId*) _wanted groupId expl 'groupId' _mvn_groupIds && ret=0;;
-    ((#i)*artifactId*) _wanted artifactId expl 'artifactId' _mvn_groupId_artifactIds ${${(M)${(ps.:.)opt_args[(K)-D]}:#groupId=*}#groupId=} && ret=0;;
-    ((#i)*version*) _wanted version expl 'version' _mvn_artifact_versions ${${(M)${(ps.:.)opt_args[(K)-D]}:#groupId=*}#groupId=}:${${(M)${(ps.:.)opt_args[(K)-D]}:#artifactId=*}#artifactId=} && ret=0;;
+    ((#i)*pomFile*) _wanted pom-files expl 'POM file' _mvn_pom_files && ret=0;;
+    ((#i)*file*) _wanted files expl 'file' _files && ret=0;;
+    ((#i)*groupId*) _wanted groupIds expl 'groupId' _mvn_groupIds && ret=0;;
+    ((#i)*artifactId*) _wanted artifactIds expl 'artifactId' _mvn_groupId_artifactIds ${${(M)${(ps.:.)opt_args[(K)-D]}:#groupId=*}#groupId=} && ret=0;;
+    ((#i)*version*) _wanted versions expl 'version' _mvn_artifact_versions ${${(M)${(ps.:.)opt_args[(K)-D]}:#groupId=*}#groupId=}:${${(M)${(ps.:.)opt_args[(K)-D]}:#artifactId=*}#artifactId=} && ret=0;;
     ((#i)*repositoryId*) _message -e repositoryIds 'repositoryId' && ret=0;; # TODO Not implemented
     ((#i)*classifier*) _message -e classifiers 'classifier' && ret=0;;
-    ((#i)*scope*) _wanted scope expl 'scope' _mvn_scopes && ret=0;;
-    ((#i)*url*) _wanted url expl 'url' _urls && ret=0;; # TODO Use _alternative and add repository urls from settings + projects
-    ((#i)*(password|passphrase)*) _wanted password expl $property _mvn_passwords && ret=0;;
-    ((#i)*(createChecksum|generatePom|maven.test.skip)*) _wanted boolean expl 'boolean' _mvn_booleans && ret=0;;
-    ((#i)*user*) _wanted user expl 'user' _users && ret=0;; # TODO Use _alternative and add repository usernames from settings + projects
+    ((#i)*scope*) _wanted scopes expl 'scope' _mvn_scopes && ret=0;;
+    ((#i)*url*) _wanted urls expl 'url' _urls && ret=0;; # TODO Use _alternative and add repository urls from settings + projects
+    ((#i)*(password|passphrase)*) _wanted passwords expl password _mvn_passwords && ret=0;;
+    ((#i)*(createChecksum|generatePom|maven.test.skip)*) _wanted booleans expl 'boolean' _mvn_booleans && ret=0;;
+    ((#i)*user*) _wanted users expl 'user' _users && ret=0;; # TODO Use _alternative and add repository usernames from settings + projects
     (*) _default && ret=0;;
   esac
   return ret
