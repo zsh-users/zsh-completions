@@ -247,7 +247,7 @@ _mvn_groupIds() {
       [[ $#_groupIds -gt 0 ]] && _store_cache "mvn/repositories/${repository_location}/groupIds" _groupIds
     fi
 
-    [[ $#_groupIds -gt 0 ]] && _multi_parts "$@" . _groupIds && ret=0
+    [[ $#_groupIds -gt 0 ]] && _multi_parts $@ . _groupIds && ret=0
   fi
 
   return ret
@@ -303,6 +303,8 @@ _mvn_profiles() {
   # Blocked on http://jira.codehaus.org/browse/MPH-82 and http://jira.codehaus.org/browse/MPH-83
   local profs update_policy settings_file=$(__mvn_get_settings_file) parent_pom_file=$(__mvn_get_parent_pom_file) cache_name profiles_section ret=1
 
+  # TODO Should be split into _mvn_profiles/mvn_profiles_lists
+
   zstyle -s ":completion:${curcontext}:" cache-policy update_policy
   [[ -z "$update_policy" ]] && zstyle ":completion:${curcontext}:" cache-policy _mvn_profiles_caching_policy
 
@@ -354,7 +356,8 @@ _mvn_profiles() {
 
 (( $+functions[_mvn_projects] )) ||
 _mvn_projects() {
-  # TODO projects can also be given in the form [groupId:]artifactId.
+  # TODO Projects can also be given in the form [groupId:]artifactId.
+  # TODO Should be split into _mvn_projects/mvn_projects_lists
   local pom_file=$(__mvn_get_parent_pom_file) ret=1
 
   if [[ -f $pom_file ]]; then
@@ -380,11 +383,12 @@ _mvn_properties() {
 
 (( $+functions[_mvn_property_names] )) ||
 _mvn_property_names() {
+  # FIXME "-qS=" should be inherited from _mvn_properties
   local alternatives; alternatives=(
-    "common-property-names:common property name:_mvn_common_property_names"
+    "common-property-names:common property name:_mvn_common_property_names -qS="
   )
   for plugin_colon_goal in ${(M)words:#[^-]*:*}; do
-    alternatives+=("plugin-property-names:plugin property name:_mvn_plugin_goal_property_names ${plugin_colon_goal}")
+    alternatives+=("plugin-property-names:plugin property name:_mvn_plugin_goal_property_names -qS= ${plugin_colon_goal}")
   done
   _alternative "${alternatives[@]}"
 }
@@ -396,7 +400,7 @@ _mvn_common_property_names() {
     'maven.test.skip:skip tests compilation and execution'
     'gpg.passphrase:gpg passphrase'
   )
-  _describe -t 'common-property-names' 'common property name' properties -qS= # FIXME "-qS=" should be passed by calling function
+  _describe -t 'common-property-names' 'common property name' properties $@
 }
 
 (( $+functions[_mvn_plugin_goal_property_names] )) ||
@@ -415,16 +419,16 @@ _mvn_plugin_goal_property_names() {
     [[ $#_properties -gt 0 ]] && _store_cache "mvn/plugins/${plugin_colon_goal}" _properties
   fi
 
-  [[ $#_properties -gt 0 ]] && _describe -t "${plugin_colon_goal//:/-}-property-names" "${plugin_colon_goal} property name" _properties -qS= && ret=0 # FIXME "-qS=" should be passed by calling function
+  [[ $#_properties -gt 0 ]] && _describe -t "${plugin_colon_goal//:/-}-property-names" "${plugin_colon_goal} property name" _properties $@[0,-2] && ret=0
 
   return ret
 }
 
 (( $+functions[_mvn_property_values] )) ||
 _mvn_property_values() {
-  local property="$@[-1]" ret=1
+  local ret=1
   setopt localoptions extendedglob
-  case $property in
+  case $@[-1] in
     ((#i)*pomFile*) _wanted pom-files expl 'POM file' _mvn_pom_files && ret=0;;
     ((#i)*file*) _wanted files expl 'file' _files && ret=0;;
     ((#i)*groupId*) _wanted groupIds expl 'groupId' _mvn_groupIds && ret=0;;
