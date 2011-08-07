@@ -239,37 +239,42 @@ _mvn_groupIds() {
   zstyle -s ":completion:${curcontext}:" cache-policy update_policy
   [[ -z "$update_policy" ]] && zstyle ":completion:${curcontext}:" cache-policy _mvn_groupIds_caching_policy
 
-  # FIXME Check repository_location exists first
-  unset _groupIds
-  if ( [[ ${+_groupIds} -eq 0 ]] || _cache_invalid "mvn/repositories/${repository_location}/groupIds" ) && ! _retrieve_cache "mvn/repositories/${repository_location}/groupIds"; then
-    _groupIds=($repository_location/**/)
-    _groupIds=(${${${(u)_groupIds:h:h}#"$repository_location/"}//\//.})
-    [[ $#_groupIds -gt 0 ]] && _store_cache "mvn/repositories/${repository_location}/groupIds" _groupIds
-  fi
+  if [[ -d $repository_location ]]; then
+    unset _groupIds
+    if ( [[ ${+_groupIds} -eq 0 ]] || _cache_invalid "mvn/repositories/${repository_location}/groupIds" ) && ! _retrieve_cache "mvn/repositories/${repository_location}/groupIds"; then
+      _groupIds=($repository_location/**/)
+      _groupIds=(${${${(u)_groupIds:h:h}#"$repository_location/"}//\//.})
+      [[ $#_groupIds -gt 0 ]] && _store_cache "mvn/repositories/${repository_location}/groupIds" _groupIds
+    fi
 
-  [[ $#_groupIds -gt 0 ]] && _multi_parts "$@" . _groupIds && ret=0
+    [[ $#_groupIds -gt 0 ]] && _multi_parts "$@" . _groupIds && ret=0
+  fi
 
   return ret
 }
 
 (( $+functions[_mvn_groupId_artifactIds] )) ||
 _mvn_groupId_artifactIds() {
-  local groupId="$@[-1]" repository_location=$(__mvn_get_repository_location) artifactIds
+  local groupId_repository_location="${$(__mvn_get_repository_location)}/${${@[-1]}//\.//}" ret=1
 
-  # FIXME Handle case where no groupId given or invalid one
-  local groupId_repository="${repository_location}/${groupId//\.//}"
-  artifactIds=($groupId_repository/*/*/*.pom(:h:h:t))
-  _describe -t "artifactIds" "$groupId artifactId" artifactIds $@[0,-2]
+  if [[ -d $groupId_repository_location ]]; then
+    local artifactIds; artifactIds=($groupId_repository_location/*/*/*.pom(:h:h:t))
+    _describe -t artifactIds "artifactId" artifactIds $@[0,-2] && ret=0
+  fi
+
+  return ret
 }
 
 (( $+functions[_mvn_artifact_versions] )) ||
 _mvn_artifact_versions() {
-  local artifact="$@[-1]" repository_location=$(__mvn_get_repository_location) versions
+  local artifact_repository_location="${$(__mvn_get_repository_location)}/${${@[-1]}//[\.:]//}" ret=1
 
-  # FIXME Handle case where no artifact given or invalid one
-  local artifact_repository="${repository_location}/${artifact//[\.:]//}"
-  versions=($artifact_repository/*/*.pom(:h:t))
-  _describe -t "versions" "version" versions $@[0,-2]
+  if [[ -d $artifact_repository_location ]]; then
+    local versions; versions=($artifact_repository_location/*/*.pom(:h:t))
+    _describe -t versions "version" versions $@[0,-2]
+  fi
+
+  return ret
 }
 
 (( $+functions[_mvn_plugin_goals] )) ||
@@ -296,7 +301,7 @@ _mvn_profiles() {
 
   # FIXME Use "mvn help:all-profiles" output instead of parsing settings and pom files...
   # Blocked on http://jira.codehaus.org/browse/MPH-82 and http://jira.codehaus.org/browse/MPH-83
-  local ret=1 profs update_policy settings_file=$(__mvn_get_settings_file) parent_pom_file=$(__mvn_get_parent_pom_file) cache_name profiles_section
+  local profs update_policy settings_file=$(__mvn_get_settings_file) parent_pom_file=$(__mvn_get_parent_pom_file) cache_name profiles_section ret=1
 
   zstyle -s ":completion:${curcontext}:" cache-policy update_policy
   [[ -z "$update_policy" ]] && zstyle ":completion:${curcontext}:" cache-policy _mvn_profiles_caching_policy
@@ -327,7 +332,7 @@ _mvn_profiles() {
     if ( [[ ${+_profiles} -eq 0 ]] || _cache_invalid "$cache_name" ) && ! _retrieve_cache "$cache_name"; then
       _profiles=()
       setopt localoptions extendedglob
-      for file in ${parent_pom_file:h}/**/pom.xml~*target\/*; do
+      for file in ${parent_pom_file:h}/**/pom.xml~*target\/*; do  # FIXME project.build.directory is not always target/
         profiles_section="${(M)${(f)$(<$file)}:#*<profiles>*}"
         if [[ -n "$profiles_section" ]]; then
           for profile in ${(s:,,,:)${${${(S)${(S)${(S)${(S)${${profiles_section#*<profile>}%</profile>*}//<repositories>*<\/repositories>}//<pluginRepositories>*<\/pluginRepositories>}//<build>*<\/build>}//<\/id>*<id>/,,,}##*<id>}%%</id>*}}; do
@@ -447,7 +452,7 @@ _mvn_scopes() {
     'system:similar to provided except that you have to provide the JAR which contains it explicitly. The artifact is always available and is not looked up in a repository.'
     'import:only used on a dependency of type pom in the <dependencyManagement> section. It indicates that the specified POM should be replaced with the dependencies in that POM'\''s <dependencyManagement> section. Since they are replaced, dependencies with a scope of import do not actually participate in limiting the transitivity of a dependency.'
   )
-  _describe -t "scopes" "scope" scopes
+  _describe -t scopes 'scope' scopes
 }
 
 (( $+functions[_mvn_thread_counts] )) ||
@@ -462,7 +467,7 @@ _mvn_thread_counts() {
     '7:build with 7 threads' '7C:build with 7 threads per CPU core'
     '8:build with 8 threads' '8C:build with 8 threads per CPU core'
   )
-  _describe -t 'thread-counts' "thread count" thread_counts
+  _describe -t thread-counts 'thread count' thread_counts
 }
 
 (( $+functions[_mvn_reactors] )) ||
@@ -501,7 +506,7 @@ _mvn_booleans() {
     'true:"true" boolean value'
     'false:"false" boolean value'
   )
-  _describe -t "booleans" "boolean" booleans
+  _describe -t booleans 'boolean' booleans
 }
 
 
@@ -515,7 +520,9 @@ __mvn_get_pom_file() {
 
 __mvn_get_parent_pom_file() {
   local pom_file=$(__mvn_get_pom_file)
-  while [[ -f ${pom_file:a:h:h}/pom.xml ]]; do pom_file=${pom_file:a:h:h}/pom.xml; done
+  while [[ -f ${pom_file:a:h:h}/pom.xml ]]; do
+    pom_file=${pom_file:a:h:h}/pom.xml;
+  done
   print $pom_file
 }
 
