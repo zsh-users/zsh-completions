@@ -42,9 +42,8 @@
 # How to tweak
 # ------------
 #
-#   * By default a few common utility plugins are displayed, plus the ones for each
-#     the completion has already been called ("mvn plugin:<TAB>"). To define your
-#     own list of plugins:
+#   * By default only the plugins for which the completion has already been
+#     called ("mvn plugin:<TAB>") are shown. To define your own list of plugins:
 #
 #       maven_plugins=(jboss tomcat gwt android)
 #       zstyle ':completion:*:mvn:*' plugins $maven_plugins
@@ -130,15 +129,9 @@ _mvn() {
 
 (( $+functions[_mvn_args] )) ||
 _mvn_args() {
-  local alternatives; alternatives=(
-    'phases:phase:_mvn_phases'
-  )
-  if [[ $words[CURRENT] == *.* ]]; then
-    alternatives+=('full-form-plugin-colon-goals:full form plugin colon goal:_mvn_full_form_plugin_colon_goals')
-  else
-    alternatives+=('plugin-prefix-colon-goals:plugin prefix colon goal:_mvn_plugin_prefix_colon_goals')
-  fi
-  _alternative "${alternatives[@]}"
+  _alternative \
+    'phases:phase:_mvn_phases' \
+    'plugin-colon-goals:plugin colon goal:_mvn_plugin_colon_goals'
 }
 
 (( $+functions[_mvn_phases] )) ||
@@ -183,6 +176,17 @@ _mvn_phases() {
   _describe -t 'phases' "phase" phases
 }
 
+(( $+functions[_mvn_plugin_colon_goals] )) ||
+_mvn_plugin_colon_goals() {
+  local ret=1
+  if [[ $words[CURRENT] == *.* ]]; then
+    _wanted full-form-plugin-colon-goals expl "full form plugin colon goal" _mvn_full_form_plugin_colon_goals && ret=0
+  else
+    _wanted plugin-prefix-colon-goals expl "plugin prefix colon goal" _mvn_plugin_prefix_colon_goals && ret=0
+  fi
+  return ret
+}
+
 (( $+functions[_mvn_plugin_prefix_colon_goals] )) ||
 _mvn_plugin_prefix_colon_goals() {
   local ret=1
@@ -199,15 +203,8 @@ _mvn_plugin_prefix_colon_goals() {
 _mvn_plugin_prefixes() {
   local plugins
   zstyle -a ":completion:${curcontext}:" plugins plugins
-  if [[ $#plugins -eq 0 ]]; then
-    plugins=(assembly release help versions deploy dependency archetype site install)
-    local cache_dir
-    zstyle -s ":completion:${curcontext}:" cache-path cache_dir
-    : ${cache_dir:=${ZDOTDIR:-$HOME}/.zcompcache}
-    local cached_plugins; cached_plugins=($cache_dir/mvn/plugins/*(:t))
-    plugins+=(${${${cached_plugins#*:}%-plugin*}/-#maven-#})
-  fi
-  _describe -t 'plugin-prefixes' 'plugin prefix' plugins -S ':'
+  [[ $#plugins -eq 0 ]] && plugins=($(__mvn_get_plugin_prefix $(__mvn_get_cache_dir)/mvn/plugins/*(:t)))
+  _describe -t 'plugin-prefixes' 'plugin prefix' plugins -qS: # FIXME "-qS:" should be passed by calling function
 }
 
 (( $+functions[_mvn_full_form_plugin_colon_goals] )) ||
@@ -237,15 +234,12 @@ _mvn_full_form_plugin_colon_goals() {
 
 (( $+functions[_mvn_groupIds] )) ||
 _mvn_groupIds() {
-  local settings_file repository_location ret=1
-
-  # FIXME Duplicated code, see _mvn_groupIds/_mvn_groupId_artifactIds/_mvn_artifact_versions
-  settings_file=${~opt_args[-s]:-${opt_args[--settings]:-$HOME/.m2/settings.xml}}
-  repository_location=${${${${(M)"$(<$settings_file)":#*<localRepository>*}:-$HOME/.m2/repository}##*<localRepository>}%%<\/localRepository>*}
+  local repository_location=$(__mvn_get_repository_location) update_policy ret=1
 
   zstyle -s ":completion:${curcontext}:" cache-policy update_policy
   [[ -z "$update_policy" ]] && zstyle ":completion:${curcontext}:" cache-policy _mvn_groupIds_caching_policy
 
+  # FIXME Check repository_location exists first
   unset groupIds
   if ( [[ ${+groupIds} -eq 0 ]] || _cache_invalid "mvn/repositories/${repository_location}/groupIds" ) && ! _retrieve_cache "mvn/repositories/${repository_location}/groupIds"; then
     groupIds=($repository_location/**/)
@@ -260,11 +254,7 @@ _mvn_groupIds() {
 
 (( $+functions[_mvn_groupId_artifactIds] )) ||
 _mvn_groupId_artifactIds() {
-  local settings_file repository_location groupId="$@[-1]"
-
-  # FIXME Duplicated code, see _mvn_groupIds/_mvn_groupId_artifactIds/_mvn_artifact_versions
-  settings_file=${~opt_args[-s]:-${opt_args[--settings]:-$HOME/.m2/settings.xml}}
-  repository_location=${${${${(M)"$(<$settings_file)":#*<localRepository>*}:-$HOME/.m2/repository}##*<localRepository>}%%<\/localRepository>*}
+  local groupId="$@[-1]" repository_location=$(__mvn_get_repository_location) artifactIds
 
   # FIXME Handle case where no groupId given or invalid one
   local groupId_repository="${repository_location}/${groupId//\.//}"
@@ -274,11 +264,7 @@ _mvn_groupId_artifactIds() {
 
 (( $+functions[_mvn_artifact_versions] )) ||
 _mvn_artifact_versions() {
-  local settings_file repository_location artifact="$@[-1]" versions
-
-  # FIXME Duplicated code, see _mvn_groupIds/_mvn_groupId_artifactIds/_mvn_artifact_versions
-  settings_file=${~opt_args[-s]:-${opt_args[--settings]:-$HOME/.m2/settings.xml}}
-  repository_location=${${${${(M)"$(<$settings_file)":#*<localRepository>*}:-$HOME/.m2/repository}##*<localRepository>}%%<\/localRepository>*}
+  local artifact="$@[-1]" repository_location=$(__mvn_get_repository_location) versions
 
   # FIXME Handle case where no artifact given or invalid one
   local artifact_repository="${repository_location}/${artifact//[\.:]//}"
@@ -296,8 +282,7 @@ _mvn_plugin_goals() {
   unset goals
   if ( [[ ${+goals} -eq 0 ]] || _cache_invalid "mvn/plugins/${plugin}" ) && ! _retrieve_cache "mvn/plugins/${plugin}"; then
     setopt localoptions extendedglob
-    local plugin_prefix=${${${plugin#*:}%-plugin*}/-#maven-#}
-    goals=(${(s:,,,:)${${${(f)${${${(f)${${${${(F)${(S)${(f)"$(_call_program goals $words[1] -N org.apache.maven.plugins:maven-help-plugin:2.1.1:describe -Dplugin=$plugin)"}//#$plugin_prefix:/,,,}}:#*BUILD FAILURE*}#*This plugin has*goals#:}%For more information, run \'mvn help:describe*}}//:/\\:}}}// ##/ }// Description\\: /:}})
+    goals=(${(s:,,,:)${${${(f)${${${(f)${${${${(F)${(S)${(f)"$(_call_program goals $words[1] -N org.apache.maven.plugins:maven-help-plugin:2.1.1:describe -Dplugin=$plugin)"}//#$(__mvn_get_plugin_prefix $plugin):/,,,}}:#*BUILD FAILURE*}#*This plugin has*goals#:}%For more information, run \'mvn help:describe*}}//:/\\:}}}// ##/ }// Description\\: /:}})
     [[ $#goals -gt 0 ]] && _store_cache "mvn/plugins/${plugin}" goals
   fi
 
@@ -311,7 +296,7 @@ _mvn_profiles() {
 
   # FIXME Use "mvn help:all-profiles" output instead of parsing settings and pom files...
   # Blocked on http://jira.codehaus.org/browse/MPH-82 and http://jira.codehaus.org/browse/MPH-83
-  local ret=1 profs update_policy settings_file files parent_pom_file cache_name profiles_section
+  local ret=1 profs update_policy settings_file=$(__mvn_get_settings_file) parent_pom_file=$(__mvn_get_parent_pom_file) cache_name profiles_section
 
   zstyle -s ":completion:${curcontext}:" cache-policy update_policy
   [[ -z "$update_policy" ]] && zstyle ":completion:${curcontext}:" cache-policy _mvn_profiles_caching_policy
@@ -319,8 +304,6 @@ _mvn_profiles() {
   profs=()
 
   # Resolve profiles from settings.xml
-  # FIXME Duplicated code, see _mvn_groupIds/_mvn_groupId_artifactIds/_mvn_artifact_versions
-  settings_file=${~opt_args[-s]:-${opt_args[--settings]:-~/.m2/settings.xml}}
   if [[ -f  $settings_file ]]; then
     unset profiles
     cache_name="mvn/profiles${settings_file:A}" # FIXME Don't use A modifier, it is only available on Zsh >= 4.3.10
@@ -338,9 +321,6 @@ _mvn_profiles() {
   fi
 
   # Resolve project profiles
-  # FIXME Duplicated code, see _mvn_projects/_mvn_profiles
-  parent_pom_file=${~opt_args[-f]:-${opt_args[--file]:-pom.xml}}
-  while [[ -f ${parent_pom_file:a:h:h}/pom.xml ]]; do parent_pom_file=${parent_pom_file:a:h:h}/pom.xml; done
   if [[ -f  $parent_pom_file ]]; then
     unset profiles
     cache_name="mvn/profiles${parent_pom_file:A}" # FIXME Don't use A modifier, it is only available on Zsh >= 4.3.10
@@ -370,15 +350,11 @@ _mvn_profiles() {
 (( $+functions[_mvn_projects] )) ||
 _mvn_projects() {
   # TODO projects can also be given in the form [groupId:]artifactId.
-  local pom_file ret=1
-
-  # FIXME Duplicated code, see _mvn_projects/_mvn_profiles
-  pom_file=${~opt_args[-f]:-${opt_args[--file]:-pom.xml}}
-  while [[ -f ${pom_file:a:h:h}/pom.xml ]]; do pom_file=${pom_file:a:h:h}/pom.xml; done
+  local pom_file=$(__mvn_get_parent_pom_file) ret=1
 
   if [[ -f $pom_file ]]; then
     setopt localoptions extendedglob
-    local projects; projects=(${pom_file:h}/*/**/pom.xml~*target\/*)
+    local projects; projects=(${pom_file:h}/*/**/pom.xml~*target\/*) # FIXME project.build.directory is not always target/
     projects=(${${projects#.\/}:h})
     [[ $#projects -gt 0 ]] && _values "$@" 'project' "${projects[@]}" && ret=0
   fi
@@ -415,7 +391,7 @@ _mvn_common_property_names() {
     'maven.test.skip:skip tests compilation and execution'
     'gpg.passphrase:gpg passphrase'
   )
-  _describe -t 'common-property-names' 'common property name' properties -qS=
+  _describe -t 'common-property-names' 'common property name' properties -qS= # FIXME "-qS=" should be passed by calling function
 }
 
 (( $+functions[_mvn_plugin_goal_property_names] )) ||
@@ -427,12 +403,14 @@ _mvn_plugin_goal_property_names() {
 
   unset properties
   if ( [[ ${+properties} -eq 0 ]] || _cache_invalid "mvn/plugins/${plugin_colon_goal}" ) && ! _retrieve_cache "mvn/plugins/${plugin_colon_goal}"; then
-    # FIXME Does not work with android:apk
+    # FIXME Does not work for:
+    #   android:apk (new line before expression)
+    #   ear:ear (unknown cause)
     properties=(${(M)${(ps:,,,:)${${${${(pj: :)${${${(f)${"$(_call_program properties $words[1] -N org.apache.maven.plugins:maven-help-plugin:2.1.1:describe -Dplugin=${plugin_colon_goal%:*} -Dgoal=${plugin_colon_goal##*:} -Ddetail)"#*Available parameters:}%%\[INFO\]*}//#    [a-z]*/,,,}##*Expression: \$\{}}//\}[[:space:]]##/:}//[[:space:]]##/ }//[[:space:]]#,,,[[:space:]]#/,,,}}:#[a-zA-Z]##:*})
     [[ $#properties -gt 0 ]] && _store_cache "mvn/plugins/${plugin_colon_goal}" properties
   fi
 
-  [[ $#properties -gt 0 ]] && _describe -t "${plugin_colon_goal//:/-}-property-names" "${plugin_colon_goal} property name" properties -qS= && ret=0
+  [[ $#properties -gt 0 ]] && _describe -t "${plugin_colon_goal//:/-}-property-names" "${plugin_colon_goal} property name" properties -qS= && ret=0 # FIXME "-qS=" should be passed by calling function
 
   return ret
 }
@@ -526,6 +504,44 @@ _mvn_booleans() {
   _describe -t "booleans" "boolean" booleans
 }
 
+
+# ------------------------------------------------------------------------------
+# Helper functions
+# ------------------------------------------------------------------------------
+
+__mvn_get_pom_file() {
+  print ${~opt_args[-f]:-${opt_args[--file]:-pom.xml}}
+}
+
+__mvn_get_parent_pom_file() {
+  local pom_file=$(__mvn_get_pom_file)
+  while [[ -f ${pom_file:a:h:h}/pom.xml ]]; do pom_file=${pom_file:a:h:h}/pom.xml; done
+  print $pom_file
+}
+
+__mvn_get_settings_file() {
+  print ${~opt_args[-s]:-${opt_args[--settings]:-$HOME/.m2/settings.xml}}
+}
+
+__mvn_get_repository_location() {
+  print ${${${${(M)"$(<$(__mvn_get_settings_file))":#*<localRepository>*}:-$HOME/.m2/repository}##*<localRepository>}%%<\/localRepository>*}
+}
+
+__mvn_get_plugin_prefix() {
+  print ${${${@#*:}%-plugin*}/-#maven-#}
+}
+
+__mvn_get_cache_dir() {
+  local cache_dir
+  zstyle -s ":completion:${curcontext}:" cache-path cache_dir
+  print ${cache_dir:-${ZDOTDIR:-$HOME}/.zcompcache}
+}
+
+
+# ------------------------------------------------------------------------------
+# Caching policies
+# ------------------------------------------------------------------------------
+
 (( $+functions[_mvn_goals_caching_policy] )) ||
 _mvn_goals_caching_policy() {
   # Rebuild if cache is older than one month.
@@ -546,13 +562,8 @@ _mvn_groupIds_caching_policy() {
 
 (( $+functions[_mvn_profiles_caching_policy] )) ||
 _mvn_profiles_caching_policy() {
-  # Resolve the cache directory.
-  local cache_dir
-  zstyle -s ":completion:${curcontext}:" cache-path cache_dir
-  : ${cache_dir:=${ZDOTDIR:-$HOME}/.zcompcache}
-
   # Rebuild if cached file more recent than cache.
-  local cached_file="${1#$cache_dir}"
+  local cached_file="${1#$(__mvn_get_cache_dir)}"
   [[ -f $cached_file && $cached_file -nt "$1" ]] && return 0
 
   # Rebuild if cache is older than one week.  
