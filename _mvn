@@ -441,6 +441,7 @@ _mvn_property_values() {
     ((#i)*(password|passphrase)*) _wanted passwords expl password _mvn_passwords && ret=0;;
     ((#i)*(createChecksum|generatePom|maven.test.skip)*) _wanted booleans expl 'boolean' _mvn_booleans && ret=0;;
     ((#i)*user*) _wanted users expl 'user' _users && ret=0;; # TODO Use _alternative and add repository usernames from settings + projects
+    ((#i)*plugin*) _wanted plugin expl 'plugin' _mvn_plugin_prefixes && ret=0;; # TODO Complete full form plugins too
     (*) _default && ret=0;;
   esac
   return ret
