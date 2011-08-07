@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Maven 2/3 (http://maven.apache.org).
+#  Completion script for Maven (http://maven.apache.org).
 #
 #  Status: See FIXME and TODO tags.
 #
@@ -186,9 +186,7 @@ _mvn_phases() {
 (( $+functions[_mvn_plugin_prefix_colon_goals] )) ||
 _mvn_plugin_prefix_colon_goals() {
   local ret=1
-  if [[ $words[CURRENT] == *.* ]]; then
-    ret=1
-  elif compset -P '*:'; then
+  if compset -P '*:'; then
     local plugin="${IPREFIX%:}"
     _wanted goals expl "${plugin} plugin goal" _mvn_plugin_goals $plugin && ret=0
   else
@@ -202,17 +200,7 @@ _mvn_plugin_prefixes() {
   local plugins
   zstyle -a ":completion:${curcontext}:" plugins plugins
   if [[ $#plugins -eq 0 ]]; then
-    plugins=(
-      'assembly'
-      'release'
-      'help'
-      'versions'
-      'deploy'
-      'dependency'
-      'archetype'
-      'site'
-      'install'
-    )
+    plugins=(assembly release help versions deploy dependency archetype site install)
     local cache_dir
     zstyle -s ":completion:${curcontext}:" cache-path cache_dir
     : ${cache_dir:=${ZDOTDIR:-$HOME}/.zcompcache}
@@ -254,11 +242,11 @@ _mvn_plugin_goals() {
   [[ -z "$update_policy" ]] && zstyle ":completion:${curcontext}:" cache-policy _mvn_plugin_goals_caching_policy
 
   unset goals
-  if ( [[ ${+goals} -eq 0 ]] || _cache_invalid "mvn/plugins/${plugin}/_goals" ) && ! _retrieve_cache "mvn/plugins/${plugin}/_goals"; then
+  if ( [[ ${+goals} -eq 0 ]] || _cache_invalid "mvn/plugins/${plugin}" ) && ! _retrieve_cache "mvn/plugins/${plugin}"; then
     setopt localoptions extendedglob
     local plugin_prefix=${${${plugin#*:}%-plugin*}/-#maven-#}
     goals=(${(s:,,,:)${${${(f)${${${(f)${${${${(F)${(S)${(f)"$(_call_program goals $words[1] -N org.apache.maven.plugins:maven-help-plugin:2.1.1:describe -Dplugin=$plugin)"}//#$plugin_prefix:/,,,}}:#*BUILD FAILURE*}#*This plugin has*goals#:}%For more information, run \'mvn help:describe*}}//:/\\:}}}// ##/ }// Description\\: /:}})
-    [[ $#goals -gt 0 ]] && _store_cache "mvn/plugins/${plugin}/_goals" goals
+    [[ $#goals -gt 0 ]] && _store_cache "mvn/plugins/${plugin}" goals
   fi
 
   [[ $#goals -gt 0 ]] && _describe -t "goals" "${plugin} goal" goals $@[0,-2] && ret=0
@@ -422,19 +410,16 @@ _mvn_common_property_names() {
 
 (( $+functions[_mvn_plugin_goal_property_names] )) ||
 _mvn_plugin_goal_property_names() {
-  local plugin_colon_goal="$@[-1]" plugin goal update_policy ret=1
-
-  plugin=${plugin_colon_goal%:*}
-  goal=${plugin_colon_goal##*:}
+  local plugin_colon_goal="$@[-1]" update_policy ret=1
 
   zstyle -s ":completion:${curcontext}:" cache-policy update_policy
   [[ -z "$update_policy" ]] && zstyle ":completion:${curcontext}:" cache-policy _mvn_properties_caching_policy
 
   unset properties
-  if ( [[ ${+properties} -eq 0 ]] || _cache_invalid "mvn/plugins/${plugin}/${goal}" ) && ! _retrieve_cache "mvn/plugins/${plugin}/${goal}"; then
+  if ( [[ ${+properties} -eq 0 ]] || _cache_invalid "mvn/plugins/${plugin_colon_goal}" ) && ! _retrieve_cache "mvn/plugins/${plugin_colon_goal}"; then
     # FIXME Does not work with android:apk
-    properties=(${(M)${(ps:,,,:)${${${${(pj: :)${${${(f)${"$(_call_program properties $words[1] -N org.apache.maven.plugins:maven-help-plugin:2.1.1:describe -Dplugin=$plugin -Dgoal=$goal -Ddetail)"#*Available parameters:}%%\[INFO\]*}//#    [a-z]*/,,,}##*Expression: \$\{}}//\}[[:space:]]##/:}//[[:space:]]##/ }//[[:space:]]#,,,[[:space:]]#/,,,}}:#[a-zA-Z]##:*})
-    [[ $#properties -gt 0 ]] && _store_cache "mvn/plugins/${plugin}/${goal}" properties
+    properties=(${(M)${(ps:,,,:)${${${${(pj: :)${${${(f)${"$(_call_program properties $words[1] -N org.apache.maven.plugins:maven-help-plugin:2.1.1:describe -Dplugin=${plugin_colon_goal%:*} -Dgoal=${plugin_colon_goal##*:} -Ddetail)"#*Available parameters:}%%\[INFO\]*}//#    [a-z]*/,,,}##*Expression: \$\{}}//\}[[:space:]]##/:}//[[:space:]]##/ }//[[:space:]]#,,,[[:space:]]#/,,,}}:#[a-zA-Z]##:*})
+    [[ $#properties -gt 0 ]] && _store_cache "mvn/plugins/${plugin_colon_goal}" properties
   fi
 
   [[ $#properties -gt 0 ]] && _describe -t "${plugin_colon_goal//:/-}-property-names" "${plugin_colon_goal} property name" properties -qS= && ret=0
