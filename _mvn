@@ -240,14 +240,14 @@ _mvn_groupIds() {
   [[ -z "$update_policy" ]] && zstyle ":completion:${curcontext}:" cache-policy _mvn_groupIds_caching_policy
 
   # FIXME Check repository_location exists first
-  unset groupIds
-  if ( [[ ${+groupIds} -eq 0 ]] || _cache_invalid "mvn/repositories/${repository_location}/groupIds" ) && ! _retrieve_cache "mvn/repositories/${repository_location}/groupIds"; then
-    groupIds=($repository_location/**/)
-    groupIds=(${${${(u)groupIds:h:h}#"$repository_location/"}//\//.})
-    [[ $#groupIds -gt 0 ]] && _store_cache "mvn/repositories/${repository_location}/groupIds" groupIds
+  unset _groupIds
+  if ( [[ ${+_groupIds} -eq 0 ]] || _cache_invalid "mvn/repositories/${repository_location}/groupIds" ) && ! _retrieve_cache "mvn/repositories/${repository_location}/groupIds"; then
+    _groupIds=($repository_location/**/)
+    _groupIds=(${${${(u)_groupIds:h:h}#"$repository_location/"}//\//.})
+    [[ $#_groupIds -gt 0 ]] && _store_cache "mvn/repositories/${repository_location}/groupIds" _groupIds
   fi
 
-  [[ $#groupIds -gt 0 ]] && _multi_parts "$@" . groupIds && ret=0
+  [[ $#_groupIds -gt 0 ]] && _multi_parts "$@" . _groupIds && ret=0
 
   return ret
 }
@@ -279,14 +279,14 @@ _mvn_plugin_goals() {
   zstyle -s ":completion:${curcontext}:" cache-policy update_policy
   [[ -z "$update_policy" ]] && zstyle ":completion:${curcontext}:" cache-policy _mvn_goals_caching_policy 
 
-  unset goals
-  if ( [[ ${+goals} -eq 0 ]] || _cache_invalid "mvn/plugins/${plugin}" ) && ! _retrieve_cache "mvn/plugins/${plugin}"; then
+  unset _goals
+  if ( [[ ${+_goals} -eq 0 ]] || _cache_invalid "mvn/plugins/${plugin}" ) && ! _retrieve_cache "mvn/plugins/${plugin}"; then
     setopt localoptions extendedglob
-    goals=(${(s:,,,:)${${${(f)${${${(f)${${${${(F)${(S)${(f)"$(_call_program goals $words[1] -N org.apache.maven.plugins:maven-help-plugin:2.1.1:describe -Dplugin=$plugin)"}//#$(__mvn_get_plugin_prefix $plugin):/,,,}}:#*BUILD FAILURE*}#*This plugin has*goals#:}%For more information, run \'mvn help:describe*}}//:/\\:}}}// ##/ }// Description\\: /:}})
-    [[ $#goals -gt 0 ]] && _store_cache "mvn/plugins/${plugin}" goals
+    _goals=(${(s:,,,:)${${${(f)${${${(f)${${${${(F)${(S)${(f)"$(_call_program goals $words[1] -N org.apache.maven.plugins:maven-help-plugin:2.1.1:describe -Dplugin=$plugin)"}//#$(__mvn_get_plugin_prefix $plugin):/,,,}}:#*BUILD FAILURE*}#*This plugin has*goals#:}%For more information, run \'mvn help:describe*}}//:/\\:}}}// ##/ }// Description\\: /:}})
+    [[ $#_goals -gt 0 ]] && _store_cache "mvn/plugins/${plugin}" _goals
   fi
 
-  [[ $#goals -gt 0 ]] && _describe -t "goals" "${plugin} goal" goals $@[0,-2] && ret=0
+  [[ $#_goals -gt 0 ]] && _describe -t "goals" "${plugin} goal" _goals $@[0,-2] && ret=0
 
   return ret
 }
@@ -305,44 +305,44 @@ _mvn_profiles() {
 
   # Resolve profiles from settings.xml
   if [[ -f  $settings_file ]]; then
-    unset profiles
+    unset _profiles
     cache_name="mvn/profiles${settings_file:A}" # FIXME Don't use A modifier, it is only available on Zsh >= 4.3.10
-    if ( [[ ${+profiles} -eq 0 ]] || _cache_invalid "$cache_name" ) && ! _retrieve_cache "$cache_name"; then
-      profiles=()
+    if ( [[ ${+_profiles} -eq 0 ]] || _cache_invalid "$cache_name" ) && ! _retrieve_cache "$cache_name"; then
+      _profiles=()
       profiles_section="${(M)${(f)$(<$settings_file)}:#*<profiles>*}"
       if [[ -n "$profiles_section" ]]; then
         for profile in ${(s:,,,:)${${${(S)${(S)${(S)${(S)${${profiles_section#*<profile>}%</profile>*}//<repositories>*<\/repositories>}//<pluginRepositories>*<\/pluginRepositories>}//<build>*<\/build>}//<\/id>*<id>/,,,}##*<id>}%%</id>*}}; do
-          [[ -z ${(M)profiles:#"$profile"*} ]] && profiles+=("$profile"'['"in settings file"']')
+          [[ -z ${(M)profiles:#"$profile"*} ]] && _profiles+=("$profile"'['"in settings file"']')
         done
       fi
-      [[ $#profiles -gt 0 ]] && _store_cache "$cache_name" profiles
+      [[ $#_profiles -gt 0 ]] && _store_cache "$cache_name" _profiles
     fi
-    profs+=($profiles)
+    profs+=($_profiles)
   fi
 
   # Resolve project profiles
   if [[ -f  $parent_pom_file ]]; then
-    unset profiles
+    unset _profiles
     cache_name="mvn/profiles${parent_pom_file:A}" # FIXME Don't use A modifier, it is only available on Zsh >= 4.3.10
-    if ( [[ ${+profiles} -eq 0 ]] || _cache_invalid "$cache_name" ) && ! _retrieve_cache "$cache_name"; then
-      profiles=()
+    if ( [[ ${+_profiles} -eq 0 ]] || _cache_invalid "$cache_name" ) && ! _retrieve_cache "$cache_name"; then
+      _profiles=()
       setopt localoptions extendedglob
       for file in ${parent_pom_file:h}/**/pom.xml~*target\/*; do
         profiles_section="${(M)${(f)$(<$file)}:#*<profiles>*}"
         if [[ -n "$profiles_section" ]]; then
           for profile in ${(s:,,,:)${${${(S)${(S)${(S)${(S)${${profiles_section#*<profile>}%</profile>*}//<repositories>*<\/repositories>}//<pluginRepositories>*<\/pluginRepositories>}//<build>*<\/build>}//<\/id>*<id>/,,,}##*<id>}%%</id>*}}; do
-            [[ -z ${(M)profiles:#"$profile"*} ]] && profiles+=("$profile"'['"in ${file#${parent_pom_file:h}\/}"']')
+            [[ -z ${(M)profiles:#"$profile"*} ]] && _profiles+=("$profile"'['"in ${file#${parent_pom_file:h}\/}"']')
           done
         fi
       done
-      [[ $#profiles -gt 0 ]] && _store_cache "$cache_name" profiles
+      [[ $#_profiles -gt 0 ]] && _store_cache "$cache_name" _profiles
     fi
-    profs+=($profiles)
+    profs+=($_profiles)
   fi
 
   compset -P '-'; compset -P '+'; compset -P '!' # FIXME Only works for the first profile
 
-  [[ $#profs -gt 0 ]] && _values -s ',' 'profile' "$profs[@]" && ret=0
+  [[ $#profs -gt 0 ]] && _values -s ',' 'profile' "${profs[@]}" && ret=0
 
   return ret
 }
@@ -401,16 +401,16 @@ _mvn_plugin_goal_property_names() {
   zstyle -s ":completion:${curcontext}:" cache-policy update_policy
   [[ -z "$update_policy" ]] && zstyle ":completion:${curcontext}:" cache-policy _mvn_properties_caching_policy
 
-  unset properties
-  if ( [[ ${+properties} -eq 0 ]] || _cache_invalid "mvn/plugins/${plugin_colon_goal}" ) && ! _retrieve_cache "mvn/plugins/${plugin_colon_goal}"; then
+  unset _properties
+  if ( [[ ${+_properties} -eq 0 ]] || _cache_invalid "mvn/plugins/${plugin_colon_goal}" ) && ! _retrieve_cache "mvn/plugins/${plugin_colon_goal}"; then
     # FIXME Does not work for:
     #   android:apk (new line before expression)
     #   ear:ear (unknown cause)
-    properties=(${(M)${(ps:,,,:)${${${${(pj: :)${${${(f)${"$(_call_program properties $words[1] -N org.apache.maven.plugins:maven-help-plugin:2.1.1:describe -Dplugin=${plugin_colon_goal%:*} -Dgoal=${plugin_colon_goal##*:} -Ddetail)"#*Available parameters:}%%\[INFO\]*}//#    [a-z]*/,,,}##*Expression: \$\{}}//\}[[:space:]]##/:}//[[:space:]]##/ }//[[:space:]]#,,,[[:space:]]#/,,,}}:#[a-zA-Z]##:*})
-    [[ $#properties -gt 0 ]] && _store_cache "mvn/plugins/${plugin_colon_goal}" properties
+    _properties=(${(M)${(ps:,,,:)${${${${(pj: :)${${${(f)${"$(_call_program properties $words[1] -N org.apache.maven.plugins:maven-help-plugin:2.1.1:describe -Dplugin=${plugin_colon_goal%:*} -Dgoal=${plugin_colon_goal##*:} -Ddetail)"#*Available parameters:}%%\[INFO\]*}//#    [a-z]*/,,,}##*Expression: \$\{}}//\}[[:space:]]##/:}//[[:space:]]##/ }//[[:space:]]#,,,[[:space:]]#/,,,}}:#[a-zA-Z]##:*})
+    [[ $#_properties -gt 0 ]] && _store_cache "mvn/plugins/${plugin_colon_goal}" _properties
   fi
 
-  [[ $#properties -gt 0 ]] && _describe -t "${plugin_colon_goal//:/-}-property-names" "${plugin_colon_goal} property name" properties -qS= && ret=0 # FIXME "-qS=" should be passed by calling function
+  [[ $#_properties -gt 0 ]] && _describe -t "${plugin_colon_goal//:/-}-property-names" "${plugin_colon_goal} property name" _properties -qS= && ret=0 # FIXME "-qS=" should be passed by calling function
 
   return ret
 }
