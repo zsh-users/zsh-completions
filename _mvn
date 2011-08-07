@@ -235,12 +235,62 @@ _mvn_full_form_plugin_colon_goals() {
   return ret
 }
 
+(( $+functions[_mvn_groupIds] )) ||
+_mvn_groupIds() {
+  local settings_file repository_location ret=1
+
+  settings_file=${~opt_args[-s]:-${opt_args[--settings]:-$HOME/.m2/settings.xml}}
+  repository_location=${${${${(M)"$(<$settings_file)":#*<localRepository>*}:-$HOME/.m2/repository}##*<localRepository>}%%<\/localRepository>*}
+
+  zstyle -s ":completion:${curcontext}:" cache-policy update_policy
+  [[ -z "$update_policy" ]] && zstyle ":completion:${curcontext}:" cache-policy _mvn_groupIds_caching_policy
+
+  unset groupIds
+  if ( [[ ${+groupIds} -eq 0 ]] || _cache_invalid "mvn/repositories/${repository_location}/groupIds" ) && ! _retrieve_cache "mvn/repositories/${repository_location}/groupIds"; then
+    groupIds=($repository_location/**/)
+    groupIds=(${${${(u)groupIds:h:h}#"$repository_location/"}//\//.})
+    [[ $#groupIds -gt 0 ]] && _store_cache "mvn/repositories/${repository_location}/groupIds" groupIds
+  fi
+
+  [[ $#groupIds -gt 0 ]] && _multi_parts "$@" . groupIds && ret=0
+
+  return ret
+}
+
+(( $+functions[_mvn_groupId_artifactIds] )) ||
+_mvn_groupId_artifactIds() {
+  local settings_file repository_location groupId="$@[-1]"
+
+  # FIXME Duplicated code, see _mvn_groupIds
+  settings_file=${~opt_args[-s]:-${opt_args[--settings]:-$HOME/.m2/settings.xml}}
+  repository_location=${${${${(M)"$(<$settings_file)":#*<localRepository>*}:-$HOME/.m2/repository}##*<localRepository>}%%<\/localRepository>*}
+
+  # FIXME Handle case where no groupId given or invalid one
+  local groupId_repository="${repository_location}/${groupId//\.//}"
+  artifactIds=($groupId_repository/*/*/*.pom(:h:h:t))
+  _describe -t "artifactIds" "$groupId artifactId" artifactIds $@[0,-2]
+}
+
+(( $+functions[_mvn_artifact_versions] )) ||
+_mvn_artifact_versions() {
+  local settings_file repository_location artifact="$@[-1]" versions
+
+  # FIXME Duplicated code, see _mvn_groupIds
+  settings_file=${~opt_args[-s]:-${opt_args[--settings]:-$HOME/.m2/settings.xml}}
+  repository_location=${${${${(M)"$(<$settings_file)":#*<localRepository>*}:-$HOME/.m2/repository}##*<localRepository>}%%<\/localRepository>*}
+
+  # FIXME Handle case where no artifact given or invalid one
+  local artifact_repository="${repository_location}/${artifact//[\.:]//}"
+  versions=($artifact_repository/*/*.pom(:h:t))
+  _describe -t "versions" "version" versions $@[0,-2]
+}
+
 (( $+functions[_mvn_plugin_goals] )) ||
 _mvn_plugin_goals() {
   local ret=1 plugin="$@[-1]" update_policy
 
   zstyle -s ":completion:${curcontext}:" cache-policy update_policy
-  [[ -z "$update_policy" ]] && zstyle ":completion:${curcontext}:" cache-policy _mvn_plugin_goals_caching_policy
+  [[ -z "$update_policy" ]] && zstyle ":completion:${curcontext}:" cache-policy _mvn_goals_caching_policy 
 
   unset goals
   if ( [[ ${+goals} -eq 0 ]] || _cache_invalid "mvn/plugins/${plugin}" ) && ! _retrieve_cache "mvn/plugins/${plugin}"; then
@@ -253,51 +303,6 @@ _mvn_plugin_goals() {
   [[ $#goals -gt 0 ]] && _describe -t "goals" "${plugin} goal" goals $@[0,-2] && ret=0
 
   return ret
-}
-
-(( $+functions[_mvn_reactors] )) ||
-_mvn_reactors() {
-  _message -e reactors 'reactor' # FIXME No idea what kind of value the "--reactor" option is supposed to take
-}
-
-(( $+functions[_mvn_passwords] )) ||
-_mvn_passwords() {
-  _message -e passwords 'password'
-}
-
-(( $+functions[_mvn_thread_counts] )) ||
-_mvn_thread_counts() {
-  local thread_counts; thread_counts=(
-    '1:build with 1 thread'  '1C:build with 1 thread per CPU core'
-    '2:build with 2 threads' '2C:build with 2 threads per CPU core'
-    '3:build with 3 threads' '3C:build with 3 threads per CPU core'
-    '4:build with 4 threads' '4C:build with 4 threads per CPU core'
-    '5:build with 5 threads' '5C:build with 5 threads per CPU core'
-    '6:build with 6 threads' '6C:build with 6 threads per CPU core'
-    '7:build with 7 threads' '7C:build with 7 threads per CPU core'
-    '8:build with 8 threads' '8C:build with 8 threads per CPU core'
-  )
-  _describe -t 'thread-counts' "thread count" thread_counts
-}
-
-(( $+functions[_mvn_pom_files] )) ||
-_mvn_pom_files() {
-  _files -g '*pom*\.xml*'
-}
-
-(( $+functions[_mvn_toolchains_files] )) ||
-_mvn_toolchains_files() {
-  _files -g '*toolchains*\.xml*'
-}
-
-(( $+functions[_mvn_settings_files] )) ||
-_mvn_settings_files() {
-  _files -g '*settings*\.xml*'
-}
-
-(( $+functions[_mvn_log_files] )) ||
-_mvn_log_files() {
-  _files
 }
 
 (( $+functions[_mvn_profiles] )) ||
@@ -450,65 +455,6 @@ _mvn_property_values() {
   return ret
 }
 
-(( $+functions[_mvn_groupIds] )) ||
-_mvn_groupIds() {
-  local settings_file repository_location ret=1
-
-  settings_file=${~opt_args[-s]:-${opt_args[--settings]:-$HOME/.m2/settings.xml}}
-  repository_location=${${${${(M)"$(<$settings_file)":#*<localRepository>*}:-$HOME/.m2/repository}##*<localRepository>}%%<\/localRepository>*}
-
-  zstyle -s ":completion:${curcontext}:" cache-policy update_policy
-  [[ -z "$update_policy" ]] && zstyle ":completion:${curcontext}:" cache-policy _mvn_groupIds_caching_policy
-
-  unset groupIds
-  if ( [[ ${+groupIds} -eq 0 ]] || _cache_invalid "mvn/repositories/${repository_location}/groupIds" ) && ! _retrieve_cache "mvn/repositories/${repository_location}/groupIds"; then
-    groupIds=($repository_location/**/)
-    groupIds=(${${${(u)groupIds:h:h}#"$repository_location/"}//\//.})
-    [[ $#groupIds -gt 0 ]] && _store_cache "mvn/repositories/${repository_location}/groupIds" groupIds
-  fi
-
-  [[ $#groupIds -gt 0 ]] && _multi_parts "$@" . groupIds && ret=0
-
-  return ret
-}
-
-(( $+functions[_mvn_groupId_artifactIds] )) ||
-_mvn_groupId_artifactIds() {
-  local settings_file repository_location groupId="$@[-1]"
-
-  # FIXME Duplicated code, see _mvn_groupIds
-  settings_file=${~opt_args[-s]:-${opt_args[--settings]:-$HOME/.m2/settings.xml}}
-  repository_location=${${${${(M)"$(<$settings_file)":#*<localRepository>*}:-$HOME/.m2/repository}##*<localRepository>}%%<\/localRepository>*}
-
-  # FIXME Handle case where no groupId given or invalid one
-  local groupId_repository="${repository_location}/${groupId//\.//}"
-  artifactIds=($groupId_repository/*/*/*.pom(:h:h:t))
-  _describe -t "artifactIds" "$groupId artifactId" artifactIds $@[0,-2]
-}
-
-(( $+functions[_mvn_artifact_versions] )) ||
-_mvn_artifact_versions() {
-  local settings_file repository_location artifact="$@[-1]" versions
-
-  # FIXME Duplicated code, see _mvn_groupIds
-  settings_file=${~opt_args[-s]:-${opt_args[--settings]:-$HOME/.m2/settings.xml}}
-  repository_location=${${${${(M)"$(<$settings_file)":#*<localRepository>*}:-$HOME/.m2/repository}##*<localRepository>}%%<\/localRepository>*}
-
-  # FIXME Handle case where no artifact given or invalid one
-  local artifact_repository="${repository_location}/${artifact//[\.:]//}"
-  versions=($artifact_repository/*/*.pom(:h:t))
-  _describe -t "versions" "version" versions $@[0,-2]
-}
-
-(( $+functions[_mvn_booleans] )) ||
-_mvn_booleans() {
-  local booleans; booleans=(
-    'true:"true" boolean value'
-    'false:"false" boolean value'
-  )
-  _describe -t "booleans" "boolean" booleans
-}
-
 (( $+functions[_mvn_scopes] )) ||
 _mvn_scopes() {
   local scopes; scopes=(
@@ -522,7 +468,61 @@ _mvn_scopes() {
   _describe -t "scopes" "scope" scopes
 }
 
-_mvn_plugin_goals_caching_policy() {
+(( $+functions[_mvn_thread_counts] )) ||
+_mvn_thread_counts() {
+  local thread_counts; thread_counts=(
+    '1:build with 1 thread'  '1C:build with 1 thread per CPU core'
+    '2:build with 2 threads' '2C:build with 2 threads per CPU core'
+    '3:build with 3 threads' '3C:build with 3 threads per CPU core'
+    '4:build with 4 threads' '4C:build with 4 threads per CPU core'
+    '5:build with 5 threads' '5C:build with 5 threads per CPU core'
+    '6:build with 6 threads' '6C:build with 6 threads per CPU core'
+    '7:build with 7 threads' '7C:build with 7 threads per CPU core'
+    '8:build with 8 threads' '8C:build with 8 threads per CPU core'
+  )
+  _describe -t 'thread-counts' "thread count" thread_counts
+}
+
+(( $+functions[_mvn_reactors] )) ||
+_mvn_reactors() {
+  _message -e reactors 'reactor' # FIXME No idea what kind of value the "--reactor" option is supposed to take
+}
+
+(( $+functions[_mvn_passwords] )) ||
+_mvn_passwords() {
+  _message -e passwords 'password'
+}
+
+(( $+functions[_mvn_pom_files] )) ||
+_mvn_pom_files() {
+  _files -g '*pom*\.xml*'
+}
+
+(( $+functions[_mvn_toolchains_files] )) ||
+_mvn_toolchains_files() {
+  _files -g '*toolchains*\.xml*'
+}
+
+(( $+functions[_mvn_settings_files] )) ||
+_mvn_settings_files() {
+  _files -g '*settings*\.xml*'
+}
+
+(( $+functions[_mvn_log_files] )) ||
+_mvn_log_files() {
+  _files
+}
+
+(( $+functions[_mvn_booleans] )) ||
+_mvn_booleans() {
+  local booleans; booleans=(
+    'true:"true" boolean value'
+    'false:"false" boolean value'
+  )
+  _describe -t "booleans" "boolean" booleans
+}
+
+_mvn_goals_caching_policy() {
   # Rebuild if cache is older than one month.
   local -a oldp
   oldp=( "$1"(NmM+1) )
@@ -530,14 +530,11 @@ _mvn_plugin_goals_caching_policy() {
 }
 
 _mvn_properties_caching_policy() {
-  _mvn_plugin_goals_caching_policy
+  _mvn_goals_caching_policy 
 }
 
 _mvn_groupIds_caching_policy() {
-  # Rebuild if cache is older than one month.
-  local -a oldp
-  oldp=( "$1"(NmM+1) )
-  (( $#oldp ))
+  _mvn_goals_caching_policy
 }
 
 _mvn_profiles_caching_policy() {
