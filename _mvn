@@ -116,7 +116,7 @@ _mvn() {
     "($excl_opts -fae --fail-at-end -ff --fail-fast -fn --fail-never)"{-fae,--fail-at-end}'[only fail the build afterwards, allow all non-impacted builds to continue]' \
     "($excl_opts -ff --fail-fast -fae --fail-at-end -fn --fail-never)"{-ff,--fail-fast}'[stop at first failure in reactorized builds]' \
     "($excl_opts -fn --fail-never -fae --fail-at-end -ff --fail-fast)"{-fn,--fail-never}'[nerver fail the build, regardless of project result]' \
-    "($excl_opts)*"{-P,--activate-profiles}'[comma-delimited list of profiles to activate]:profile:_mvn_profiles' \
+    "($excl_opts)*"{-P,--activate-profiles}'[comma-delimited list of profiles to activate]:profile:_mvn_profiles -s ,' \
     "($excl_opts -pl --projects)"{-pl,--projects}'[build specified reactor projects instead of all projects]:project list:_mvn_projects -s ,' \
     "($excl_opts -rf --resume-from)"{-rf,--resume-from}'[resume reactor from specified project]:project:_mvn_projects' \
     "($excl_opts -o --offline -U --update-snapshots -cpu --check-plugin-updates -up --update-plugins)"{-o,--offline}'[work offline]' \
@@ -349,7 +349,7 @@ _mvn_profiles() {
 
   compset -P '-'; compset -P '+'; compset -P '!' # FIXME Only works for the first profile
 
-  [[ $#profs -gt 0 ]] && _values -s ',' 'profile' "${profs[@]}" && ret=0
+  [[ $#profs -gt 0 ]] && _values $@ 'profile' "${profs[@]}" && ret=0
 
   return ret
 }
