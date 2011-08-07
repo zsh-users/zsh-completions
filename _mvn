@@ -180,9 +180,9 @@ _mvn_phases() {
 _mvn_plugin_colon_goals() {
   local ret=1
   if [[ $words[CURRENT] == *.* ]]; then
-    _wanted full-form-plugin-colon-goals expl "full form plugin colon goal" _mvn_full_form_plugin_colon_goals && ret=0
+    _wanted full-form-plugin-colon-goals expl 'full form plugin colon goal' _mvn_full_form_plugin_colon_goals && ret=0
   else
-    _wanted plugin-prefix-colon-goals expl "plugin prefix colon goal" _mvn_plugin_prefix_colon_goals && ret=0
+    _wanted plugin-prefix-colon-goals expl 'plugin prefix colon goal' _mvn_plugin_prefix_colon_goals && ret=0
   fi
   return ret
 }
@@ -194,7 +194,7 @@ _mvn_plugin_prefix_colon_goals() {
     local plugin="${IPREFIX%:}"
     _wanted goals expl "${plugin} plugin goal" _mvn_plugin_goals $plugin && ret=0
   else
-    _wanted plugin-prefixes expl 'plugin prefix' _mvn_plugin_prefixes && ret=0
+    _wanted plugin-prefixes expl 'plugin prefix' _mvn_plugin_prefixes -qS: && ret=0
   fi
   return ret
 }
@@ -204,7 +204,7 @@ _mvn_plugin_prefixes() {
   local plugins
   zstyle -a ":completion:${curcontext}:" plugins plugins
   [[ $#plugins -eq 0 ]] && plugins=($(__mvn_get_plugin_prefix $(__mvn_get_cache_dir)/mvn/plugins/*(:t)))
-  _describe -t 'plugin-prefixes' 'plugin prefix' plugins -qS: # FIXME "-qS:" should be passed by calling function
+  _describe -t plugin-prefixes 'plugin prefix' plugins $@
 }
 
 (( $+functions[_mvn_full_form_plugin_colon_goals] )) ||
