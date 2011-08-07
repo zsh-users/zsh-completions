@@ -522,6 +522,7 @@ _mvn_booleans() {
   _describe -t "booleans" "boolean" booleans
 }
 
+(( $+functions[_mvn_goals_caching_policy] )) ||
 _mvn_goals_caching_policy() {
   # Rebuild if cache is older than one month.
   local -a oldp
@@ -529,14 +530,17 @@ _mvn_goals_caching_policy() {
   (( $#oldp ))
 }
 
+(( $+functions[_mvn_properties_caching_policy] )) ||
 _mvn_properties_caching_policy() {
   _mvn_goals_caching_policy 
 }
 
+(( $+functions[_mvn_groupIds_caching_policy] )) ||
 _mvn_groupIds_caching_policy() {
   _mvn_goals_caching_policy
 }
 
+(( $+functions[_mvn_profiles_caching_policy] )) ||
 _mvn_profiles_caching_policy() {
   # Resolve the cache directory.
   local cache_dir
