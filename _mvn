@@ -540,7 +540,7 @@ __mvn_get_repository_location() {
 }
 
 __mvn_get_plugin_prefix() {
-  print ${${${@#*:}%-plugin*}/-#maven-#}
+  print ${${${${@#*.*:}%%:*}%-plugin}/-#maven-#}
 }
 
 __mvn_get_cache_dir() {
