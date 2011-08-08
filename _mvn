@@ -210,6 +210,7 @@ _mvn_plugin_prefixes() {
 (( $+functions[_mvn_full_form_plugin_colon_goals] )) ||
 _mvn_full_form_plugin_colon_goals() {
   local ret=1
+  # FIXME Duplicates _mvn_full_form_plugins
   if compset -P 1 '*:'; then
     local groupId="${${IPREFIX%:}##*:}"
     if compset -P 1 '*:'; then
@@ -223,6 +224,23 @@ _mvn_full_form_plugin_colon_goals() {
           "goals:${artifactId} goal:_mvn_plugin_goals ${groupId}:${artifactId}" \
         && ret=0
       fi
+    else
+      _wanted artifactIds expl "${groupId} artifactId" _mvn_groupId_artifactIds -qS: $groupId && ret=0
+    fi
+  else
+    _wanted groupIds expl "groupId" _mvn_groupIds -qS: && ret=0
+  fi
+  return ret
+}
+
+(( $+functions[_mvn_full_form_plugins] )) ||
+_mvn_full_form_plugins() {
+  local ret=1
+  if compset -P 1 '*:'; then
+    local groupId="${${IPREFIX%:}##*:}"
+    if compset -P 1 '*:'; then
+      local artifactId="${${IPREFIX%:}##*:}"
+      _wanted versions expl "${artifactId} version" _mvn_artifact_versions -qS: "${groupId}:${artifactId}" && ret=0
     else
       _wanted artifactIds expl "${groupId} artifactId" _mvn_groupId_artifactIds -qS: $groupId && ret=0
     fi
