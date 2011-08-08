@@ -39,19 +39,24 @@
 #  * Julien Nicoulaud <julien.nicoulaud@gmail.com>
 #
 # ------------------------------------------------------------------------------
-# How to tweak
-# ------------
+# Notes
+# -----
+#
+#   * By default advanced phases are displayed only if you start typing them. To have
+#     them always displayed:
+#
+#       zstyle ':completion:*:mvn:*' show-all-phases true
+#
+#   * By default full form plugins (groupId:artifactId[:version]) are only shown if you
+#     start typing them. To have them always displayed:
+#
+#       zstyle ':completion:*:mvn:*' show-full-form-plugins true
 #
 #   * By default only the plugins for which the completion has already been
 #     called ("mvn plugin:<TAB>") are shown. To define your own list of plugins:
 #
 #       maven_plugins=(jboss tomcat gwt android)
 #       zstyle ':completion:*:mvn:*' plugins $maven_plugins
-#
-#   * By default advanced phases are displayed only if you start typing them. To have
-#     them always displayed:
-#
-#       zstyle ':completion:*:mvn:*' show-advanced-phases true
 #
 #   * To have a better presentation of completions:
 #
@@ -149,7 +154,7 @@ _mvn_phases() {
     'site:generates the projects site documentation'
     'site-deploy:deploys the generated site documentation to the specified web server'
   )
-  if [[ $#PREFIX -gt 0 ]] || zstyle -t ":completion:${curcontext}:" show-advanced-phases; then
+  if [[ $#PREFIX -gt 0 ]] || zstyle -t ":completion:${curcontext}:" show-all-phases; then
     phases+=(
       'pre-clean:executes processes needed prior to the actual project cleaning'
       'post-clean:executes processes needed to finalize the project cleaning'
@@ -179,7 +184,7 @@ _mvn_phases() {
 (( $+functions[_mvn_plugins] )) ||
 _mvn_plugins() {
   local ret=1
-  if [[ $words[CURRENT] == *.* ]]; then
+  if [[ $words[CURRENT] == *.* ]] || zstyle -t ":completion:${curcontext}:" show-full-form-plugins; then
     _wanted full-form-plugins expl 'full form plugin' _mvn_full_form_plugins && ret=0
   else
     _wanted plugin-prefixes expl 'plugin prefix' _mvn_plugin_prefixes && ret=0
@@ -190,7 +195,7 @@ _mvn_plugins() {
 (( $+functions[_mvn_plugin_colon_goals] )) ||
 _mvn_plugin_colon_goals() {
   local ret=1
-  if [[ $words[CURRENT] == *.* ]]; then
+  if [[ $words[CURRENT] == *.* ]] || zstyle -t ":completion:${curcontext}:" show-full-form-plugins; then
     _wanted full-form-plugin-colon-goals expl 'full form plugin colon goal' _mvn_full_form_plugin_colon_goals && ret=0
   else
     _wanted plugin-prefix-colon-goals expl 'plugin prefix colon goal' _mvn_plugin_prefix_colon_goals && ret=0
