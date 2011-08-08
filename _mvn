@@ -176,6 +176,17 @@ _mvn_phases() {
   _describe -t 'phases' "phase" phases
 }
 
+(( $+functions[_mvn_plugins] )) ||
+_mvn_plugins() {
+  local ret=1
+  if [[ $words[CURRENT] == *.* ]]; then
+    _wanted full-form-plugins expl 'full form plugin' _mvn_full_form_plugins && ret=0
+  else
+    _wanted plugin-prefixes expl 'plugin prefix' _mvn_plugin_prefixes && ret=0
+  fi
+  return ret
+}
+
 (( $+functions[_mvn_plugin_colon_goals] )) ||
 _mvn_plugin_colon_goals() {
   local ret=1
@@ -235,14 +246,14 @@ _mvn_full_form_plugin_colon_goals() {
 
 (( $+functions[_mvn_full_form_plugins] )) ||
 _mvn_full_form_plugins() {
-  local ret=1
+  local ret=1 chunk="${PREFIX%%:*}"
   if compset -P 1 '*:'; then
-    local groupId="${${IPREFIX%:}##*:}"
+    local groupId="$chunk"
+    chunk="${PREFIX%%:*}"
     if compset -P 1 '*:'; then
-      local artifactId="${${IPREFIX%:}##*:}"
-      _wanted versions expl "${artifactId} version" _mvn_artifact_versions -qS: "${groupId}:${artifactId}" && ret=0
+      _wanted versions expl "${current} version" _mvn_artifact_versions $@ "${groupId}:${chunk}" && ret=0
     else
-      _wanted artifactIds expl "${groupId} artifactId" _mvn_groupId_artifactIds -qS: $groupId && ret=0
+      _wanted artifactIds expl "${groupId} artifactId" _mvn_groupId_artifactIds -qS: "${groupId}" && ret=0
     fi
   else
     _wanted groupIds expl "groupId" _mvn_groupIds -qS: && ret=0
@@ -459,7 +470,7 @@ _mvn_property_values() {
     ((#i)*(password|passphrase)*) _wanted passwords expl password _mvn_passwords && ret=0;;
     ((#i)*(createChecksum|generatePom|maven.test.skip)*) _wanted booleans expl 'boolean' _mvn_booleans && ret=0;;
     ((#i)*user*) _wanted users expl 'user' _users && ret=0;; # TODO Use _alternative and add repository usernames from settings + projects
-    ((#i)*plugin*) _wanted plugin expl 'plugin' _mvn_plugin_prefixes && ret=0;; # TODO Complete full form plugins too
+    ((#i)*plugin*) _wanted plugin expl 'plugin' _mvn_plugins && ret=0;;
     (*) _default && ret=0;;
   esac
   return ret
