@@ -147,7 +147,12 @@ _adb() {
           && ret=0
         ;;
         (ppp)
-          _message '<tty> [parameters]' && ret=0 # TODO Not implemented
+          # TODO Complete tty ?
+          # TODO Complete parameters ?
+          _arguments \
+            '1::tty' \
+            '*::parameters' \
+          && ret=0
         ;;
       esac
     ;;
