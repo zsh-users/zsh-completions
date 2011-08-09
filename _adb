@@ -46,21 +46,25 @@
 
 
 typeset -A opt_args
-local context state line curcontext="$curcontext"
+local context state line curcontext="$curcontext" adb_cmd
 
 _adb() {
   local ret=1
+  
+  adb_cmd="$words[1]"
 
   _arguments -C \
-     '(-e -s)-d[directs command to the only connected USB device, returns an error if more than one USB device is present]' \
-     '(-d -s)-e[directs command to the only running emulator, returns an error if more than one emulator is running]' \
-     '(-d -e)-s[directs command to the USB device or emulator with the given serial number]: :_adb_serial_numbers' \
-     '-p[simple product name or a relative/absolute path to a product out directory]: :_adb_products' \
+    '(-e -s)-d[directs command to the only connected USB device, returns an error if more than one USB device is present]' \
+    '(-d -s)-e[directs command to the only running emulator, returns an error if more than one emulator is running]' \
+    '(-d -e)-s[directs command to the USB device or emulator with the given serial number]: :_adb_serial_numbers' \
+    '-p[simple product name or a relative/absolute path to a product out directory]: :_adb_products' \
     '1: :_adb_cmds' \
     '*::arg:->args' \
   && ret=0
 
-  case $state in
+  adb_cmd+=" ${(fkv)opt_args[(I)-d|-e|-s|-p]}"
+
+  case "$state" in
     (args)
       curcontext="${curcontext%:*:*}:adb-cmd-$words[1]:"
       case $words[1] in
@@ -126,10 +130,9 @@ _adb() {
           && ret=0
         ;;
         (uninstall)
-          # TODO Somehow complete package names ?
           _arguments \
             '-k[keep the data and cache directories]' \
-            '1::package' \
+            '1: :_adb_packages' \
           && ret=0
         ;;
         (reboot)
@@ -229,6 +232,12 @@ _adb_serial_numbers() {
     '$ANDROID_SERIAL:default value'
   )
   _describe -t serial-numbers 'serial number' serial_numbers "$@" && ret=0
+}
+
+(( $+functions[_adb_packages] )) ||
+_adb_packages() {
+  local packages; packages=($(_call_program packages $adb_cmd shell 'ls /data/data'))
+  _multi_parts . packages
 }
 
 (( $+functions[_adb_host_colon_ports] )) ||
