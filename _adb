@@ -116,7 +116,10 @@ _adb() {
           && ret=0
         ;;
         (forward)
-          _message '<local> <remote>' && ret=0 # TODO Not implemented
+          _arguments \
+            '1: :_adb_local_forward_specs' \
+            '2: :_adb_remote_forward_specs' \
+          && ret=0
         ;;
         (install)
           _message '[-l] [-r] [-s] <file>' && ret=0 # TODO Not implemented
@@ -221,6 +224,20 @@ _adb_remote_commands() {
   # TODO Not implemented
   # Doc here: http://developer.android.com/guide/developing/tools/adb.html#shellcommands
   _message 'remote command'
+}
+
+(( $+functions[_adb_local_forward_specs] )) ||
+_adb_local_forward_specs() {
+  # TODO Not implemented
+  # Doc here: http://developer.android.com/guide/developing/tools/adb.html#forwardports + adb help
+  _message 'local forward spec'
+}
+
+(( $+functions[_adb_remote_forward_specs] )) ||
+_adb_remote_forward_specs() {
+  # TODO Not implemented
+  # Doc here: http://developer.android.com/guide/developing/tools/adb.html#forwardports + adb help
+  _message 'remote forward spec'
 }
 
 (( $+functions[_adb_sync_directories] )) ||
