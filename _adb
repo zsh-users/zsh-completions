@@ -96,19 +96,18 @@ _adb() {
           && ret=0
         ;;
         (logcat)
-           # TODO -n requires the -r option.
-           # TODO -r requires the -f option.
-           # Doc here: http://developer.android.com/guide/developing/tools/adb.html#logcat
+           local -a rotation_opts
+           [[ -n ${(M)words:#"-f"} ]] && rotation_opts+=('-r[rotates the log file every kbytes of output. The default value is 16]:value (in kb)')
+           [[ -n ${(M)words:#"-r"} ]] && rotation_opts+=('-n[sets the maximum number of rotated logs. The default value is 4]:count')
           _arguments \
             '-b[loads an alternate log buffer for viewing, such as event or radio. The main buffer is used by default]: :_adb_logcat_buffers' \
             '-c[clears (flushes) the entire log and exits]' \
             '-d[dumps the log to the screen and exits]' \
             '-f[writes log message output to file. The default is stdout]: :_files' \
             '-g[prints the size of the specified log buffer and exits]' \
-            '-n[sets the maximum number of rotated logs. The default value is 4]:count' \
-            '-r[rotates the log file every kbytes of output. The default value is 16]:value (in kb)' \
             '-s[sets the default filter spec to silent]' \
             '-v[sets the output format for log messages]: :_adb_logcat_output_formats' \
+            "${rotation_opts[@]}" \
             '*: :_adb_logcat_filter_specs' \
           && ret=0
         ;;
