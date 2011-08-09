@@ -54,8 +54,8 @@ _adb() {
   _arguments -C \
      '(-e -s)-d[directs command to the only connected USB device, returns an error if more than one USB device is present]' \
      '(-d -s)-e[directs command to the only running emulator, returns an error if more than one emulator is running]' \
-     '(-d -e)-s[directs command to the USB device or emulator with the given serial number. Overrides ANDROID_SERIAL environment variable]:serial number' \
-     '-p[simple product name or a relative/absolute path to a product out directory. Overrides ANDROID_PRODUCT_OUT environment variable]:product name or path' \
+     '(-d -e)-s[directs command to the USB device or emulator with the given serial number]: :_adb_serial_numbers' \
+     '-p[simple product name or a relative/absolute path to a product out directory]: :_adb_products' \
     '1: :_adb_cmds' \
     '*::arg:->args' \
   && ret=0
@@ -214,6 +214,21 @@ _adb_scripting_cmds() {
     'ppp:run PPP over USB'
   )
   _describe -t scripting-commands 'scripting command' commands "$@"
+}
+
+(( $+functions[_adb_products] )) ||
+_adb_products() {
+  _alternative \
+    'product-names:product name:((\$ANDROID_PRODUCT_OUT:default value))' \
+    'directories:directory:_files -/'
+}
+
+(( $+functions[_adb_serial_numbers] )) ||
+_adb_serial_numbers() {
+  local serial_numbers; serial_numbers=(
+    '$ANDROID_SERIAL:default value'
+  )
+  _describe -t serial-numbers 'serial number' serial_numbers "$@" && ret=0
 }
 
 (( $+functions[_adb_host_colon_ports] )) ||
