@@ -31,8 +31,6 @@
 #  Completion script for adb
 #  (http://developer.android.com/guide/developing/tools/adb.html).
 #
-#  Status: Incomplete, see FIXMEs and TODOs.
-#
 # ------------------------------------------------------------------------------
 # Authors
 # -------
@@ -147,8 +145,8 @@ _adb() {
           && ret=0
         ;;
         (ppp)
-          # TODO Complete tty ?
-          # TODO Complete parameters ?
+          # TODO Complete tty (See http://developer.android.com/guide/developing/tools/adb.html#commandsummary)
+          # TODO Complete PPP parameters (See http://ppp.samba.org/pppd.html)
           _arguments \
             '1::tty' \
             '*::parameters' \
@@ -237,7 +235,7 @@ _adb_serial_numbers() {
 
 (( $+functions[_adb_packages] )) ||
 _adb_packages() {
-  local packages; packages=($(_call_program packages $adb_cmd shell 'ls /data/data'))
+  local packages; packages=($(_call_program packages $adb_cmd shell 'ls /data/data 2>/dev/null'))
   _multi_parts . packages
 }
 
@@ -254,8 +252,8 @@ _adb_host_colon_ports() {
 
 (( $+functions[_adb_remote_directories] )) ||
 _adb_remote_directories() {
-  # TODO Not implemented
-  _message 'remote directory'
+  local directories; directories=(${$(_call_program directories $adb_cmd shell "'ls -d ${words[CURRENT]%/*}/*/ 2>/dev/null'")%/})
+  _describe -t remote-directory 'remote directories' directories -qS/ && ret=0
 }
 
 (( $+functions[_adb_remote_commands] )) ||
