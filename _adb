@@ -122,7 +122,12 @@ _adb() {
           && ret=0
         ;;
         (install)
-          _message '[-l] [-r] [-s] <file>' && ret=0 # TODO Not implemented
+          _arguments \
+            '-l[forward-lock the app]' \
+            '-r[reinstall the app, keeping its data]' \
+            '-s[install on SD card instead of internal storage]' \
+            '1: :_files' \
+          && ret=0
         ;;
         (uninstall)
           _message '[-k] <package>' && ret=0 # TODO Not implemented
