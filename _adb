@@ -301,16 +301,17 @@ _adb_remote_forward_specs() {
   if compset -P '*:'; then
     case ${IPREFIX%:} in
       (tcp)
-        _message -e ports 'port' && ret=0
+        _message -e ports 'remote port' && ret=0
       ;;
       (localabstract|localreserved|localfilesystem)
-        _message -e sockets 'socket' && ret=0
+        _message -e sockets 'remote socket' && ret=0
       ;;
       (dev)
-        _message -e devices 'device' && ret=0
+        _message -e devices 'remote device' && ret=0
       ;;
       (jdwp)
-        _message -e pids 'pid' && ret=0 # TODO Use "adb jdwp" output
+        local pids; pids=($(_call_program pids $adb_cmd jdwp))
+        _describe -t remote-pids 'remote pid' pids && ret=0
       ;;
     esac
   else
