@@ -130,7 +130,11 @@ _adb() {
           && ret=0
         ;;
         (uninstall)
-          _message '[-k] <package>' && ret=0 # TODO Not implemented
+          # TODO Somehow complete package names ?
+          _arguments \
+            '-k[keep the data and cache directories]' \
+            '1::package' \
+          && ret=0
         ;;
         (reboot)
           _message '[bootloader|recovery]' && ret=0 # TODO Not implemented
