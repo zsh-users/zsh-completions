@@ -68,7 +68,9 @@ _adb() {
           _message 'no more arguments' && ret=0
         ;;
         (connect|disconnect)
-          _arguments '1: :_adb_host_colon_ports' && ret=0
+          _arguments \
+            '1: :_adb_host_colon_ports' \
+          && ret=0
         ;;
         (push)
           _arguments \
@@ -89,10 +91,29 @@ _adb() {
           && ret=0
         ;;
         (shell|emu)
-          _arguments '1: :_adb_remote_commands' && ret=0
+          _arguments \
+            '1: :_adb_remote_commands' \
+          && ret=0
         ;;
         (logcat)
-          _message '[ <filter-spec> ]' && ret=0 # TODO Not implemented
+           # TODO Complete -b option
+           # TODO -n requires the -r option.
+           # TODO -r requires the -f option.
+           # TODO Complete -v option
+           # TODO Complete filter-spec
+           # Doc here: http://developer.android.com/guide/developing/tools/adb.html#logcat
+          _arguments \
+            '-b[loads an alternate log buffer for viewing, such as event or radio. The main buffer is used by default]:buffer' \
+            '-c[clears (flushes) the entire log and exits' \
+            '-d[dumps the log to the screen and exits' \
+            '-f[writes log message output to file. The default is stdout]: _files' \
+            '-g[prints the size of the specified log buffer and exits]' \
+            '-n[sets the maximum number of rotated logs. The default value is 4]:count' \
+            '-r[rotates the log file every kbytes of output. The default value is 16]:value (in kb)' \
+            '-s[sets the default filter spec to silent]' \
+            '-v[sets the output format for log messages. The default is brief format]:format' \
+            '*::filter-spec' \
+          && ret=0
         ;;
         (forward)
           _message '<local> <remote>' && ret=0 # TODO Not implemented
@@ -198,6 +219,7 @@ _adb_remote_directories() {
 (( $+functions[_adb_remote_commands] )) ||
 _adb_remote_commands() {
   # TODO Not implemented
+  # Doc here: http://developer.android.com/guide/developing/tools/adb.html#shellcommands
   _message 'remote command'
 }
 
