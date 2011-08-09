@@ -104,15 +104,15 @@ _adb() {
            # Doc here: http://developer.android.com/guide/developing/tools/adb.html#logcat
           _arguments \
             '-b[loads an alternate log buffer for viewing, such as event or radio. The main buffer is used by default]:buffer' \
-            '-c[clears (flushes) the entire log and exits' \
-            '-d[dumps the log to the screen and exits' \
+            '-c[clears (flushes) the entire log and exits]' \
+            '-d[dumps the log to the screen and exits]' \
             '-f[writes log message output to file. The default is stdout]: _files' \
             '-g[prints the size of the specified log buffer and exits]' \
             '-n[sets the maximum number of rotated logs. The default value is 4]:count' \
             '-r[rotates the log file every kbytes of output. The default value is 16]:value (in kb)' \
             '-s[sets the default filter spec to silent]' \
             '-v[sets the output format for log messages. The default is brief format]:format' \
-            '*::filter-spec' \
+            '*: :_adb_logcat_filter_specs' \
           && ret=0
         ;;
         (forward)
@@ -224,7 +224,7 @@ _adb_scripting_cmds() {
 _adb_host_colon_ports() {
   local ret=1
   if compset -P '*:'; then
-    _message 'port' && ret=0
+    _message -e ports 'port' && ret=0
   else
     _wanted hosts expl 'host' _hosts -qS: && ret=0
   fi
@@ -263,6 +263,26 @@ _adb_sync_directories() {
   _alternative \
     'partitions:partition:((system:the\ /system\ partition data:the\ /data\ partition))' \
     'directories:directory:_adb_remote_directories'
+}
+
+(( $+functions[_adb_logcat_filter_specs] )) ||
+_adb_logcat_filter_specs() {
+  local ret=1
+  if compset -P '*:'; then
+    local priorities; priorities=(
+      'V:verbose (lowest priority)'
+      'D:debug'
+      'I:info'
+      'W:warning'
+      'E:error'
+      'F:fatal'
+      'S:silent (highest priority, on which nothing is ever printed)'
+    )
+    _describe -t log-priorities 'log priority' priorities "$@" && ret=0
+  else
+    _message -e log-tags 'log tag' && ret=0
+  fi
+  return ret
 }
 
 _adb "$@"
