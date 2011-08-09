@@ -97,6 +97,7 @@ _adb() {
         (shell|emu)
           _arguments \
             '1: :_adb_remote_commands' \
+            '*::remote command arguments' \
           && ret=0
         ;;
         (logcat)
@@ -259,9 +260,8 @@ _adb_remote_directories() {
 
 (( $+functions[_adb_remote_commands] )) ||
 _adb_remote_commands() {
-  # TODO Not implemented
-  # Doc here: http://developer.android.com/guide/developing/tools/adb.html#shellcommands
-  _message 'remote command'
+  local commands; commands=($(_call_program packages $adb_cmd shell "'IFS=:;for path_dir in \$PATH; do ls \$path_dir 2>/dev/null; done'"))
+  _describe -t remote-command 'remote-command' commands && ret=0
 }
 
 (( $+functions[_adb_local_forward_specs] )) ||
