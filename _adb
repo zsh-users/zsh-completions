@@ -257,16 +257,65 @@ _adb_remote_commands() {
 
 (( $+functions[_adb_local_forward_specs] )) ||
 _adb_local_forward_specs() {
-  # TODO Not implemented
-  # Doc here: http://developer.android.com/guide/developing/tools/adb.html#forwardports + adb help
-  _message 'local forward spec'
+  local ret=1
+  if compset -P '*:'; then
+    case ${IPREFIX%:} in
+      (tcp)
+        _message -e ports 'port' && ret=0
+      ;;
+      (localabstract|localreserved)
+        _wanted sockets expl 'socket' _socket && ret=0
+      ;;
+      (localfilesystem)
+        _wanted socket-files expl 'socket file' _files && ret=0
+      ;;
+      (dev)
+        _wanted devices expl 'device' _files -g "/dev/**" && ret=0
+      ;;
+    esac
+  else
+    local modes; modes=(
+      'tcp:TCP socket'
+      'localabstract:local abstract socket'
+      'localreserved:local reserved socket'
+      'localfilesystem:local filesystem socket'
+      'dev:device'
+    )
+    _describe -t forward-modes 'forward mode' modes -qS: && ret=0
+  fi
+  return ret
 }
 
 (( $+functions[_adb_remote_forward_specs] )) ||
 _adb_remote_forward_specs() {
-  # TODO Not implemented
-  # Doc here: http://developer.android.com/guide/developing/tools/adb.html#forwardports + adb help
-  _message 'remote forward spec'
+  local ret=1
+  if compset -P '*:'; then
+    case ${IPREFIX%:} in
+      (tcp)
+        _message -e ports 'port' && ret=0
+      ;;
+      (localabstract|localreserved|localfilesystem)
+        _message -e sockets 'socket' && ret=0
+      ;;
+      (dev)
+        _message -e devices 'device' && ret=0
+      ;;
+      (jdwp)
+        _message -e pids 'pid' && ret=0 # TODO Use "adb jdwp" output
+      ;;
+    esac
+  else
+    local modes; modes=(
+      'tcp:TCP socket'
+      'localabstract:local abstract socket'
+      'localreserved:local reserved socket'
+      'localfilesystem:local filesystem socket'
+      'dev:device'
+      'jdwp:Java Debug Wire Protocol'
+    )
+    _describe -t forward-modes 'forward mode' modes -qS: && ret=0
+  fi
+  return ret
 }
 
 (( $+functions[_adb_sync_directories] )) ||
