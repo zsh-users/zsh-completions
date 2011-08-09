@@ -83,7 +83,10 @@ _adb() {
           && ret=0
         ;;
         (sync)
-          _message '[ [-l] <directory> ]' && ret=0 # TODO Not implemented
+          _arguments \
+            '-l[list but do not copy]' \
+            '1: :_adb_sync_directories' \
+          && ret=0
         ;;
         (shell)
           _message '[ <command> ]' && ret=0 # TODO Not implemented
@@ -187,6 +190,13 @@ _adb_host_colon_ports() {
     _wanted hosts expl 'host' _hosts -qS: && ret=0
   fi
   return ret
+}
+
+(( $+functions[_adb_sync_directories] )) ||
+_adb_sync_directories() {
+  _alternative \
+    'partitions:partition:((system:the\ /system\ partition data:the\ /data\ partition))' \
+    'directories:directory:_files -/'
 }
 
 _adb "$@"
