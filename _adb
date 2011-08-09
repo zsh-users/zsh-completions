@@ -142,7 +142,9 @@ _adb() {
           && ret=0
         ;;
         (tcpip)
-          _message 'port' && ret=0 # TODO Not implemented
+          _arguments \
+            '1::port' \
+          && ret=0
         ;;
         (ppp)
           _message '<tty> [parameters]' && ret=0 # TODO Not implemented
