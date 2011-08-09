@@ -99,19 +99,17 @@ _adb() {
            # TODO Complete -b option
            # TODO -n requires the -r option.
            # TODO -r requires the -f option.
-           # TODO Complete -v option
-           # TODO Complete filter-spec
            # Doc here: http://developer.android.com/guide/developing/tools/adb.html#logcat
           _arguments \
             '-b[loads an alternate log buffer for viewing, such as event or radio. The main buffer is used by default]:buffer' \
             '-c[clears (flushes) the entire log and exits]' \
             '-d[dumps the log to the screen and exits]' \
-            '-f[writes log message output to file. The default is stdout]: _files' \
+            '-f[writes log message output to file. The default is stdout]: :_files' \
             '-g[prints the size of the specified log buffer and exits]' \
             '-n[sets the maximum number of rotated logs. The default value is 4]:count' \
             '-r[rotates the log file every kbytes of output. The default value is 16]:value (in kb)' \
             '-s[sets the default filter spec to silent]' \
-            '-v[sets the output format for log messages. The default is brief format]:format' \
+            '-v[sets the output format for log messages]: :_adb_logcat_output_formats' \
             '*: :_adb_logcat_filter_specs' \
           && ret=0
         ;;
@@ -283,6 +281,20 @@ _adb_logcat_filter_specs() {
     _message -e log-tags 'log tag' && ret=0
   fi
   return ret
+}
+
+(( $+functions[_adb_logcat_output_formats] )) ||
+_adb_logcat_output_formats() {
+  local formats; formats=(
+    'brief:display priority/tag and PID of originating process (the default format)'
+    'process:display PID only'
+    'tag:display the priority/tag only'
+    'thread:display process:thread and priority/tag only'
+    'raw:display the raw log message, with no other metadata fields'
+    'time:display the date, invocation time, priority/tag, and PID of the originating process'
+    'long:display all metadata fields and separate messages with a blank lines'
+  )
+  _describe -t log-formats 'log format' formats "$@" && ret=0
 }
 
 _adb "$@"
