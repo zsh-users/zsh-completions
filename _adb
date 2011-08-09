@@ -67,11 +67,8 @@ _adb() {
         (help|version|devices|jdwp|bugreport|wait-for-device|start-server|kill-server|get-state|get-serialno|status-window|remount|reboot-bootloader|root|usb)
           _message 'no more arguments' && ret=0
         ;;
-        (connect)
-          _message '<host>[:<port>]' && ret=0 # TODO Not implemented
-        ;;
-        (disconnect)
-          _message '[<host>[:<port>]]' && ret=0 # TODO Not implemented
+        (connect|disconnect)
+          _arguments '1: :_adb_host_colon_ports' && ret=0
         ;;
         (push)
           _message '<local> <remote>' && ret=0 # TODO Not implemented
@@ -173,6 +170,17 @@ _adb_scripting_cmds() {
     'ppp:run PPP over USB'
   )
   _describe -t scripting-commands 'scripting command' commands "$@"
+}
+
+(( $+functions[_adb_host_colon_ports] )) ||
+_adb_host_colon_ports() {
+  local ret=1
+  if compset -P '*:'; then
+    _message 'port' && ret=0
+  else
+    _wanted hosts expl 'host' _hosts -qS: && ret=0
+  fi
+  return ret
 }
 
 _adb "$@"
