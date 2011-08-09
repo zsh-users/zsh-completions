@@ -137,7 +137,9 @@ _adb() {
           && ret=0
         ;;
         (reboot)
-          _message '[bootloader|recovery]' && ret=0 # TODO Not implemented
+          _arguments \
+            '1:program:((bootloader:reboot\ into\ the\ bootloader\ program recovery:reboot\ into\ the\ recovery\ program))' \
+          && ret=0
         ;;
         (tcpip)
           _message 'port' && ret=0 # TODO Not implemented
