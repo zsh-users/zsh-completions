@@ -73,19 +73,19 @@ _adb() {
         (push)
           _arguments \
             '1:local directory:_files -/' \
-            '2::remote directory' \
+            '2:remote directory:_adb_remote_directories' \
           && ret=0
         ;;
         (pull)
           _arguments \
-            '1::remote directory' \
+            '1:remote directory:_adb_remote_directories' \
             '2:local directory:_files -/' \
           && ret=0
         ;;
         (sync)
           _arguments \
             '-l[list but do not copy]' \
-            '1: :_adb_sync_directories' \
+            '1:synchronized directory:_adb_sync_directories' \
           && ret=0
         ;;
         (shell)
@@ -192,11 +192,17 @@ _adb_host_colon_ports() {
   return ret
 }
 
+(( $+functions[_adb_remote_directories] )) ||
+_adb_remote_directories() {
+  # TODO Not implemented
+  _message 'remote directory'
+}
+
 (( $+functions[_adb_sync_directories] )) ||
 _adb_sync_directories() {
   _alternative \
     'partitions:partition:((system:the\ /system\ partition data:the\ /data\ partition))' \
-    'directories:directory:_files -/'
+    'directories:directory:_adb_remote_directories'
 }
 
 _adb "$@"
