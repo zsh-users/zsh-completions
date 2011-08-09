@@ -221,15 +221,26 @@ _adb_scripting_cmds() {
 (( $+functions[_adb_products] )) ||
 _adb_products() {
   _alternative \
-    'product-names:product name:((\$ANDROID_PRODUCT_OUT:default value))' \
+    'product-names:product name:_adb_product_names' \
     'directories:directory:_files -/'
+}
+
+(( $+functions[_adb_product_names] )) ||
+_adb_product_names() {
+  local ret=1
+  if [[ -n "$ANDROID_PRODUCT_OUT" ]]; then
+    local product_names; product_names=("$ANDROID_PRODUCT_OUT:default value set in ANDROID_PRODUCT_OUT environment variable")
+    _describe -t product-names 'product name' product_names && ret=0
+  else
+    _message -e product-names 'product name' && ret=0
+  fi
+  return ret
 }
 
 (( $+functions[_adb_serial_numbers] )) ||
 _adb_serial_numbers() {
-  local serial_numbers; serial_numbers=(
-    '$ANDROID_SERIAL:default value'
-  )
+  local serial_numbers; serial_numbers=(${${(M)${(f)"$(adb devices)"}:#*device}%%[[:space:]]*}":connected device")
+  [[ -n "$ANDROID_SERIAL" ]] && serial_numbers+=("$ANDROID_SERIAL:default value set in ANDROID_SERIAL environment variable")
   _describe -t serial-numbers 'serial number' serial_numbers "$@" && ret=0
 }
 
