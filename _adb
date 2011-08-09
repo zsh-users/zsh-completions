@@ -1,0 +1,178 @@
+#compdef adb
+# ------------------------------------------------------------------------------
+# Copyright (c) 2011 zsh-users
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of the zsh-users nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL ZSH-USERS BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for adb
+#  (http://developer.android.com/guide/developing/tools/adb.html).
+#
+#  Status: Incomplete, see FIXMEs and TODOs.
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Julien Nicoulaud <julien.nicoulaud@gmail.com>
+#
+# ------------------------------------------------------------------------------
+# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
+# vim: ft=zsh sw=2 ts=2 et
+# ------------------------------------------------------------------------------
+
+
+typeset -A opt_args
+local context state line curcontext="$curcontext"
+
+_adb() {
+  local ret=1
+
+  _arguments -C \
+     '(-e -s)-d[directs command to the only connected USB device, returns an error if more than one USB device is present]' \
+     '(-d -s)-e[directs command to the only running emulator, returns an error if more than one emulator is running]' \
+     '(-d -e)-s[directs command to the USB device or emulator with the given serial number. Overrides ANDROID_SERIAL environment variable]:serial number' \
+     '-p[simple product name or a relative/absolute path to a product out directory. Overrides ANDROID_PRODUCT_OUT environment variable]:product name or path' \
+    '1: :_adb_cmds' \
+    '*::arg:->args' \
+  && ret=0
+
+  case $state in
+    (args)
+      curcontext="${curcontext%:*:*}:adb-cmd-$words[1]:"
+      case $words[1] in
+        (help|version|devices|jdwp|bugreport|wait-for-device|start-server|kill-server|get-state|get-serialno|status-window|remount|reboot-bootloader|root|usb)
+          _message 'no more arguments' && ret=0
+        ;;
+        (connect)
+          _message '<host>[:<port>]' && ret=0 # TODO Not implemented
+        ;;
+        (disconnect)
+          _message '[<host>[:<port>]]' && ret=0 # TODO Not implemented
+        ;;
+        (push)
+          _message '<local> <remote>' && ret=0 # TODO Not implemented
+        ;;
+        (pull)
+          _message '<remote> [<local>]' && ret=0 # TODO Not implemented
+        ;;
+        (sync)
+          _message '[ [-l] <directory> ]' && ret=0 # TODO Not implemented
+        ;;
+        (shell)
+          _message '[ <command> ]' && ret=0 # TODO Not implemented
+        ;;
+        (emu)
+          _message '<command>' && ret=0 # TODO Not implemented
+        ;;
+        (logcat)
+          _message '[ <filter-spec> ]' && ret=0 # TODO Not implemented
+        ;;
+        (forward)
+          _message '<local> <remote>' && ret=0 # TODO Not implemented
+        ;;
+        (install)
+          _message '[-l] [-r] [-s] <file>' && ret=0 # TODO Not implemented
+        ;;
+        (uninstall)
+          _message '[-k] <package>' && ret=0 # TODO Not implemented
+        ;;
+        (reboot)
+          _message '[bootloader|recovery]' && ret=0 # TODO Not implemented
+        ;;
+        (tcpip)
+          _message 'port' && ret=0 # TODO Not implemented
+        ;;
+        (ppp)
+          _message '<tty> [parameters]' && ret=0 # TODO Not implemented
+        ;;
+      esac
+    ;;
+  esac
+
+  return ret
+}
+
+(( $+functions[_adb_cmds] )) ||
+_adb_cmds() {
+  _alternative \
+    'general-commands:general command:_adb_general_cmds' \
+    'device-commands:device command:_adb_device_cmds' \
+    'scripting-commands:scripting command:_adb_scripting_cmds'
+}
+
+(( $+functions[_adb_general_cmds] )) ||
+_adb_general_cmds() {
+  local commands; commands=(
+    'help:show help message'
+    'version:show version number'
+    'devices:list all connected devices'
+    'connect:connect to a device via TCP/IP'
+    'disconnect:disconnect from a TCP/IP device'
+  )
+  _describe -t general-commands 'general command' commands "$@"
+}
+
+(( $+functions[_adb_device_cmds] )) ||
+_adb_device_cmds() {
+  local commands; commands=(
+    'push:copy file/dir to device'
+    'pull:copy file/dir from device'
+    'sync:copy host->device only if changed'
+    'shell:run remote shell interactively or command'
+    'shell:run remote shell command'
+    'emu:run emulator console command'
+    'logcat:view device log'
+    'forward:forward socket connections'
+    'jdwp:list PIDs of processes hosting a JDWP transport'
+    'install:push this padbage file to the device and install it'
+    'uninstall:remove this app padbage from the device'
+    'bugreport:return all information from the device'
+  )
+  _describe -t device-commands 'device command' commands "$@"
+}
+
+(( $+functions[_adb_scripting_cmds] )) ||
+_adb_scripting_cmds() {
+  local commands; commands=(
+    'wait-for-device:block until device is online'
+    'start-server:ensure that there is a server running'
+    'kill-server:kill the server if it is running'
+    'get-state:prints\: offline | bootloader | device'
+    'get-serialno:prints\: <serial-number>'
+    'status-window:continuously print device status for a specified device'
+    'remount:remounts the /system partition on the device read-write'
+    'reboot:reboots the device, optionally into the bootloader or recovery program'
+    'reboot-bootloader:reboots the device into the bootloader'
+    'root:restarts the adbd daemon with root permissions'
+    'usb:restarts the adbd daemon listening on USB'
+    'tcpip:restarts the adbd daemon listening on TCP on the specified port'
+    'ppp:run PPP over USB'
+  )
+  _describe -t scripting-commands 'scripting command' commands "$@"
+}
+
+_adb "$@"
