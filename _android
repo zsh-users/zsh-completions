@@ -1,0 +1,175 @@
+#compdef android
+# ------------------------------------------------------------------------------
+# Copyright (c) 2011 zsh-users
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of the zsh-users nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL ZSH-USERS BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for android command
+#  (http://developer.android.com/guide/developing/tools/android.html).
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Julien Nicoulaud <julien.nicoulaud@gmail.com>
+#
+# ------------------------------------------------------------------------------
+# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
+# vim: ft=zsh sw=2 ts=2 et
+# ------------------------------------------------------------------------------
+
+
+typeset -A opt_args
+local context state line curcontext="$curcontext" android_cmd
+
+_android() {
+  local ret=1
+  
+  android_cmd="$words[1]"
+
+  _arguments -C \
+    '(- : *)'{-h,--help}'[get help on a specific command]' \
+    '(-s --silent)'{-v,--verbose}'[verbose mode: errors, warnings and informational messages are printed]' \
+    '(-v --verbose)'{-s,--silent}'[silent mode: only errors are printed out]' \
+    '1: :_android_cmds' \
+    '*::arg:->args' \
+  && ret=0
+
+  case "$state" in
+    (args)
+      curcontext="${curcontext%:*:*}:android-cmd-$words[1]:"
+      case $words[1] in
+        (list)
+          _arguments \
+            '1: :_android_list_entities' \
+          && ret=0
+        ;;
+        (create)
+          _arguments \
+            '1: :_android_create_entities' \
+          && ret=0
+        ;;
+        (update)
+          _arguments \
+            '1: :_android_update_entities' \
+          && ret=0
+        ;;
+        (move)
+          _arguments \
+            '1: :_android_move_entities' \
+          && ret=0
+        ;;
+        (delete)
+          _arguments \
+            '1: :_android_delete_entities' \
+          && ret=0
+        ;;
+        (display)
+          _arguments \
+            '1: :_android_display_entities' \
+          && ret=0
+        ;;
+      esac
+    ;;
+  esac
+
+  return ret
+}
+
+(( $+functions[_android_cmds] )) ||
+_android_cmds() {
+  local commands; commands=(
+    'list'
+    'create'
+    'update'
+    'move'
+    'delete'
+    'display'
+  )
+  _describe -t commands 'command' commands "$@"
+}
+
+(( $+functions[_android_list_entities] )) ||
+_android_list_entities() {
+  local entities; entities=(
+    'avd'
+    'target'
+    'sdk'
+  )
+  _describe -t entities 'entity' entities "$@"
+}
+
+(( $+functions[_android_create_entities] )) ||
+_android_create_entities() {
+  local entities; entities=(
+    'avd'
+    'project'
+    'test-project'
+    'lib-project'
+  )
+  _describe -t entities 'entity' entities "$@"
+}
+
+(( $+functions[_android_update_entities] )) ||
+_android_update_entities() {
+  local entities; entities=(
+    'avd'
+    'project'
+    'test-project'
+    'lib-project'
+    'adb'
+    'sdk'
+  )
+  _describe -t entities 'entity' entities "$@"
+}
+
+(( $+functions[_android_move_entities] )) ||
+_android_move_entities() {
+  local entities; entities=(
+    'avd'
+  )
+  _describe -t entities 'entity' commands "$@"
+}
+
+(( $+functions[_android_delete_entities] )) ||
+_android_delete_entities() {
+  local entities; entities=(
+    'avd'
+  )
+  _describe -t entities 'entity' entities "$@"
+}
+
+(( $+functions[_android_display_entities] )) ||
+_android_display_entities() {
+  local entities; entities=(
+    'sdk'
+    'avd'
+  )
+  _describe -t entities 'entity' entities "$@"
+}
+
+_android "$@"
