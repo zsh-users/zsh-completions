@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for adb
+#  Completion script for adb (Android Debug Bridge) 1.0.26
 #  (http://developer.android.com/guide/developing/tools/adb.html).
 #
 # ------------------------------------------------------------------------------
