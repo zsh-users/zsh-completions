@@ -179,12 +179,20 @@ _android() {
           _arguments -C \
             '1: :_android_move_entities' \
             '*::move-arg:->move-args' \
-      && ret=0
-          # TODO Options:
-          # Action "move avd":
-          #   -p --path     Path to the AVD's new directory
-          #   -n --name     Name of the AVD to move or rename [required]
-          #   -r --rename   New name of the AVD
+          && ret=0
+          case "$state" in
+            (move-args)
+              case $words[1] in
+                (avd)
+                  _arguments \
+                    '(-n --name)'{-n,--name}'[name of the AVD to move or rename]: :_android_avd_names' \
+                    '(-p --path)'{-p,--path}'[path to the AVD'\''s new directory]: :_files -/' \
+                    '(-r --rename)'{-r,--rename}'[new name of the AVD]:name' \
+                  && ret=0
+                ;;
+              esac
+            ;;
+          esac
         ;;
         (delete)
           _arguments -C \
