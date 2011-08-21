@@ -69,25 +69,17 @@ _android() {
           && ret=0
           # TODO Options:
           # Action "list ":
-          #   Lists existing targets or virtual devices.
-          # Options:
           #   No options
           # 
           # Action "list avd":
-          #   Lists existing Android Virtual Devices.
-          # Options:
           #   -0 --null     Terminates lines with \0 instead of \n (e.g. for xargs -0). Only used by --compact.
           #   -c --compact  Compact output (suitable for scripts)
           # 
           # Action "list target":
-          #   Lists existing targets.
-          # Options:
           #   -0 --null     Terminates lines with \0 instead of \n (e.g. for xargs -0) Only used by --compact.
           #   -c --compact  Compact output (suitable for scripts)
           # 
           # Action "list sdk":
-          #   Lists remote SDK repository.
-          # Options:
           #   -o --obsolete   Installs obsolete packages
           #      --proxy-host HTTP/HTTPS proxy host (overrides settings if defined)
           #      --proxy-port HTTP/HTTPS proxy port (overrides settings if defined)
@@ -100,8 +92,6 @@ _android() {
           && ret=0
           # TODO Options:
           # Action "create avd":
-          #   Creates a new Android Virtual Device.
-          # Options:
           #   -c --sdcard   Path to a shared SD card image, or size of a new sdcard for the new AVD
           #   -n --name     Name of the new AVD [required]
           #   -a --snapshot Place a snapshots file in the AVD, to enable persistence.
@@ -111,8 +101,6 @@ _android() {
           #   -t --target   Target ID of the new AVD [required]
           # 
           # Action "create project":
-          #   Creates a new Android project.
-          # Options:
           #   -n --name     Project name
           #   -t --target   Target ID of the new project [required]
           #   -p --path     The new project's directory [required]
@@ -120,15 +108,11 @@ _android() {
           #   -a --activity Name of the default Activity that is created [required]
           # 
           # Action "create test-project":
-          #   Creates a new Android project for a test package.
-          # Options:
           #   -p --path     The new project's directory [required]
           #   -n --name     Project name
           #   -m --main     Path to directory of the app under test, relative to the test project directory [required]
           # 
           # Action "create lib-project":
-          #   Creates a new Android library project.
-          # Options:
           #   -n --name     Project name
           #   -t --target   Target ID of the new project [required]
           #   -k --package  Android package name for the library [required]
@@ -140,13 +124,9 @@ _android() {
           && ret=0
           # TODO Options:
           # Action "update avd":
-          #   Updates an Android Virtual Device to match the folders of a new SDK.
-          # Options:
           #   -n --name     Name of the AVD to update [required]
           # 
           # Action "update project":
-          #   Updates an Android project (must already have an AndroidManifest.xml).
-          # Options:
           #   -l --library     Directory of an Android library to add, relative to this project's directory
           #   -p --path        The project's directory [required]
           #   -n --name        Project name
@@ -154,25 +134,17 @@ _android() {
           #   -s --subprojects Also updates any projects in sub-folders, such as test projects.
           # 
           # Action "update test-project":
-          #   Updates the Android project for a test package (must already have an AndroidManifest.xml).
-          # Options:
           #   -m --main     Directory of the app under test, relative to the test project directory [required]
           #   -p --path     The project's directory [required]
           # 
           # Action "update lib-project":
-          #   Updates an Android library project (must already have an AndroidManifest.xml).
-          # Options:
           #   -p --path     The project's directory [required]
           #   -t --target   Target ID to set for the project
           # 
           # Action "update adb":
-          #   Updates adb to support the USB devices declared in the SDK add-ons.
-          # Options:
           #   No options
           # 
           # Action "update sdk":
-          #   Updates the SDK by suggesting new platforms to install if available.
-          # Options:
           #      --proxy-port HTTP/HTTPS proxy port (overrides settings if defined)
           #      --proxy-host HTTP/HTTPS proxy host (overrides settings if defined)
           #   -s --no-https   Uses HTTP instead of HTTPS (the default) for downloads
@@ -189,8 +161,6 @@ _android() {
           && ret=0
           # TODO Options:
           # Action "move avd":
-          #   Moves or renames an Android Virtual Device.
-          # Options:
           #   -p --path     Path to the AVD's new directory
           #   -n --name     Name of the AVD to move or rename [required]
           #   -r --rename   New name of the AVD
@@ -201,8 +171,6 @@ _android() {
           && ret=0
           # TODO Options:
           # Action "delete avd":
-          #   Deletes an Android Virtual Device.
-          # Options:
           #   -n --name     Name of the AVD to delete [required]
         ;;
         (display)
