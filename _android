@@ -44,13 +44,11 @@
 
 
 typeset -A opt_args
-local context state line curcontext="$curcontext" android_cmd
+local context state line curcontext="$curcontext"
 
 _android() {
   local ret=1
   
-  android_cmd="$words[1]"
-
   _arguments -C -A "-*" \
     '(- : *)'{-h,--help}'[get help on a specific command]:command:_android_cmds' \
     '(-s --silent -v --verbose)'{-v,--verbose}'[verbose mode: errors, warnings and informational messages are printed]' \
@@ -309,13 +307,13 @@ _android_display_entities() {
 
 (( $+functions[_android_targets] )) ||
 _android_targets() {
-  local targets; targets=(${(f)"$(_call_program targets $android_cmd list target --compact)"//:/\\:})
+  local targets; targets=(${(f)"$(_call_program targets $service list target --compact)"//:/\\:})
   _describe -t targets 'target' targets "$@"
 }
 
 (( $+functions[_android_avd_names] )) ||
 _android_avd_names() {
-  local avd_names; avd_names=(${(f)"$(_call_program targets $android_cmd list avd --compact)"//:/\\:})
+  local avd_names; avd_names=(${(f)"$(_call_program targets $service list avd --compact)"//:/\\:})
   _describe -t avd-names 'AVD name' avd_names "$@"
 }
 
