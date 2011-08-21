@@ -142,38 +142,50 @@ _android() {
             '1: :_android_update_entities' \
             '*::update-arg:->update-args' \
           && ret=0
-          # TODO Options:
-          # Action "update avd":
-          #   -n --name     Name of the AVD to update [required]
-          # 
-          # Action "update project":
-          #   -l --library     Directory of an Android library to add, relative to this project's directory
-          #   -p --path        The project's directory [required]
-          #   -n --name        Project name
-          #   -t --target      Target ID to set for the project
-          #   -s --subprojects Also updates any projects in sub-folders, such as test projects.
-          # 
-          # Action "update test-project":
-          #   -m --main     Directory of the app under test, relative to the test project directory [required]
-          #   -p --path     The project's directory [required]
-          # 
-          # Action "update lib-project":
-          #   -p --path     The project's directory [required]
-          #   -t --target   Target ID to set for the project
-          # 
-          # Action "update adb":
-          #   No options
-          # 
-          # Action "update sdk":
-          #      --proxy-port HTTP/HTTPS proxy port (overrides settings if defined)
-          #      --proxy-host HTTP/HTTPS proxy host (overrides settings if defined)
-          #   -s --no-https   Uses HTTP instead of HTTPS (the default) for downloads
-          #   -f --force      Forces replacement of a package or its parts, even if something has been modified
-          #   -u --no-ui      Updates from command-line (does not display the GUI)
-          #   -o --obsolete   Installs obsolete packages
-          #   -t --filter     A filter that limits the update to the specified types of packages in the form of
-          #                   a comma-separated list of [platform, tool, platform-tool, doc, sample, extra]
-          #   -n --dry-mode   Simulates the update but does not download or install anything
+          case "$state" in
+            (update-args)
+              case $words[1] in
+                (avd)
+                  _arguments \
+                    '(-n --name)'{-n,--name}'[name of the AVD to update]: :_android_avd_names' \
+                  && ret=0
+                ;;
+                (project)
+                  _arguments \
+                    '(-l --library)'{-l,--library}'[directory of an Android library to add, relative to this project'\''s directory]: :_files -/' \
+                    '(-p --path)'{-p,--path}'[the project'\''s directory]: :_files -/' \
+                    '(-n --name)'{-n,--name}'[project name]:name' \
+                    '(-t --target)'{-t,--target}'[target ID to set for the project]: :_android_targets' \
+                    '(-s --subprojects)'{-s,--subprojects}'[also updates any projects in sub-folders, such as test projects]' \
+                  && ret=0
+                ;;
+                (test-project)
+                  _arguments \
+                    '(-p --path)'{-p,--path}'[the project'\''s directory]: :_files -/' \
+                    '(-m --main)'{-m,--main}'[directory of the app under test, relative to the test project directory]:path' \
+                  && ret=0
+                ;;
+                (lib-project)
+                  _arguments \
+                    '(-p --path)'{-p,--path}'[the project'\''s directory]: :_files -/' \
+                    '(-t --target)'{-t,--target}'[target ID to set for the project]: :_android_targets' \
+                  && ret=0
+                ;;
+                (sdk)
+                  _arguments \
+                    '(-o --obsolete)'{-o,--obsolete}'[install obsolete packages]' \
+                    '--proxy-host[HTTP/HTTPS proxy host (overrides settings if defined)]:proxy host:_hosts' \
+                    '--proxy-port[HTTP/HTTPS proxy port (overrides settings if defined)]:proxy port number' \
+                    '(-s --no-https)'{-s,--no-https}'[use HTTP instead of HTTPS (the default) for downloads]' \
+                    '(-u --no-ui)'{-u,--no-ui}'[update from command-line (no GUI)]' \
+                    '(-f --force)'{-f,--force}'[force replacement of a package or its parts, even if something has been modified]' \
+                    '(-t --filter)'{-t,--filter}'[a filter that limits the update to the specified types of packages]: :_android_sdk_update_filters -s ,' \
+                    '(-n --dry-mode)'{-n,--dry-mode}'[simulate the update but does not download or install anything]' \
+                  && ret=0
+                ;;
+              esac
+            ;;
+          esac
         ;;
         (move)
           _arguments -C \
@@ -305,6 +317,12 @@ _android_targets() {
 _android_avd_names() {
   local avd_names; avd_names=(${(f)"$(_call_program targets $android_cmd list avd --compact)"//:/\\:})
   _describe -t avd-names 'AVD name' avd_names "$@"
+}
+
+(( $+functions[_android_sdk_update_filters] )) ||
+_android_sdk_update_filters() {
+  local filters; filters=(platform tool platform-tool doc sample extra)
+  _values $@ 'filter' "${filters[@]}"
 }
 
 _android "$@"
