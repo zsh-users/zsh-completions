@@ -51,9 +51,8 @@ _android() {
   
   android_cmd="$words[1]"
 
-  # FIXME Global options must be before the command
   # TODO -h takes an optional command name
-  _arguments -C \
+  _arguments -C -A "-*" \
     '(- : *)'{-h,--help}'[get help on a specific command]' \
     '(-s --silent)'{-v,--verbose}'[verbose mode: errors, warnings and informational messages are printed]' \
     '(-v --verbose)'{-s,--silent}'[silent mode: only errors are printed out]' \
