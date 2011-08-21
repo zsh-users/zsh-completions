@@ -103,12 +103,12 @@ _android() {
 (( $+functions[_android_cmds] )) ||
 _android_cmds() {
   local commands; commands=(
-    'list'
-    'create'
-    'update'
-    'move'
-    'delete'
-    'display'
+    'list:list existing targets or virtual devices'
+    'create:create new virtual devices or projects'
+    'update:update a virtual device, project, SDK or adb'
+    'move:move a virtual device'
+    'delete:delete a virtual device'
+    'display:display manager windows'
   )
   _describe -t commands 'command' commands "$@"
 }
@@ -116,9 +116,8 @@ _android_cmds() {
 (( $+functions[_android_list_entities] )) ||
 _android_list_entities() {
   local entities; entities=(
-    'avd'
-    'target'
-    'sdk'
+    'avd:list existing Android Virtual Devices'
+    'target:list existing targets'
   )
   _describe -t entities 'entity' entities "$@"
 }
@@ -126,10 +125,10 @@ _android_list_entities() {
 (( $+functions[_android_create_entities] )) ||
 _android_create_entities() {
   local entities; entities=(
-    'avd'
-    'project'
-    'test-project'
-    'lib-project'
+    'avd:create a new Android Virtual Device'
+    'project:create a new Android project'
+    'test-project:create a new Android project for a test package'
+    'lib-project:create a new Android library project'
   )
   _describe -t entities 'entity' entities "$@"
 }
@@ -137,12 +136,12 @@ _android_create_entities() {
 (( $+functions[_android_update_entities] )) ||
 _android_update_entities() {
   local entities; entities=(
-    'avd'
-    'project'
-    'test-project'
-    'lib-project'
-    'adb'
-    'sdk'
+    'avd:update an Android Virtual Device to match the folders of a new SDK'
+    'project:update an Android project'
+    'test-project:update the Android project for a test package'
+    'lib-project:update an Android library project'
+    'adb:update adb to support the USB devices declared in the SDK add-ons'
+    'sdk:update the SDK by suggesting new platforms to install if available'
   )
   _describe -t entities 'entity' entities "$@"
 }
@@ -150,7 +149,7 @@ _android_update_entities() {
 (( $+functions[_android_move_entities] )) ||
 _android_move_entities() {
   local entities; entities=(
-    'avd'
+    'avd:move or rename an Android Virtual Device'
   )
   _describe -t entities 'entity' commands "$@"
 }
@@ -158,7 +157,7 @@ _android_move_entities() {
 (( $+functions[_android_delete_entities] )) ||
 _android_delete_entities() {
   local entities; entities=(
-    'avd'
+    'avd:delete an Android Virtual Device'
   )
   _describe -t entities 'entity' entities "$@"
 }
@@ -166,8 +165,8 @@ _android_delete_entities() {
 (( $+functions[_android_display_entities] )) ||
 _android_display_entities() {
   local entities; entities=(
-    'sdk'
-    'avd'
+    'sdk:display the SDK Manager window'
+    'avd:display the AVD Manager window'
   )
   _describe -t entities 'entity' entities "$@"
 }
