@@ -357,7 +357,8 @@ _adb_logcat_filter_specs() {
     )
     _describe -t log-priorities 'log priority' priorities "$@" && ret=0
   else
-    _message -e log-tags 'log tag' && ret=0
+    local tags; tags=(${(u)${${(f)"$(_call_program tags $service $adb_args logcat -d)"}%%[[:space:]]#\(*}##*\/})
+    _describe -t log-tags 'log tag' tags -qS: "$@" && ret=0
   fi
   return ret
 }
