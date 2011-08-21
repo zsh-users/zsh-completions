@@ -97,6 +97,7 @@ _adb() {
           && ret=0
           case "$state" in
             (remote-command-args)
+              curcontext="${curcontext%:*:*}:adb-remote-cmd-$words[1]:"
               if (( $+functions[_adb_remote_command_$words[1]_args] )); then
                 _adb_remote_command_$words[1] && ret=0
                 # TODO Write handlers for following commands:
