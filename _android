@@ -91,7 +91,7 @@ _android() {
           esac
         ;;
         (create)
-          _arguments \
+          _arguments -C \
             '1: :_android_create_entities' \
             '*::create-arg:->create-args' \
           && ret=0
@@ -138,8 +138,9 @@ _android() {
           esac
         ;;
         (update)
-          _arguments \
+          _arguments -C \
             '1: :_android_update_entities' \
+            '*::update-arg:->update-args' \
           && ret=0
           # TODO Options:
           # Action "update avd":
@@ -175,9 +176,10 @@ _android() {
           #   -n --dry-mode   Simulates the update but does not download or install anything
         ;;
         (move)
-          _arguments \
+          _arguments -C \
             '1: :_android_move_entities' \
-          && ret=0
+            '*::move-arg:->move-args' \
+      && ret=0
           # TODO Options:
           # Action "move avd":
           #   -p --path     Path to the AVD's new directory
@@ -185,12 +187,21 @@ _android() {
           #   -r --rename   New name of the AVD
         ;;
         (delete)
-          _arguments \
+          _arguments -C \
             '1: :_android_delete_entities' \
+            '*::delete-arg:->delete-args' \
           && ret=0
-          # TODO Options:
-          # Action "delete avd":
-          #   -n --name     Name of the AVD to delete [required]
+          case "$state" in
+            (delete-args)
+              case $words[1] in
+                (avd)
+                  _arguments \
+                    '(-n --name)'{-n,--name}'[name of the AVD to delete]: :_android_avd_names' \
+                  && ret=0
+                ;;
+              esac
+            ;;
+          esac
         ;;
         (display)
           _arguments \
@@ -280,6 +291,12 @@ _android_display_entities() {
 _android_targets() {
   local targets; targets=(${(f)"$(_call_program targets $android_cmd list target --compact)"//:/\\:})
   _describe -t targets 'target' targets "$@"
+}
+
+(( $+functions[_android_avd_names] )) ||
+_android_avd_names() {
+  local avd_names; avd_names=(${(f)"$(_call_program targets $android_cmd list avd --compact)"//:/\\:})
+  _describe -t avd-names 'AVD name' avd_names "$@"
 }
 
 _android "$@"
