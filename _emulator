@@ -55,12 +55,10 @@ _emulator() {
   # TODO -logcat: use completer from _adb
   # TODO Complete options with device values
   # TODO Complete -prop
-  # TODO -help-<option>
   # TODO -debug-<tag> / -debug-no-<tag>
   _arguments \
     '(- : *)-version[display emulator version number]' \
     '(- : *)-help[display help information]' \
-    '(- : *)-help-<option>[print option-specific help]' \
     '(- : *)-help-disk-images[about disk images]' \
     '(- : *)-help-keys[supported key bindings]' \
     '(- : *)-help-debug-tags[debug tags for -debug <tags>]' \
@@ -71,6 +69,7 @@ _emulator() {
     '(- : *)-help-sdk-images[about disk images when using the SDK]' \
     '(- : *)-help-build-images[about disk images when building Android]' \
     '(- : *)-help-all[prints all help content]' \
+    '(- : *)-help-'{version,sysdir,system,image,datadir,kernel,ramdisk,initdata,data,partition-size,cache,no-cache,nocache,sdcard,snapstorage,no-snapstorage,snapshot,no-snapshot,no-snapshot-save,no-snapshot-load,snapshot-list,no-snapshot-update-time,wipe-data,avd,skindir,skin,noskin,no-skin,memory,netspeed,netdelay,netfast,trace,show-kernel,shell,no-jni,nojni,logcat,noaudio,no-audio,audio,raw-keys,radio,port,ports,onion,onion-alpha,onion-rotation,scale,dpi-device,http-proxy,timezone,dns-server,cpu-delay,no-boot-anim,no-window,report-console,gps,keyset,shell-serial,tcpdump,bootchart,charmap,prop,shared-net-id,nand-limits,memcheck,qemu,verbose}'[print option-specific help]' \
     '-sysdir[search for system disk images in the directory]: :_files -/' \
     '(-system -image)'{-system,-image}'[read initial system image from the file]: :_files -g "*.img"' \
     '-datadir[write user data into the directory]: :_files -/' \
