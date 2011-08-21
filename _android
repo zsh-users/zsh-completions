@@ -93,34 +93,49 @@ _android() {
         (create)
           _arguments \
             '1: :_android_create_entities' \
+            '*::create-arg:->create-args' \
           && ret=0
-          # TODO Options:
-          # Action "create avd":
-          #   -c --sdcard   Path to a shared SD card image, or size of a new sdcard for the new AVD
-          #   -n --name     Name of the new AVD [required]
-          #   -a --snapshot Place a snapshots file in the AVD, to enable persistence.
-          #   -p --path     Directory where the new AVD will be created
-          #   -f --force    Forces creation (overwrites an existing AVD)
-          #   -s --skin     Skin for the new AVD
-          #   -t --target   Target ID of the new AVD [required]
-          # 
-          # Action "create project":
-          #   -n --name     Project name
-          #   -t --target   Target ID of the new project [required]
-          #   -p --path     The new project's directory [required]
-          #   -k --package  Android package name for the application [required]
-          #   -a --activity Name of the default Activity that is created [required]
-          # 
-          # Action "create test-project":
-          #   -p --path     The new project's directory [required]
-          #   -n --name     Project name
-          #   -m --main     Path to directory of the app under test, relative to the test project directory [required]
-          # 
-          # Action "create lib-project":
-          #   -n --name     Project name
-          #   -t --target   Target ID of the new project [required]
-          #   -k --package  Android package name for the library [required]
-          #   -p --path     The new project's directory [required]
+          case "$state" in
+            (create-args)
+              case $words[1] in
+                (avd)
+                  _arguments \
+                    '(-c --sdcard)'{-c,--sdcard}'[path to a shared SD card image, or size of a new sdcard for the new AVD]:SD card image or size:_files -g "*.img"' \
+                    '(-n --name)'{-n,--name}'[name of the new AVD]:name' \
+                    '(-a --snapshot)'{-a,--snapshot}'[place a snapshots file in the AVD, to enable persistence]' \
+                    '(-p --path)'{-p,--path}'[directory where the new AVD will be created]: :_files -/' \
+                    '(-f --force)'{-f,--force}'[forces creation (overwrites an existing AVD)]' \
+                    '(-s --skin)'{-s,--skin}'[skin for the new AVD]:skin' \
+                    '(-t --target)'{-t,--target}'[target ID of the new AVD]: :_android_targets' \
+                  && ret=0
+                ;;
+                (project)
+                  _arguments \
+                    '(-n --name)'{-n,--name}'[project name]:project name' \
+                    '(-p --path)'{-p,--path}'[the new project'\''s directory]: :_files -/' \
+                    '(-k --package)'{-k,--package}'[Android package name for the application]:package name' \
+                    '(-a --activity)'{-a,--activity}'[name of the default Activity that is created]:activity name' \
+                    '(-t --target)'{-t,--target}'[target ID of the new project]: :_android_targets' \
+                  && ret=0
+                ;;
+                (test-project)
+                  _arguments \
+                    '(-n --name)'{-n,--name}'[project name]:project name' \
+                    '(-p --path)'{-p,--path}'[the new project'\''s directory]: :_files -/' \
+                    '(-m --main)'{-m,--main}'[path to directory of the app under test, relative to the test project directory]:path' \
+                  && ret=0
+                ;;
+                (lib-project)
+                  _arguments \
+                    '(-n --name)'{-n,--name}'[project name]:project name' \
+                    '(-p --path)'{-p,--path}'[the new project'\''s directory]: :_files -/' \
+                    '(-k --package)'{-k,--package}'[Android package name for the application]:package name' \
+                    '(-t --target)'{-t,--target}'[target ID of the new project]: :_android_targets' \
+                  && ret=0
+                ;;
+              esac
+            ;;
+          esac
         ;;
         (update)
           _arguments \
@@ -259,6 +274,12 @@ _android_display_entities() {
     'avd:display the AVD Manager window'
   )
   _describe -t entities 'entity' entities "$@"
+}
+
+(( $+functions[_android_targets] )) ||
+_android_targets() {
+  local targets; targets=(${(f)"$(_call_program targets $android_cmd list target --compact)"//:/\\:})
+  _describe -t targets 'target' targets "$@"
 }
 
 _android "$@"
