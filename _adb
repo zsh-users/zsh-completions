@@ -193,7 +193,6 @@ _adb_device_cmds() {
     'pull:copy file/dir from device'
     'sync:copy host->device only if changed'
     'shell:run remote shell interactively or command'
-    'shell:run remote shell command'
     'emu:run emulator console command'
     'logcat:view device log'
     'forward:forward socket connections'
