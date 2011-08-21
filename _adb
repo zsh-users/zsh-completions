@@ -75,12 +75,12 @@ _adb() {
         (push)
           _arguments \
             '1:local directory:_files -/' \
-            '2: :_adb_remote_directories' \
+            '2: :_adb_remote_files -/' \
           && ret=0
         ;;
         (pull)
           _arguments \
-            '1: :_adb_remote_directories' \
+            '1: :_adb_remote_files -/' \
             '2:local directory:_files -/' \
           && ret=0
         ;;
@@ -91,10 +91,19 @@ _adb() {
           && ret=0
         ;;
         (shell|emu)
-          _arguments \
+          _arguments -C \
             '1: :_adb_remote_commands' \
-            '*::remote command arguments' \
+            '*::remote-command-arg:->remote-command-args' \
           && ret=0
+          case "$state" in
+            (remote-command-args)
+              if (( $+functions[_adb_remote_command_$words[1]_args] )); then
+                _adb_remote_command_$words[1]_args && ret=0
+              else
+                _wanted remote-files expl 'remote file' _adb_remote_files && ret=0
+              fi
+            ;;
+          esac
         ;;
         (logcat)
            local -a rotation_opts
@@ -259,16 +268,19 @@ _adb_host_colon_ports() {
   return ret
 }
 
-(( $+functions[_adb_remote_directories] )) ||
-_adb_remote_directories() {
-  local directories; directories=(${$(_call_program directories $service $adb_args shell "'ls -d ${words[CURRENT]%/*}/*/ 2>/dev/null'")%/})
-  _describe -t remote-directory 'remote directories' directories -qS/ && ret=0
+(( $+functions[_adb_remote_files] )) ||
+_adb_remote_files() {
+  local dirsonly command="ls -d ${(S)words[CURRENT]/\/*//}*/ 2>/dev/null"
+  zparseopts -D -E '/=dirsonly'
+  (( ! $#dirsonly )) && command+="; ls -d ${words[CURRENT]}* 2>/dev/null"
+  local files; files=($(_call_program files $service $adb_args shell "'$command'"))
+  _multi_parts "$@" / files
 }
 
 (( $+functions[_adb_remote_commands] )) ||
 _adb_remote_commands() {
   local commands; commands=($(_call_program packages $service $adb_args shell "'IFS=:;for path_dir in \$PATH; do ls \$path_dir 2>/dev/null; done'"))
-  _describe -t remote-command 'remote command' commands && ret=0
+  _describe -t remote-commands 'remote command' commands && ret=0
 }
 
 (( $+functions[_adb_local_forward_specs] )) ||
@@ -339,7 +351,7 @@ _adb_remote_forward_specs() {
 _adb_sync_directories() {
   _alternative \
     'partitions:partition:((system:the\ /system\ partition data:the\ /data\ partition))' \
-    'directories:directory:_adb_remote_directories'
+    'directories:directory:_adb_remote_files -/'
 }
 
 (( $+functions[_adb_logcat_filter_specs] )) ||
