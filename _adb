@@ -268,7 +268,7 @@ _adb_remote_directories() {
 (( $+functions[_adb_remote_commands] )) ||
 _adb_remote_commands() {
   local commands; commands=($(_call_program packages $service $adb_args shell "'IFS=:;for path_dir in \$PATH; do ls \$path_dir 2>/dev/null; done'"))
-  _describe -t remote-command 'remote-command' commands && ret=0
+  _describe -t remote-command 'remote command' commands && ret=0
 }
 
 (( $+functions[_adb_local_forward_specs] )) ||
