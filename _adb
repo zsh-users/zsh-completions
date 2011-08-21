@@ -44,12 +44,10 @@
 
 
 typeset -A opt_args
-local context state line curcontext="$curcontext" adb_cmd
+local context state line curcontext="$curcontext" adb_args
 
 _adb() {
   local ret=1
-  
-  adb_cmd="$words[1]"
 
   _arguments -C \
     '(-e -s)-d[directs command to the only connected USB device, returns an error if more than one USB device is present]' \
@@ -60,7 +58,7 @@ _adb() {
     '*::arg:->args' \
   && ret=0
 
-  adb_cmd+=" ${(fkv)opt_args[(I)-d|-e|-s|-p]}"
+  adb_args="${(fkv)opt_args[(I)-d|-e|-s|-p]}"
 
   case "$state" in
     (args)
@@ -246,7 +244,7 @@ _adb_serial_numbers() {
 
 (( $+functions[_adb_packages] )) ||
 _adb_packages() {
-  local packages; packages=($(_call_program packages $adb_cmd shell 'ls /data/data 2>/dev/null'))
+  local packages; packages=($(_call_program packages $service $adb_args shell 'ls /data/data 2>/dev/null'))
   _multi_parts . packages
 }
 
@@ -263,13 +261,13 @@ _adb_host_colon_ports() {
 
 (( $+functions[_adb_remote_directories] )) ||
 _adb_remote_directories() {
-  local directories; directories=(${$(_call_program directories $adb_cmd shell "'ls -d ${words[CURRENT]%/*}/*/ 2>/dev/null'")%/})
+  local directories; directories=(${$(_call_program directories $service $adb_args shell "'ls -d ${words[CURRENT]%/*}/*/ 2>/dev/null'")%/})
   _describe -t remote-directory 'remote directories' directories -qS/ && ret=0
 }
 
 (( $+functions[_adb_remote_commands] )) ||
 _adb_remote_commands() {
-  local commands; commands=($(_call_program packages $adb_cmd shell "'IFS=:;for path_dir in \$PATH; do ls \$path_dir 2>/dev/null; done'"))
+  local commands; commands=($(_call_program packages $service $adb_args shell "'IFS=:;for path_dir in \$PATH; do ls \$path_dir 2>/dev/null; done'"))
   _describe -t remote-command 'remote-command' commands && ret=0
 }
 
@@ -319,7 +317,7 @@ _adb_remote_forward_specs() {
         _message -e devices 'remote device' && ret=0
       ;;
       (jdwp)
-        local pids; pids=($(_call_program pids $adb_cmd jdwp))
+        local pids; pids=($(_call_program pids $service $adb_args jdwp))
         _describe -t remote-pids 'remote pid' pids && ret=0
       ;;
     esac
