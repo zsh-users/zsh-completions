@@ -98,9 +98,14 @@ _adb() {
           case "$state" in
             (remote-command-args)
               if (( $+functions[_adb_remote_command_$words[1]_args] )); then
-                _adb_remote_command_$words[1]_args && ret=0
+                _adb_remote_command_$words[1] && ret=0
+                # TODO Write handlers for following commands:
+                #  * am (Activity Manager)
+                #  * pm (Package Manager)
+                # TODO Reuse existing compdefs for standard commands (ls, id, ifconfig, kill, etc) ?
+                #      How do we tell them to use _remote_ files/pids/users/etc ?
               else
-                _wanted remote-files expl 'remote file' _adb_remote_files && ret=0
+                _adb_remote_command_default && ret=0
               fi
             ;;
           esac
@@ -396,6 +401,11 @@ _adb_logcat_buffers() {
     'events:view the buffer containing events-related messages'
   )
   _describe -t log-buffers 'log buffer' buffers "$@" && ret=0
+}
+
+(( $+functions[_adb_remote_command_default] )) ||
+_adb_remote_command_default() {
+  _wanted remote-files expl 'remote file' _adb_remote_files
 }
 
 _adb "$@"
