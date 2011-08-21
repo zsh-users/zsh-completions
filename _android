@@ -64,27 +64,31 @@ _android() {
       curcontext="${curcontext%:*:*}:android-cmd-$words[1]:"
       case $words[1] in
         (list)
-          _arguments \
+          _arguments -C \
             '1: :_android_list_entities' \
+            '*::list-arg:->list-args' \
           && ret=0
-          # TODO Options:
-          # Action "list ":
-          #   No options
-          # 
-          # Action "list avd":
-          #   -0 --null     Terminates lines with \0 instead of \n (e.g. for xargs -0). Only used by --compact.
-          #   -c --compact  Compact output (suitable for scripts)
-          # 
-          # Action "list target":
-          #   -0 --null     Terminates lines with \0 instead of \n (e.g. for xargs -0) Only used by --compact.
-          #   -c --compact  Compact output (suitable for scripts)
-          # 
-          # Action "list sdk":
-          #   -o --obsolete   Installs obsolete packages
-          #      --proxy-host HTTP/HTTPS proxy host (overrides settings if defined)
-          #      --proxy-port HTTP/HTTPS proxy port (overrides settings if defined)
-          #   -s --no-https   Uses HTTP instead of HTTPS (the default) for downloads
-          #   -u --no-ui      Displays list result on console (no GUI) [Default: true]
+          case "$state" in
+            (list-args)
+              case $words[1] in
+                (avd|target)
+                  _arguments \
+                    '(-0 --null)'{-0,--null}'[terminate lines with \0 instead of \n (e.g. for xargs -0)]' \
+                    '(-c --compact)'{-c,--compact}'[compact output (suitable for scripts)]' \
+                  && ret=0
+                ;;
+                (sdk)
+                  _arguments \
+                    '(-o --obsolete)'{-o,--obsolete}'[install obsolete packages]' \
+                    '--proxy-host[HTTP/HTTPS proxy host (overrides settings if defined)]:proxy host:_hosts' \
+                    '--proxy-port[HTTP/HTTPS proxy port (overrides settings if defined)]:proxy port number' \
+                    '(-s --no-https)'{-s,--no-https}'[use HTTP instead of HTTPS (the default) for downloads]' \
+                    '(-u --no-ui)'{-u,--no-ui}'[display list result on console (no GUI)]' \
+                  && ret=0
+                ;;
+              esac
+            ;;
+          esac
         ;;
         (create)
           _arguments \
