@@ -51,9 +51,8 @@ _android() {
   
   android_cmd="$words[1]"
 
-  # TODO -h takes an optional command name
   _arguments -C -A "-*" \
-    '(- : *)'{-h,--help}'[get help on a specific command]' \
+    '(- : *)'{-h,--help}'[get help on a specific command]:command:_android_cmds' \
     '(-s --silent -v --verbose)'{-v,--verbose}'[verbose mode: errors, warnings and informational messages are printed]' \
     '(-v --verbose -s --silent)'{-s,--silent}'[silent mode: only errors are printed out]' \
     '1: :_android_cmds' \
