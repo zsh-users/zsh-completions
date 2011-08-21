@@ -175,14 +175,14 @@ _play_apps() {
 }
 
 _play_modules() {
-  local modules; modules=(${(ps:,:)${${${(S)${(f)$(_call_program modules play list-modules)}//\]*\[/,}%%\]*}##*\[}})
+  local modules; modules=(${(ps:,:)${${${(S)${(f)$(_call_program modules $service list-modules)}//\]*\[/,}%%\]*}##*\[}})
   _describe -t modules 'Play! module' modules "$@"
 }
 
 _play_modules_dash_versions() {
   local ret=1
   if compset -P '*-'; then
-    local versions; versions=(${(ps:,:)${${${${${(f)$(_call_program versions play list-modules)}##*${IPREFIX%-}\]}#*Versions:}%%"~"*}//[[:space:]]/}})
+    local versions; versions=(${(ps:,:)${${${${${(f)$(_call_program versions $service list-modules)}##*${IPREFIX%-}\]}#*Versions:}%%"~"*}//[[:space:]]/}})
     _describe -t module-versions "${IPREFIX%-} module versions" versions && ret=0
   else
     _wanted modules expl 'Play! module' _play_modules -qS- && ret=0
