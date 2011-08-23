@@ -251,8 +251,6 @@ _adb_product_names() {
 
 (( $+functions[_adb_serial_numbers] )) ||
 _adb_serial_numbers() {
-  # FIXME Wrong matches when adb was not started
-  # FIXME Wrong matches when device unreacheable
   local serial_numbers; serial_numbers=(${${(M)${(f)"$(_call_program devices $service devices)"}:#*device}%%[[:space:]]*}":connected device")
   [[ -n "$ANDROID_SERIAL" ]] && serial_numbers+=("$ANDROID_SERIAL:default value set in ANDROID_SERIAL environment variable")
   _describe -t serial-numbers 'serial number' serial_numbers "$@" && ret=0
@@ -280,17 +278,13 @@ _adb_remote_files() {
   local dirsonly command="ls -d ${(S)words[CURRENT]/\/*//}*/ 2>/dev/null"
   zparseopts -D -E '/=dirsonly'
   (( ! $#dirsonly )) && command+="; ls -d ${words[CURRENT]}* 2>/dev/null"
-  # FIXME Wrong matches when adb was not started
-  # FIXME Wrong matches when device unreacheable
-  local files; files=($(_call_program files $service $adb_args shell "'$command'"))
+  local files; files=(${${(ps:\r\n:)"$(_call_program files $service $adb_args shell "'$command'" 2>/dev/null)"}:#\**\*})
   _multi_parts "$@" / files
 }
 
 (( $+functions[_adb_remote_commands] )) ||
 _adb_remote_commands() {
-  # FIXME Wrong matches when adb was not started
-  # FIXME Wrong matches when device unreacheable
-  local commands; commands=($(_call_program packages $service $adb_args shell "'IFS=:;for path_dir in \$PATH; do ls \$path_dir 2>/dev/null; done'"))
+  local commands; commands=(${${(ps:\r\n:)"$(_call_program commands $service $adb_args shell "'IFS=:;for path_dir in \$PATH; do ls \$path_dir 2>/dev/null; done'" 2>/dev/null)"}:#\**\*})
   _describe -t remote-commands 'remote command' commands && ret=0
 }
 
@@ -340,9 +334,7 @@ _adb_remote_forward_specs() {
         _message -e devices 'remote device' && ret=0
       ;;
       (jdwp)
-        # FIXME Wrong matches when adb was not started
-        # FIXME Wrong matches when device unreacheable
-        local pids; pids=($(_call_program pids $service $adb_args jdwp))
+        local pids; pids=(${${(f)"$(_call_program pids $service $adb_args jdwp 2>/dev/null)"}:#\**\*})
         _describe -t remote-pids 'remote pid' pids && ret=0
       ;;
     esac
@@ -382,9 +374,7 @@ _adb_logcat_filter_specs() {
     )
     _describe -t log-priorities 'log priority' priorities "$@" && ret=0
   else
-    # FIXME Wrong matches when adb was not started
-    # FIXME Wrong matches when device unreacheable
-    local tags; tags=(${(u)${${(f)"$(_call_program tags $service $adb_args logcat -d)"}%%[[:space:]]#\(*}##*\/})
+    local tags; tags=(${(u)${${${(f)"$(_call_program tags $service $adb_args logcat -d 2>/dev/null)"}%%[[:space:]]#\(*}##*\/}:#\**\*})
     _describe -t log-tags 'log tag' tags -qS: "$@" && ret=0
   fi
   return ret
