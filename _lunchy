@@ -1,4 +1,18 @@
 #compdef lunchy
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for lunchy (https://github.com/mperham/lunchy).
+#
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Blake Walters (https://github.com/markupboy)
+#
+# ------------------------------------------------------------------------------
 
 local state line cmds ret=1
 
