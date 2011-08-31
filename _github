@@ -55,6 +55,84 @@ _github() {
     ;;
     (args)
       curcontext="${curcontext%:*:*}:github-cmd-$words[1]:"
+      case $words[1] in
+        (admin)
+          # TODO Not implemented
+          _message "${words[1]} command argument" && ret=0
+        ;;
+        (browse)
+          # TODO Not implemented
+          _message "${words[1]} command argument" && ret=0
+        ;;
+        (clone)
+          # TODO Not implemented
+          _message "${words[1]} command argument" && ret=0
+        ;;
+        (config)
+          # TODO Not implemented
+          _message "${words[1]} command argument" && ret=0
+        ;;
+        (create)
+          # TODO Not implemented
+          _message "${words[1]} command argument" && ret=0
+        ;;
+        (create-from-local)
+          # TODO Not implemented
+          _message "${words[1]} command argument" && ret=0
+        ;;
+        (fetch)
+          # TODO Not implemented
+          _message "${words[1]} command argument" && ret=0
+        ;;
+        (fetch_all)
+          # TODO Not implemented
+          _message "${words[1]} command argument" && ret=0
+        ;;
+        (fork)
+          # TODO Not implemented
+          _message "${words[1]} command argument" && ret=0
+        ;;
+        (home)
+          # TODO Not implemented
+          _message "${words[1]} command argument" && ret=0
+        ;;
+        (ignore)
+          # TODO Not implemented
+          _message "${words[1]} command argument" && ret=0
+        ;;
+        (info)
+          # TODO Not implemented
+          _message "${words[1]} command argument" && ret=0
+        ;;
+        (issues)
+          # TODO Not implemented
+          _message "${words[1]} command argument" && ret=0
+        ;;
+        (network)
+          # TODO Not implemented
+          _message "${words[1]} command argument" && ret=0
+        ;;
+        (open)
+          # TODO Not implemented
+          _message "${words[1]} command argument" && ret=0
+        ;;
+        (pull)
+          # TODO Not implemented
+          _message "${words[1]} command argument" && ret=0
+        ;;
+        (pull-request)
+          # TODO Not implemented
+          _message "${words[1]} command argument" && ret=0
+        ;;
+        (search)
+          # TODO Not implemented
+          _message "${words[1]} command argument" && ret=0
+        ;;
+        (track)
+          # TODO Not implemented
+          _message "${words[1]} command argument" && ret=0
+        ;;
+      esac
     ;;
   esac
 
