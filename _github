@@ -42,9 +42,6 @@ _1st_arguments=(
   'track:Track another users repository'
 )
 
-local expl
-local -a pkgs installed_pkgs
-
 _arguments \
   '*:: :->subcmds' && return 0
 
