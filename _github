@@ -5,13 +5,10 @@
 #
 #  Completion script for Github gem (https://github.com/defunkt/github-gem).
 #
-#  Source: https://github.com/robbyrussell/oh-my-zsh/blob/master/plugins/github
-#
 # ------------------------------------------------------------------------------
 # Authors
 # -------
 #
-#  * Sven Lito (https://github.com/svnlto)
 #  * Julien Nicoulaud (https://github.com/nicoulaj)
 #
 # ------------------------------------------------------------------------------
