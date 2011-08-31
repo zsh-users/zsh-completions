@@ -1,4 +1,4 @@
-#compdef github
+#compdef github gh
 # ------------------------------------------------------------------------------
 # Description
 # -----------
@@ -12,6 +12,7 @@
 # -------
 #
 #  * Sven Lito (https://github.com/svnlto)
+#  * Julien Nicoulaud (https://github.com/nicoulaj)
 #
 # ------------------------------------------------------------------------------
 # -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
