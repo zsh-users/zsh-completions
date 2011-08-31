@@ -56,9 +56,8 @@ _github() {
     (args)
       curcontext="${curcontext%:*:*}:github-cmd-$words[1]:"
       case $words[1] in
-        (admin)
-          # TODO Not implemented
-          _message "${words[1]} command argument" && ret=0
+        (admin|fetch|fetch_all|home|info)
+          _message 'no more arguments' && ret=0
         ;;
         (browse)
           # TODO Not implemented
@@ -80,14 +79,6 @@ _github() {
           # TODO Not implemented
           _message "${words[1]} command argument" && ret=0
         ;;
-        (fetch)
-          # TODO Not implemented
-          _message "${words[1]} command argument" && ret=0
-        ;;
-        (fetch_all)
-          # TODO Not implemented
-          _message "${words[1]} command argument" && ret=0
-        ;;
         (fork)
           # TODO Not implemented
           _message "${words[1]} command argument" && ret=0
@@ -97,10 +88,6 @@ _github() {
           _message "${words[1]} command argument" && ret=0
         ;;
         (ignore)
-          # TODO Not implemented
-          _message "${words[1]} command argument" && ret=0
-        ;;
-        (info)
           # TODO Not implemented
           _message "${words[1]} command argument" && ret=0
         ;;
