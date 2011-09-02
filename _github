@@ -81,8 +81,15 @@ _github() {
           && ret=0
         ;;
         (create)
-          # TODO Not implemented
-          _message "${words[1]} command argument" && ret=0
+          _arguments \
+            '1:repo name' \
+            '--markdown[create README.markdown]' \
+            '--mdown[create README.mdown]' \
+            '--private[create private repository]' \
+            '--rdoc[create README.rdoc]' \
+            '--rst[create README.rst]' \
+            '--textile[create README.textile]' \
+          && ret=0
         ;;
         (create-from-local)
           # TODO Not implemented
