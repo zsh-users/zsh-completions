@@ -175,8 +175,10 @@ _github() {
           && ret=0
         ;;
         (pull-request)
-          # TODO Not implemented
-          _message "${words[1]} command argument" && ret=0
+          _arguments \
+            '1: :_github_users' \
+            '2: :_github_branches' \
+          && ret=0
         ;;
         (search)
           # TODO Not implemented
