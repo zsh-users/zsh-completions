@@ -101,13 +101,10 @@ _github() {
             '1: :_github_user_slash_repos' \
           && ret=0
         ;;
-        (home)
-          # TODO Not implemented
-          _message "${words[1]} command argument" && ret=0
-        ;;
         (ignore)
-          # TODO Not implemented
-          _message "${words[1]} command argument" && ret=0
+          _arguments \
+            '1: :_github_network_commits' \
+          && ret=0
         ;;
         (issues)
           # TODO Not implemented
@@ -172,6 +169,12 @@ _github_user_slash_repos() {
     _wanted users expl 'user' _github_users -qS/ && ret=0
   fi
   return ret
+}
+
+(( $+functions[_github_network_commits] )) ||
+_github_network_commits() {
+  # TODO Not implemented (use 'github network commits' output)
+  _message -e commits 'commit'
 }
 
 _github "$@"
