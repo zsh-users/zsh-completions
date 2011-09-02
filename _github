@@ -97,8 +97,9 @@ _github() {
           && ret=0
         ;;
         (fork)
-          # TODO Not implemented
-          _message "${words[1]} command argument" && ret=0
+          _arguments \
+            '1: :_github_user_slash_repos' \
+          && ret=0
         ;;
         (home)
           # TODO Not implemented
@@ -159,6 +160,18 @@ _github_repos() {
 _github_branches() {
   # TODO Not implemented
   _message -e branches 'branch'
+}
+
+(( $+functions[_github_user_slash_repos] )) ||
+_github_user_slash_repos() {
+  local ret=1
+  if compset -P '*/'; then
+    # TODO Make it contextual to the user
+    _wanted repos expl 'repo' _github_repos && ret=0
+  else
+    _wanted users expl 'user' _github_users -qS/ && ret=0
+  fi
+  return ret
 }
 
 _github "$@"
