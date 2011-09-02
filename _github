@@ -201,8 +201,8 @@ _github() {
 
 (( $+functions[_github_users] )) ||
 _github_users() {
-  # TODO Not implemented
-  _message -e users 'user'
+  local users; users=(${(f)"$(_call_program users $service network list)"})
+  _describe -t users 'user' users "$@"
 }
 
 (( $+functions[_github_repos] )) ||
