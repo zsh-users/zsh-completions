@@ -71,7 +71,12 @@ _git-pulls() {
         (update)
           _message 'no more arguments' && ret=0
         ;;
-        (list|show|browse|merge)
+        (list)
+          _arguments \
+            '--reverse[list in reverse order]' \
+          && ret=0
+        ;;
+        (show|browse|merge)
           # TODO Not implemented
           _message 'arguments' && ret=0
         ;;
