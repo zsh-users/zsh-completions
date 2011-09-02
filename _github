@@ -107,14 +107,14 @@ _github() {
           && ret=0
         ;;
         (issues)
-          _arguments \
-            '1:cmd:->cmds' \
+          _arguments -C \
+            '1:issue-status:->issue-statuses' \
             '2:: :_github_users' \
             '--after[only show issues updated after a certain date]:date' \
             '--label[only show issues with a certain label]:label' \
           && ret=0
           case "$state" in
-            (cmds)
+            (issue-statuses)
               local statuses; statuses=(
                 'open:show open issues'
                 'closed:show closed issues'
@@ -124,8 +124,43 @@ _github() {
           esac
         ;;
         (network)
-          # TODO Not implemented
-          _message "${words[1]} command argument" && ret=0
+          _arguments -C \
+            '1:network-subcommand:->network-subcommands' \
+            '*::network-arg:->network-args' \
+            '(--after)--before[only show commits before a certain date]:date' \
+            '(--before)--after[only show commits after a certain date]:date' \
+            '--applies[filter commits to patches that apply cleanly]' \
+            '--author[filter commits on a email address of author]:author' \
+            '--cache[use the network data even if it'\''s expired]' \
+            '--common[show common branch point]' \
+            '--limit[only look through the first X heads - useful for really large projects]:number' \
+            '--noapply[filter commits to patches that do not apply cleanly]' \
+            '--nocache[do not use the cached network data]' \
+            '--project[filter commits on a certain project]:project' \
+            '--shas[only show shas]' \
+            '--sort[how to sort : date, branch, author]:sort type:((date\:sort\ by\ date\ \(default\) branch\:sort\ by\ branch author\:sort\ by\ author))' \
+            '--thisbranch[look at branches that match the current one]' \
+          && ret=0
+          case "$state" in
+            (network-subcommands)
+              local subcommands; subcommands=(
+                'web:open network in a web browser'
+                'list:list network members'
+                'fetch:fetch network members commits'
+                'commits:list network members commits'
+              )
+              _describe -t subcommands 'subcommand' subcommands && ret=0
+            ;;
+            (network-args)
+              case $words[1] in
+                (web)
+                  _arguments \
+                    '1: :_github_users' \
+                  && ret=0
+                ;;
+              esac
+            ;;
+          esac
         ;;
         (open)
           # TODO Not implemented
