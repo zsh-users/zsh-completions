@@ -66,8 +66,13 @@ _github() {
           && ret=0
         ;;
         (clone)
-          # TODO Not implemented
-          _message "${words[1]} command argument" && ret=0
+          _arguments \
+            '1: :_github_users' \
+            '2: :_github_repos' \
+            '3: :_files -/' \
+            '--search[search for user or repo and clone selected repository]:user or repo' \
+            '--ssh[clone using the git@github.com style url]' \
+          && ret=0
         ;;
         (config)
           # TODO Not implemented
@@ -132,6 +137,12 @@ _github() {
 _github_users() {
   # TODO Not implemented
   _message -e users 'user'
+}
+
+(( $+functions[_github_repos] )) ||
+_github_repos() {
+  # TODO Not implemented
+  _message -e repos 'repo'
 }
 
 (( $+functions[_github_branches] )) ||
