@@ -60,8 +60,10 @@ _github() {
           _message 'no more arguments' && ret=0
         ;;
         (browse)
-          # TODO Not implemented
-          _message "${words[1]} command argument" && ret=0
+          _arguments \
+            '1: :_github_users' \
+            '2: :_github_branches' \
+          && ret=0
         ;;
         (clone)
           # TODO Not implemented
@@ -124,6 +126,18 @@ _github() {
   esac
 
   return ret
+}
+
+(( $+functions[_github_users] )) ||
+_github_users() {
+  # TODO Not implemented
+  _message -e users 'user'
+}
+
+(( $+functions[_github_branches] )) ||
+_github_branches() {
+  # TODO Not implemented
+  _message -e branches 'branch'
 }
 
 _github "$@"
