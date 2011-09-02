@@ -96,8 +96,8 @@ _git-pulls() {
 
 (( $+functions[_git-pulls_pull_requests_numbers] )) ||
 _git-pulls_pull_requests_numbers() {
-  # TODO Not implemented
-  _message -e pull-request-numbers 'pull request number'
+  local pull_requests; pull_requests=(${${${(M)${(f)"$(_call_program users $service list)"}:#[[:digit:]]##[[:space:]]*}//:/\\:}/[[:space:]]##/:})
+  _describe -t pull-request-numbers 'pull request number' pull_requests "$@"
 }
 
 _git-pulls "$@"
