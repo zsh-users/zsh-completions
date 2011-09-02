@@ -163,8 +163,9 @@ _github() {
           esac
         ;;
         (open)
-          # TODO Not implemented
-          _message "${words[1]} command argument" && ret=0
+          _arguments \
+            '1: :_github_user_slash_repos' \
+          && ret=0
         ;;
         (pull)
           # TODO Not implemented
