@@ -107,8 +107,21 @@ _github() {
           && ret=0
         ;;
         (issues)
-          # TODO Not implemented
-          _message "${words[1]} command argument" && ret=0
+          _arguments \
+            '1:cmd:->cmds' \
+            '2:: :_github_users' \
+            '--after[only show issues updated after a certain date]:date' \
+            '--label[only show issues with a certain label]:label' \
+          && ret=0
+          case "$state" in
+            (cmds)
+              local statuses; statuses=(
+                'open:show open issues'
+                'closed:show closed issues'
+              )
+              _describe -t statuses 'status' statuses && ret=0
+            ;;
+          esac
         ;;
         (network)
           # TODO Not implemented
