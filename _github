@@ -181,8 +181,9 @@ _github() {
           && ret=0
         ;;
         (search)
-          # TODO Not implemented
-          _message "${words[1]} command argument" && ret=0
+          _arguments \
+            '1:query' \
+          && ret=0
         ;;
         (track)
           # TODO Not implemented
