@@ -92,8 +92,9 @@ _github() {
           && ret=0
         ;;
         (create-from-local)
-          # TODO Not implemented
-          _message "${words[1]} command argument" && ret=0
+          _arguments \
+            '--private[create private repository]' \
+          && ret=0
         ;;
         (fork)
           # TODO Not implemented
