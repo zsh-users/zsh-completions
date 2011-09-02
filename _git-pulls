@@ -68,7 +68,10 @@ _git-pulls() {
     (args)
       curcontext="${curcontext%:*:*}:git-pulls-cmd-$words[1]:"
       case $words[1] in
-        (update|list|show|browse|merge)
+        (update)
+          _message 'no more arguments' && ret=0
+        ;;
+        (list|show|browse|merge)
           # TODO Not implemented
           _message 'arguments' && ret=0
         ;;
