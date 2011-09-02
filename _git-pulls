@@ -83,8 +83,9 @@ _git-pulls() {
           && ret=0
         ;;
         (browse|merge)
-          # TODO Not implemented
-          _message 'arguments' && ret=0
+          _arguments \
+            '1: :_git-pulls_pull_requests_numbers' \
+          && ret=0
         ;;
       esac
     ;;
