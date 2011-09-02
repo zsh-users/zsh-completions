@@ -186,8 +186,11 @@ _github() {
           && ret=0
         ;;
         (track)
-          # TODO Not implemented
-          _message "${words[1]} command argument" && ret=0
+          _arguments \
+            '1:: :((remote))' \
+            '*: :_github_user_slash_repos' \
+            {--private,--ssh}'[use git@github.com: instead of git://github.com/]' \
+          && ret=0
         ;;
       esac
     ;;
