@@ -76,7 +76,13 @@ _git-pulls() {
             '--reverse[list in reverse order]' \
           && ret=0
         ;;
-        (show|browse|merge)
+        (show)
+          _arguments \
+            '1: :_git-pulls_pull_requests_numbers' \
+            '--full[use verbose output]' \
+          && ret=0
+        ;;
+        (browse|merge)
           # TODO Not implemented
           _message 'arguments' && ret=0
         ;;
@@ -85,6 +91,12 @@ _git-pulls() {
   esac
 
   return ret
+}
+
+(( $+functions[_git-pulls_pull_requests_numbers] )) ||
+_git-pulls_pull_requests_numbers() {
+  # TODO Not implemented
+  _message -e pull-request-numbers 'pull request number'
 }
 
 _git-pulls "$@"
