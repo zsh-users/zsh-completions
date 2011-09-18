@@ -131,6 +131,7 @@ _play() {
 
 # FIXME Completes only core commands, some modules add commands too (eg Maven). Where do we get them ?
 # FIXME Parse 'play help' and 'play help <command>' (for aliases) instead of hard-coding.
+(( $+functions[_mvn_plugin_goals] )) ||
 _play_cmds() {
   local commands; commands=(
     'antify:Create a build.xml file for this project'
@@ -170,15 +171,18 @@ _play_cmds() {
   _describe -t commands 'Play! command' commands "$@"
 }
 
+(( $+functions[_play_apps] )) ||
 _play_apps() {
   _wanted application expl 'Play! application directory' _files -/
 }
 
+(( $+functions[_play_modules] )) ||
 _play_modules() {
   local modules; modules=(${(ps:,:)${${${(S)${(f)$(_call_program modules $service list-modules)}//\]*\[/,}%%\]*}##*\[}})
   _describe -t modules 'Play! module' modules "$@"
 }
 
+(( $+functions[_play_modules_dash_versions] )) ||
 _play_modules_dash_versions() {
   local ret=1
   if compset -P '*-'; then
@@ -189,11 +193,13 @@ _play_modules_dash_versions() {
   fi
 }
 
+(( $+functions[_play_modules_list] )) ||
 _play_modules_list() {
   compset -P '*,'; compset -S ',*'
   _wanted module-list expl 'Play! modules list' _play_modules -qS,
 }
 
+(( $+functions[_play_colon_dirs_list] )) ||
 _play_colon_dirs_list() {
   compset -P '*:'; compset -S ':*'
   _wanted directories-list expl 'Directories list' _files -/ -qS:
