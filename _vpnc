@@ -42,11 +42,6 @@
 # ------------------------------------------------------------------------------
 
 
-_vpnc-connect() {
-  local confs
-  confs=(/etc/vpnc/*.conf(:t:s/\.conf/)) # FIXME /etc/vpnc/ is only accessible to root, how do we deal with this ?
-  _describe -t "confs" "conf" confs && return 0
-}
-
-_vpnc-connect "$@"
-
+# FIXME /etc/vpnc/ is only accessible to root, how do we deal with this ?
+local confs; confs=(/etc/vpnc/*.conf(:t:s/\.conf/))
+_describe -t confs 'VPNC conf' confs
