@@ -44,18 +44,14 @@
 # ------------------------------------------------------------------------------
 
 
-_jmeter() {
-  _arguments \
-    '(- 1 *)'{-h,--help}'[Show help options]' \
-    '-p[properties files]:properties file:_files -g "*.properties"' \
-    '-n[run in non-GUI mode]' \
-    '-t[name of JMX file that contains the Test Plan]:JMeter test plan file:_files -g "*.jmx"' \
-    '-l[name of JTL file to log sample results to]: :_files -g "*.jtl"' \
-    '-j[name of JMeter run log file]: :_files -g "*.log"' \
-    '-r[run the test in the servers specified by the JMeter property "remote_hosts"]' \
-    '-R[run the test in the specified remote servers]:remote servers list' \
-    '-H[proxy server hostname or ip address]: :_hosts' \
-    '-P[proxy server port]:number'
-}
-
-_jmeter "$@"
+_arguments \
+  '(- 1 *)'{-h,--help}'[Show help options]' \
+  '-p[properties files]:properties file:_files -g "*.properties"' \
+  '-n[run in non-GUI mode]' \
+  '-t[name of JMX file that contains the Test Plan]:JMeter test plan file:_files -g "*.jmx"' \
+  '-l[name of JTL file to log sample results to]: :_files -g "*.jtl"' \
+  '-j[name of JMeter run log file]: :_files -g "*.log"' \
+  '-r[run the test in the servers specified by the JMeter property "remote_hosts"]' \
+  '-R[run the test in the specified remote servers]:remote servers list' \
+  '-H[proxy server hostname or ip address]: :_hosts' \
+  '-P[proxy server port]:number'
