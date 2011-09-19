@@ -45,7 +45,7 @@
 
 
 _arguments \
-  '(- 1 *)'{-h,--help}'[Show help options]' \
+  '(- 1 *)'{-h,--help}'[show help message]' \
   '-p[properties files]:properties file:_files -g "*.properties"' \
   '-n[run in non-GUI mode]' \
   '-s[run in server mode]' \
@@ -55,4 +55,7 @@ _arguments \
   '-r[run the test in the servers specified by the JMeter property "remote_hosts"]' \
   '-R[run the test in the specified remote servers]:remote servers list' \
   '-H[proxy server hostname or ip address]: :_hosts' \
-  '-P[proxy server port]:number'
+  '-P[proxy server port]:number' \
+  '-N[nonproxy hosts]:regex' \
+  '-u[username for proxy authentication]:username:_users' \
+  '-a[password for proxy authentication]:password'
