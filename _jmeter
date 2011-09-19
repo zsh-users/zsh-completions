@@ -48,6 +48,7 @@ _arguments \
   '(- 1 *)'{-h,--help}'[Show help options]' \
   '-p[properties files]:properties file:_files -g "*.properties"' \
   '-n[run in non-GUI mode]' \
+  '-s[run in server mode]' \
   '-t[name of JMX file that contains the Test Plan]:JMeter test plan file:_files -g "*.jmx"' \
   '-l[name of JTL file to log sample results to]: :_files -g "*.jtl"' \
   '-j[name of JMeter run log file]: :_files -g "*.log"' \
