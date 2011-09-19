@@ -48,7 +48,7 @@ _arguments \
   '--generate-png[generate PNG file containing graph]:PNG file name:_files -g "*.png"' \
   '--generate-csv[generate CSV file containing graph data]:CSV file name:_files -g "*.csv"' \
   '--input-jtl[load data from specified JTL file]:JTL file:_files -g "*.jtl"' \
-  '--plugin-type[type of graph to use for results generation]:class' \
+  '--plugin-type[type of graph to use for results generation]:class:((AggregateReport ThreadsStateOverTime BytesThroughputOverTime HitsPerSecond LatenciesOverTime PerfMon ResponseCodesPerSecond ResponseTimesDistribution ResponseTimesOverTime ResponseTimesPercentiles ThroughputOverTime ThroughputVsThreads TimesVsThreads TransactionsPerSecond))' \
   '--width[set graph width]:graph width (pixels)' \
   '--height[set graph height]::graph height (pixels)' \
   '--granulation[granulation time for samples]:time (ms)' \
