@@ -133,7 +133,7 @@ _play() {
 
 # FIXME Completes only core commands, some modules add commands too (eg Maven). Where do we get them ?
 # FIXME Parse 'play help' and 'play help <command>' (for aliases) instead of hard-coding.
-(( $+functions[_mvn_plugin_goals] )) ||
+(( $+functions[_play_cmds] )) ||
 _play_cmds() {
   local commands; commands=(
     'antify:Create a build.xml file for this project'
