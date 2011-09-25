@@ -1,8 +1,20 @@
 #compdef heroku
-
-# Heroku Autocomplete plugin for Oh-My-Zsh
-# Requires: The Heroku client gem (https://github.com/heroku/heroku)
-# Author: Ali B. (http://awhitebox.com)
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for the Heroku client gem (https://github.com/heroku/heroku)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Ali B. (http://awhitebox.com)
+#
+# ------------------------------------------------------------------------------
+# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
+# vim: ft=zsh sw=2 ts=2 et
+# ------------------------------------------------------------------------------
 
 local -a _1st_arguments
 _1st_arguments=(
