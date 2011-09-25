@@ -1,0 +1,91 @@
+#compdef colorex
+# ------------------------------------------------------------------------------
+# Copyright (c) 2011 Github zsh-users - http://github.com/zsh-users
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of the zsh-users nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL ZSH-USERS BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for Colorex (https://launchpad.net/colorex).
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Julien Nicoulaud <julien.nicoulaud@gmail.com>
+#
+# ------------------------------------------------------------------------------
+# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
+# vim: ft=zsh sw=2 ts=2 et
+# ------------------------------------------------------------------------------
+
+
+typeset -A opt_args
+local context state line curcontext="$curcontext"
+
+_arguments \
+  '(- 1 *)'{-h,--help}'[print program usage]' \
+  '(- 1 *)--version[print program version]' \
+  '*'{-v,--verbose}'[verbose mode]' \
+  '--disable-stderr-filtering[disable STDERR filtering]' \
+  {-f,--config}'[colorex config file]:colorex config:_files -W "( $(pwd) ~/.colorex /usr/share/colorex/configs )" -g "*.cfg(\:r\:t)"' \
+  {-r+,--red}'[display pattern in red]' \
+  {-g+,--green}'[display pattern in green]' \
+  {-y+,--yellow}'[display pattern in yellow]' \
+  {-b+,--blue}'[display pattern in blue]' \
+  {-m+,--magenta}'[display pattern in magenta]' \
+  {-c+,--cyan}'[display pattern in cyan]' \
+  '--start-red[toggle foreground color to red at pattern]' \
+  '--start-green[toggle foreground color to green at pattern]' \
+  '--start-yellow[toggle foreground color to yellow at pattern]' \
+  '--start-blue[toggle foreground color to blue at pattern]' \
+  '--start-magenta[toggle foreground color to magenta at pattern]' \
+  '--start-cyan[toggle foreground color to cyan at pattern]' \
+  '--reset-color[reset foreground color at pattern]' \
+  {-R+,--bred}'[display pattern in red background]' \
+  {-G+,--bgreen}'[display pattern in green background]' \
+  {-Y+,--byellow}'[display pattern in yellow background]' \
+  {-B+,--bblue}'[display pattern in blue background]' \
+  {-M+,--bmagenta}'[display pattern in magenta background]' \
+  {-C+,--bcyan}'[display pattern in cyan background]' \
+  '--start-bred[toggle background color to red at pattern]' \
+  '--start-bgreen[toggle background color to green at pattern]' \
+  '--start-byellow[toggle background color to yellow at pattern]' \
+  '--start-bblue[toggle background color to blue at pattern]' \
+  '--start-bmagenta[toggle background color to magenta at pattern]' \
+  '--start-bcyan[toggle background color to cyan at pattern]' \
+  '--reset-bcolor[reset background color at pattern]' \
+  '--bold[display pattern in bold]' \
+  '--faint[display pattern with decreased intensity]' \
+  '--start-bold[toggle bold on at pattern]' \
+  '--start-faint[toggle faint on at pattern]' \
+  '--reset-intensity[reset text intensity at pattern]' \
+  '--italic[display pattern in italic]' \
+  '--underline[display pattern underlined]' \
+  '--underline-double[display pattern double underlined]' \
+  '--blink[display pattern blinking]' \
+  '--blink-rapid[display pattern blinking]' \
+  '--negative[display pattern swapping foreground and background]' \
+  '--hide[hide pattern]'
