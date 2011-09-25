@@ -1,0 +1,4 @@
+#compdef fab
+#autoload
+
+compadd `fab --shortlist`

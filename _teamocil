@@ -1,0 +1,4 @@
+#compdef teamocil
+#autoload
+
+compadd `ls ~/.teamocil | sed 's/.yml//'`
