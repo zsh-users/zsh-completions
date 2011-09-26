@@ -226,7 +226,7 @@ _github() {
 
 (( $+functions[_github_users] )) ||
 _github_users() {
-  local users; users=(${(f)"$(_call_program users $service network list)"})
+  local users; users=(${(f)"$(_call_program users $service network list 2>/dev/null)"})
   _describe -t users 'user' users "$@"
 }
 
@@ -256,8 +256,8 @@ _github_user_slash_repos() {
 
 (( $+functions[_github_network_commits] )) ||
 _github_network_commits() {
-  # TODO Not implemented (use 'github network commits' output)
-  _message -e commits 'commit'
+  local commits; commits=(${${(f)"$(_call_program commits $service network commits 2>/dev/null)"}%%[[:blank:]]*})
+  _describe -t commits 'commit' commits "$@"
 }
 
 _github "$@"
