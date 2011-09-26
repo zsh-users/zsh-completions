@@ -1,0 +1,36 @@
+#compdef zargs
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for zargs.
+#
+#  Source: http://smasher.org/tmp/_zargs.gz
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Atom Smasher <atom@smasher.org>
+#  * Sorin Ionescu <sorin.ionescu@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+
+_arguments -s -S \
+  '(--eof -e)'{--eof=,-e+}'[Change the end-of-input-args string from "--" to eof-str]:string' \
+  '(--exit -x)'{--exit,-x}'[Exit if the size (see --max-chars) is exceeded]' \
+  '(--interactive -p)'{--interactive,-p}'[Prompt before executing each command line]' \
+  '--help[Print this summary and exit]' \
+  '(--max-args -n)'{--max-args=,-n+}'[Use at most max-args arguments per command line]:integer' \
+  '(--max-chars -s)'{--max-chars=,-s+}'[Use at most max-chars characters per command line]:integer' \
+  '(--max-lines -l)'{--max-lines=,-l+}'[Use at most max-lines of the input-args per command line]:integer' \
+  '(--max-procs -P)'{--max-procs=,-P+}'[Run up to max-procs command lines in the background at once]:integer' \
+  '(--no-run-if-empty, -r)'{--no-run-if-empty,-r}'[Do nothing if there are no input arguments before the eof-str]' \
+  '(--null -0)'{--null,-0}'[Split each input-arg at null bytes, for xargs compatibility]' \
+  '(--replace -i)'{--replace=,-i+}'[Substitute replace-str in the initial-args by each initial-arg]:string' \
+  '(--verbose -t)'{--verbose,-t}'[Print each command line to stderr before executing it]' \
+  '--version[Print the version number and exit]' \
+  '(-):command: _command_names -e' \
+  '*::args: _normal'
+
