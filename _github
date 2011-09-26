@@ -226,8 +226,15 @@ _github() {
 
 (( $+functions[_github_users] )) ||
 _github_users() {
+  _alternative \
+    'users:user:_users' \
+    'github-network-users:github network user:_github_network_users'
+}
+
+(( $+functions[_github_network_users] )) ||
+_github_network_users() {
   local users; users=(${(f)"$(_call_program users $service network list 2>/dev/null)"})
-  _describe -t users 'user' users "$@"
+  _describe -t github-network-users 'github network user' users "$@"
 }
 
 (( $+functions[_github_repos] )) ||
