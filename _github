@@ -239,13 +239,11 @@ _github_network_users() {
 
 (( $+functions[_github_repos] )) ||
 _github_repos() {
-  # TODO Not implemented
   _message -e repos 'repo'
 }
 
 (( $+functions[_github_branches] )) ||
 _github_branches() {
-  # TODO Not implemented
   _message -e branches 'branch'
 }
 
@@ -253,7 +251,6 @@ _github_branches() {
 _github_user_slash_repos() {
   local ret=1
   if compset -P '*/'; then
-    # TODO Make it contextual to the user
     _wanted repos expl 'repo' _github_repos && ret=0
   else
     _wanted users expl 'user' _github_users -qS/ && ret=0
