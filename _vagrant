@@ -1,4 +1,4 @@
-#compdef vagrant 
+#compdef vagrant
 # ------------------------------------------------------------------------------
 # Description
 # -----------
@@ -62,6 +62,11 @@ __box_list ()
     _wanted application expl 'command' compadd $(command ls -1 $HOME/.vagrant/boxes 2>/dev/null| sed -e 's/ /\\ /g')
 }
 
+__vm_list ()
+{
+    _wanted application expl 'command' compadd $(command grep Vagrantfile -oe '^[^#]*\.vm\.define *:\([a-zA-Z0-9]\+\)' 2>/dev/null | cut -d: -f2)
+}
+
 __vagrant-box ()
 {
     local curcontext="$curcontext" state line
@@ -80,7 +85,7 @@ __vagrant-box ()
        (options)
            case $line[1] in
                (repackage|remove)
-                   _arguments ':feature:__box_list' 
+                   _arguments ':feature:__box_list'
                ;;
            esac
        ;;
@@ -109,12 +114,14 @@ case $state in
   (options)
     case $line[1] in
       (help)
-         _arguments ':feature:__task_list' 
+         _arguments ':feature:__task_list'
       ;;
 
       (box)
           __vagrant-box
       ;;
+      (up|provision|package|destroy|reload|ssh|halt|resume|status)
+	_arguments ':feature:__vm_list'
     esac
   ;;
 esac
