@@ -45,7 +45,7 @@ fi
 local curcontext=$curcontext state line ret=1
 declare -A opt_args
 
-_arguments -C $opts \
+_arguments -s -S -C $opts \
   $args && ret=0
 
 case $state in
