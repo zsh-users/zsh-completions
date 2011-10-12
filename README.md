@@ -13,14 +13,24 @@ See [issues](zsh-completions/issues) for details on each completion definition.
 
 Usage
 -----
+
+#### Using packages
+
+* ArchLinux: a [package is available in AUR](https://aur.archlinux.org/packages.php?ID=51001).
+
+#### Manual installation
+
 * Clone the repository:
 
         git clone git://github.com/zsh-users/zsh-completions.git
 
-* Include the directory in your `$fpath`, for example:
+* Include the directory in your `$fpath`, for example by adding in `~/.zshrc`:
 
         fpath=(path/to/zsh-completions $fpath)
 
+* You may have to force rebuild `zcompdump`:
+
+        rm -f ~/.zcompdump; compinit
 
 Contributing
 ------------
