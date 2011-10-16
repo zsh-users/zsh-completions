@@ -1,0 +1,402 @@
+#compdef equery euse eclean eclean-dist eclean-pkg epkginfo genpkgindex glsa-check revdep-rebuild
+# ------------------------------------------------------------------------------
+# Copyright (c) 2011 Github zsh-users - http://github.com/zsh-users
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of the zsh-users nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL ZSH-USERS BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for Gentoolkit (collection of Gentoo administrative scripts).
+#  (Means portage helper python-scrips and some usefull staff)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Unknown Preson
+#  * Some internet users and some IRC people from #gentoo-* and #zsh on FreeNode
+#  * Vadim A. Misbakh-Soloviev <mva@mva.name>
+#
+# ------------------------------------------------------------------------------
+# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
+# vim: ft=zsh sw=2 ts=2 et
+# ------------------------------------------------------------------------------
+#<app-portage/gentoolkit-0.2.4-rc3>
+#
+# Status:
+#     euse              (fully done)
+#     equery            (fully done)
+#     eclean*           (fully done)
+#     epkginfo          (fully done)
+#     genpkgindex       (fully done)
+#     glsa-check        (fully done)
+#     revdep-rebuild    (fully done)
+#     eread             (nothing todo)
+
+
+# XXX: shouldn't this go to _gentoo_package?
+_packages () {
+    if compset -P '(\\|)(>=|<=|<|>|=)'  ; then
+	    _gentoo_packages ${*/(#m)(installed|available)/${MATCH}_versions}
+    else
+	    _gentoo_packages $*
+    fi
+}
+
+
+_euse () {
+  local state tmp start_args suboptions_args
+  start_args=(
+    {'(--help)-h','(-h)--help'}'[show help]'
+    {'(--version)-v','(-v)--version'}'[show version]'
+    {'(--info)-i','(-i)--info'}'[show descriptions for the given useflags]'
+    {'(--active)-a','(-a)--active'}'[show currently active useflags and their origin]'
+    {'(--enable)-E','(-E)--enable'}'[enable the given useflags]'
+    {'(--disable)-D','(-D)--disable'}'[disable the given useflags]'
+    {'(--prune)-P','(-P)--prune'}'[show version]'
+  )
+  suboptions_args=(
+    {'(--global)-g','(-g)--global'}'[show only global use flags]'
+    {'(--local)-l','(-l)--local'}'[show only local use flags]'
+  )
+  if (( CURRENT == 2 ));then
+    _arguments -s $start_args
+  elif (( CURRENT == 3 ));then
+    case "$words[2]" in
+      -i|--info|-a|--active)
+	_arguments -s $suboptions_args \
+	  '*:useflags:_gentoo_packages useflag' && ret=0
+      ;;
+      -E|--enable)
+	_arguments \
+	  '*:useflags:_gentoo_packages useflag' && ret=0
+      ;;
+      -D|--disable)
+	_arguments \
+	  '*:active useflags:_gentoo_packages active_useflag' && ret=0
+    esac
+  else
+    _arguments \
+      '*:useflag:_gentoo_packages useflag' && ret=0
+  fi
+}
+
+
+_equery () {
+  # Based off of X/_xauth.
+  local state context line expl ret=1
+  local tmp cmd start_args common_args
+
+  start_args=(
+    {'(--nocolor)-C','(-C)--nocolor'}'[turns off colors]'
+    {'(--quiet)-q','(-q)--quiet'}'[minimal output]'
+    {'(--help)-h','(-h)--help'}'[show help]'
+    {'(--version)-V','(-V)--version'}'[show version]'
+  )
+
+  common_args=(
+    '(-i --installed -I --exclude-installed)'{-i,--installed}'[search installed packages]'
+    '(-I --exclude-installed -i --installed)'{-I,--exclude-installed}'[do not search installed packages]'
+    '(-p --portage)'{-p,--portage-tree}'[also search in portage tree]'
+    '(-o --overlay-tree)'{-o,--overlay-tree}'[also search in overlay tree]'
+  )
+
+
+  _arguments -s $start_args \
+    '*::command:->command' && ret=0
+
+  while [[ -n "$state" ]]; do
+    tmp="$state"
+    state=
+    case "$tmp" in
+    command)
+	if (( CURRENT == 1 )); then
+	    state=subcommands
+	else
+	    cmd="$words[1]"
+	    curcontext="${curcontext%:*:*}:equery-${cmd}:"
+	    case "$cmd" in
+	    belongs|b)
+		_arguments \
+		  '(-c --category)'{-c,--category}'[only search in specified category]:category:_gentoo_packages category' \
+		  '(-e --earlyout)'{-e,--earlyout}'[stop when first match found]' \
+		  '(-f --full-regex)'{-f,--full-regex}'[supplied query is a full regex]:pattern:' \
+		  '*:file:_files' && ret=0
+		;;
+	    check|k)
+		_arguments \
+		  ':portage:_packages installed' && ret=0
+		;;
+	    depends|d)
+		_arguments \
+		  '(-a --all-packages)'{-a,--all-packages}'[search in all available packages (slow)]:all packages:->packages' \
+		  '(-d --direct -D --indirect)'{-d,--direct}'[search direct dependencies only (default)]' \
+		  '(-d --direct -D --indirect)'{-D,--indirect}'[search indirect dependencies (VERY slow)]' \
+		  '*:package:_packages installed' && ret=0
+		;;
+	    depgraph|g)
+		_arguments \
+		  '(-U --no-useflags)'{-U,--no-useflags}'[do not show USE flags]' \
+		  '(-l --linear)'{-l,--linear}'[do not use fancy formatting]' \
+		  ':package:_packages installed' && ret=0
+		;;
+	    files|f)
+		_arguments \
+		 '--timestamp[append timestamp]' \
+		 '--md5sum[append md5sum]' \
+		 '--type[prepend file type]' \
+		 '--filter=[filter output]:filter(s):_values -s , '' dir obj sym dev fifo path conf cmd doc man info' \
+		 ':installed pkgname:_packages installed' && ret=0
+		;;
+	    hasuse|h)
+		_arguments \
+		  $common_args \
+		  ':useflag:_gentoo_packages useflag' && ret=0
+		;;
+	    list|l)
+		_arguments \
+		  $common_args \
+		  ': :_guard "^--*" pattern' && ret=0
+    		;;
+    	    size|s)
+		_arguments \
+		  '(-b --bytes)'{-b,--bytes}'[report size in bytes]' \
+		  ':package:_packages installed' && ret=0
+		;;
+	    which|w)
+		_arguments \
+		  ':portage:_packages available' && ret=0
+		;;
+	    uses|u)
+		 _arguments \
+		  {--all,-a}'[include non-installed packages]' \
+		  ":portage:_packages installed" && ret=0
+		;;
+    	    *)
+		_message 'command not found'
+		;;
+    	    esac
+	fi
+	;;
+    subcommands)
+	tmp=(
+	    {belongs,b}'[list all packages owning file(s)]'
+	    {check,k}'[check MD5sums and timestamps of package]'
+	    {depends,d}'[list all packages depending on specified package]'
+	    {depgraph,g}'[display a dependency tree for package]'
+	    {files,f}'[list files owned by package]'
+	    {hasuse,h}'[list all packages with specified useflag]'
+	    {list,l}'[list all packages matching pattern]'
+	    {size,s}'[print size of files contained in package]'
+	    {uses,u}'[display USE flags for package]'
+	    {which,w}'[print full path to ebuild for package]'
+	)
+	    _values 'equery command' $tmp && ret=0
+    ;;
+    esac
+  done
+}
+
+
+_eclean_wrapper () {
+    local global_opts pkg_opts dist_opts
+
+    global_opts=(
+	    '(-C --nocolor)'{-C,--nocolor}'[turns off colors]'
+	    '(-d,--destructive)'{-d,--destructive}'[only keep the minimum for a reinstallation]'
+	    '(-e,--exclude-file)'{-e,--exclude-file}'[path to the exclusion file]:filename:_files'
+	    '(-i,--interactive)'{-i,--interactive}'[ask confirmation before deletions]'
+	    '(-n,--package-names)'{-n,--package-names}'[protect all versions (when --destructive)]'
+	    '(-p,--pretend)'{-p,--pretend}'[only display what would be cleaned]'
+	    '(-q,--quiet)'{-q,--quiet}'[minimal output]'
+	    '(-t,--time-limit)'{-t,--time-limit}'[don’t delete files modified since <time>]:time:_eclean_time'
+	    '(: -)'{-h,--help}'[show help]'
+	    '(: -)'{-V,--version}'[show version]'
+    )
+    dist_opts=(
+        '(-s,--size-limit)'{-s,--size-limit}'[do not delete disfiles bigger than <size>]:size:_eclean_size'
+        '(-f,--fetch-restricted)'{-f,--fetch-restricted}'[protect fetch-restricted files]'
+    )
+    # XXX: If you add options here make sure that it'll work.
+    #       since there isn't any option *right* now, $pkg_opts
+    #       is never used.
+    pkg_opts=()
+
+    # check which kind of eclean command we run.
+    case "$words[1]" in
+        eclean-pkg)
+            _arguments -s $global_opts $pkg_opts &&
+                return 0
+        ;;
+        eclean-dist)
+            _arguments -s $global_opts $dist_opts &&
+                return 0
+        ;;
+        eclean)
+        # eclean. complete only specifics options if an action has been given,
+        # global_opts and packages|distfiles otherwhise.
+            if (( $words[(I)(packages)] )); then
+		    # Currently no options so return 0
+                #_values "packages options" $pkg_opts &&
+                    return 0
+            elif (( $words[(I)(distfiles)] )); then
+                _values "distfiles options"  $dist_opts &&
+                    return 0
+            else
+                _arguments -s $global_opts
+                # complete packages|distfiles only if CURRENT-1 don't need an arg
+                if [[ ! $words[CURRENT-1] =~ -(e|-exclude-file|t|-time-limit|s|-size-limit|h|-help|v|-version) ]]; then
+                    _values 'eclean command'                                \
+                        'packages[clean outdated binary packages]'          \
+                        'distfiles[clean outdated packages sources files]' &&
+                        return 0
+                fi
+            fi
+        ;;
+    esac
+}
+_eclean_time () {
+    # adapted from _chmod
+    compset -P '*'
+    suf=( -S '' )
+    _alternative -O suf \
+        'number:number:(0 1 2 3 4 5 6 7 8 9)' \
+        'time_unit:time_unit:((y\:year m\:month w\:week d\:day h\:hour))' &&
+        return 0
+}
+_eclean_size () {
+    # adapted from _chmod
+    compset -P '*'
+    suf=( -S '' )
+    _alternative -O suf \
+        'number:number:(0 1 2 3 4 5 6 7 8 9)' \
+        'time_unit:time_unit:((G\:gigabytes M\:megabytes K\:kilobytes B\:bytes))' &&
+        return 0
+}
+
+
+_epkginfo () {
+    if (( CURRENT == 2 )); then
+        _arguments -s '*:package:_gentoo_packages available'
+    fi
+}
+
+
+_genpkgindex () {
+    _arguments -s \
+	    '(: -)'{-h,--help}'[Display help and exit]' \
+	    '(-h --help -q --quiet -v --verbose)'{-q,--quiet}'[Be quiet]'                                       \
+	    '(-h --help -q --quiet -v --verbose)'{-v,--verbose}'[Be verbose]'                                   \
+	    '(-h --help -c --compress)'{-c,--compress}'[Compresses the generated metadata with bzip2]'          \
+	    '(-h --help -P --pkgdir)'{-P,--pkgdir}'[Set the base location of the binary packages (default $PKGDIR)]:file:_files'
+}
+
+
+_glsa-check () {
+    local actions
+
+	actions=(-l --list -d --dump --print -t --test -p --pretend -f --fix -i --inject -h --help -V --version -m --mail)
+
+    _arguments -s \
+	    "($actions)"{-l,--list}'[list all unapplied GLSA]:glsa_id:_glsa_id'                             \
+	    "($actions)"{-d,--dump,--print}'[show all information about the given GLSA]:glsa_id:_glsa_id'   \
+	    "($actions)"{-t,--test}'[test if this system is affected by the given GLSA]:glsa_id:_glsa_id'   \
+	    "($actions)"{-p,--pretend}'[show the necessary commands to apply this GLSA]:glsa_id:_glsa_id'   \
+	    "($actions)"{-f,--fix}'[try to auto-apply this GLSA (experimental)]:glsa_id:_glsa_id'           \
+	    "($actions)"{-i,--inject}'[inject the given GLSA into the checkfile]:glsa_id:_glsa_id'          \
+	    '(-n --nocolor)'{-n,--nocolor}'[disable colors (option)]'                                       \
+	    '(: -)'{-h,--help}'[Show help message]'                                                         \
+	    '(: -)'{-V,--version}'[some information about this tool]'                                       \
+	    '(-v --verbose)'{-v,--verbose}'[print more messages (option)]'                                  \
+	    '(-c --cve)'{-c,--cve}'[show CAN ids in listing mode (option)]'                                 \
+	    "($actions)"{-m,--mail}'[send a mail with the given GLSAs to the administrator]:glsa_id:_glsa_id'
+}
+# glsa-list can contain an arbitrary number of GLSA ids,
+# filenames containing GLSAs or the special identifiers
+# 'all', 'new' and 'affected'
+_glsa_id () {
+# XXX: we'll avoid displaying GLSA ids, because the ratio use/noise
+# will be low. May be we should display only the X previous GLSA,
+# or GLSA ids of the X last month.
+#
+# start to look at /usr/lib/gentoolkit/pym/glsa.py if GLSA_DIR is still
+# PORTDIR + "metadata/glsa/"
+# and then get the list (it's only xml files in GLSA_DIR, easy!)
+
+    compadd 'all' 'new' 'affected'
+    _files
+}
+
+
+_revdep-rebuild () {
+    if (( $words[(I)(--)] )); then
+    # here it's no more revdep-rebuild options, but emerge options that are called
+        _arguments -s '*:portage:_portage --emerge $@' && return 0
+    fi
+
+    _arguments -s \
+        '(-C --nocolor)'{-C,--nocolor}'[Turn off colored output]' \
+        '(-d --debug)'{-d,--debug}'[Print way too much information (uses bash set -xv)]' \
+        '(-e --exact)'{-e,--exact}'[Emerge based on exact package version]' \
+        '(: -)'{-h,--help}'[Print help]' \
+        '(-i --ignore)'{-i,--ignore}'[Ignore temporary files from previous runs]' \
+        '(-k --keep-temp)'{-k,--keep-temp}'[Do not delete temporary files on exit]' \
+        '(-L --library)'{-L,--library}'[<NAME> Emerge existing packages that use the library with NAME]:file:_files' \
+        '(-l --no-ld-path)'{-l,--no-ld-path}'[Do not set LD_LIBRARY_PATH]' \
+        '(-o --no-order)'{-o,--no-order}'[Do not check the build order (Saves time, but may cause breakage)]' \
+        '(-p --pretend)'{-p,--pretend}'[Do a trial run without actually emerging anything (also passed to emerge command)]' \
+        '(-P --no-progress)'{-P,--no-progress}'[Turn off the progress meter]' \
+        '(-q --quiet)'{-q,--quiet}'[Be less verbose (also passed to emerge command)]' \
+        '(-v --verbose)'{-v,--verbose}'[Be more verbose (also passed to emerge command)]' \
+        '(-u --no-util)'{-u,--no-util}'[<UTIL> Do not use features provided by UTIL]:file:_files'
+        # XXX: does someone really use -u|--no-util option?
+        #       we can check packages installed (like portage-utils etc) to see
+        #       which "UTIL" is avaiable.
+}
+
+
+case "$service" in
+    euse)
+        _euse "$@" && return 0
+    ;;
+    equery)
+        _equery "$@" && return 0
+    ;;
+    eclean*)
+        _eclean_wrapper "$@" && return 0
+    ;;
+    epkginfo)
+        _epkginfo "$@" && return 0
+    ;;
+    genpkgindex)
+        _genpkgindex "$@" && return 0
+    ;;
+    glsa-check)
+        _glsa-check "$@" && return 0
+    ;;
+    revdep-rebuild)
+        _revdep-rebuild "$@" && return 0
+    ;;
+esac

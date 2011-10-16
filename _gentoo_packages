@@ -1,0 +1,221 @@
+#autoload
+# ------------------------------------------------------------------------------
+# Copyright (c) 2011 Github zsh-users - http://github.com/zsh-users
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of the zsh-users nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL ZSH-USERS BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  functions for gentoo packages
+#  inspired by _deb_packages
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Unknown Person
+#  * Some internet users and some IRC people from #gentoo-* and #zsh on FreeNode
+#  * Vadim A. Misbakh-Soloviev <mva@mva.name>
+#
+# ------------------------------------------------------------------------------
+# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
+# vim: ft=zsh sw=2 ts=2 et
+# ------------------------------------------------------------------------------
+#Usage: _gentoo_packages installed|available|installed_versions|available_versions|binary|category|useflag|overlays|sets|licenses
+
+# List installed overlays
+_gentoo_packages_overlays () {
+    for f in /etc/make.conf /etc/make.globals; do
+        [[ -z "$PORTDIR_OVERLAY" && -r "$f" ]] &&
+            local PORTDIR_OVERLAY="`. "$f" 2>/dev/null; echo ${PORTDIR_OVERLAY}`"
+    done
+    compadd $=PORTDIR_OVERLAY
+}
+
+#List the sets
+_gentoo_packages_sets() {
+    local sets
+    [[ -f /usr/share/portage/config/sets.conf ]] && sets=(${${${(M)${(f)"$(</usr/share/portage/config/sets.conf)"}##\[*}/\[/@}/\]})
+    [[ -f /etc/portage/sets.conf ]] && sets=($sets ${${${(M)${(f)"$(</etc/portage/sets.conf)"}##\[*}/\[/@}/\]})
+    compadd $sets
+}
+
+#List licenses
+_gentoo_packages_licenses () {
+    local licenses var PORTDIR
+        var=PORTDIR 
+        [[ -z ${(P)var} && -r /etc/make.conf ]] &&
+            local $var="`. /etc/make.conf 2>/dev/null; echo ${(P)var}`"
+        [[ -z ${(P)var} && -r /etc/make.globals ]] &&
+            local $var="`. /etc/make.globals 2>/dev/null; echo ${(P)var}`"
+	licenses=($PORTDIR/licenses/*(:t))
+	compadd $licenses
+}
+
+# Completion function to show useflags.
+_gentoo_packages_useflag(){
+    local flags var PORTDIR
+	var=PORTDIR
+	[[ -z ${(P)var} && -r /etc/make.conf ]] &&
+	    local $var="`. /etc/make.conf 2>/dev/null; echo ${(P)var}`"
+	[[ -z ${(P)var} && -r /etc/make.globals ]] &&
+	    local $var="`. /etc/make.globals 2>/dev/null; echo ${(P)var}`"
+
+    flags=( ${${(M)${(f)"$(<$PORTDIR/profiles/use.desc)"}:#* - *}%% - *}
+    ${${${(M)${(f)"$(<$PORTDIR/profiles/use.local.desc)"}#* - *}%% - *}#*:} )
+    compadd $flags
+}
+
+_gentoo_packages_active_useflag(){
+  local flags var USE
+  var=USE
+  [[ -z ${(P)var} && -r /etc/make.conf ]] &&
+    local $var="`. /etc/make.conf 2>/dev/null; echo ${(P)var}`"
+  flags=(${${${=USE}%-*}%\\*})
+  compadd $flags
+}
+_gentoo_packages_category(){
+    local var trees category
+    for var in PORTDIR PORTDIR_OVERLAY ; do
+	[[ -z ${(P)var} && -r /etc/make.conf ]] &&
+	    local $var="`. /etc/make.conf 2>/dev/null; echo ${(P)var}`"
+	[[ -z ${(P)var} && -r /etc/make.globals ]] &&
+	    local $var="`. /etc/make.globals 2>/dev/null; echo ${(P)var}`"
+    done
+    trees=($PORTDIR $=PORTDIR_OVERLAY)
+    category=( $trees/*-*(/:t) )
+    _wanted cat_packages expl 'category' compadd "$@" $category
+}
+
+_gentoo_packages_installed(){
+ local installed_dir installed_portage installed_list expl
+    installed_dir="/var/db/pkg"
+    installed_portage=($installed_dir/*-*/*)
+
+    installed_pkgname=( ${${installed_portage:t}%%-[0-9]*} )
+    _wanted packages expl 'category/package' compadd "$@" ${installed_pkgname}
+
+    installed_list=( ${${installed_portage#$installed_dir/}%%-[0-9]*} )
+    _wanted cat_packages expl 'category/package' _multi_parts "$@" / installed_list
+
+}
+
+_gentoo_packages_installed_versions(){
+    local installed_list installed_portage expl
+
+    installed_portage=(/var/db/pkg/*-*/*)
+    _wanted packages expl 'package' compadd "$@" ${installed_portage:t}
+
+    installed_list=( ${installed_portage##*/pkg/} )
+    _wanted cat_packages expl 'category/package' _multi_parts "$@" / installed_list
+}
+
+_gentoo_packages_available_pkgnames_only(){
+    local var trees packages
+
+    for var in PORTDIR PORTDIR_OVERLAY ; do
+	[[ -z ${(P)var} && -r /etc/make.conf ]] &&
+	    local $var="`. /etc/make.conf 2>/dev/null; echo ${(P)var}`"
+	[[ -z ${(P)var} && -r /etc/make.globals ]] &&
+	    local $var="`. /etc/make.globals 2>/dev/null; echo ${(P)var}`"
+    done
+    trees=( $PORTDIR $=PORTDIR_OVERLAY)
+
+    packages=( $trees/*-*/*(:t) )
+    _wanted packages expl 'package' compadd  - "${(@)packages}"
+}
+
+_gentoo_packages_available(){
+    local var trees category packages pkg expl
+
+    for var in PORTDIR PORTDIR_OVERLAY ; do
+	[[ -z ${(P)var} && -r /etc/make.conf ]] &&
+	    local $var="`. /etc/make.conf 2>/dev/null; echo ${(P)var}`"
+	[[ -z ${(P)var} && -r /etc/make.globals ]] &&
+	    local $var="`. /etc/make.globals 2>/dev/null; echo ${(P)var}`"
+    done
+    trees=( $PORTDIR $=PORTDIR_OVERLAY)
+    category=( $trees/*-*(/:t) )
+
+    packages=( $trees/*-*/*(:t) )
+    _wanted packages expl 'package' compadd  - "${(@)packages}"
+
+    # Complete cat/pkg. _multi_parts is much to slow for such a large task,
+    # _sep_parts removes the dash from gnome-<tab>, and _path_files wants to
+    # complete cat/pkg/files (if "files" is ignored with -F, miscfiles, etc...
+    # don't get completed).
+    if [[ $PREFIX != */* ]] ; then
+	_wanted cat_packages expl 'category/package' compadd -S '/' $category
+    else
+	compset -P '*/'
+	pkg=( $trees/$IPREFIX/*(:t) )
+	_wanted cat_packages expl 'category/package' compadd $pkg
+    fi
+}
+
+_gentoo_packages_available_versions(){
+    local var overlay_ebuilds portage_ebuilds expl trees category
+
+    for var in PORTDIR PORTDIR_OVERLAY ; do
+	[[ -z ${(P)var} && -r /etc/make.conf ]] &&
+	    local $var="`. /etc/make.conf 2>/dev/null; echo ${(P)var}`"
+	[[ -z ${(P)var} && -r /etc/make.globals ]] &&
+	    local $var="`. /etc/make.globals 2>/dev/null; echo ${(P)var}`"
+    done
+    trees=($PORTDIR $=PORTDIR_OVERLAY)
+    category=( $trees/*-*(/:t) )
+    typeset -U category
+
+    if [[  $#PREFIX -ge 1  &&  -z $words[(r)(--inject|-i)]  ]] ; then
+	overlay_ebuilds=($=PORTDIR_OVERLAY/*-*/${PREFIX%%-[0-9]#*}*/*.ebuild(:t:r) )
+	portage_ebuilds=($PORTDIR/metadata/cache/*-*/${PREFIX%%-[0-9]#*}*(:t))
+	_wanted packages expl 'package'  compadd  $portage_ebuilds $overlay_ebuilds
+    fi
+    pkg=( $trees/${PREFIX%%/*}/*/*.ebuild(:t:r) )
+    _wanted cat_packages expl 'category/package' _sep_parts category / pkg
+}
+
+#Function to show tbz2 files available
+_gentoo_packages_binary() {
+    [[ -z $PKGDIR && -r /etc/make.conf ]] &&
+	local PKGDIR="`. /etc/make.conf 2>/dev/null; echo $PKGDIR`"
+    [[ -z $PKGDIR && -r /etc/make.globals ]] &&
+	local PKGDIR="`. /etc/make.globals 2>/dev/null; echo $PKGDIR`"
+
+    # this doesn't take care of ${PORTAGE_BINHOST}. If Gentoo official
+    # binary mirror will be available we should rewrite it accordingly.
+    _path_files -g \*.tbz2 -W "$PKGDIR/All"
+}
+
+_gentoo_packages () {
+	local command="$argv[$#]" 
+	[[ "$command" == (sets|licenses|installed(_versions|)|available(_versions|)|binary|category|(active_|)useflag|available_pkgnames_only|overlays) ]] || {
+		_message "unknown command: $command"
+		return 1
+	}
+	_gentoo_packages_$command
+}
+
+_gentoo_packages "$@"

@@ -1,0 +1,160 @@
+#compdef rc-update rc-status rc rc-service
+# ------------------------------------------------------------------------------
+# Copyright (c) 2011 Github zsh-users - http://github.com/zsh-users
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of the zsh-users nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL ZSH-USERS BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for Gentoo Baselayout v2 and OpenRC v0.8 (init system).
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Unknown Person
+#  * Some internet users and some IRC people from #gentoo-* and #zsh on FreeNode
+#  * Vadim A. Misbakh-Soloviev <mva@mva.name>
+#
+# ------------------------------------------------------------------------------
+# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
+# vim: ft=zsh sw=2 ts=2 et
+# ------------------------------------------------------------------------------
+#<sys-apps/baselayout-1.12.11.1>
+#
+# Status:
+#     rc        (fully done)
+#     rc-update (fully done)
+#     rc-status (fully done)
+#     rc-service (to be improved)
+
+
+local gentoo_runlevels
+gentoo_runlevels=(/etc/runlevels/*(:t))
+
+
+# Stuff for rc
+_rc () {
+	if (( CURRENT == 2 )); then
+	    _values 'runlevels' $gentoo_runlevels
+	fi
+}
+
+_rc_list_service () {
+    local servicelist
+    servicelist=(${(f)"$(/sbin/rc-service -Cl 2>/dev/null)"})
+    _values 'services' $servicelist
+}
+# Stuff for rc-service
+_rc-service () {
+    servicelist=${(f)"$(/sbin/rc-service -Cl 2>/dev/null)"}
+    if (( CURRENT == 2 ));then
+        _arguments -s                                                                      \
+            '(-e --exists)'{-e,--exists}"[tests if the service exists or not]"             \
+            '(-l --list)'{-l,--list}'[list all available services]'                        \
+            '(-r --resolve)'{-r,--resolve}'[resolve the service name to an init script]'   \
+            '(-C --nocolor)'{-C,--nocolor}'[Disable color output]'                         \
+            '(-v --verbose)'{-v,--verbose}'[Run verbosely]'                                \
+            '(-q --quiet)'{-q,--quiet}'[Run quietly]'
+        _rc_list_service
+    else
+        case $words[2] in
+            -e|--exists|-r|--resolve)
+                (( CURRENT > 3 )) && return 0
+                _rc_list_service
+            ;;
+            -*)
+                return 0
+            ;;
+            *)
+                _values "action" stop start restart describe zap
+            ;;
+        esac
+    fi
+}
+
+# Stuff for rc-status
+_rc-status () {
+    _arguments -s                                                                   \
+	    '(-a --all)'{-a,--all}'[Show services at all run levels]'                   \
+	    '(-l --list)'{-l,--list}'[Show list of run levels]'                         \
+	    '(-nc --nocolor)'{-nc,--nocolor}'[Disable color output]'                    \
+	    '(-s --servicelist)'{-s,--servicelist}'[Show all services]'                 \
+	    '(-u --unused)'{-u,--unused}'[Show services not assigned to any run level]'
+
+	_values 'runlevels' $gentoo_runlevels
+}
+
+
+# Stuff for rc-update
+_rc-update () {
+    local used_init
+
+    # FIXME: ${=${(f)"$(rc-update show 2>/dev/null)"}% |*} yield the same result (for me).
+    #           we probably don't need any more the (M) matcher part.
+    used_init=(${=${(M)${(f)"$(/sbin/rc-update show 2>/dev/null)"}:#*|*[a-z]*}% |*})
+
+    if (( CURRENT == 2 )); then
+       _values 'rc-update actions'                      \
+           'add[Add script to a runlevel]'              \
+           'del[Delete script from a runlevel]'         \
+           'show[Show scripts lanched at a runlevel]'   \
+           '-a[Add script to a runlevel]'               \
+           '-d[Delete script from a runlevel]'          \
+           '-s[Show scripts lanched at a runlevel]'
+    elif (( CURRENT == 3 )); then
+	    case "$words[2]" in
+		    add|-a)
+		         _values 'scripts' /etc/init.d/*~*.sh(:t)
+		    ;;
+		    del|-d)
+		        _values 'scripts' $used_init
+		    ;;
+		    show|-s)
+		        _values 'runlevels' $gentoo_runlevels   \
+                    '-v[Show all init scripts]'         \
+                    '--verbose[Show all init scripts]'
+		    ;;
+	    esac
+    elif (( CURRENT == 4 )); then
+	    _values 'runlevels' $gentoo_runlevels
+    fi
+}
+
+
+case "$service" in
+	rc-update)
+		_rc-update "$@" && return 0
+	;;
+    rc-service)
+        _rc-service "$@" && return 0
+    ;;
+	rc-status)
+		_rc-status "$@" && return 0
+	;;
+	rc)
+		_rc "$@" && return 0
+	;;
+esac

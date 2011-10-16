@@ -1,0 +1,199 @@
+#compdef eselect
+# ------------------------------------------------------------------------------
+# Copyright (c) 2011 Github zsh-users - http://github.com/zsh-users
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of the zsh-users nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL ZSH-USERS BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for Eselect (symlink manager for multiversioning
+#  and multibranding support for some libraries and binaries).
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Unknown Person
+#  * Some internet users and some IRC people from #gentoo-* and #zsh on FreeNode
+#  * Vadim A. Misbakh-Soloviev <mva@mva.name>
+#
+# ------------------------------------------------------------------------------
+# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
+# vim: ft=zsh sw=2 ts=2 et
+# ------------------------------------------------------------------------------
+#<app-admin/eselect-1.0.11>
+#
+
+
+_eselect_env () {
+    if (( $words[(I)(update)] )); then
+        _values 'update options' \
+            'makelinks[force updating of links]' \
+            'noldconfig[Do not alter the ld.so cache or configuration]' && return 0
+    fi
+    _values 'env options' $stdopts[@] \
+        'update[Collect environment variables from all scripts]' && return 0
+}
+
+_eselect_binutils () {
+    local binutilslist
+        if (( $words[(I)(set)] )); then
+            binutilslist=(${${${(M)${(f)"$(eselect --no-color binutils list)"}## *}// \**/}//(  \[*\]   |  \[*\]  )/})
+            _values 'available binutils version' $binutilslist[@] && return 0
+        fi
+        _values 'binutils options' $stdopts[@] \
+            'list[List all installed version of binutils]' \
+            'show[Print the currently active binutils version]' \
+            'set[Activate one of the installed binutils]' && return 0
+}
+
+_eselect_kernel () {
+    local kernellist
+        if (( $words[(I)(set)] )); then
+            kernellist=(${${${(M)${(f)"$(eselect --no-color kernel list)"}## *}// \**/}//(  \[*\]   |  \[*\]  )/})
+            _values 'available kernel version' $kernellist[@] && return 0
+        fi
+        _values 'kenrel options' $stdopts[@] \
+            'list[List available kernel symlink targets]' \
+            'show[Show the current kernel symlink]' \
+            'set[Set a new kernel symlink target]' && return 0
+}
+_eselect_ctags () {
+    local ctagslist
+        if (( $words[(I)(set)] )); then
+            ctagslist=(${${${(M)${(f)"$(eselect --no-color ctags list)"}## *}// \**/}//(  \[*\]   |  \[*\]  )/})
+            _values 'available ctags version' $ctagslist[@] && return 0
+        fi
+        _values 'ctags options' $stdopts[@] \
+            'list[List available ctags symlink targets]' \
+            'show[Show the current target of the ctags symlink]' \
+            'update[Automatically update the ctags symlink]' \
+            'set[Set a new ctags symlink target]' && return 0
+}
+_eselect_profile () {
+    local profilelist
+        if (( $words[(I)(set)] )); then
+            profilelist=(${${${(M)${(f)"$(eselect --no-color profile list)"}## *}// \**/}//(  \[*\]   |  \[*\]  )/})
+            _values -w 'available profiles' $profilelist[@] \
+                '--force[Forcibly set the symlink]' && return 0
+        fi
+        _values 'profile options' $stdopts[@] \
+            'list[List available profile symlink targets]' \
+            'show[Show the current make.profile symlink]' \
+            'set[Set a new profile symlink target]' && return 0
+}
+_eselect_fontconfig () {
+    local fclistenabled fclistdisabled
+        if (( $words[(I)(enable)] )); then
+            fclistdisabled=(${${${${(M)${(f)"$(eselect --no-color fontconfig list)"}## *}#*\*}// \**/}//(  \[*\]   |  \[*\]  )/})
+            _values -w '.conf to enable' $fclistdisabled[@] && return 0
+        elif (( $words[(I)(disable)] )); then
+            fclistenabled=(${${${(M)${(M)${(f)"$(eselect --no-color fontconfig list)"}## *}#*\*}// \**/}//(  \[*\]   |  \[*\]  )/})
+            _values -w '.conf to disable' $fclistenabled[@] && return 0
+        fi
+        _values 'fontconfig options' $stdopts[@] \
+            'list[List available fontconfig .conf files]' \
+            'disable[Disable specified fontconfig .conf file(s)]' \
+            'enable[Enable specified fontconfig .conf file(s)]' && return 0
+}
+_eselect_opengl () {
+    local opengllist
+        if (( $words[(I)(set)] )); then
+            opengllist=(${${${(M)${(f)"$(eselect --no-color opengl list)"}## *}// \**/}//(  \[*\]   |  \[*\]  )/})
+            _values -w 'opengl implementations and options' $opengllist[@] \
+                '--use-old[If an implementationis already set, use that one instead]' \
+                '--prefix[Set the source prefix]:path:_files -/' \
+                '--dst-prefix[Set the destination prefix]:path:_files -/' \
+                '--impl-headers[Override global headers with ones provided by this profile]' && return 0
+        fi
+        _values 'opengl options' $stdopts[@] \
+            'list[List the available OpenGL implementations]' \
+            'set[Select the OpenGL implementation]' \
+            'show[Print the current OpenGL implementation]' && return 0
+}
+_eselect_vi () {
+    local vilist
+        if (( $words[(I)(set)] )); then
+            vilist=(${${${(M)${(f)"$(eselect --no-color vi list)"}## *}// \**/}//(  \[*\]   |  \[*\]  )/})
+            _values -w 'vi implementation' $vilist[@] && return 0
+        elif (( $words[(I)(update)] )); then
+            _values -w 'option' '--if-unset[Do not override existing implementation]' && return 0
+        fi
+        _values 'vi options' $stdopts[@] \
+            'list[List available vi implementations]' \
+            'set[Set a new vi implementation provider]' \
+            'show[Show the current vi implementation]' \
+            'update[Automatically update the vi provider]' && return 0
+}
+_eselect () {
+    local globopts sedcmd modnames modopts
+    local stdopts
+    stdopts=(
+        'help[Display help text]'
+        'usage[Display usage information]'
+        'version[Display version information]'
+    )
+    globopts=(
+            '--no-colour[Disable coloured output]'
+            '--no-color[Disable coloured output]'
+            )
+    modnames=(${${${(M)${(f)"$(eselect --no-color list-modules)"}## *}//   */}//  /})
+    if ((CURRENT == 2)); then
+        _arguments -s \
+            "$globopts[@]" \
+            "*:portage:_values 'eselect modules' \$modnames[@]" && return 0
+    elif ((CURRENT == 3)); then
+        if [[ $words[2] == --no-colour || $words[2] == --no-color ]]; then
+            _arguments -s \
+                "*:portage:_values 'eselect modules' \$modnames[@]" && return 0
+        elif (( $modnames[(I)$words[2]] )); then
+            if [[ "$words[2]" == (env|binutils|kernel|ctags|profile|fontconfig|opengl|vi) ]]; then
+                _eselect_$words[2] "$@"
+            else
+                modopts=(${${${(M)${(f)"$(eselect --no-color $words[2] usage)"}## *}//   */}//  /})
+                _arguments -s \
+                    "*:portage:_values 'eselect $words[2] options' \$modopts[@]" && return 0
+            fi
+        fi
+    elif ((CURRENT >= 4)); then
+        if (( $words[(I)(--no-color|--no-colour)] )); then
+            if (( $modnames[(I)$words[3]] )); then
+                if [[ "$words[3]" == (env|binutils|kernel|ctags|profile|fontconfig|opengl|vi) ]]; then
+                    _eselect_$words[3] "$@"
+                else
+                    modopts=(${${${${(M)${(f)"$(eselect --no-color $words[3] usage)"}## *}//   */}//  /}// *})
+                    _arguments -s \
+                        "*:portage:_values 'eselect $words[3] options' \$modopts[@]" && return 0
+                fi
+            fi
+        else
+            if (( $modnames[(I)$words[2]] )); then
+                _eselect_$words[2] "$@"
+            fi
+        fi
+    fi
+}
+
+_eselect "$@"
