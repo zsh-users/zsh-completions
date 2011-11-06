@@ -1,0 +1,127 @@
+#compdef gradle gradlew
+# ------------------------------------------------------------------------------
+# Copyright (c) 2011 Github zsh-users - http://github.com/zsh-users
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of the zsh-users nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL ZSH-USERS BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for Gradle 1.0-milestone-5 (http://www.gradle.org).
+#
+#  Status: incomplete (see TODO/FIXME tags)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Julien Nicoulaud <julien.nicoulaud@gmail.com>
+#
+# ------------------------------------------------------------------------------
+# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
+# vim: ft=zsh sw=2 ts=2 et
+# ------------------------------------------------------------------------------
+
+
+typeset -A opt_args
+local context state line
+
+_gradle() {
+  local curcontext="$curcontext"
+
+  _arguments \
+    '(- 1 *)'{-?,-h,--help}'[show help message]' \
+    '(-a --no-rebuild)'{-a,--no-rebuild}'[do not rebuild project dependencies]' \
+    '(-b --build-file)'{-b,--build-file}'[specify the build file]:build file:_gradle_scripts' \
+    '(-C --cache)'{-C,--cache}'[specify how compiled build scripts should be cached]:cache strategy:((rebuild\:rebuild\ the\ cache on\:use\ the\ cache\ \(default\)))' \
+    '(-c --settings-file)'{-c,--settings-file}'[speciy the settings file]:settings file:_gradle_scripts' \
+    '*'{-D-,--system-prop}'[set system property of the JVM]:property:_gradle_properties' \
+    '(-d --debug -q --quiet -i --info)'{-d,--debug}'[log in debug mode (includes normal stacktrace)]' \
+    '(--foreground --no-daemon --stop)--daemon[use the Gradle daemon to run the build, starts the daemon if not running]' \
+    '(-e --embedded)'{-e,--embedded}'[specify an embedded build script]:embedded build script' \
+    '(--daemon --no-daemon --stop)--foreground[start the Gradle daemon in the foreground]' \
+    '(-g --gradle-user-home)'{-g,--gradle-user-home}'[specify the gradle user home directory]: :_files -/' \
+    '--gui[launch a GUI application]' \
+    '(-I --init-script)'{-I,--init-script}'[specify an initialization script]:init script:_gradle_scripts' \
+    '(-i --info -q --quiet -d --debug)'{-i,--info}'[set log level to info]' \
+    '(-m --dry-run)'{-m,--dry-run}'[run the builds with all task actions disabled]' \
+    '(-n --dependencies)'{-n,--dependencies}'[show list of all project dependencies]' \
+    '--no-color[do not use color in the console output]' \
+    '(--daemon --foreground --stop)--no-daemon[do not use the Gradle daemon to run the build]' \
+    '--no-opt[ignore any task optimization]' \
+    '*'{-P-,--project-prop}'[set project property for the build script]:property:_gradle_properties' \
+    '(-p --project-dir)'{-p,--project-dir}'[specify the start directory for Gradle]: :_files -/' \
+    '--profile[profile build execution time and generate a report in the <build_dir>/reports/profile directory]' \
+    '(-q --quiet -d --debug -i --info)'{-q,--quiet}'[log errors only]' \
+    '(-r --properties)'{-r,--properties}'[show list of all available project properties]' \
+    '(-S --full-stacktrace)'{-S,--full-stacktrace}'[print out the full (very verbose) stacktrace for any exceptions]' \
+    '(-s --stacktrace)'{-s,--stacktrace}'[print out the stacktrace also for user exceptions]' \
+    '(--daemon --foreground)--stop[stop the Gradle daemon if it is running]' \
+    '(-t --tasks)'{-t,--tasks}'[show list of available tasks]' \
+    '(-u --no-search-upward)'{-u,--no-search-upward}'[don'\''t search in parent folders for a settings.gradle file]' \
+    '(-v --version)'{-v,--version}'[print version info]' \
+    '(-x --exclude-task)*'{-x,--exclude-task}'[specify a task to be excluded from execution]:task:_gradle_tasks' \
+    '*: :_gradle_tasks'
+}
+
+(( $+functions[_gradle_tasks] )) ||
+_gradle_tasks() {
+  local alternatives task_group task_group_name task_group_tasks
+  for task_group in ${(M)${(ps:\n\n:)"$($service --daemon --quiet --no-color :tasks 2>/dev/null)"}:#*[[:space:]]\-[[:space:]]*}; do
+    task_group_name="${${${task_group%%---*}%[[:space:]]tasks[[:space:]]*}:l}"
+    task_group_tasks=(${(q)${(f)${task_group##*---}}/[[:space:]]\-[[:space:]]/:})
+    alternatives+=("${task_group_name//[[:space:]]/-}-task:${task_group_name} task:((${task_group_tasks[@]}))")
+  done
+  _alternative "${alternatives[@]}"
+}
+
+(( $+functions[_gradle_projects] )) ||
+_gradle_projects() {
+  local projects; projects=(${${${(M)${(f)"$($service --daemon --quiet --no-color :projects 2>/dev/null)"}:#*--- Project\ \':*}#*\'}%\'*})
+  _multi_parts $@ : projects
+}
+
+(( $+functions[_gradle_scripts] )) ||
+_gradle_scripts() {
+  _files -g '*.gradle*'
+}
+
+(( $+functions[_gradle_properties] )) ||
+_gradle_properties() {
+  local ret=1
+  if compset -P '*='; then
+    _message -e property-values 'property value' && ret=0
+  else
+    _wanted property-names expl 'property name' _gradle_property_names -qS= && ret=0
+  fi
+  return ret
+}
+
+(( $+functions[_gradle_property_names] )) ||
+_gradle_property_names() {
+  local property_names; property_names=(${${(M)${(f)"$($service --daemon --quiet --no-color :properties 2>/dev/null)"}:#*:*}%%:*})
+  _describe -t property_names 'property name' property_names "$@"
+}
+
+_gradle "$@"
