@@ -1,4 +1,4 @@
-#compdef vpnc vpnc-connect
+#compdef vpnc vpnc-connect vpnc-disconnect
 # ------------------------------------------------------------------------------
 # Copyright (c) 2011 Github zsh-users - http://github.com/zsh-users
 # All rights reserved.
@@ -42,6 +42,25 @@
 # ------------------------------------------------------------------------------
 
 
-# FIXME /etc/vpnc/ is only accessible to root, how do we deal with this ?
-local confs; confs=(/etc/vpnc/*.conf(:t:s/\.conf/))
-_describe -t confs 'VPNC conf' confs
+(( $+functions[_vpnc-connect] )) ||
+_vpnc-connect() {
+  _arguments \
+    '*: :_vpnc_confs'
+}
+
+(( $+functions[_vpnc-disconnect] )) ||
+_vpnc-disconnect() {
+  _message 'no more arguments'
+}
+
+(( $+functions[_vpnc_confs] )) ||
+_vpnc_confs() {
+  # FIXME /etc/vpnc/ is only accessible to root, how do we deal with this ?
+  local confs; confs=(/etc/vpnc/*.conf(:t:s/\.conf/))
+  _describe -t confs 'VPNC conf' confs "$@"
+}
+
+case $service in
+  vpnc|vpnc-connect) _call_function ret _vpnc-connect && return ret ;;
+  vpnc-disconnect)   _call_function ret _vpnc-disconnect && return ret ;;
+esac
