@@ -34,9 +34,12 @@
 # Authors
 # -------
 #
-#  * Unknown Person
-#  * Some internet users and some IRC people from #gentoo-* and #zsh on FreeNode
 #  * Vadim A. Misbakh-Soloviev <mva@mva.name>
+#  * Bapt <bapt@tuxfamily.org>
+#  * kaworu <kaworu@kaworu.ch>
+#  * David Durrleman <dualmoo@gmail.com>
+#  * oberyno <oberyno@gmail.com>
+#  * Mamoru Komachi <usata@usata.org>
 #
 # ------------------------------------------------------------------------------
 # -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
