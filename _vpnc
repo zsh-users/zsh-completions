@@ -1,4 +1,4 @@
-#compdef vpnc-connect
+#compdef vpnc vpnc-connect
 # ------------------------------------------------------------------------------
 # Copyright (c) 2011 Github zsh-users - http://github.com/zsh-users
 # All rights reserved.
