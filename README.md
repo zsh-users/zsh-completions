@@ -16,7 +16,9 @@ Usage
 
 #### Using packages
 
-* ArchLinux: a [package is available in AUR](https://aur.archlinux.org/packages.php?ID=51001).
+* Arch Linux: [AUR/zsh-completions](https://aur.archlinux.org/packages.php?ID=54111) / [AUR/zsh-completions-git](https://aur.archlinux.org/packages.php?ID=51001)
+* Gentoo: [scrill overlay](http://gpo.zugaina.org/app-shells/zsh-completions)
+
 
 #### Manual installation
 
