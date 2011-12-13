@@ -54,6 +54,7 @@ _1st_arguments=(
   'server:start a local web app that lets you browse formulae (requires Sinatra)'
   'unlink:unlink a formula'
   'update:freshen up links'
+  'upgrade:upgrade outdated formulae'
   'uses:show formulae which depend on a formula'
 )
 
