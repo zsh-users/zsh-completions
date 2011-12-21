@@ -88,7 +88,9 @@ _gradle() {
 (( $+functions[_gradle_tasks] )) ||
 _gradle_tasks() {
   local alternatives task_group task_group_name task_group_tasks
-  for task_group in ${(M)${(ps:\n\n:)"$($service --daemon --quiet --no-color :tasks 2>/dev/null)"}:#*[[:space:]]\-[[:space:]]*}; do
+  local project="${PREFIX%:*}"
+  alternatives=("project:project:_gradle_projects -qS:")
+  for task_group in ${(M)${(ps:\n\n:)"$($service --daemon --quiet --no-color ${project}:tasks 2>/dev/null)"}:#*[[:space:]]\-[[:space:]]*}; do
     task_group_name="${${${task_group%%---*}%[[:space:]]tasks[[:space:]]*}:l}"
     task_group_tasks=(${(q)${(f)${task_group##*---}}/[[:space:]]\-[[:space:]]/:})
     alternatives+=("${task_group_name//[[:space:]]/-}-task:${task_group_name} task:((${task_group_tasks[@]}))")
@@ -98,7 +100,8 @@ _gradle_tasks() {
 
 (( $+functions[_gradle_projects] )) ||
 _gradle_projects() {
-  local projects; projects=(${${${(M)${(f)"$($service --daemon --quiet --no-color :projects 2>/dev/null)"}:#*--- Project\ \':*}#*\'}%\'*})
+  local project="${PREFIX%:*}"
+  local projects; projects=(${${${(M)${(f)"$($service --daemon --quiet --no-color ${project}:projects 2>/dev/null)"}:#*--- Project\ \':*}#*\'}%\'*})
   _multi_parts $@ : projects
 }
 
