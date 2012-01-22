@@ -42,6 +42,6 @@ _arguments -A "-*" \
 	'(-h --help)'{-h,--help}'[Show help message]' \
 	'(-i --interactive)'{-i,--interactive}'[Drop to bpython shell after running file instead of exiting]' \
 	'(-q --quiet)'{-q,--quiet}"[Don't flush the output to stdout]" \
-	'(-v --version)'{-v,--version}'[Print version and exit]' \
+	'(-V --version)'{-V,--version}'[Print version and exit]' \
 	'--config[Use CONFIG instead of default config file]:Config file:_files' \
 	'*: :_files'
