@@ -52,7 +52,7 @@ case $state in
       "help:show available commands"
       "install:install packages"
       "search:search pypi"
-      "usinstall:uninstall packages"
+      "uninstall:uninstall packages"
       "unzip:unzip undividual packages"
       "zip:zip dividual packages"
     )
