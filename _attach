@@ -16,24 +16,24 @@
 local state mode_values existing_sessions ret=1
 
 mode_values=(
-  "none:Disable redrawing completely"
-  "ctrl_l:Send a ^L character if the terminal is in char-at-a-time mode to the program"
-  "winch:Send a WINCH signal to the program"
+  "none:disable redrawing"
+  "ctrl_l:use ctrl + l to redraw"
+  "winch:use sigwinch to redraw"
 )
 
 existing_sessions=($(_call_program session attach))
 
 _arguments -C -s -S \
-  '(--list -l)'{--list,-l}'[List sessions]' \
-  '(--sockets -L)'{--sockets,-L}'[List sockets]' \
-  '(--session -s)'{--session=,-s+}'[Set the session name]:session' \
-  '(--char -c)'{--char=,-c+}'[Set the detach character (default: ^\\)]:char' \
-  '(--redraw -r)'{--redraw=,-r+}'[Set the redraw method (none, ctrl_l, or winch)]:mode:->mode' \
-  '(--detached -d)'{--detached,-d}'[Start the session detched]' \
-  '(--no-detach -D)'{--no-detach,-D}'[Disable detaching]' \
-  '(--no-suspend -Z)'{--no-suspend,-Z}'[Disable suspending]' \
-  '(--version -v)'{--version,-v}'[Display version and copyright]' \
-  '(--help -h)'{--help,-h}'[Display this help]' \
+  '(--list -l)'{--list,-l}'[list sessions]' \
+  '(--sockets -L)'{--sockets,-L}'[list sockets]' \
+  '(--session -s)'{--session=,-s+}'[set the session name]:session' \
+  '(--char -c)'{--char=,-c+}'[set the detach character (default: ^\\)]:char' \
+  '(--redraw -r)'{--redraw=,-r+}'[set the redraw method (none, ctrl_l, or winch)]:mode:->mode' \
+  '(--detached -d)'{--detached,-d}'[start the session detached]' \
+  '(--no-detach -D)'{--no-detach,-D}'[disable detaching]' \
+  '(--no-suspend -Z)'{--no-suspend,-Z}'[disable suspending]' \
+  '(--version -v)'{--version,-v}'[display version and copyright]' \
+  '(--help -h)'{--help,-h}'[display help]' \
   '(-)::args:->session-or-command' && ret=0
 
 case "$state" in
