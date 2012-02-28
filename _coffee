@@ -1,4 +1,4 @@
-#compdef node
+#compdef coffee
 # ------------------------------------------------------------------------------
 # Copyright (c) 2011 Github zsh-users - http://github.com/zsh-users
 # All rights reserved.
@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Node.js v0.6.11 (http://nodejs.org)
+#  Completion script for Coffee.js v0.6.11 (http://coffeejs.org)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -45,12 +45,22 @@ local curcontext="$curcontext" state line ret=1
 typeset -A opt_args
 
 _arguments -C \
-  '(- 1 *)--help[print options help]' \
-  '(- 1 *)'{-v,--version}'[print node version]' \
-  '(- 1 *)--v8-options[print v8 command line options]' \
-  '(-e --eval)'{-e,--eval}'[evaluate script]:Inline Script' \
-  '(-p --print)'{-p,--print}'[print result of --eval]' \
-  '(--vars)--vars[print various compiled-in variables]' \
-  '*:JS Script:_files -g "*.js"' && ret=0
+  '(- *)'{-h,--help}'[display this help message]' \
+  '(- *)'{-v,--version}'[display the version number]' \
+  '(-b --bare)'{-b,--bare}'[compile without a top-level function wrapper]' \
+  '(-e --eval)'{-e,--eval}'[pass a string from the command line as input]:Inline Script' \
+  '(-i --interactive)'{-i,--interactive}'[run an interactive CoffeeScript REPL]' \
+  '(-j --join)'{-j,--join}'[concatenate the source CoffeeScript before compiling]:Destination JS file:_files -g "*.js"' \
+  '(-l --lint)'{-l,--lint}'[pipe the compiled JavaScript through JavaScript Lint]' \
+  '(--nodejs)--nodejs[pass options directly to the "node" binary]' \
+  '(-c --compile)'{-c,--compile}'[compile to JavaScript and save as .js files]' \
+  '(-o --output)'{-o,--output}'[set the output directory for compiled JavaScript]:Output Directory:_files -/' \
+  '(-n -t -p)'{-n,--nodes}'[print out the parse tree that the parser produces]' \
+  '(-n -t -p)'{-p,--print}'[print out the compiled JavaScript]' \
+  '(-n -t -p)'{-t,--tokens}'[print out the tokens that the lexer/rewriter produce]' \
+  '(-r --require)'{-r,--require}'[require a library before executing your script]:library' \
+  '(-s --stdio)'{-s,--stdio}'[listen for and compile scripts over stdio]' \
+  '(-w --watch)'{-w,--watch}'[watch scripts for changes and rerun commands]' \
+  '*:script or directory:_files' && ret=0
 
 return ret
