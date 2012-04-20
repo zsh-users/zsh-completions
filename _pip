@@ -68,7 +68,7 @@ case $state in
 
     declare -a requirement
     requirement=(
-      {-r,--requirement=}"[install all the packages listed in the given requirements file]:filename"
+      {-r,--requirement=}"[install all the packages listed in the given requirements file]:filename:_files"
     )
 
     declare -a findlink
