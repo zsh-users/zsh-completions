@@ -19,16 +19,18 @@
 # ------------------------------------------------------------------------------
 
 
-gem_general_flags=("(-h --help)"{-h,--help}"[Get help on this command]"
-  "(-V --verbose)"{-V,--verbose}"[Set the verbose level of output]"
-  "(-q --quiet)"{-q,--quiet}"[Silence commands]"
-  "--config-file[Use this config file instead of default]:file:_files"
-  "--backtrace[Show stack backtrace on errors]"
-  "--debug[Turn on Ruby debugging]"
-  $nul_arg
-)
-
 _gem() {
+  local -a gem_general_flags
+
+  gem_general_flags=("(-h --help)"{-h,--help}"[Get help on this command]"
+    "(-V --verbose)"{-V,--verbose}"[Set the verbose level of output]"
+    "(-q --quiet)"{-q,--quiet}"[Silence commands]"
+    "--config-file[Use this config file instead of default]:file:_files"
+    "--backtrace[Show stack backtrace on errors]"
+    "--debug[Turn on Ruby debugging]"
+    $nul_arg
+  )
+
   if (( CURRENT > 2 )); then
     (( CURRENT-- ))
     shift words

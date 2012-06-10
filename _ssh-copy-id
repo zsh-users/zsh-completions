@@ -42,7 +42,7 @@
 # ------------------------------------------------------------------------------
 
 
-# FIXME This completes "user@host" and not "[user@]host" ("user@" is optionnal),
+# FIXME This completes "user@host" and not "[user@]host" ("user@" is optional),
 #       should be merged in _ssh.
 
 _arguments -A "-*" \

@@ -19,9 +19,6 @@
 # ------------------------------------------------------------------------------
 
 
-# These flags should be available everywhere according to man knife
-knife_general_flags=( --help --server-url --key --config --editor --format --log_level --logfile --no-editor --user --print-after --version --yes )
-
 # knife has a very special syntax, some example calls are:
 # knife status
 # knife cookbook list
@@ -34,6 +31,10 @@ knife_general_flags=( --help --server-url --key --config --editor --format --log
 _knife() {
   local curcontext="$curcontext" state line
   typeset -A opt_args
+
+  # These flags should be available everywhere according to man knife
+  knife_general_flags=( --help --server-url --key --config --editor --format --log_level --logfile --no-editor --user --print-after --version --yes )
+
   cloudproviders=(bluebox ec2 rackspace slicehost terremark)
   _arguments \
     '1: :->knifecmd'\

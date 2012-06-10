@@ -15,7 +15,7 @@
 #
 # ------------------------------------------------------------------------------
 
-declare -a opts args
+local -a opts args
 args=(
   '(-f --force)'{-f,--force}'[ignore nonexistent files, never prompt]'
   '(-r --interactive)'{-i,--interactive}'[prompt before any removal]'
@@ -43,14 +43,14 @@ else
 fi
 
 local curcontext=$curcontext state line ret=1
-declare -A opt_args
+local -A opt_args
 
 _arguments -s -S -C $opts \
   $args && ret=0
 
 case $state in
   (file)
-    declare -a ignored
+    local -a ignored
     ignored=()
     ((CURRENT > 1)) &&
       ignored+=(${line[1,CURRENT-1]//(#m)[\[\]()\\*?#<>~\^]/\\$MATCH})

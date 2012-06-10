@@ -21,7 +21,7 @@
 
 local ret=1 state
 
-declare -ga common_ops
+local -a common_ops
 common_ops=(
   "--version[display version number]"
   {-h,--help}"[show help]"
@@ -46,6 +46,7 @@ _arguments \
 
 case $state in
   subcommand)
+    local -a subcommands
     subcommands=(
       "bundle:create pybundle"
       "freeze:put all currently installed packages"
@@ -61,17 +62,17 @@ case $state in
   ;;
 
   options)
-    declare -a args
+    local -a args
     args=(
       $common_ops
     )
 
-    declare -a requirement
+    local -a requirement
     requirement=(
       {-r,--requirement=}"[install all the packages listed in the given requirements file]:filename:_files"
     )
 
-    declare -a findlink
+    local -a findlink
     findlink=(
       {-f,--find-links=}"[URL to look for packages at]:url"
     )

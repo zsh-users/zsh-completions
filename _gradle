@@ -44,10 +44,10 @@
 # ------------------------------------------------------------------------------
 
 
-typeset -A opt_args
-local context state line
-
 _gradle() {
+  typeset -A opt_args
+  local context state line
+
   local curcontext="$curcontext"
 
   _arguments \

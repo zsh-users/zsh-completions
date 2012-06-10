@@ -39,98 +39,94 @@
 # ------------------------------------------------------------------------------
 
 
-_pkcon() {
-	local -a options
-	options=(
-		'--version[Show the program version and exit]'
-		'--filter[Set the filter, e.g. installed]'
-		"--root[Set the install root, e.g. '/' or '/mnt/ltsp']"
-		'(-n --nowait)'{-n,--nowait}'[Exit without waiting for actions to complete]'
-		'(-y --noninteractive)'{-g,--noninteractive}'[Install the packages without asking for confirmation]'
-		'--background[Run the command using idle network bandwidth and also using less power]'
-		'(-p --plain)'{-p,--plain}'[Print to screen a machine readable output, rather than using animated widgets]'
-		'(-c --cache-age)'{-c,--cache-age}"[The maximum metadata cache age. Use -1 for 'never'.]"
-		'(-h --help)'{-h,--help}'[Show help options.]'
-		'(-v --verbose)'{-v,--verbose}'[Show debugging information for all files]'
-	)
+local -a options
+options=(
+  '--version[Show the program version and exit]'
+  '--filter[Set the filter, e.g. installed]'
+  "--root[Set the install root, e.g. '/' or '/mnt/ltsp']"
+  '(-n --nowait)'{-n,--nowait}'[Exit without waiting for actions to complete]'
+  '(-y --noninteractive)'{-g,--noninteractive}'[Install the packages without asking for confirmation]'
+  '--background[Run the command using idle network bandwidth and also using less power]'
+  '(-p --plain)'{-p,--plain}'[Print to screen a machine readable output, rather than using animated widgets]'
+  '(-c --cache-age)'{-c,--cache-age}"[The maximum metadata cache age. Use -1 for 'never'.]"
+  '(-h --help)'{-h,--help}'[Show help options.]'
+  '(-v --verbose)'{-v,--verbose}'[Show debugging information for all files]'
+)
 
-	local -a actions
-	actions=(
-		'accept-eula'
-		'get-roles'
-		'get-distro-upgrades'
-		'get-categories'
-		'get-actions'
-		'get-groups'
-		'get-filters'
-		'get-transactions'
-		'get-time'
-		'search'
-		'install'
-		'install-local'
-		'download'
-		'remove'
-		'update'
-		'refresh'
-		'resolve'
-		'get-updates'
-		'get-depends'
-		'get-requires'
-		'get-details'
-		'get-files'
-		'get-update-detail'
-		'get-packages'
-		'repo-list'
-		'repo-enable'
-		'repo-disable'
-		'repo-set-data'
-		'what-provides'
-		'upgrade-system'
-	)
+local -a actions
+actions=(
+  'accept-eula'
+  'get-roles'
+  'get-distro-upgrades'
+  'get-categories'
+  'get-actions'
+  'get-groups'
+  'get-filters'
+  'get-transactions'
+  'get-time'
+  'search'
+  'install'
+  'install-local'
+  'download'
+  'remove'
+  'update'
+  'refresh'
+  'resolve'
+  'get-updates'
+  'get-depends'
+  'get-requires'
+  'get-details'
+  'get-files'
+  'get-update-detail'
+  'get-packages'
+  'repo-list'
+  'repo-enable'
+  'repo-disable'
+  'repo-set-data'
+  'what-provides'
+  'upgrade-system'
+)
 
-	local context state line expl cmd
-	local -A opt_args
+local context state line expl cmd
+local -A opt_args
 
-	integer i=2
-	while (( i < $#words )); do
-		case "$words[$i]" in
-			-*)
-				# skip option
-				(( i++ ))
-				continue
-			;;
-		esac
+integer i=2
+while (( i < $#words )); do
+  case "$words[$i]" in
+    -*)
+      # skip option
+      (( i++ ))
+      continue
+    ;;
+  esac
 
-		if [[ -z "$cmd" ]]; then
-			cmd="$words[$i]"
-			words[$i]=()
-			(( CURRENT-- ))
-		fi
-		(( i++ ))
-	done
+  if [[ -z "$cmd" ]]; then
+    cmd="$words[$i]"
+    words[$i]=()
+    (( CURRENT-- ))
+  fi
+  (( i++ ))
+done
 
-	if [[ -z "$cmd" ]]
-	then
-		_arguments -s -w : $options \
-			":action:($actions)"
-		return
-	fi
+if [[ -z "$cmd" ]]
+then
+  _arguments -s -w : $options \
+    ":action:($actions)"
+  return
+fi
 
-	case "$cmd" in
-		search)
-			_arguments : $options \
-				':type:(name details group file)' \
-				':data: :'
-		;;
-		refresh)
-			_arguments -s -w : $options \
-				'--force'
-		;;
-		*)
-			_arguments -s -w : $options
-		;;
-	esac
-	return 1
-}
-
-_pkcon "$@"
+case "$cmd" in
+  search)
+    _arguments : $options \
+      ':type:(name details group file)' \
+      ':data: :'
+  ;;
+  refresh)
+    _arguments -s -w : $options \
+      '--force'
+  ;;
+  *)
+    _arguments -s -w : $options
+  ;;
+esac
+return 1
