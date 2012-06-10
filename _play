@@ -43,10 +43,10 @@
 # ------------------------------------------------------------------------------
 
 
-local context curcontext="$curcontext" state line
-typeset -A opt_args
-
 _play() {
+  local context curcontext="$curcontext" state line
+  typeset -A opt_args
+
   local ret=1
 
   _arguments -C \

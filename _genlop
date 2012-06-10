@@ -80,7 +80,7 @@ single=( --current -c --pretend -p --help -h --version -v )
 	        _values '' \
 		last yesterday 1st 2nd 3rd 4th 5th
 		_alternative \
-		'*:*:_days' '*:*:_months' && return 0
+		'*:*:_genlop_days' '*:*:_genlop_months' && return 0
 	;;
 	    --file|-f)
 	        _arguments '*:logfile:_files' && return 0
@@ -113,13 +113,13 @@ single=( --current -c --pretend -p --help -h --version -v )
 	    _values '' \
 		last yesterday 1st 2nd 3rd 4th 5th
 		_alternative \
-		':*:_days' ':*:_months' && return 0
+		':*:_genlop_days' ':*:_genlop_months' && return 0
 	    ;;
 	esac
     done
 }
 
-_days() {
+_genlop_days() {
 	local m="monday" t="tuesday" w="wednesday" T="thursday" f="friday" s="saturday" S="sunday"
 	local day=$(date +%u)
 	if   [[ ${day} == 1 ]] then compadd $m
@@ -131,7 +131,7 @@ _days() {
 	elif [[ ${day} == 7 ]] then compadd $m $t $w $T $f $s $S
 	fi
 }
-_months() {
+_genlop_months() {
 	local j="january" f="february" m="march" a="april" M="may" ju="june" J="july" A="august" s="september" o="october" n="november" d="december"
 	local month=$(date +%m)
 	if   [[ ${month} == 01 ]] then compadd $j

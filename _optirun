@@ -45,7 +45,9 @@
 local curcontext="$curcontext" state line
 typeset -A opt_args
 
-args=(
+local -a arguments
+
+arguments=(
     '--version[output version information]'
     '(-h --help)'{-h,--help}'[show help]'
     '(-c --vgl-compress)'{-c,--vgl-compress}'[image transport method]:method:(proxy jpeg rgb xb yuv)'
@@ -59,7 +61,7 @@ args=(
     '(-C --config)'{-C,--config}'[retrieve settings for Bumblebee from FILE]:file:_files'
     '(-l --ldpath)'{-l,--ldpath}'[PATH the libraries like libGL.so are searched in]:file:_files'
     '(-s --socket)'{-s,--socket}'[use FILE for communication with the daemon]:file:_files'
-    '*::arguments: _normal'
+    '*::arguments: _files'
 )
 
-_arguments $args
+_arguments $arguments

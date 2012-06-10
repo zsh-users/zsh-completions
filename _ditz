@@ -19,9 +19,9 @@
 # ------------------------------------------------------------------------------
 
 
-ME=ditz
-COMMANDS=--commands
-OPTIONS='<options>'
+local ME=ditz
+local COMMANDS=--commands
+local OPTIONS='<options>'
 
 if (($CURRENT == 2)); then
   # We're completing the first word after the tool: the command.

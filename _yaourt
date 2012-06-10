@@ -4,104 +4,6 @@
 
 # copy this file to /usr/share/zsh/site-functions/_pacman
 
-typeset -A opt_args
-
-# options for passing to _arguments: main pacman commands
-_yaourt_opts_commands=(
-    '-Q[Query the package database]'
-    '-R[Remove a package from the system]'
-    '-S[Synchronize packages]'
-    '-U[Upgrade a package]'
-    '-V[Display version and exit]'
-    '-h[Display usage]'
-    '-B[backup pacman database]'
-    '-G[Get PKGBUILD]'
-    '-C[Clean backup files]'
-    '--stats[Package Statistics]'
-)
-
-# options for passing to _arguments: options common to all commands
-_yaourt_opts_common=(
-    '-b[Alternate database location]:database_location:_files -/'
-    '-h[Display syntax for the given operation]'
-    '-r[Set alternate installation root]:installation root:_files -/'
-    '-v[Be more verbose]'
-    '--cachedir[Alternate package cache location]:cache_location:_files -/'
-    '--config[An alternate configuration file]:config file:_files'
-    '--logfile[An alternate log file]:config file:_files'
-    '--noconfirm[Do not ask for confirmation]'
-    '--noprogressbar[Do not show a progress bar when downloading files]'
-    '--noscriptlet[Do not execute the install scriptlet if one exists]'
-    '--print[Only print the targets instead of performing the operation]'
-)
-
-# options for passing to _arguments: options for --upgrade commands
-_yaourt_opts_pkgfile=(
-    '-d[Skip dependency checks]'
-    '-f[Overwrite conflicting files]'
-    '*:package file:_files -g "*.pkg.tar.*(.)"'
-)
-
-# options for passing to _arguments: subactions for --query command
-_yaourt_opts_query_actions=(
-    '-g[View all members of a package group]:*:package groups:->query_group'
-    '-o[Query the package that owns a file]:file:_files'
-    '-p[Package file to query]:*:package file:->query_file'
-    '-s[Search package names and descriptions]:*:search text:->query_search'
-)
-
-# options for passing to _arguments: options for --query and subcommands
-_yaourt_opts_query_modifiers=(
-    '-c[List package changelog]'
-    '-d[List packages installed as dependencies]'
-    '-e[List packages explicitly installed]'
-    '-i[View package information]'
-    '-ii[View package information including backup files]'
-    '-k[Check package files]'
-    '-l[List package contents]'
-    '-m[List installed packages not found in sync db(s)]'
-    '-t[List packages not required by any package]'
-    '-u[List packages that can be upgraded]'
-	'--aur[Install packages from aur, even if they are in community, or, with the -u option, update packages installed from aur]'
-	'--devel[Used with -u updates all cvs/svn/git/hg/bzr packages]'
-)
-
-# options for passing to _arguments: options for --remove command
-_yaourt_opts_remove=(
-    '-c[Remove all dependent packages]'
-    '-d[Skip dependency checks]'
-    '-k[Only remove database entry, do not remove files]'
-    '-n[Remove protected configuration files]'
-    '-s[Remove dependencies not required by other packages]'
-    '*:installed package:_yaourt_completions_installed_packages'
-)
-
-# options for passing to _arguments: options for --sync command
-_yaourt_opts_sync_actions=(
-    '*-c[Remove old packages from cache]:*:clean:->sync_clean'
-    '*-cc[Remove all packages from cache]:*:clean:->sync_clean'
-    '-g[View all members of a package group]:*:package groups:->sync_group'
-    '-s[Search package names and descriptions]:*:search text:->sync_search'
-)
-
-# options for passing to _arguments: options for --sync command
-_yaourt_opts_sync_modifiers=(
-    '-d[Skip dependency checks]'
-    '-f[Overwrite conflicting files]'
-    '-i[View package information]'
-    '-l[List all packages in a repository]'
-    '-p[Print download URIs for each package to be installed]'
-    '-u[Upgrade all out-of-date packages]'
-    '-w[Download packages only]'
-    '-y[Download fresh package databases]'
-    '*--ignore[Ignore a package upgrade]:package:
-        _yaourt_completions_all_packages'
-    '*--ignoregroup[Ignore a group upgrade]:package group:
-        _yaourt_completions_all_groups'
-    '--asdeps[Install packages as non-explicitly installed]'
-    '--asexplicit[Install packages as explicitly installed]'
-)
-
 # handles --help subcommand
 _yaourt_action_help() {
     _arguments -s : \
@@ -288,7 +190,113 @@ _yaourt_get_command() {
 }
 
 # main dispatcher
-_pacman() {
+_yaourt() {
+    typeset -A opt_args
+
+    # options for passing to _arguments: main pacman commands
+    typeset -a _yaourt_opts_commands
+    _yaourt_opts_commands=(
+        '-Q[Query the package database]'
+        '-R[Remove a package from the system]'
+        '-S[Synchronize packages]'
+        '-U[Upgrade a package]'
+        '-V[Display version and exit]'
+        '-h[Display usage]'
+        '-B[backup pacman database]'
+        '-G[Get PKGBUILD]'
+        '-C[Clean backup files]'
+        '--stats[Package Statistics]'
+    )
+
+    # options for passing to _arguments: options common to all commands
+    typeset -a _yaourt_opts_common
+    _yaourt_opts_common=(
+        '-b[Alternate database location]:database_location:_files -/'
+        '-h[Display syntax for the given operation]'
+        '-r[Set alternate installation root]:installation root:_files -/'
+        '-v[Be more verbose]'
+        '--cachedir[Alternate package cache location]:cache_location:_files -/'
+        '--config[An alternate configuration file]:config file:_files'
+        '--logfile[An alternate log file]:config file:_files'
+        '--noconfirm[Do not ask for confirmation]'
+        '--noprogressbar[Do not show a progress bar when downloading files]'
+        '--noscriptlet[Do not execute the install scriptlet if one exists]'
+        '--print[Only print the targets instead of performing the operation]'
+    )
+
+    # options for passing to _arguments: options for --upgrade commands
+    typeset -a _yaourt_opts_pkgfile
+    _yaourt_opts_pkgfile=(
+        '-d[Skip dependency checks]'
+        '-f[Overwrite conflicting files]'
+        '*:package file:_files -g "*.pkg.tar.*(.)"'
+    )
+
+    # options for passing to _arguments: subactions for --query command
+    typeset -a _yaourt_opts_query_actions
+    _yaourt_opts_query_actions=(
+        '-g[View all members of a package group]:*:package groups:->query_group'
+        '-o[Query the package that owns a file]:file:_files'
+        '-p[Package file to query]:*:package file:->query_file'
+        '-s[Search package names and descriptions]:*:search text:->query_search'
+    )
+
+    # options for passing to _arguments: options for --query and subcommands
+    typeset -a _yaourt_opts_query_modifiers
+    _yaourt_opts_query_modifiers=(
+        '-c[List package changelog]'
+        '-d[List packages installed as dependencies]'
+        '-e[List packages explicitly installed]'
+        '-i[View package information]'
+        '-ii[View package information including backup files]'
+        '-k[Check package files]'
+        '-l[List package contents]'
+        '-m[List installed packages not found in sync db(s)]'
+        '-t[List packages not required by any package]'
+        '-u[List packages that can be upgraded]'
+      '--aur[Install packages from aur, even if they are in community, or, with the -u option, update packages installed from aur]'
+      '--devel[Used with -u updates all cvs/svn/git/hg/bzr packages]'
+    )
+
+    # options for passing to _arguments: options for --remove command
+    typeset -a _yaourt_opts_remove
+    _yaourt_opts_remove=(
+        '-c[Remove all dependent packages]'
+        '-d[Skip dependency checks]'
+        '-k[Only remove database entry, do not remove files]'
+        '-n[Remove protected configuration files]'
+        '-s[Remove dependencies not required by other packages]'
+        '*:installed package:_yaourt_completions_installed_packages'
+    )
+
+    # options for passing to _arguments: options for --sync command
+    typeset -a _yaourt_opts_sync_actions
+    _yaourt_opts_sync_actions=(
+        '*-c[Remove old packages from cache]:*:clean:->sync_clean'
+        '*-cc[Remove all packages from cache]:*:clean:->sync_clean'
+        '-g[View all members of a package group]:*:package groups:->sync_group'
+        '-s[Search package names and descriptions]:*:search text:->sync_search'
+    )
+
+    # options for passing to _arguments: options for --sync command
+    typeset -a _yaourt_opts_sync_modifiers
+    _yaourt_opts_sync_modifiers=(
+        '-d[Skip dependency checks]'
+        '-f[Overwrite conflicting files]'
+        '-i[View package information]'
+        '-l[List all packages in a repository]'
+        '-p[Print download URIs for each package to be installed]'
+        '-u[Upgrade all out-of-date packages]'
+        '-w[Download packages only]'
+        '-y[Download fresh package databases]'
+        '*--ignore[Ignore a package upgrade]:package:
+            _yaourt_completions_all_packages'
+        '*--ignoregroup[Ignore a group upgrade]:package group:
+            _yaourt_completions_all_groups'
+        '--asdeps[Install packages as non-explicitly installed]'
+        '--asexplicit[Install packages as explicitly installed]'
+    )
+
     case $words[2] in
         -Q*g*) # ipkg groups
             _arguments -s : \
@@ -335,4 +343,4 @@ _pacman() {
 }
 
 # run the main dispatcher
-_pacman "$@"
+_yaourt "$@"

@@ -38,12 +38,12 @@
 #
 # ------------------------------------------------------------------------------
 
-function _tasks () { 
+function _sbt_tasks () { 
   compadd clean compile console console-project console-quick doc package \
     package-doc package-src publish publish-local run run-main test test-only \
     test:compile test:package test:package-doc test:package-src update
 }
 
-_arguments "*:task:_tasks"
+_arguments "*:task:_sbt_tasks"
 
 return 0

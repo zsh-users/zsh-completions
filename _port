@@ -16,11 +16,6 @@
 
 local subcmds
 
-# Cache the list of ports.
-if (( ! $+_port_list )); then
-	_port_list=($(port echo all; echo "all current active inactive installed uninstalled outdated"))
-fi
-
 subcmds=(
   'activate'
   'archive'
@@ -97,6 +92,11 @@ case "$state" in
   	_describe -t commands 'port commands' subcmds
 	;;
 	(portname)
+    # Cache the list of ports.
+    if (( ! $+_port_list )); then
+      _port_list=($(port echo all; echo "all current active inactive installed uninstalled outdated"))
+    fi
+
   	_describe -t commands 'available ports' _port_list
 	;;
 esac

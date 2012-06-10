@@ -108,7 +108,7 @@ _quickpkg () {
 # Stuff for emerge
 
 _emerge () {
-    local nopkg_opts all noask_opts bopts install_args common_args profiles
+  local nopkg_opts all noask_opts bopts install_args common_args profiles
 
   noask_opts=(-p -a --pretend --ask --regen --info --search -s --searchdesc \
   -S --version -V --help -h --metadata)
@@ -319,6 +319,7 @@ _tbz2tool () {
 }
 
 
+local -A Args
 zparseopts -D -E -A Args -- -emerge
 if (( ${+Args[--emerge]} ));then
 	_emerge "$@" && return 0

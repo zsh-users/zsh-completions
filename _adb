@@ -43,10 +43,10 @@
 # ------------------------------------------------------------------------------
 
 
-typeset -A opt_args
-local context state line curcontext="$curcontext" adb_args
-
 _adb() {
+  typeset -A opt_args
+  local context state line curcontext="$curcontext" adb_args
+
   local ret=1
 
   _arguments -C \

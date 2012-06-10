@@ -41,7 +41,7 @@
 typeset -A opt_args
 local context state line
 
-function phases () {
+_scala_phases () {
    compadd "parser" "namer" "packageobjects" "typer" "superaccessors" \
      "pickler" "refchecks" "selectiveanf" "liftcode" "selectivecps" "uncurry" \
      "tailcalls" "specialize" "explicitouter" "erasure" "lazyvals" "lambdalift" \
@@ -49,6 +49,7 @@ function phases () {
      "dce" "jvm" "terminal"
 }
 
+local -a shared_opts
 shared_opts=(
   "-bootclasspath+[Override location of bootstrap class files]:bootstrap class directory:_files -/"
   "-classpath+[Specify where to find user class files]:directory:_files -/"
@@ -82,6 +83,7 @@ shared_opts=(
   "-Y[Print a synopsis of private options]"
 )
 
+local -a X_opts
 X_opts=(
   "-Xcheck-null[Warn upon selection of nullable reference]"
   "-Xcheckinit[Wrap field accessors to throw an exception on uninitialized access]"
@@ -98,7 +100,7 @@ X_opts=(
   "-Xno-forwarders[Do not generate static forwarders in mirror classes]"
   "-Xno-uescape[Disable handling of \u unicode escapes]"
   "-Xnojline[Do not use JLine for editing]"
-  "-Xprint\:-[Print out program after <phase>]:phase name:phases"
+  "-Xprint\:-[Print out program after <phase>]:phase name:_scala_phases"
   "-Xprint-icode[Log internal icode to *.icode files]"
   "-Xprint-pos[Print tree positions, as offsets]"
   "-Xprint-types[Print tree types (debugging option)]"
@@ -123,6 +125,7 @@ X_opts=(
   "-Xplugin-require\:-[Abort unless the given plugin(s) are available]"
 )
 
+local -a Y_opts
 Y_opts=(
   "-Y[Print a synopsis of private options]"
   "-Ybuild-manager-debug[Generate debug information for the Refined Build Manager compiler]"
@@ -155,19 +158,19 @@ Y_opts=(
   "-Yresolve-term-conflict\:-[Resolve term conflicts (default\: error)]:resolution strategy:(package object error)"
   "-Yrich-exceptions[Fancier exceptions.  Set source search path with -Dscala.control.sourcepath]"
   "-Yself-in-annots[Include a \"self\" identifier inside of annotations]"
-  "-Yshow\:-[Show after <phase> (requires -Xshow-class or -Xshow-object)]:phase name:phases"
+  "-Yshow\:-[Show after <phase> (requires -Xshow-class or -Xshow-object)]:phase name:_scala_phases"
   "-Yshow-syms[Print the AST symbol hierarchy after each phase]"
   "-Yshow-trees[Print detailed ASTs (requires -Xprint:phase)]"
   "-Ystatistics[Print compiler statistics]"
   "-Ystruct-dispatch\:-[Structural method dispatch policy (default\: poly-cache)]:policy name:(no-cache mono-cache poly-cache invoke-dynamic)"
 
-  "-Ybrowse\:-[Browse the abstract syntax tree after <phase>]:phase name:phases"
-  "-Ycheck\:-[Check the tree at the end of <phase>]:phase name:phases"
-  "-Ylog\:-[Log operations during <phase>]:phase name:phases"
-  "-Yprofile\:-[Profile CPU usage of given phases (requires jgpagent on JVM -agentpath)]:phase name:phases"
-  "-Yskip\:-[Skip <phase>]:phase name:phases"
-  "-Ystop-after\:-[Stop after given phase <phase>]:phase name:phases"
-  "-Ystop-before\:-[Stop before given phase <phase>]:phase name:phases"
+  "-Ybrowse\:-[Browse the abstract syntax tree after <phase>]:phase name:_scala_phases"
+  "-Ycheck\:-[Check the tree at the end of <phase>]:phase name:_scala_phases"
+  "-Ylog\:-[Log operations during <phase>]:phase name:_scala_phases"
+  "-Yprofile\:-[Profile CPU usage of given phases (requires jgpagent on JVM -agentpath)]:phase name:_scala_phases"
+  "-Yskip\:-[Skip <phase>]:phase name:_scala_phases"
+  "-Ystop-after\:-[Stop after given phase <phase>]:phase name:_scala_phases"
+  "-Ystop-before\:-[Stop before given phase <phase>]:phase name:_scala_phases"
 
   "-Ywarn-all[Enable all -Y warnings]"
   "-Ywarn-dead-code[Warn when dead code is identified]"
@@ -188,6 +191,7 @@ Y_opts=(
   "-Ytyper-debug[Trace all type assignments]"
 )
 
+local -a scala_opts
 scala_opts=(
   "-e+[execute <string> as if entered in the repl]:string" \
   "-howtorun+[what to run (default\: guess)]:execution mode:(script object jar guess)" \
