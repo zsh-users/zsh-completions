@@ -73,10 +73,10 @@
 # ------------------------------------------------------------------------------
 
 
-typeset -A opt_args
-local context state line
-
 _mvn() {
+  typeset -A opt_args
+  local context state line
+
   local curcontext="$curcontext" maven_version excl_opts
 
   excl_opts=(-h --help -v --version -ep --encrypt-password -emp --encrypt-master-password)

@@ -43,10 +43,10 @@
 # ------------------------------------------------------------------------------
 
 
-typeset -A opt_args
-local context state line curcontext="$curcontext"
-
 _android() {
+  typeset -A opt_args
+  local context state line curcontext="$curcontext"
+
   local ret=1
   
   _arguments -C -A "-*" \

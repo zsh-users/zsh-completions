@@ -42,10 +42,10 @@
 # ------------------------------------------------------------------------------
 
 
-local context curcontext="$curcontext" state line
-typeset -A opt_args
-
 _perf() {
+  local context curcontext="$curcontext" state line
+  typeset -A opt_args
+
   local ret=1
 
   _arguments -C \

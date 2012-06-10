@@ -42,10 +42,10 @@
 # ------------------------------------------------------------------------------
 
 
-typeset -A opt_args
-local context state line curcontext="$curcontext"
-
 _git-pulls() {
+  typeset -A opt_args
+  local context state line curcontext="$curcontext"
+
   local ret=1
 
   _arguments -C \

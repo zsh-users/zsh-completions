@@ -41,9 +41,9 @@
 # vim: ft=zsh sw=2 ts=2 et
 # ------------------------------------------------------------------------------
 
-local context state line
-
 _pygmentize() {
+  local context state line
+
   _arguments -s -S \
     '-h[prints help]:' \
     '-V[prints the package version]:' \

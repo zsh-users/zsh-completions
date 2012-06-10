@@ -50,7 +50,7 @@ _box_arguments=(
 __task_list ()
 {
     local expl
-    declare -a tasks
+    local -a tasks
 
     tasks=(box destroy halt init package provision reload resume ssh ssh_config status suspend up version)
 
@@ -70,7 +70,7 @@ __vm_list ()
 __vagrant-box ()
 {
     local curcontext="$curcontext" state line
-    typeset -A opt_args
+    local -A opt_args
 
     _arguments -C \
         ':command:->command' \
@@ -99,7 +99,7 @@ local expl
 local -a boxes installed_boxes
 
 local curcontext="$curcontext" state line
-typeset -A opt_args
+local -A opt_args
 
 _arguments -C \
     ':command:->command' \

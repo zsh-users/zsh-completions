@@ -49,7 +49,7 @@
 #<app-portage/portage-utils-0.19>
 #
 
-local common_args PORTDIR
+local common_args PORTDIR var
 var=PORTDIR
 [[ -z ${(P)var} && -r /etc/make.conf ]] &&
 local $var="`. /etc/make.conf 2>/dev/null; echo ${(P)var}`"
