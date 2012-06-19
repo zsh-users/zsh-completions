@@ -120,7 +120,7 @@ __gem_trust_policies() {
 
 _gem_build() {
   _arguments \
-    *:file:_files -f \
+    '*:file:_files -g "*.gemspec"' \
     $gem_general_flags && ret=0
 }
 
@@ -224,7 +224,7 @@ _gem_help() {
 
 _gem_install() {
   _arguments \
-    "*:gemname:__all_gems" \
+    "*:URI: _alternative 'files:file:_files -g *.gem' 'urls:URL:__all_gems'" \
     "(-i --install-dir)"{-i,--install-dir}"[Gem repository directory to get installed gems]":directory:_directories \
     "(-n --bindir)"{-n,--bindir}"[Directory where binary files are located]":directory:_directories \
     "(-d --no-rdoc)"{-d,--no-rdoc}"[Generate RDoc documentation for the gem on install]" \
