@@ -13,6 +13,8 @@
 #
 #  * Dominic Mitchell <dom+zsh@happygiraffe.net>
 #
+#  * Johann 'Myrkraverk' Oskarsson <johann@2ndquadrant.com>
+#
 # ------------------------------------------------------------------------------
 # -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
 # vim: ft=zsh sw=2 ts=2 et
@@ -39,8 +41,16 @@ _pgsql_host_or_dir() {
         'directories:directory:_directories'
 }
 
+# This creates a port completion list based on socket files on the
+# local computer.  Be default, Postgres puts them in /tmp/ but Debian
+# changed that to /var/run/postgresql/ in their packages.
+_pgsql_ports() {
+    compadd "$@" - /tmp/.s.PGSQL.<->(N:e) /var/run/postgresql/.s.PGSQL.<->(N:e)
+}
+
 _pgsql_users () {
     local _pgsql_user _pgsql_port _pgsql_host _pgsql_params
+    local _pgsql_user_sql
     _pgsql_get_identity
 
     # We use _pgsql_port and _pgsql_host directly here instead of
@@ -51,7 +61,10 @@ _pgsql_users () {
         ${_pgsql_host:+"--host=$_pgsql_host"}
     )
 
-    compadd "$@" - ${${(f)~~"$( psql $_pgsql_params[@] -At -c '\du' template1 2>/dev/null )"}[@]%%|*}
+    _pgsql_user_sql='select r.rolname from pg_catalog.pg_roles r where r.rolcanlogin = true'
+
+    compadd "$@" - $( psql $_pgsql_params[@] -Aqt -c $_pgsql_user_sql template1 2>/dev/null )
+
 }
 
 _pgsql_tables () {
@@ -67,22 +80,34 @@ _pgsql_tables () {
     local db
     db=${line[1]:-${PGDATABASE:-$LOGNAME}}
 
-    # XXX In postgres 7.3 and above, the schema name is in the first
-    # column.  I'm not sure how best to work around that...  It really
-    # needs to be prepended with a "." to the table name.
+    ## Instead of parsing the output of the psql \ commands, we look
+    ## up the tables ourselves.  The following query has been tested
+    ## with Postgres 8.2 - 9.2.
 
-    # Many thanks to Oliver Kiddle for pointing out how to get the 2nd
-    # column out of this...
+    local _pgsql_table_sql
+    _pgsql_table_sql="select n.nspname || '.' || c.relname \
+	from pg_catalog.pg_class c \
+		left join pg_catalog.pg_namespace n on n.oin = c.relnamespace \
+	where c.relkind in ('r', '') \
+		and n.nspname <> 'pg_catalog' \
+		and n.nspname <> 'information_schema' \
+		and n.nspname !~ '^pg_toast' \
+		and pg_catalog.pg_table_is_visible( c.oid ) \
+	order by 1"
+
     compadd "$@" - \
-        ${${${(f)~~"$( psql $_pgsql_params[@] -At -c '\dt' $db 2>/dev/null )"}#*|}%%|*}
+        $( psql $_pgsql_params[@] -Aqt -c $_pgsql_table_sql $db 2>/dev/null )
 }
 
 _pgsql_databases () {
     local _pgsql_user _pgsql_port _pgsql_host _pgsql_params
     _pgsql_get_identity
 
-    # Should I grep out template0?
-    compadd "$@" - ${${(f)~~"$( psql $_pgsql_params[@] -At -l 2>/dev/null )"}[@]%%|*} 
+    local _pgsql_db_sql
+    _pgsql_db_sql="select d.datname from pg_catalog.pg_database d \
+	where d.datname <> 'template0'"
+
+    compadd "$@" - $( psql $_pgsql_params[@] -Atq -c $_pgsql_db_sql 2>/dev/null )
 }
 
 
@@ -94,7 +119,7 @@ _psql () {
     local curcontext="$curcontext" state line expl
     typeset -A opt_args
 
-    _arguments -C -s \
+    _arguments -C -s "-*" \
         "$_pgsql_common_opts[@]" \
         {-V,--version}'[display client version]' \
         {-a,--echo-all}'[print commands read]' \
@@ -205,9 +230,7 @@ _pgsql_utils () {
     _pgsql_common_opts=(
         {-\?,--help}'[display help]'
         {-h+,--host=}':database host:_pgsql_host_or_dir'
-        # Postgres doesn't like service names here, which is why we
-        # don't use _ports.
-        {-p+,--port=}':database port number:'
+        {-p+,--port=}':database port number:_pgsql_ports'
         {-U+,--username=}':connect as user:_pgsql_users'
         {-W,--password}'[prompt for password]'
     )
