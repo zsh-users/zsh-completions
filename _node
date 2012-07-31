@@ -48,10 +48,10 @@ typeset -A opt_args
 _arguments -C \
   '(- 1 *)--help[print options help]' \
   '(- 1 *)'{-v,--version}'[print node version]' \
-  '(- 1 *)--no-deprecation[silence deprecation warnings]' \
-  '(- 1 *)--trace-deprecation[show stack traces on deprecations]' \
+  '(--no-deprecation)--no-deprecation[silence deprecation warnings]' \
+  '(--trace-deprecation)--trace-deprecation[show stack traces on deprecations]' \
   '(- 1 *)--v8-options[print v8 command line options]' \
-  '(- 1 *)--max-stack-size=[set max v8 stack size (bytes)]' \
+  '(--max-stack-size)--max-stack-size=[set max v8 stack size (bytes)]' \
   '(-e --eval)'{-e,--eval}'[evaluate script]:Inline Script' \
   '(-i --interactive)'{-i,--interactive}'[always enter the REPL even if stdin does not appear to be a terminal]' \
   '(-p --print)'{-p,--print}'[print result of --eval]' \
