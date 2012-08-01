@@ -31,7 +31,7 @@ Usage
 
 * Include the directory in your `$fpath`, for example by adding in `~/.zshrc`:
 
-        fpath=(path/to/zsh-completions $fpath)
+        fpath=(path/to/zsh-completions/src $fpath)
 
 * You may have to force rebuild `zcompdump`:
 
