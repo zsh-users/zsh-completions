@@ -18,6 +18,7 @@ Usage
 
 * Arch Linux: [AUR/zsh-completions](https://aur.archlinux.org/packages.php?ID=54111) / [AUR/zsh-completions-git](https://aur.archlinux.org/packages.php?ID=51001)
 * Gentoo: [scrill overlay](http://gpo.zugaina.org/app-shells/zsh-completions)
+* Mac OS: [Homebrew](https://github.com/mxcl/homebrew/blob/master/Library/Formula/zsh-completions.rb)
 
 
 #### Manual installation
@@ -47,3 +48,4 @@ Contributions are welcome, just make sure you follow the guidelines:
 License
 -------
 See each file for license details.
+
