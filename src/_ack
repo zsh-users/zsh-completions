@@ -84,6 +84,7 @@ _ack() {
     '(-i --ignore-case)'{-i,--ignore-case}'[ignore case in the search strings]' \
     '*--ignore-dir[ignore directory]:directory:_files -/' \
     '*--noignore-dir[don'\''t ignore directory]:directory:_files -/' \
+    '--invert-file-match[print/search handle files that do not match -g/-G]' \
     '--line[only print given line of each file]:number' \
     '(-l --files-with-matches -L --files-without-matches)'{-l,--files-with-matches}'[only print the filenames of matching files, instead of the matching text]' \
     '(-L --files-without-matches -l --files-with-matches)'{-L,--files-without-matches}'[only print the filenames of files that do NOT match]' \
