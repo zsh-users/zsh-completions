@@ -42,9 +42,6 @@
 #  * Mamoru Komachi <usata@usata.org>
 #
 # ------------------------------------------------------------------------------
-# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
-# vim: ft=zsh sw=2 ts=2 et
-# ------------------------------------------------------------------------------
 #<app-portage/genlop-0.30.8>
 
 
@@ -148,3 +145,11 @@ _genlop_months() {
 	elif [[ ${month} == 12 ]] then compadd $j $f $m $a $M $ju $J $A $s $o $n $d
 	fi
 }
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et

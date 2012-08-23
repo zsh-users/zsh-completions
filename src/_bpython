@@ -34,9 +34,6 @@
 #  * Massimiliano Torromeo <massimiliano.torromeo@gmail.com>
 #
 # ------------------------------------------------------------------------------
-# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
-# vim: ft=zsh sw=2 ts=2 et
-# ------------------------------------------------------------------------------
 
 _arguments -A "-*" \
 	'(-h --help)'{-h,--help}'[Show help message]' \
@@ -45,3 +42,11 @@ _arguments -A "-*" \
 	'(-V --version)'{-V,--version}'[Print version and exit]' \
 	'--config[Use CONFIG instead of default config file]:Config file:_files' \
 	'*: :_files'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et

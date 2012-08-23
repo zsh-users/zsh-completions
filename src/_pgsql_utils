@@ -16,9 +16,6 @@
 #  * Johann 'Myrkraverk' Oskarsson <johann@2ndquadrant.com>
 #
 # ------------------------------------------------------------------------------
-# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
-# vim: ft=zsh sw=2 ts=2 et
-# ------------------------------------------------------------------------------
 
 
 _pgsql_get_identity () {
@@ -264,3 +261,11 @@ _pgsql_utils () {
 }
 
 _pgsql_utils "$@"
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et

@@ -14,9 +14,6 @@
 #  * Alex Vollmer (https://github.com/alexvollmer)
 #
 # ------------------------------------------------------------------------------
-# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
-# vim: ft=zsh sw=2 ts=2 et
-# ------------------------------------------------------------------------------
 
 
 _gem() {
@@ -454,3 +451,11 @@ _gem_which() {
     "(-g --no-gems-first)"{-g,--no-gems-first}"[search gems before non-gems]" \
     $gem_general_flags && ret=0
 }
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
