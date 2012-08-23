@@ -54,7 +54,7 @@ _ack() {
     [[ $#_ack_raw_types -gt 0 ]] && _store_cache "ack-grep" _ack_raw_types
   fi
 
-  _arguments -C \
+  _arguments -C -s -S \
     '(- 1 *)--version[display version and copyright information]' \
     '(- 1 *)--help[print a short help statement]' \
     '(- 1 *)--man[print the manual page]' \
