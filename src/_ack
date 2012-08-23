@@ -43,7 +43,9 @@
 
 
 _ack() {
-  local curcontext="$curcontext" state line cmds update_policy ret=1
+  local context curcontext="$curcontext" state line cmds update_policy ret=1
+  integer NORMARG
+  typeset -A opt_args
 
   zstyle -s ":completion:${curcontext}:" cache-policy update_policy
   [[ -z "$update_policy" ]] && zstyle ":completion:${curcontext}:" cache-policy _ack_types_caching_policy
@@ -54,7 +56,7 @@ _ack() {
     [[ $#_ack_raw_types -gt 0 ]] && _store_cache "ack-grep" _ack_raw_types
   fi
 
-  _arguments -C -s -S \
+  _arguments -C -s -S -n \
     '(- 1 *)--version[display version and copyright information]' \
     '(- 1 *)--help[print a short help statement]' \
     '(- 1 *)--man[print the manual page]' \
@@ -111,13 +113,19 @@ _ack() {
     '(-w --word-regexp)'{-w,--word-regexp}'[force the given pattern to match only whole words]' \
     '-1[stops after reporting first match of any kind]' \
     {'--','--no'}${_ack_raw_types/ ##/\[}']' \
-    '1: :->patterns' \
-    '*: :_files' \
+    '*: :->args' \
   && ret=0
 
   case $state in
-    patterns)
-      _message -e patterns 'pattern' && ret=0
+    args)
+      if [[ CURRENT -eq NORMARG && ${+opt_args[--match]} -eq 0 ]]
+      then
+        # If the current argument is the first non-option argument
+        # and --match isn't present then a pattern is expected
+        _message -e patterns 'pattern' && ret=0
+      else
+        _files
+      fi
     ;;
     colors)
       local colors; colors=(
