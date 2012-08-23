@@ -39,9 +39,6 @@
 #  * Julien Nicoulaud <julien.nicoulaud@gmail.com>
 #
 # ------------------------------------------------------------------------------
-# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
-# vim: ft=zsh sw=2 ts=2 et
-# ------------------------------------------------------------------------------
 
 
 # FIXME --noconf is only allowed in first position
@@ -58,3 +55,11 @@ _arguments \
   '(-d)-D[force checking of build dependencies]' \
   '--check-dirname-level[how much to check directory names]:level:((0\:never 1\:only\ if\ program\ changes\ directory\ \(default\) 2\:always))' \
   '--check-dirname-regex[Perl regex defining matching directory names, the string PACKAGE will be replaced by the package name (default: '\''PACKAGE(-.+)?'\'')]:regex'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et

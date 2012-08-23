@@ -14,10 +14,15 @@
 #  * Andrew Hodges (https://github.com/betawaffle)
 #
 # ------------------------------------------------------------------------------
-# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
-# vim: ft=zsh sw=2 ts=2 et
-# ------------------------------------------------------------------------------
 
 
 # FIXME This should be rewritten using up-to-date ZSH completion API.
 compadd `thor list | grep thor | cut -d " " -f 2`
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et

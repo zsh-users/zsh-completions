@@ -38,9 +38,6 @@
 #  * Mario Fernandez (https://github.com/sirech)
 #
 # ------------------------------------------------------------------------------
-# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
-# vim: ft=zsh sw=2 ts=2 et
-# ------------------------------------------------------------------------------
 
 _arguments -w -C -s \
     '(--long --short)'{-l,--long}'[include author info and date for each commit]' \
@@ -51,3 +48,11 @@ _arguments -w -C -s \
     '(--relations)'{-r,--relations}'[show relation to features / integration branches]' \
     '(--dump-config)--dump-config[print out current configuration and exit]' \
     '*: :__git_branch_names'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et

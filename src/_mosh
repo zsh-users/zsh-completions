@@ -14,9 +14,6 @@
 #  * Ben O'Hara (https://github.com/benohara)
 #
 # ------------------------------------------------------------------------------
-# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
-# vim: ft=zsh sw=2 ts=2 et
-# ------------------------------------------------------------------------------
 
 _arguments \
  '--client=:client helper:_command_names -e' \
@@ -28,3 +25,11 @@ _arguments \
  {-p,--port=}':port:_ports' \
  ':remote:_hosts' \
  ':remote command:_command_names -e'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et

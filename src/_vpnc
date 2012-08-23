@@ -37,9 +37,6 @@
 #  * Julien Nicoulaud <julien.nicoulaud@gmail.com>
 #
 # ------------------------------------------------------------------------------
-# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
-# vim: ft=zsh sw=2 ts=2 et
-# ------------------------------------------------------------------------------
 
 
 (( $+functions[_vpnc-connect] )) ||
@@ -200,3 +197,11 @@ case $service in
   vpnc|vpnc-connect) _call_function ret _vpnc-connect && return ret ;;
   vpnc-disconnect)   _call_function ret _vpnc-disconnect && return ret ;;
 esac
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et

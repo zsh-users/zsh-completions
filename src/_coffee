@@ -37,9 +37,6 @@
 #  * Mario Fernandez (https://github.com/sirech)
 #
 # ------------------------------------------------------------------------------
-# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
-# vim: ft=zsh sw=2 ts=2 et
-# ------------------------------------------------------------------------------
 
 local curcontext="$curcontext" state line ret=1
 typeset -A opt_args
@@ -64,3 +61,11 @@ _arguments -C \
   '*:script or directory:_files' && ret=0
 
 return ret
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et

@@ -37,9 +37,6 @@
 #  * Julien Nicoulaud <julien.nicoulaud@gmail.com>
 #
 # ------------------------------------------------------------------------------
-# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
-# vim: ft=zsh sw=2 ts=2 et
-# ------------------------------------------------------------------------------
 
 
 _arguments \
@@ -71,3 +68,11 @@ _arguments \
     '(-R --nodns)'{-R,--nodns}'[don'\''t send DNS information to resolvconf or touch /etc/resolv.conf]' \
     '(-T --test)'{-T,--test}'[on receipt of discover messages, simply print the contents of the DHCP message to the console]' \
     '(-Y --nonis)'{-Y,--nonis}'[don'\''t touch /etc/yp.conf or restart the ypbind service]'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
