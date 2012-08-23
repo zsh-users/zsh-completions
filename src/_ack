@@ -59,9 +59,9 @@ _ack() {
     '(- 1 *)--help[print a short help statement]' \
     '(- 1 *)--man[print the manual page]' \
     '(-a --all -u --unrestricted)'{-a,--all}'[operate on all files, regardless of type (but still skip directories like blib, CVS, etc.)]' \
-    '(-A --after-context -C --context)'{-A,--after-context}'[print N lines of trailing context after matching lines]:number' \
-    '(-B --before-context -C --context)'{-B,--before-context}'[print N lines of leading context before matching lines]:number' \
-    '(-C --context -A --after-context -B --before-context)'{-C,--context}'[print N lines (default 2) of context around matching lines]:number' \
+    '(-A --after-context -C --context)'{-A+,--after-context=}'[print N lines of trailing context after matching lines]:number' \
+    '(-B --before-context -C --context)'{-B+,--before-context=}'[print N lines of leading context before matching lines]:number' \
+    '(-C --context -A --after-context -B --before-context)'{-C-,--context=}'[print N lines (default 2) of context around matching lines]:number' \
     '(-c --count)'{-c,--count}'[suppress normal output; instead print a count of matching lines for each input file]' \
     '(--nocolor)--color[highlight the matching text]' \
     '(--color --color-filename --color-match --color-lineno)--nocolor[supress the color]' \
@@ -75,8 +75,8 @@ _ack() {
     '-f[only print the files that would be searched, without actually doing any searching]' \
     '(--nofollow)--follow[follow symlinks]' \
     '(--follow)--nofollow[don'\''t follow symlinks]' \
-    '-G[only paths matching the given regex are included in the search]:regex' \
-    '-g[print files where the relative path + filename matches the given regex]:regex' \
+    '-G+[only paths matching the given regex are included in the search]:regex' \
+    '-g+[print files where the relative path + filename matches the given regex]:regex' \
     '(--nogroup)--group[group matches by file name]' \
     '(--group)--nogroup[do not group matches by file name]' \
     '(-H --with-filename -h --no-filename)'{-H,--with-filename}'[print the filename for each match]' \
@@ -85,16 +85,16 @@ _ack() {
     '*--ignore-dir[ignore directory]:directory:_files -/' \
     '*--noignore-dir[don'\''t ignore directory]:directory:_files -/' \
     '--invert-file-match[print/search handle files that do not match -g/-G]' \
-    '--line[only print given line of each file]:number' \
+    '--line=[only print given line of each file]:number' \
     '(-l --files-with-matches -L --files-without-matches)'{-l,--files-with-matches}'[only print the filenames of matching files, instead of the matching text]' \
     '(-L --files-without-matches -l --files-with-matches)'{-L,--files-without-matches}'[only print the filenames of files that do NOT match]' \
-    '--match[specify the regular expression explicitly]:regex' \
-    '(-m --max-count)'{-m,--max-count}'[stop reading a file after N matches]:number' \
+    '--match=[specify the regular expression explicitly]:regex' \
+    '(-m --max-count)'{-m+,--max-count=}'[stop reading a file after N matches]:number' \
     '(-r -R --recurse -n --no-recurse)'{-r,-R,--recurse}'[recurse into sub-directories]' \
     '(-n --no-recurse -r -R --recurse)'{-n,--no-recurse}'[no descending into subdirectories]' \
     '-o[show only the part of each line matching PATTERN (turns off text highlighting)]:pattern' \
-    '--output[output the evaluation of expr for each line (turns off text highlighting)]:expression' \
-    '--pager[direct ack'\''s output through program]:pager program:_command_names' \
+    '--output=[output the evaluation of expr for each line (turns off text highlighting)]:expression' \
+    '--pager=[direct ack'\''s output through program]:pager program:_command_names' \
     '--passthru[prints all lines, whether or not they match the expression]' \
     '--print0[the filenames are output separated with a null byte instead of the usual newline]' \
     '(-Q --literal)'{-Q,--literal}'[quote all metacharacters in the pattern, it is treated as a literal]' \
@@ -103,7 +103,7 @@ _ack() {
     '--sort-files[sorts the found files lexically]' \
     '--show-types[outputs the filetypes that ack associates with each file]' \
     '--thpppt[display the all-important Bill The Cat logo]' \
-    '*--type[specify the types of files to include or exclude from a search]:type:->types' \
+    '*--type=[specify the types of files to include or exclude from a search]:type:->types' \
     '*--type-add[files with the given extensions are recognized as being of the given type]:type-def:->type-defs' \
     '*--type-set[files with the given extensions are recognized as being of the given type]:type-def:->type-defs' \
     '(-u --unrestricted -a --all)'{-u,--unrestricted}'[all files and directories (including blib/, core.*, ...) are searched, nothing is skipped]' \
