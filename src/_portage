@@ -44,9 +44,6 @@
 #  * Mamoru Komachi <usata@usata.org>
 #
 # ------------------------------------------------------------------------------
-# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
-# vim: ft=zsh sw=2 ts=2 et
-# ------------------------------------------------------------------------------
 #<sys-apps/portage-2.1.4.4>
 # TODO: <sys-apps/portage-2.2_aplha*> (sets, some other candies)
 #
@@ -351,3 +348,11 @@ case "$service" in
 		_tbz2tool "$@" && return 0
 	;;
 esac
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et

@@ -38,9 +38,6 @@
 #  * Christophe-Marie Duquesne <chm.duquesne@gmail.com>
 #
 # ------------------------------------------------------------------------------
-# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
-# vim: ft=zsh sw=2 ts=2 et
-# ------------------------------------------------------------------------------
 
 local curcontext="$curcontext" state line
 typeset -A opt_args
@@ -65,3 +62,11 @@ arguments=(
 )
 
 _arguments $arguments
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et

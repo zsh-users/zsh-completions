@@ -38,9 +38,6 @@
 #  * Julien Nicoulaud <julien.nicoulaud@gmail.com>
 #
 # ------------------------------------------------------------------------------
-# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
-# vim: ft=zsh sw=2 ts=2 et
-# ------------------------------------------------------------------------------
 
 
 _arguments \
@@ -48,3 +45,11 @@ _arguments \
   '--layout[specify a custom file path to a YAML layout file]:teamocil layout file:_files -g "*.yml"' \
   '--edit[open the layout file (whether or not --layout is used) with $EDITOR]' \
   '1:teamocil layout:_files -W ~/.teamocil -g "*.yml(:r)"'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et

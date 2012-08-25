@@ -19,9 +19,6 @@
 #  * Erik Kastner (https://github.com/kastner)
 #
 # ------------------------------------------------------------------------------
-# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
-# vim: ft=zsh sw=2 ts=2 et
-# ------------------------------------------------------------------------------
 
 
 _brew_all_formulae() {
@@ -99,3 +96,11 @@ case "$words[1]" in
     _brew_installed_formulae
     _wanted installed_formulae expl 'installed formulae' compadd -a installed_formulae ;;
 esac
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et

@@ -14,9 +14,6 @@
 #  * Alexandru Totolici (https://github.com/totolici)
 #
 # ------------------------------------------------------------------------------
-# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
-# vim: ft=zsh sw=2 ts=2 et
-# ------------------------------------------------------------------------------
 
 
 local -a _1st_arguments
@@ -156,3 +153,11 @@ if (( CURRENT == 1 )); then
   _describe -t commands "redis-cli subcommand" _1st_arguments
   return
 fi
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et

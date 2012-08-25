@@ -42,9 +42,6 @@
 #  * Mamoru Komachi <usata@usata.org>
 #
 # ------------------------------------------------------------------------------
-# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
-# vim: ft=zsh sw=2 ts=2 et
-# ------------------------------------------------------------------------------
 #<sys-devel/gcc-config-0.0>
 
 local arguments
@@ -71,3 +68,11 @@ _gcc_profile () {
 }
 
 _arguments $arguments
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et

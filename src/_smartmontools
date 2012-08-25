@@ -34,9 +34,6 @@
 #  * Massimiliano Torromeo <massimiliano.torromeo@gmail.com>
 #
 # ------------------------------------------------------------------------------
-# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
-# vim: ft=zsh sw=2 ts=2 et
-# ------------------------------------------------------------------------------
 
 _smartctl() {
 	local context state line expl
@@ -108,3 +105,11 @@ _smartmontools() {
 }
 
 _smartmontools "$@"
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et

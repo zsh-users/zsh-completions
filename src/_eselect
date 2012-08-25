@@ -43,9 +43,6 @@
 #  * Mamoru Komachi <usata@usata.org>
 #
 # ------------------------------------------------------------------------------
-# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
-# vim: ft=zsh sw=2 ts=2 et
-# ------------------------------------------------------------------------------
 #<app-admin/eselect-1.0.11>
 #
 
@@ -200,3 +197,11 @@ _eselect () {
 }
 
 _eselect "$@"
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
