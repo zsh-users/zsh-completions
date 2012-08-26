@@ -22,7 +22,7 @@ ret=1
 
 _arguments -C \
   '(- 1 *)'{-v,--version}'[display version information]' \
-  '(-l|--level)'{-l,--level}'+[patch level to use with rvm use / install]:number' \
+  '(-l --level)'{-l,--level}'+[patch level to use with rvm use / install]:number' \
   '--bin[path for binaries to be placed (~/.rvm/bin/)]:path:_files' \
   '--source[src directory to use (~/.rvm/src/)]:path:_files' \
   '--archives[directory for downladed files (~/.rvm/archives/)]:path:_files' \
@@ -32,7 +32,7 @@ _arguments -C \
   '--gems[Used to set the gems_flag, use with remove to remove gems]' \
   '--archive[Used to set the archive_flag, use with remove to remove archive]' \
   '--patch[With MRI Rubies you may specify one or more full paths to patches]' \
-  '(-C|--configure)'{-C,--configure}'=[custom configure options]' \
+  '(-C --configure)'{-C,--configure}'=[custom configure options]' \
   '--nice[process niceness (for slow computers, default 0)]:number' \
   '--ree-options[Options passed directly to ree ./installer on the command line]:options' \
   '--head[with update, updates rvm to git head version]' \
