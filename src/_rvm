@@ -15,13 +15,14 @@
 #
 # ------------------------------------------------------------------------------
 
+typeset curcontext state line cmds ret
 
-local curcontext="$curcontext" state line cmds ret=1
+curcontext="$curcontext"
+ret=1
 
 _arguments -C \
   '(- 1 *)'{-v,--version}'[display version information]' \
   '(-l|--level)'{-l,--level}'+[patch level to use with rvm use / install]:number' \
-  '(--prefix)--prefix[path for all rvm files (~/.rvm/), with trailing slash!]:path:_files' \
   '(--bin)--bin[path for binaries to be placed (~/.rvm/bin/)]:path:_files' \
   '(--source)--source[src directory to use (~/.rvm/src/)]:path:_files' \
   '(--archives)--archives[directory for downladed files (~/.rvm/archives/)]:path:_files' \
@@ -65,7 +66,7 @@ case $state in
 
         if (( CURRENT == 3 )); then
           # See if we’ve made it to the ‘@’; eg, 1.9.2@
-          if ! \grep -q '@' <<< "${line[CURRENT-1]}" ; then
+          if ! GREP_OPTIONS="" \grep '@' <<< "${line[CURRENT-1]}" >/dev/null ; then
             _values -S , 'rubies' \
               $(rvm list strings | sed -e 's/ruby-\([^) ]*\)-\([^) ]*\)/ruby-\1-\2 \1-\2 \1/g') \
               default system $(rvm alias list | cut -d' ' -f1) && ret=0
@@ -88,8 +89,8 @@ case $state in
         if (( CURRENT == 3 )); then
           _values 'gemset_commands' $(rvm gemset | sed -e '/create/!d; s/^.*[{]\(.*\)[}].*$/\1/; s/,/ /g')
         else
-          #_values -S , 'gemsets' $(rvm gemset list | \grep -v gemset 2>/dev/null)
-          _values -S , 'gemsets' $(rvm gemset list | \grep -Ev '(gemset|info)' 2>/dev/null | awk '/^[ -_[:alnum:]]+$/ {print '$1'}')
+          #_values -S , 'gemsets' $(rvm gemset list | GREP_OPTIONS="" \grep -v gemset 2>/dev/null)
+          _values -S , 'gemsets' $(rvm gemset list | GREP_OPTIONS="" \grep -Ev '(gemset|info)' 2>/dev/null | awk '/^[ -_[:alnum:]]+$/ {print '$1'}')
         fi
         ret=0
         ;;
