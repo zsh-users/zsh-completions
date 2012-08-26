@@ -23,29 +23,29 @@ ret=1
 _arguments -C \
   '(- 1 *)'{-v,--version}'[display version information]' \
   '(-l|--level)'{-l,--level}'+[patch level to use with rvm use / install]:number' \
-  '(--bin)--bin[path for binaries to be placed (~/.rvm/bin/)]:path:_files' \
-  '(--source)--source[src directory to use (~/.rvm/src/)]:path:_files' \
-  '(--archives)--archives[directory for downladed files (~/.rvm/archives/)]:path:_files' \
+  '--bin[path for binaries to be placed (~/.rvm/bin/)]:path:_files' \
+  '--source[src directory to use (~/.rvm/src/)]:path:_files' \
+  '--archives[directory for downladed files (~/.rvm/archives/)]:path:_files' \
   '-S[Specify a script file to attempt to load and run (rubydo)]:file:_files' \
   '-e[Execute code from the command line]:code' \
-  '(-G)-G[root gem path to use]:path:_files' \
-  '(--gems)--gems[Used to set the gems_flag, use with remove to remove gems]' \
-  '(--archive)--archive[Used to set the archive_flag, use with remove to remove archive]' \
-  '(--patch)--patch[With MRI Rubies you may specify one or more full paths to patches]' \
+  '-G[root gem path to use]:path:_files' \
+  '--gems[Used to set the gems_flag, use with remove to remove gems]' \
+  '--archive[Used to set the archive_flag, use with remove to remove archive]' \
+  '--patch[With MRI Rubies you may specify one or more full paths to patches]' \
   '(-C|--configure)'{-C,--configure}'=[custom configure options]' \
-  '(--nice)--nice[process niceness (for slow computers, default 0)]:number' \
-  '(--ree)--ree-options[Options passed directly to ree ./installer on the command line]:options' \
-  '(--head)--head[with update, updates rvm to git head version]' \
-  '(--rubygems)--rubygems[with update, updates rubygems for selected ruby]' \
-  '(--default)--default[with ruby select, sets a default ruby for new shells]' \
-  '(--debug)--debug[Toggle debug mode on for very verbose output]' \
-  '(--trace)--trace[Toggle trace mode on to see EVERYTHING rvm is doing]' \
-  '(--force)--force[Force install, removes old install & source before install]' \
-  '(--summary)--summary[Used with rubydo to print out a summary of the commands run]' \
-  '(--latest)--latest[with gemset --dump skips version strings for latest gem]' \
-  '(--gems)--gems[with uninstall/remove removes gems with the interpreter]' \
-  '(--docs)--docs[with install, attempt to generate ri after installation]' \
-  '(--reconfigure)--reconfigure[Force ./configure on install even if Makefile already exists]' \
+  '--nice[process niceness (for slow computers, default 0)]:number' \
+  '--ree-options[Options passed directly to ree ./installer on the command line]:options' \
+  '--head[with update, updates rvm to git head version]' \
+  '--rubygems[with update, updates rubygems for selected ruby]' \
+  '--default[with ruby select, sets a default ruby for new shells]' \
+  '--debug[Toggle debug mode on for very verbose output]' \
+  '--trace[Toggle trace mode on to see EVERYTHING rvm is doing]' \
+  '--force[Force install, removes old install & source before install]' \
+  '--summary[Used with rubydo to print out a summary of the commands run]' \
+  '--latest[with gemset --dump skips version strings for latest gem]' \
+  '--gems[with uninstall/remove removes gems with the interpreter]' \
+  '--docs[with install, attempt to generate ri after installation]' \
+  '--reconfigure[Force ./configure on install even if Makefile already exists]' \
   '1: :->cmds' \
   '*: :->args' && ret=0
 
