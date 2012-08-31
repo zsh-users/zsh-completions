@@ -137,10 +137,16 @@ _yaourt_completions_all_packages() {
     if compset -P1 '*/*'; then
         packages=( $(_call_program packages $cmd[@] -Sql ${words[CURRENT]%/*}) )
         typeset -U packages
+	if [[ -d /var/aur ]]; then
+	    packages=( $packages $(ls /var/aur) )
+	fi
         _wanted repo_packages expl "repository/package" compadd ${(@)packages}
     else
         packages=( $(_call_program packages $cmd[@] -Sql) )
         typeset -U packages
+	if [[ -d /var/aur ]]; then
+	    packages=( $packages $(ls /var/aur) )
+	fi
         _wanted packages expl "packages" compadd - "${(@)packages}"
 
         repositories=(${(o)${${${(M)${(f)"$(</etc/pacman.conf)"}:#\[*}/\[/}/\]/}:#options})
