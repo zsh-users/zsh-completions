@@ -1,0 +1,14 @@
+#compdef pactree pactree.static=pactree
+
+# copy this file to /usr/share/zsh/site-functions/_pactree
+typeset -A opt_args
+
+_pactree() {
+    local -a cmd packages packages_long
+    packages_long=(/var/lib/pacman/local/*(/))
+    packages=( ${${packages_long#/var/lib/pacman/local/}%-*-*} )
+    compadd "$@" -a packages
+}
+
+# run the main dispatcher
+_pactree "$@"
