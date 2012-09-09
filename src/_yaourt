@@ -25,39 +25,39 @@ _yaourt_action_query() {
 #       "$_yaourt_opts_common[@]" \
 #       "$_yaourt_opts_query_actions[@]" \
 #       "$_yaourt_opts_query_modifiers[@]"
-        
+    
     case $state in
         query_file)
             _arguments -s : \
                 "$_yaourt_opts_common[@]" \
                 "$_yaourt_opts_query_modifiers[@]" \
                 '*:package file:_files -g "*.pkg.tar.*"'
-                ;;
+            ;;
         query_group)
             _arguments -s : \
                 "$_yaourt_opts_common[@]" \
                 "$_yaourt_opts_query_modifiers[@]" \
                 '*:groups:_yaourt_completions_installed_groups'
-                ;;
+            ;;
         query_owner)
             _arguments -s : \
                 "$_yaourt_opts_common[@]" \
                 "$_yaourt_opts_query_modifiers[@]" \
                 '*:file:_files'
-                ;;
+            ;;
         query_search)
             _arguments -s : \
                 "$_yaourt_opts_common[@]" \
                 "$_yaourt_opts_query_modifiers[@]" \
                 '*:search text: '
-                ;;
+            ;;
         *)
             _arguments -s : \
                 "$_yaourt_opts_common[@]" \
                 "$_yaourt_opts_query_actions[@]" \
                 "$_yaourt_opts_query_modifiers[@]" \
                 '*:package:_yaourt_completions_installed_packages'
-                ;;
+            ;;
     esac
 }
 
@@ -77,7 +77,7 @@ _yaourt_action_sync() {
 #       "$_yaourt_opts_common[@]" \
 #       "$_yaourt_opts_sync_actions[@]" #\
 #       #"$_yaourt_opts_sync_modifiers[@]"
-        
+    
     case $state in
         sync_clean)
             _arguments -s : \
@@ -90,20 +90,20 @@ _yaourt_action_sync() {
                 "$_yaourt_opts_common[@]" \
                 "$_yaourt_opts_sync_modifiers[@]" \
                 '*:package group:_yaourt_completions_all_groups'
-                ;;
+            ;;
         sync_search)
             _arguments -s : \
                 "$_yaourt_opts_common[@]" \
                 "$_yaourt_opts_sync_modifiers[@]" \
                 '*:search text: '
-                ;;
+            ;;
         *)
             _arguments -s : \
                 "$_yaourt_opts_common[@]" \
                 "$_yaourt_opts_sync_modifiers[@]" \
                 '*:package:_yaourt_completions_all_packages'
-                ;;
-        esac
+            ;;
+    esac
 }
 
 # handles --upgrade subcommand
@@ -137,10 +137,16 @@ _yaourt_completions_all_packages() {
     if compset -P1 '*/*'; then
         packages=( $(_call_program packages $cmd[@] -Sql ${words[CURRENT]%/*}) )
         typeset -U packages
+        if [[ -d /var/aur ]]; then
+            packages=( $packages $(ls /var/aur) )
+        fi
         _wanted repo_packages expl "repository/package" compadd ${(@)packages}
     else
         packages=( $(_call_program packages $cmd[@] -Sql) )
         typeset -U packages
+        if [[ -d /var/aur ]]; then
+            packages=( $packages $(ls /var/aur) )
+        fi
         _wanted packages expl "packages" compadd - "${(@)packages}"
 
         repositories=(${(o)${${${(M)${(f)"$(</etc/pacman.conf)"}:#\[*}/\[/}/\]/}:#options})
@@ -254,8 +260,8 @@ _yaourt() {
         '-m[List installed packages not found in sync db(s)]'
         '-t[List packages not required by any package]'
         '-u[List packages that can be upgraded]'
-      '--aur[Install packages from aur, even if they are in community, or, with the -u option, update packages installed from aur]'
-      '--devel[Used with -u updates all cvs/svn/git/hg/bzr packages]'
+        '--aur[Install packages from aur, even if they are in community, or, with the -u option, update packages installed from aur]'
+        '--devel[Used with -u updates all cvs/svn/git/hg/bzr packages]'
     )
 
     # options for passing to _arguments: options for --remove command
@@ -303,19 +309,19 @@ _yaourt() {
                 "$_yaourt_opts_common[@]" \
                 "$_yaourt_opts_query_modifiers[@]" \
                 '*:groups:_yaourt_completions_installed_groups'
-                ;;
+            ;;
         -Q*o*) # file
             _arguments -s : \
                 "$_yaourt_opts_common[@]" \
                 "$_yaourt_opts_query_modifiers[@]" \
                 '*:package file:_files'
-                ;;
+            ;;
         -Q*p*) # file *.pkg.tar.*
             _arguments -s : \
                 "$_yaourt_opts_common[@]" \
                 "$_yaourt_opts_query_modifiers[@]" \
                 '*:package file:_files -g "*.pkg.tar.*"'
-                ;;
+            ;;
         -Q*)  _yaourt_action_query    ;;
         -R*)  _yaourt_action_remove   ;;
         -S*c*) # no completion
@@ -332,7 +338,7 @@ _yaourt() {
                 "$_yaourt_opts_common[@]" \
                 "$_yaourt_opts_sync_modifiers[@]" \
                 '*:package group:_yaourt_completions_all_groups'
-                ;;
+            ;;
         -S*)  _yaourt_action_sync     ;;
         -U*)  _yaourt_action_upgrade  ;;
         -V*)  _yaourt_action_version  ;;
