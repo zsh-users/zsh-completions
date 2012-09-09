@@ -1,6 +1,18 @@
-#compdef pactree pactree.static=pactree
+#compdef pactree
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+# Completion script for pactree 4.0
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+# * Limao Luo <luolimao@gmail.com>
+#
+# ------------------------------------------------------------------------------
 
-# copy this file to /usr/share/zsh/site-functions/_pactree
 typeset -A opt_args
 
 _pactree() {
