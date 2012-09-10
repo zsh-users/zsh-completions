@@ -165,6 +165,7 @@ _pg_dump () {
         {-b,--blobs}'[dump blobs as well]' \
         {-c,--clean}'[include clean cmds in dump]' \
         {-C,--create}'[include createdb cmds in dump]' \
+        {-E+,--encoding=}':database encoding:_pgsql_encodings' \
         {-d,--inserts}'[use INSERT not COPY]' \
         {-D,--{attribute,column}-inserts}'[use INSERT (cols) not COPY]' \
         {-f+,--file=}':output file:_files' \
