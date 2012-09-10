@@ -196,6 +196,7 @@ _pg_dump () {
         {-s,--schema-only}'[no data, only schema]' \
         {-S+,--superuser=}':superuser name:_pgsql_users' \
         {-t+,--table=}':table to dump:_pgsql_tables' \
+        {-T+,--exclude-table=}':table to NOT dump:_pgsql_tables' \
         {-v,--verbose}'[verbose mode]' \
         {-V,--version}'[display client version]' \
         {-x,--no-{acl,privileges}}'[dont dump ACLs]' \
