@@ -104,7 +104,7 @@ _pgsql_databases () {
     _pgsql_db_sql="select d.datname from pg_catalog.pg_database d \
 	where d.datname <> 'template0'"
 
-    compadd "$@" - $( psql $_pgsql_params[@] -Atq -c $_pgsql_db_sql 2>/dev/null )
+    compadd "$@" - $( psql $_pgsql_params[@] -Atq -c $_pgsql_db_sql template1 2>/dev/null )
 }
 
 
