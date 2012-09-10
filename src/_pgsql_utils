@@ -189,6 +189,7 @@ _pg_dump () {
         {-F+,--format=}':output format:_values "format" "p[plain text]" "t[tar]" "c[custom]"' \
         {-i,--ignore-version}'[ignore version mismatch]' \
         {-n+,--schema=}':schema to dump:_pgsql_schemas' \
+        {-N+,--exclude-schema=}':schema to NOT dump:_pgsql_schemas' \
         {-o,--oids}'[dump objects identifiers for every table]' \
         {-O,--no-owner}'[dont recreate as same owner]' \
         {-R,--no-reconnect}'[dont output connect]' \
