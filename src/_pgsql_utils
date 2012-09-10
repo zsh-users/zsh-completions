@@ -202,7 +202,16 @@ _pg_dump () {
         {-x,--no-{acl,privileges}}'[dont dump ACLs]' \
         -X+':option:_values "option" use-set-session-authorization disable-triggers' \
         {-Z+,--compress=}':compression level:_values "level" 9 8 7 6 5 4 3 2 1 0' \
-        ':PostgreSQL database:_pgsql_databases'
+        ':PostgreSQL database:_pgsql_databases' \
+        --section=':dump named section:_values "section" pre-data data post-data' \
+        --disable-dollpgar-quoting'[disable dollar quoting, use SQL standard quoting]' \
+        --disable-triggers'[disable triggers during data-only restore]' \
+        --no-security-labels'[do not dump security label assignments]' \
+        --no-tablespaces'[do not dump tablespace assignments]' \
+        --no-unlogged-table-data'[do not dump unlogged table data]' \
+        --quote-all-identifiers'[quote all identifiers, even if not key words]' \
+        --serializable-deferrable'[wait until the dump can run without anomalies]' \
+        --use-set-session-authorization'[use SET SESSION AUTHORIZATION commands instead of ALTER OWNER]'
 }
 
 _createdb () {
