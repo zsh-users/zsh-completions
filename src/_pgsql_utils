@@ -1,4 +1,4 @@
-#compdef psql pg_dump createdb dropdb vacuumdb
+#compdef psql pg_dump createdb dropdb vacuumdb createuser dropuser initdb
 # ------------------------------------------------------------------------------
 # Description
 # -----------
@@ -84,7 +84,7 @@ _pgsql_tables () {
     local _pgsql_table_sql
     _pgsql_table_sql="select n.nspname || '.' || c.relname \
 	from pg_catalog.pg_class c \
-		left join pg_catalog.pg_namespace n on n.oin = c.relnamespace \
+		left join pg_catalog.pg_namespace n on n.oid = c.relnamespace \
 	where c.relkind in ('r', '') \
 		and n.nspname <> 'pg_catalog' \
 		and n.nspname <> 'information_schema' \
@@ -104,7 +104,17 @@ _pgsql_databases () {
     _pgsql_db_sql="select d.datname from pg_catalog.pg_database d \
 	where d.datname <> 'template0'"
 
-    compadd "$@" - $( psql $_pgsql_params[@] -Atq -c $_pgsql_db_sql 2>/dev/null )
+    compadd "$@" - $( psql $_pgsql_params[@] -Atq -c $_pgsql_db_sql template1 2>/dev/null )
+}
+
+_pgsql_encodings () {
+    local _pgsql_user
+    _pgsql_get_identity
+
+    local _pgsql_db_sql
+    _pgsql_db_sql="select pg_encoding_to_char(i) from generate_series(0,100) i;"
+
+    compadd "$@" - $( psql $_pgsql_params[@] -Atq -c $_pgsql_db_sql template1  )
 }
 
 
@@ -185,7 +195,7 @@ _createdb () {
         {-q,--quiet}'[non verbose mode]' \
         {-D+,--location=}':database location:_directories' \
         {-T+,--template=}':database template:_pgsql_databases' \
-        {-E+,--encoding=}':database encoding:_values "encoding" $_pgsql_encodings[@]' \
+        {-E+,--encoding=}':database encoding:_pgsql_encodings' \
         ':PostgreSQL database:' \
         ':comment:'
 }
@@ -221,8 +231,71 @@ _vacuumdb () {
         '1:PostgreSQL database:_pgsql_databases'
 }
 
+_createuser () {
+    local curcontext="$curcontext" state line expl
+    typeset -A opt_args
+
+    _arguments -C -s \
+        "$_pgsql_common_opts[@]" \
+        {-e,--echo}'[display SQL queries]' \
+        {-c,--connection-limit=}'[connection limit for role (default: no limit)]' \
+        {-d,--createdb}'[role can create new databases]' \
+        {-D,--no-createdb}'[role cannot create databases]' \
+        {-E,--encrypted}'[encrypt stored password]' \
+        {-i,--inherit}'[role inherits privileges of roles it is a member of (default)]' \
+        {-I,--no-inherit}'[role does not inherit privileges]' \
+        {-l,--login}'[role can login (default)]' \
+        {-L,--no-login}'[role cannot login]' \
+        {-N,--unencrypted}'[do not encrypt stored password]' \
+        {-P,--pwprompt}'[assign a password to new role]' \
+        {-r,--createrole}'[role can create new roles]' \
+        {-R,--no-createrole}'[role cannot create roles]' \
+        {-s,--superuser}'[role will be superuser]' \
+        {-S,--no-superuser}'[role will not be superuser]'
+}
+
+_dropuser () {
+    local curcontext="$curcontext" state line expl
+    typeset -A opt_args
+
+    _arguments -C -s \
+        "$_pgsql_common_opts[@]" \
+        {-e,--echo}'[display SQL queries]' \
+        {-q,--quiet}'[non verbose mode]' \
+        {-i,--interactive}'[confirm before drop]' \
+        ':PostgreSQL user:_pgsql_users'
+}
+
+_initdb () {
+    local curcontext="$curcontext" state line expl
+    typeset -A opt_args
+
+    _arguments -C -s \
+        {--auth=,-A+}':default authentication method for local connections:_values "auth methods" $_pgsql_auth_methods[@]' \
+        {-D+,--pgdata=}':location for this database cluster:_files' \
+        {-E+,--encoding=}':set default encoding for new databases:' \
+        --locale=':set default locale for new databases:' \
+        --lc-collate=':set the default locale for collate:' \
+        --lc-ctype=':set the default locale for ctype:' \
+        --lc-messages=':set the default locale for messages:' \
+        --lc-monetary=':set the default locale for monetary:' \
+        --lc-numeric=':set the default locale for numeric:' \
+        --lc-time=':set the default local for time:' \
+        --no-locale'[equivalent to --locale=C]' \
+        --pwfile=':read password for the new superuser from file:_files' \
+        {-T+,--text-search-config=}'[default text search configuration]' \
+        {-U+,--username=NAME}':database superuser name:' \
+        {-W,--pwprompt}'[prompt for a password for the new superuser]' \
+        {-X+,--xlogdir=}':location for the transaction log directory:_files' \
+        {-d,--debug}'[generate lots of debugging output]' \
+        -L+':where to find the input files:_files' \
+        {-n,--noclean}'[do not clean up after errors]' \
+        {-s,--show}'[show internal settings]' \
+        ':location for this database cluster:_files'
+}
+
 _pgsql_utils () {
-    local _pgsql_common_opts _pgsql_encodings
+    local _pgsql_common_opts _pgsql_auth_methods
 
     _pgsql_common_opts=(
         {-\?,--help}'[display help]'
@@ -232,23 +305,20 @@ _pgsql_utils () {
         {-W,--password}'[prompt for password]'
     )
 
-    # Taken from
-    # <http://www.postgresql.org/docs/7.4/static/multibyte.html#CHARSET-TABLE>.
-    # It'd be real nice if postgres could tell us these...
-    _pgsql_encodings=(
-        SQL_ASCII
-        EUC_{JP,CN,KR,TW}
-        JOHAB
-        UNICODE
-        MULE_INTERNAL
-        LATIN{1,2,3,4,5,6,7,8,9,10}
-        ISO_8859_{5,6,7,8}
-        KOI8
-        WIN
-        ALT
-        WIN1256
-        TCVN
-        WIN874
+    _pgsql_auth_methods=(
+        trust
+        reject
+        md5
+        password
+        gss
+        sspi
+        krb5
+        ident
+        peer
+        ldap
+        radius
+        cert
+        pam
     )
 
     case "$service" in
@@ -257,6 +327,9 @@ _pgsql_utils () {
         createdb) _createdb "$@" ;;
         dropdb)   _dropdb "$@"   ;;
         vacuumdb) _vacuumdb "$@"   ;;
+        createuser) _createuser "$@" ;;
+        dropuser) _dropuser "$@" ;;
+        initdb) _initdb "$@"     ;;
     esac
 }
 
