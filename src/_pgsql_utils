@@ -1,4 +1,4 @@
-#compdef psql pg_dump createdb dropdb vacuumdb createuser dropuser
+#compdef psql pg_dump createdb dropdb vacuumdb createuser dropuser initdb
 # ------------------------------------------------------------------------------
 # Description
 # -----------
@@ -266,8 +266,36 @@ _dropuser () {
         ':PostgreSQL user:_pgsql_users'
 }
 
+_initdb () {
+    local curcontext="$curcontext" state line expl
+    typeset -A opt_args
+
+    _arguments -C -s \
+        {--auth=,-A+}':default authentication method for local connections:_values "auth methods" $_pgsql_auth_methods[@]' \
+        {-D+,--pgdata=}':location for this database cluster:_files' \
+        {-E+,--encoding=}':set default encoding for new databases:' \
+        --locale=':set default locale for new databases:' \
+        --lc-collate=':set the default locale for collate:' \
+        --lc-ctype=':set the default locale for ctype:' \
+        --lc-messages=':set the default locale for messages:' \
+        --lc-monetary=':set the default locale for monetary:' \
+        --lc-numeric=':set the default locale for numeric:' \
+        --lc-time=':set the default local for time:' \
+        --no-locale'[equivalent to --locale=C]' \
+        --pwfile=':read password for the new superuser from file:_files' \
+        {-T+,--text-search-config=}'[default text search configuration]' \
+        {-U+,--username=NAME}':database superuser name:' \
+        {-W,--pwprompt}'[prompt for a password for the new superuser]' \
+        {-X+,--xlogdir=}':location for the transaction log directory:_files' \
+        {-d,--debug}'[generate lots of debugging output]' \
+        -L+':where to find the input files:_files' \
+        {-n,--noclean}'[do not clean up after errors]' \
+        {-s,--show}'[show internal settings]' \
+        ':location for this database cluster:_files'
+}
+
 _pgsql_utils () {
-    local _pgsql_common_opts
+    local _pgsql_common_opts _pgsql_auth_methods
 
     _pgsql_common_opts=(
         {-\?,--help}'[display help]'
@@ -275,6 +303,22 @@ _pgsql_utils () {
         {-p+,--port=}':database port number:_pgsql_ports'
         {-U+,--username=}':connect as user:_pgsql_users'
         {-W,--password}'[prompt for password]'
+    )
+
+    _pgsql_auth_methods=(
+        trust
+        reject
+        md5
+        password
+        gss
+        sspi
+        krb5
+        ident
+        peer
+        ldap
+        radius
+        cert
+        pam
     )
 
     case "$service" in
@@ -285,6 +329,7 @@ _pgsql_utils () {
         vacuumdb) _vacuumdb "$@"   ;;
         createuser) _createuser "$@" ;;
         dropuser) _dropuser "$@" ;;
+        initdb) _initdb "$@"     ;;
     esac
 }
 
