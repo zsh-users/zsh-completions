@@ -107,6 +107,16 @@ _pgsql_databases () {
     compadd "$@" - $( psql $_pgsql_params[@] -Atq -c $_pgsql_db_sql template1 2>/dev/null )
 }
 
+_pgsql_encodings () {
+    local _pgsql_user
+    _pgsql_get_identity
+
+    local _pgsql_db_sql
+    _pgsql_db_sql="select pg_encoding_to_char(i) from generate_series(0,100) i;"
+
+    compadd "$@" - $( psql $_pgsql_params[@] -Atq -c $_pgsql_db_sql template1  )
+}
+
 
 ##
 ## The actual completion code for the commands
@@ -185,7 +195,7 @@ _createdb () {
         {-q,--quiet}'[non verbose mode]' \
         {-D+,--location=}':database location:_directories' \
         {-T+,--template=}':database template:_pgsql_databases' \
-        {-E+,--encoding=}':database encoding:_values "encoding" $_pgsql_encodings[@]' \
+        {-E+,--encoding=}':database encoding:_pgsql_encodings' \
         ':PostgreSQL database:' \
         ':comment:'
 }
@@ -222,7 +232,7 @@ _vacuumdb () {
 }
 
 _pgsql_utils () {
-    local _pgsql_common_opts _pgsql_encodings
+    local _pgsql_common_opts
 
     _pgsql_common_opts=(
         {-\?,--help}'[display help]'
@@ -230,25 +240,6 @@ _pgsql_utils () {
         {-p+,--port=}':database port number:_pgsql_ports'
         {-U+,--username=}':connect as user:_pgsql_users'
         {-W,--password}'[prompt for password]'
-    )
-
-    # Taken from
-    # <http://www.postgresql.org/docs/7.4/static/multibyte.html#CHARSET-TABLE>.
-    # It'd be real nice if postgres could tell us these...
-    _pgsql_encodings=(
-        SQL_ASCII
-        EUC_{JP,CN,KR,TW}
-        JOHAB
-        UNICODE
-        MULE_INTERNAL
-        LATIN{1,2,3,4,5,6,7,8,9,10}
-        ISO_8859_{5,6,7,8}
-        KOI8
-        WIN
-        ALT
-        WIN1256
-        TCVN
-        WIN874
     )
 
     case "$service" in
