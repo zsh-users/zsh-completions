@@ -1,4 +1,4 @@
-#compdef psql pg_dump createdb dropdb vacuumdb
+#compdef psql pg_dump createdb dropdb vacuumdb createuser dropuser
 # ------------------------------------------------------------------------------
 # Description
 # -----------
@@ -231,6 +231,41 @@ _vacuumdb () {
         '1:PostgreSQL database:_pgsql_databases'
 }
 
+_createuser () {
+    local curcontext="$curcontext" state line expl
+    typeset -A opt_args
+
+    _arguments -C -s \
+        "$_pgsql_common_opts[@]" \
+        {-e,--echo}'[display SQL queries]' \
+        {-c,--connection-limit=}'[connection limit for role (default: no limit)]' \
+        {-d,--createdb}'[role can create new databases]' \
+        {-D,--no-createdb}'[role cannot create databases]' \
+        {-E,--encrypted}'[encrypt stored password]' \
+        {-i,--inherit}'[role inherits privileges of roles it is a member of (default)]' \
+        {-I,--no-inherit}'[role does not inherit privileges]' \
+        {-l,--login}'[role can login (default)]' \
+        {-L,--no-login}'[role cannot login]' \
+        {-N,--unencrypted}'[do not encrypt stored password]' \
+        {-P,--pwprompt}'[assign a password to new role]' \
+        {-r,--createrole}'[role can create new roles]' \
+        {-R,--no-createrole}'[role cannot create roles]' \
+        {-s,--superuser}'[role will be superuser]' \
+        {-S,--no-superuser}'[role will not be superuser]'
+}
+
+_dropuser () {
+    local curcontext="$curcontext" state line expl
+    typeset -A opt_args
+
+    _arguments -C -s \
+        "$_pgsql_common_opts[@]" \
+        {-e,--echo}'[display SQL queries]' \
+        {-q,--quiet}'[non verbose mode]' \
+        {-i,--interactive}'[confirm before drop]' \
+        ':PostgreSQL user:_pgsql_users'
+}
+
 _pgsql_utils () {
     local _pgsql_common_opts
 
@@ -248,6 +283,8 @@ _pgsql_utils () {
         createdb) _createdb "$@" ;;
         dropdb)   _dropdb "$@"   ;;
         vacuumdb) _vacuumdb "$@"   ;;
+        createuser) _createuser "$@" ;;
+        dropuser) _dropuser "$@" ;;
     esac
 }
 
