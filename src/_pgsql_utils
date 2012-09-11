@@ -96,6 +96,23 @@ _pgsql_tables () {
         $( psql $_pgsql_params[@] -Aqt -c $_pgsql_table_sql $db 2>/dev/null )
 }
 
+_pgsql_schemas () {
+    local _pgsql_user _pgsql_port _pgsql_host _pgsql_params
+    _pgsql_get_identity
+
+    local db
+    db=${line[1]:-${PGDATABASE:-$LOGNAME}}
+
+    local _pgsql_schema_sql="select n.nspname \
+        from pg_catalog.pg_namespace n \
+        where n.nspname !~ '^pg_' \
+            and n.nspname <> 'information_schema' \
+        order by 1;"
+
+    compadd "$@" - \
+        $( psql $_pgsql_params[@] -Aqt -c $_pgsql_schema_sql $db 2>/dev/null )
+}
+
 _pgsql_databases () {
     local _pgsql_user _pgsql_port _pgsql_host _pgsql_params
     _pgsql_get_identity
@@ -165,24 +182,36 @@ _pg_dump () {
         {-b,--blobs}'[dump blobs as well]' \
         {-c,--clean}'[include clean cmds in dump]' \
         {-C,--create}'[include createdb cmds in dump]' \
+        {-E+,--encoding=}':database encoding:_pgsql_encodings' \
         {-d,--inserts}'[use INSERT not COPY]' \
         {-D,--{attribute,column}-inserts}'[use INSERT (cols) not COPY]' \
         {-f+,--file=}':output file:_files' \
         {-F+,--format=}':output format:_values "format" "p[plain text]" "t[tar]" "c[custom]"' \
         {-i,--ignore-version}'[ignore version mismatch]' \
-        {-n+,--schema=}':schema to dump:' \
+        {-n+,--schema=}':schema to dump:_pgsql_schemas' \
+        {-N+,--exclude-schema=}':schema to NOT dump:_pgsql_schemas' \
         {-o,--oids}'[dump objects identifiers for every table]' \
         {-O,--no-owner}'[dont recreate as same owner]' \
         {-R,--no-reconnect}'[dont output connect]' \
         {-s,--schema-only}'[no data, only schema]' \
         {-S+,--superuser=}':superuser name:_pgsql_users' \
         {-t+,--table=}':table to dump:_pgsql_tables' \
+        {-T+,--exclude-table=}':table to NOT dump:_pgsql_tables' \
         {-v,--verbose}'[verbose mode]' \
         {-V,--version}'[display client version]' \
         {-x,--no-{acl,privileges}}'[dont dump ACLs]' \
         -X+':option:_values "option" use-set-session-authorization disable-triggers' \
         {-Z+,--compress=}':compression level:_values "level" 9 8 7 6 5 4 3 2 1 0' \
-        ':PostgreSQL database:_pgsql_databases'
+        ':PostgreSQL database:_pgsql_databases' \
+        --section=':dump named section:_values "section" pre-data data post-data' \
+        --disable-dollpgar-quoting'[disable dollar quoting, use SQL standard quoting]' \
+        --disable-triggers'[disable triggers during data-only restore]' \
+        --no-security-labels'[do not dump security label assignments]' \
+        --no-tablespaces'[do not dump tablespace assignments]' \
+        --no-unlogged-table-data'[do not dump unlogged table data]' \
+        --quote-all-identifiers'[quote all identifiers, even if not key words]' \
+        --serializable-deferrable'[wait until the dump can run without anomalies]' \
+        --use-set-session-authorization'[use SET SESSION AUTHORIZATION commands instead of ALTER OWNER]'
 }
 
 _createdb () {
