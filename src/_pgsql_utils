@@ -1,4 +1,4 @@
-#compdef psql pg_dump createdb dropdb vacuumdb createuser dropuser initdb
+#compdef psql pg_dump pg_dumpall createdb dropdb vacuumdb createuser dropuser initdb
 # ------------------------------------------------------------------------------
 # Description
 # -----------
@@ -14,6 +14,8 @@
 #  * Dominic Mitchell <dom+zsh@happygiraffe.net>
 #
 #  * Johann 'Myrkraverk' Oskarsson <johann@2ndquadrant.com>
+#
+#  * Daniel Serodio <dserodio@gmail.com> pg_dumpall completion
 #
 # ------------------------------------------------------------------------------
 
@@ -212,6 +214,35 @@ _pg_dump () {
         --quote-all-identifiers'[quote all identifiers, even if not key words]' \
         --serializable-deferrable'[wait until the dump can run without anomalies]' \
         --use-set-session-authorization'[use SET SESSION AUTHORIZATION commands instead of ALTER OWNER]'
+}
+
+_pg_dumpall () {
+    local curcontext="$curcontext" state line expl
+    typeset -A opt_args
+
+    _arguments -C -s \
+        "$_pgsql_common_opts[@]" \
+        {-a,--data-only}'[dump only data]' \
+        {-c,--clean}'[include clean (drop) cmds brefore recreating]' \
+        {-g,--globals-only}'[dump only global objects, no databases]' \
+        {-f+,--file=}':output file:_files' \
+        {-o,--oids}'[dump objects identifiers for every table]' \
+        {-O,--no-owner}'[dont recreate as same owner]' \
+        {-r,--roles-only}'[no databases or tablespaces, only roles]' \
+        {-s,--schema-only}'[no data, only schema]' \
+        {-S+,--superuser=}':superuser name:_pgsql_users' \
+        {-t,--tablespaces-only}'[no databases or roles, only tablespaces]' \
+        {-x,--no-privileges}'[dont dump ACLs]' \
+        --binary-upgrade'[for use by upgrade utilities only]' \
+        --column-inserts'[use INSERT with column names not COPY]' \
+        --disable-dollar-quoting'[disable dollar quoting, use SQL standard quoting]' \
+        --disable-triggers'[disable triggers during data-only restore]' \
+        --inserts'[use INSERT not COPY]' \
+        --no-security-labels'[do not dump security label assignments]' \
+        --no-tablespaces'[do not dump tablespace assignments]' \
+        --no-unlogged-table-data'[do not dump unlogged table data]' \
+        --quote-all-identifiers'[quote all identifiers, even if not key words]' \
+        --use-set-session-authorization'[use SET SESSION AUTHORIZATION cmds instead of ALTER OWNER]'
 }
 
 _createdb () {
