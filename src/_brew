@@ -17,6 +17,7 @@
 #  * Daniel Schauenberg (https://github.com/mrtazz)
 #  * Adam Vandenberg (https://github.com/adamv)
 #  * Erik Kastner (https://github.com/kastner)
+#  * Katsunori Kanda (https://github.com/potix2)
 #
 # ------------------------------------------------------------------------------
 
@@ -31,12 +32,15 @@ _brew_installed_formulae() {
 
 local -a _1st_arguments
 _1st_arguments=(
+  'audit:check formulae for Homebrew coding style violations'
   'cat:display formula file for a formula'
   'cleanup:uninstall unused and old versions of packages'
   'create:create a new formula'
   'deps:list dependencies and dependants of a formula'
   'doctor:audits your installation for common issues'
+  'diy:automatically determine the installation prefix for non-Homebrew software'
   'edit:edit a formula'
+  'fetch:download the source packages for the given formulae'
   'home:visit the homepage of a formula or the brew project'
   'info:information about a formula'
   'install:install a formula'
@@ -44,15 +48,20 @@ _1st_arguments=(
   'list:list files in a formula or not-installed formulae'
   'log:git commit log for a formula'
   'missing:check all installed formulae for missing dependencies.'
+  'options:display install options specific to formula'
   'outdated:list formulae for which a newer version is available'
   'prune:remove dead links'
   'remove:remove a formula'
   'search:search for a formula (/regex/ or string)'
   'server:start a local web app that lets you browse formulae (requires Sinatra)'
+  'tap:tap a new formula repository from GitHub, or list existing taps'
+  'test:a few formulae provide a test method'
   'unlink:unlink a formula'
+  'untap:remove a tapped repository'
   'update:freshen up links'
   'upgrade:upgrade outdated formulae'
   'uses:show formulae which depend on a formula'
+  'versions:list previous versions of formulae'
 )
 
 local expl
@@ -92,7 +101,7 @@ case "$words[1]" in
   install|home|homepage|log|info|abv|uses|cat|deps|edit|options)
     _brew_all_formulae
     _wanted formulae expl 'all formulae' compadd -a formulae ;;
-  remove|rm|uninstall|unlink|cleanup|link|ln)
+  remove|rm|uninstall|unlink|cleanup|link|ln|test)
     _brew_installed_formulae
     _wanted installed_formulae expl 'installed formulae' compadd -a installed_formulae ;;
 esac
