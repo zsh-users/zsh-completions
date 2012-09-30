@@ -50,6 +50,7 @@ _gem() {
       "mirror[Mirror a gem repository]" \
       "outdated[Display all gems that need updates]" \
       "pristine[Restores installed gems to pristine condition from files located in the gem cache]" \
+      "push[Push a gem up to RubyGems.org]" \
       "query[Query gem information in local or remote repositories]" \
       "rdoc[Generates RDoc for pre-installed gems]" \
       "search[Display all gems whose name contains STRING]" \
@@ -93,6 +94,7 @@ __gem_help_arguments() {
     "mirror"
     "outdated"
     "pristine"
+    "push"
     "query"
     "rdoc"
     "search"
@@ -298,6 +300,14 @@ _gem_pristine() {
     ":gem name:__all_gems_all" \
     "--all[Restore all installed gems to pristine condition]" \
     "(-v --version)"{-v,--version}"[Specify version of gem to restore to pristine condition]" \
+    $gem_general_flags && ret=0
+}
+
+_gem_push() {
+  _arguments \
+    "*:URI: _alternative 'files:file:_files -g *.gem'" \
+    "(-k --key)"{-k,--key}"[Use the given API key from ~/.gem/credentials]" \
+    "--host[Push to another gemcutter-compatible host]" \
     $gem_general_flags && ret=0
 }
 
