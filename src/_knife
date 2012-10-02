@@ -12,6 +12,7 @@
 # -------
 #
 #  * Frank Louwers (https://github.com/franklouwers)
+#  * Mark Cornick (https://github.com/markcornick)
 #
 # ------------------------------------------------------------------------------
 
@@ -30,7 +31,7 @@ _knife() {
   typeset -A opt_args
 
   # These flags should be available everywhere according to man knife
-  knife_general_flags=( --help --server-url --key --config --editor --format --log_level --logfile --no-editor --user --print-after --version --yes )
+  knife_general_flags=( --help --server-url --key --config --editor --format --log_level --logfile --no-editor --user --print-after --version --yes --environment )
 
   cloudproviders=(bluebox ec2 rackspace slicehost terremark)
   _arguments \
@@ -43,7 +44,7 @@ _knife() {
   
   case $state in
   knifecmd)
-    compadd -Q "$@" bootstrap client configure cookbook "cookbook site" "data bag" exec index node recipe role search ssh status windows $cloudproviders
+    compadd -Q "$@" bootstrap client configure cookbook "cookbook site" "data bag" environment exec index node recipe role search ssh status windows $cloudproviders
   ;;
   knifesubcmd)
     case $words[2] in
@@ -58,6 +59,9 @@ _knife() {
     ;;
     cookbook)
       compadd -Q "$@" test list create download delete "metadata from" show "bulk delete" metadata upload
+    ;;
+    environment)
+      compadd -Q "$@" create delete edit "from file" list show
     ;;
     node)
      compadd -Q "$@" "from file" create show edit delete list run_list "bulk delete"
@@ -110,7 +114,7 @@ _knife() {
           versioncomp=1
           _arguments '4:Cookbookversions:($(_cookbook_versions) latest)'
        ;;
-       (node|client|role)
+       (node|client|role|environment)
          compadd "$@" --attribute
        esac
      esac
@@ -176,6 +180,10 @@ _chef_sitecookbooks_remote() {
 
 _chef_data_bags_remote() {
  (knife data bag list | grep \" | awk '{print $1}' | awk -F"," '{print $1}' | awk -F"\"" '{print $2}')
+}
+
+_chef_environments_remote() {
+ (knife environment list | grep \" | awk '{print $1}' | awk -F"," '{print $1}' | awk -F"\"" '{print $2}')
 }
 
 # The chef_x_local functions use the knife config to find the paths of relevant objects x to be uploaded to the server
