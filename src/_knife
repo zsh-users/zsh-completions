@@ -183,7 +183,7 @@ _chef_data_bags_remote() {
 }
 
 _chef_environments_remote() {
- (knife environment list | grep \" | awk '{print $1}' | awk -F"," '{print $1}' | awk -F"\"" '{print $2}')
+ (knife environment list | awk '{print $1}')
 }
 
 # The chef_x_local functions use the knife config to find the paths of relevant objects x to be uploaded to the server
