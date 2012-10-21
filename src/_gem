@@ -40,6 +40,7 @@ _gem() {
       "cleanup[Clean up old versions of installed gems in the local repository]" \
       "contents[Display the contents of the installed gems]" \
       "dependency[Show the dependencies of an installed gem]" \
+      "edit[Edit installed gem in editor]" \
       "environment[Display information about the RubyGems environment]" \
       "fetch[Download a gem and place it in the current directory]" \
       "generate_index[Generates the index files for a gem server directory]" \
@@ -177,6 +178,13 @@ _gem_dependency() {
     "--platform[Specify the platform of gem to dependency]" \
     "(-R --no-reverse-dependencies)"{-R,--no-reverse-dependencies}"[Include reverse dependencies in the output]" \
     "(-p --pipe)"{-p,--pipe}"[Pipe Format (name --version ver)]" \
+    $gem_general_flags && ret=0
+}
+_gem_edit() {
+  _arguments \
+    "*:gemname:__all_gems" \
+    "(-e --editor)"{-e,--editor}"[GEMEDITOR, BUNDLER_EDITOR, VISUAL and EDITOR environment variables are used to by default]" \
+    "(-d --dryrun)"{-d,--dryrun}"[Shows what command would be run without running it]" \
     $gem_general_flags && ret=0
 }
 
