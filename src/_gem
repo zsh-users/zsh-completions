@@ -28,6 +28,11 @@ _gem() {
     $nul_arg
   )
 
+  local gem_edit_command
+
+  ruby -rgemedit -e 'true' >/dev/null 2>&1 &&
+    gem_edit_command="edit[Edit installed gem in editor]"
+
   if (( CURRENT > 2 )); then
     (( CURRENT-- ))
     shift words
@@ -40,7 +45,7 @@ _gem() {
       "cleanup[Clean up old versions of installed gems in the local repository]" \
       "contents[Display the contents of the installed gems]" \
       "dependency[Show the dependencies of an installed gem]" \
-      "edit[Edit installed gem in editor]" \
+      ${gem_edit_command} \
       "environment[Display information about the RubyGems environment]" \
       "fetch[Download a gem and place it in the current directory]" \
       "generate_index[Generates the index files for a gem server directory]" \
@@ -85,6 +90,7 @@ __gem_help_arguments() {
     "cleanup"
     "contents"
     "dependency"
+    $(_call_program commands "ruby -rgemedit -e 'print \"edit\"' 2>/dev/null")
     "environment"
     "fetch"
     "generate_index"
