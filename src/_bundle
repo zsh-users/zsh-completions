@@ -37,7 +37,8 @@ case $state in
 			"viz[Generate a visual representation of your dependencies]" \
 			"init[Generate a simple Gemfile, placed in the current directory]" \
 			"gem[Create a simple gem, suitable for development with bundler]" \
-			"help[Describe available tasks or one specific task]"
+			"help[Describe available tasks or one specific task]" \
+			"platform[Displays platform compatibility information]"
 		ret=0
 		;;
 	args)
