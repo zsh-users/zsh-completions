@@ -30,7 +30,7 @@ _gem() {
 
   local gem_edit_command
 
-  ruby -rgemedit -e 'true' >/dev/null 2>&1 &&
+  gem which gemedit >/dev/null 2>&1 &&
     gem_edit_command="edit[Edit installed gem in editor]"
 
   if (( CURRENT > 2 )); then
@@ -90,7 +90,7 @@ __gem_help_arguments() {
     "cleanup"
     "contents"
     "dependency"
-    $(_call_program commands "ruby -rgemedit -e 'print \"edit\"' 2>/dev/null")
+    $(_call_program commands "gem which gemedit >/dev/null 2>&1 && printf 'edit'")
     "environment"
     "fetch"
     "generate_index"
