@@ -42,7 +42,7 @@ _arguments -C \
 
 case $state in
   cmds)
-    _describe -t commands 'nvm command' _1st_arguments && ret=0
+    _describe -t commands 'docpad command' _1st_arguments && ret=0
     ;;
 
 esac
