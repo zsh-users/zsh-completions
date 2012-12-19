@@ -1,4 +1,4 @@
-#compdef gem gem1.9
+#compdef gem gem1.9 macgem
 # ------------------------------------------------------------------------------
 # Description
 # -----------
@@ -28,6 +28,11 @@ _gem() {
     $nul_arg
   )
 
+  local gem_edit_command
+
+  gem which gemedit >/dev/null 2>&1 &&
+    gem_edit_command="edit[Edit installed gem in editor]"
+
   if (( CURRENT > 2 )); then
     (( CURRENT-- ))
     shift words
@@ -40,6 +45,7 @@ _gem() {
       "cleanup[Clean up old versions of installed gems in the local repository]" \
       "contents[Display the contents of the installed gems]" \
       "dependency[Show the dependencies of an installed gem]" \
+      ${gem_edit_command} \
       "environment[Display information about the RubyGems environment]" \
       "fetch[Download a gem and place it in the current directory]" \
       "generate_index[Generates the index files for a gem server directory]" \
@@ -84,6 +90,7 @@ __gem_help_arguments() {
     "cleanup"
     "contents"
     "dependency"
+    $(_call_program commands "gem which gemedit >/dev/null 2>&1 && printf 'edit'")
     "environment"
     "fetch"
     "generate_index"
@@ -179,6 +186,13 @@ _gem_dependency() {
     "(-p --pipe)"{-p,--pipe}"[Pipe Format (name --version ver)]" \
     $gem_general_flags && ret=0
 }
+_gem_edit() {
+  _arguments \
+    "*:gemname:__all_gems" \
+    "(-e --editor)"{-e,--editor}"[GEMEDITOR, BUNDLER_EDITOR, VISUAL and EDITOR environment variables are used to by default]" \
+    "(-d --dryrun)"{-d,--dryrun}"[Shows what command would be run without running it]" \
+    $gem_general_flags && ret=0
+}
 
 _gem_environment() {
   typeset -g _environment_arg=
@@ -223,7 +237,7 @@ _gem_help() {
 
 _gem_install() {
   _arguments \
-    "*:URI: _alternative 'files:file:_files -g *.gem' 'urls:URL:__all_gems'" \
+    "*:URI: _alternative 'files:file:_files -g \"*.gem\"' 'urls:URL:__all_gems'" \
     "(-i --install-dir)"{-i,--install-dir}"[Gem repository directory to get installed gems]":directory:_directories \
     "(-n --bindir)"{-n,--bindir}"[Directory where binary files are located]":directory:_directories \
     "(-d --no-rdoc)"{-d,--no-rdoc}"[Generate RDoc documentation for the gem on install]" \
@@ -305,7 +319,7 @@ _gem_pristine() {
 
 _gem_push() {
   _arguments \
-    "*:URI: _alternative 'files:file:_files -g *.gem'" \
+    "*:URI: _alternative 'files:file:_files -g \"*.gem\"'" \
     "(-k --key)"{-k,--key}"[Use the given API key from ~/.gem/credentials]" \
     "--host[Push to another gemcutter-compatible host]" \
     $gem_general_flags && ret=0
