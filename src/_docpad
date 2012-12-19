@@ -1,0 +1,58 @@
+#compdef docpad
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for docpad (https://github.com/bevry/docpad).
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Changwoo Park (https://github.com/pismute)
+#
+# ------------------------------------------------------------------------------
+
+local curcontext="$curcontext" state line  ret=1
+
+local -a _1st_arguments
+_1st_arguments=(
+  'run: run [options], does everyting - skeleton, generate, watch, server'
+  'server: server [options], creates a server for your generated project'
+  'skeleton: skeleton [options], will create a new project in your cwd based off an existing skeleton'
+  'render: render [path], render the file at <path> and output its results to stdout:path:_files'
+  'generate: (re)generates your project'
+  'watch: watches your project for changes, and (re)generates whenever a change is made'
+  'install: ensure everything is installed correctly'
+  'clean: ensure everything is cleaned correctly'
+  'info: display the information about your docpad instance'
+  'help: output the help'
+)
+
+_arguments -C \
+  '(-h,--help)'{-h,--help}'[output usage information]'\
+  '(-V,--version)'{-V,--version}'[output the version number]'\
+  '(-o,--out)'{-o,--out}'[where to output the rendered directory or files]:path:_files'\
+  '(-c,--config)'{-c,--config}'[a custom configuration file to load in]:path:_files'\
+  '(-e,--env)'{-e,--env}'[the environment name to use for this instance, multiple names can be separated with a comma]'\
+  '(-d,--debug)'{-d,--debug}'+[the level of debug messages you would like to display, if specified defaults to 7, otherwise 6]:number'\
+  '(-f,--force)'{-f,--force}'[force a re-install of all modules]'\
+  '1: :->cmds'\
+  '*: :_files'&& ret=0
+
+case $state in
+  cmds)
+    _describe -t commands 'docpad command' _1st_arguments && ret=0
+    ;;
+
+esac
+
+return ret
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
