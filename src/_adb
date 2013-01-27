@@ -81,6 +81,11 @@ _adb() {
             '2:local directory:_files -/' \
           && ret=0
         ;;
+        (sideload)
+          _arguments \
+            '1:local directory:_files -/' \
+          && ret=0
+        ;;
         (sync)
           _arguments \
             '-l[list but do not copy]' \
