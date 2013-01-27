@@ -223,7 +223,7 @@ _gem_help() {
 
 _gem_install() {
   _arguments \
-    "*:URI: _alternative 'files:file:_files -g *.gem' 'urls:URL:__all_gems'" \
+    "*:URI: _alternative 'files:file:_files -g \"*.gem\"' 'urls:URL:__all_gems'" \
     "(-i --install-dir)"{-i,--install-dir}"[Gem repository directory to get installed gems]":directory:_directories \
     "(-n --bindir)"{-n,--bindir}"[Directory where binary files are located]":directory:_directories \
     "(-d --no-rdoc)"{-d,--no-rdoc}"[Generate RDoc documentation for the gem on install]" \
@@ -305,7 +305,7 @@ _gem_pristine() {
 
 _gem_push() {
   _arguments \
-    "*:URI: _alternative 'files:file:_files -g *.gem'" \
+    "*:URI: _alternative 'files:file:_files -g \"*.gem\"'" \
     "(-k --key)"{-k,--key}"[Use the given API key from ~/.gem/credentials]" \
     "--host[Push to another gemcutter-compatible host]" \
     $gem_general_flags && ret=0
