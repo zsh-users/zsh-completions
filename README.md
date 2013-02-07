@@ -42,7 +42,7 @@ Contributing
 
 Contributions are welcome, just make sure you follow the guidelines:
 
- * Please add a header containing authors, license info, status and origin of the script (example [here](https://github.com/zsh-users/zsh-completions/blob/master/_ack)).
+ * Please add a header containing authors, license info, status and origin of the script (example [here](src/_ack)).
  * Please try to follow [Zsh completion style guide](https://github.com/zsh-users/zsh/blob/master/Etc/completion-style-guide).
  * Send a pull request or ask for committer access.
 
