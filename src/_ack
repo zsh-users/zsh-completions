@@ -166,7 +166,7 @@ _ack() {
 _ack_types_caching_policy() {
 
   # Rebuild if ackrc more recent than cache.
-  [[ -f $HOME/.ackrc && $$HOME/.ackrc -nt "$1" ]] && return 0
+  [[ -f ${ACKRC:-$HOME/.ackrc} && ${ACKRC:-$HOME/.ackrc} -nt "$1" ]] && return 0
 
   # Rebuild if cache is older than one week.  
   local -a oldp
