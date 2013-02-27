@@ -8,7 +8,7 @@ zsh-completions
 
 Status
 ------
-See [issues](zsh-completions/issues) for details on each completion definition.
+See [issues](https://github.com/zsh-users/zsh-completions/issues) for details on each completion definition.
 
 
 Usage
