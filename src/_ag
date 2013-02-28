@@ -1,0 +1,89 @@
+#compdef ag
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for ag (https://github.com/ggreer/the_silver_searcher)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Akira Maeda <https://github.com/glidenote>
+#
+# ------------------------------------------------------------------------------
+# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
+# vim: ft=zsh sw=2 ts=2 et
+# ------------------------------------------------------------------------------
+
+_ag() {
+
+  local curcontext="$curcontext" state line cmds update_policy ret=1
+
+  zstyle -s ":completion:${curcontext}:" cache-policy update_policy
+  [[ -z "$update_policy" ]] && zstyle ":completion:${curcontext}:" cache-policy _ag_types_caching_policy
+
+  _arguments -C \
+    '(- 1 *)--version[display version and copyright information]' \
+    '(- 1 *)--help[print a short help statement]' \
+    '(- 1 *)--man[print the manual page]' \
+    '(--ackmate)--ackmate[Output results in a format parseable by AckMate.]' \
+    '(-a --all-types)'{-a,--all-types}"[Search all files. This doesn't include hidden files, and also doesn't respect any ignore files.]" \
+    '(-A --after)'{-A,--after}'[Print lines before match. Defaults to 2.]:LINES' \
+    '(-B --before)'{-B,--before}'[Print lines after match. Defaults to 2.]:LINES' \
+    '(--nobreak --break)'{--nobreak,--break}'[Print a newline between matches in different files. Enabled by default.]' \
+    '(--nocolor --color)'{--nocolor,--color}'[Print color codes in results. Enabled by default.]' \
+    '(--column)--column[Print column numbers in results.]' \
+    '(-C --context)'{-C,--context}'[Print lines before and after matches. Defaults to 2.]:LINES' \
+    '(-D --debug)'{-D,--debug}'[Ridiculous debugging. Probably not useful.]' \
+    '(--depth)--depth[Search up to NUM directories deep. Default is 25.]:NUM' \
+    '(-f --follow)'{-f,--follow}'[Follow symlinks.]' \
+    '(--nogroup --group)'{--nogroup,--group}'[Same as --\[no\]break --\[no\]heading]' \
+    '(-g)-g[Print filenames that match PATTERN]:PATTERN' \
+    '(-G --file-search-regex)'{-G,--file-search-regex}'[Only search file names matching PATTERN]:PATTERN' \
+    '(--noheading --heading)'{--noheading,--heading}'[\[no\]heading]' \
+    '(--hidden)--hidden[Search hidden files. This option obeys ignore files.]' \
+    '(-i --ignore-case)'{-i,--ignore-case}'[Match case insensitively]:PATTERN' \
+    '(--ignore)--ignore[Ignore files/directories matching this pattern. Literal file and directory names are also allowed.]' \
+    '(-l --files-with-matches)'{-l,--files-with-matches}'[Only print filenames containing matches, not matching lines.]' \
+    '(-L --files-without-matches)'{-L,--files-without-matches}"[Only print filenames that don't contain matches.]" \
+    '(-m --max-count)'{-m,--max-count}'[Skip the rest of a file after NUM matches. Default is 10,000.]:NUM' \
+    '(-p --path-to-agignore)'{-p,--path-to-agignore}'[Provide a path to a specific .agignore file]:STRING' \
+    '(--print-long-lines)--print-long-lines[Print matches on very long lines (> 2k characters by default)]' \
+    '(-Q --literal)'{-Q,--literal}'[Do not parse PATTERN as a regular expression. Try to match it literally.]' \
+    '(-s --case-sensitive)'{-s,--case-sensitive}'[Match case sensitively. Enabled by default.]' \
+    '(-S --smart-case)'{-S,--smart-case}'[Match case sensitively if there are any uppercase letters in PATTERN, or case insensitively otherwise.]' \
+    '(--search-binary)--search-binary[Search binary files for matches.]' \
+    '(--stats)--stats[Print stats (files scanned, time taken, etc)]' \
+    '(-t --all-text)'{-t,--all-text}"[Search all text files. This doesn't include hidden files.]" \
+    '(-u --unrestricted)'{-u,--unrestricted}'[Search *all* files. This ignores .agignore, .gitignore, etc. It searches binary and hidden files as well.]' \
+    '(-U --skip-vcs-ignores)'{-U,--skip-vcs-ignores}'[Ignore VCS ignore files (.gitigore, .hgignore, svn:ignore), but still use .agignore.]' \
+    '(-v --invert-match)'{-v,--invert-match}'[invert match]' \
+    '(-w --word-regexp)'{-w,--word-regexp}'[Only match whole words.]' \
+    '1: :->patterns' \
+    '*: :_files' \
+    && ret=0
+
+  case $state in
+    patterns)
+      _message -e patterns 'pattern' && ret=0
+      ;;
+  esac
+
+  return ret
+}
+
+_ag_types_caching_policy() {
+
+  # Rebuild if .agignore more recent than cache.
+  [[ -f $HOME/.agignore && $$HOME/.agignore -nt "$1" ]] && return 0
+
+  # Rebuild if cache is older than one week.  
+  local -a oldp
+  oldp=( "$1"(Nmw+1) )
+  (( $#oldp )) && return 0
+
+  return 1
+}
+
+_ag "$@"
