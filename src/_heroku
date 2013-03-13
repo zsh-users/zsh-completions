@@ -162,7 +162,8 @@ case "$words[1]" in
 
 _arguments \
   $_command_args \
-  '(--app)--app[the app name]' \
+  '(-a|--app)'{-a,--app}'[the app name]' \
+  '(-r|--remote)'{-r,--remote}'[the git remote name]' \
   &&  return 0
 
 # Local Variables:
