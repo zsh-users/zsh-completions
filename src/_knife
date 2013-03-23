@@ -44,7 +44,7 @@ _knife() {
   
   case $state in
   knifecmd)
-    compadd -Q "$@" bootstrap client configure cookbook "cookbook site" "data bag" environment exec index node recipe role search ssh status windows $cloudproviders
+    compadd -Q "$@" bootstrap client configure cookbook "cookbook site" "data bag" environment user exec index node recipe role search ssh status windows $cloudproviders
   ;;
   knifesubcmd)
     case $words[2] in
@@ -62,6 +62,9 @@ _knife() {
     ;;
     environment)
       compadd -Q "$@" create delete edit "from file" list show
+    ;;
+    user)
+      compadd -Q "$@" create delete edit list reregister show
     ;;
     node)
      compadd -Q "$@" "from file" create show edit delete list run_list "bulk delete"
@@ -184,6 +187,10 @@ _chef_data_bags_remote() {
 
 _chef_environments_remote() {
  (knife environment list | awk '{print $1}')
+}
+
+_chef_users_remote() {
+ (knife user list | awk '{print $1}')
 }
 
 # The chef_x_local functions use the knife config to find the paths of relevant objects x to be uploaded to the server
