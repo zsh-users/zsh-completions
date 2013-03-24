@@ -70,6 +70,12 @@ _port() {
     '*:extra:->extra' \
     && return 0
 
+  local cache_policy
+  zstyle -s ":completion:${curcontext}:" cache-policy cache_policy
+  if [[ -z "$cache_policy" ]]; then
+    zstyle ":completion:${curcontext}:" cache-policy _port_caching_policy
+  fi
+
   case "$state" in
     extra)
       case "$words[2]" in
@@ -131,6 +137,13 @@ _port_select() {
     select_variants=("${(f)$(port select --list $words[4] | sed -e '1 d' -e 's/^[ \t]*//' -e 's/ (active)$//')}")
     _describe "Port select group $words[4] variants" select_variants
   fi
+}
+
+_port_caching_policy() {
+  local reg_time comp_time
+  reg_time=$(stat -c '%Z' $port_prefix/var/macports/registry/registry.db)
+  comp_time=$(stat -c '%Z' $1)
+  return $(( reg_time < comp_time ))
 }
 
 _port "$@"
