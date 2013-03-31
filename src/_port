@@ -104,6 +104,11 @@ _port() {
             "pseudo-common:Common Pseudo-portnames:($pseudo_common)" \
             "pseudo-advanced:Advanced Pseudo-portnames:($pseudo_advanced)"
           ;;
+        upgrade)
+          local outdated_packages
+          outdated_packages=("${(f)$(port outdated | sed -e '1 d' -e 's/^\([[:graph:]]*\).*/\1/')}")
+          _describe "Outdated ports" outdated_packages
+          ;;
         *)
           # Cache the list of all ports.
           if ( [[ ${+_port_available_packages} -eq 0 ]] || _cache_invalid PORT_AVAILABLE_PACKAGES ) &&
