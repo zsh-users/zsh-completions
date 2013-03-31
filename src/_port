@@ -73,56 +73,54 @@ _port() {
     '-y[Perform a dry run.]' \
     '-t[enable trace mode debug facilities on platforms that support it (Mac OS X).]' \
     "1:Port actions:($actions)" \
-    '*:extra:->extra' \
+    '*:extra:_port_dispatch' \
     && return 0
+}
 
-  case "$state" in
-    extra)
-      case "$words[2]" in
-        provides)
-          _files
-          ;;
-        search)
-          _message 'pattern'
-          ;;
-        help)
-          _describe -t actions 'Port actions' actions
-          ;;
-        select)
-          _call_function - _port_select
-          ;;
-        contents|deactivate|setrequested|space|uninstall|unsetrequested)
-          # Cache the list of installed ports.
-          if ( [[ ${+_port_installed_packages} -eq 0 ]] || _cache_invalid PORT_INSTALLED_PACKAGES ) &&
-            ! _retrieve_cache PORT_INSTALLED_PACKAGES;
-          then
-            _port_installed_packages=( $(_call_program path-all "port echo all") )
-            _store_cache PORT_INSTALLED_PACKAGES _port_installed_packages
-          fi
-          _alternative \
-            "ports:Installed ports:($_port_installed_packages)" \
-            "pseudo-common:Common Pseudo-portnames:($pseudo_common)" \
-            "pseudo-advanced:Advanced Pseudo-portnames:($pseudo_advanced)"
-          ;;
-        upgrade)
-          local outdated_packages
-          outdated_packages=("${(f)$(port outdated | sed -e '1 d' -e 's/^\([[:graph:]]*\).*/\1/')}")
-          _describe "Outdated ports" outdated_packages
-          ;;
-        *)
-          # Cache the list of all ports.
-          if ( [[ ${+_port_available_packages} -eq 0 ]] || _cache_invalid PORT_AVAILABLE_PACKAGES ) &&
-            ! _retrieve_cache PORT_AVAILABLE_PACKAGES;
-          then
-            _port_available_packages=( $(_call_program path-all "port echo all") )
-            _store_cache PORT_AVAILABLE_PACKAGES _port_available_packages
-          fi
-          _alternative \
-            "ports:Available ports:($_port_available_packages)" \
-            "pseudo-common:Common Pseudo-portnames:($pseudo_common)" \
-            "pseudo-advanced:Advanced Pseudo-portnames:($pseudo_advanced)"
-          ;;
-      esac
+_port_dispatch() {
+  case "$words[2]" in
+    provides)
+      _files
+      ;;
+    search)
+      _message 'pattern'
+      ;;
+    help)
+      _describe -t actions 'Port actions' actions
+      ;;
+    select)
+      _call_function - _port_select
+      ;;
+    contents|deactivate|setrequested|space|uninstall|unsetrequested)
+      # Cache the list of installed ports.
+      if ( [[ ${+_port_installed_packages} -eq 0 ]] || _cache_invalid PORT_INSTALLED_PACKAGES ) &&
+        ! _retrieve_cache PORT_INSTALLED_PACKAGES;
+      then
+        _port_installed_packages=( $(_call_program path-all "port echo all") )
+        _store_cache PORT_INSTALLED_PACKAGES _port_installed_packages
+      fi
+      _alternative \
+        "ports:Installed ports:($_port_installed_packages)" \
+        "pseudo-common:Common Pseudo-portnames:($pseudo_common)" \
+        "pseudo-advanced:Advanced Pseudo-portnames:($pseudo_advanced)"
+      ;;
+    upgrade)
+      local outdated_packages
+      outdated_packages=("${(f)$(port outdated | sed -e '1 d' -e 's/^\([[:graph:]]*\).*/\1/')}")
+      _describe "Outdated ports" outdated_packages
+      ;;
+    *)
+      # Cache the list of all ports.
+      if ( [[ ${+_port_available_packages} -eq 0 ]] || _cache_invalid PORT_AVAILABLE_PACKAGES ) &&
+        ! _retrieve_cache PORT_AVAILABLE_PACKAGES;
+      then
+        _port_available_packages=( $(_call_program path-all "port echo all") )
+        _store_cache PORT_AVAILABLE_PACKAGES _port_available_packages
+      fi
+      _alternative \
+        "ports:Available ports:($_port_available_packages)" \
+        "pseudo-common:Common Pseudo-portnames:($pseudo_common)" \
+        "pseudo-advanced:Advanced Pseudo-portnames:($pseudo_advanced)"
       ;;
   esac
 }
