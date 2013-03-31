@@ -83,7 +83,7 @@ _port() {
           _files
           ;;
         search)
-          _guard '^--*' 'pattern'
+          _message 'pattern'
           ;;
         help)
           _describe -t actions 'Port actions' actions
