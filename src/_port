@@ -45,7 +45,7 @@ _port() {
   select_options=(
   '--list:List available versions for the group'
   '--set:Select the given version for the group'
-  '--show:Show which version is currently selected for the group \(default if none given\)'
+  '--show:Show which version is currently selected for the group (default if none given)'
   )
 
   _arguments -s -C \
