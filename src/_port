@@ -48,6 +48,12 @@ _port() {
   '--show:Show which version is currently selected for the group (default if none given)'
   )
 
+  local cache_policy
+  zstyle -s ":completion:${curcontext}:" cache-policy cache_policy
+  if [[ -z "$cache_policy" ]]; then
+    zstyle ":completion:${curcontext}:" cache-policy _port_caching_policy
+  fi
+
   _arguments -s -C \
     '-v[verbose mode (generate verbose messages)]' \
     '-d[debug mode (generate debugging messages, implies -v)]' \
@@ -69,12 +75,6 @@ _port() {
     "1:Port actions:($actions)" \
     '*:extra:->extra' \
     && return 0
-
-  local cache_policy
-  zstyle -s ":completion:${curcontext}:" cache-policy cache_policy
-  if [[ -z "$cache_policy" ]]; then
-    zstyle ":completion:${curcontext}:" cache-policy _port_caching_policy
-  fi
 
   case "$state" in
     extra)
