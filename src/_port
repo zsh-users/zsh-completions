@@ -48,6 +48,8 @@ _port() {
   '--show:Show which version is currently selected for the group (default if none given)'
   )
 
+  revupgrade_options=('--id-loadcmd-check:Run more checks against a special loadcommand in Mach-O binaries')
+
   local cache_policy
   zstyle -s ":completion:${curcontext}:" cache-policy cache_policy
   if [[ -z "$cache_policy" ]]; then
@@ -114,6 +116,11 @@ _port_dispatch() {
       local outdated_packages
       outdated_packages=("${(f)$(port outdated | sed -e '1 d' -e 's/^\([[:graph:]]*\).*/\1/')}")
       _describe "Outdated ports" outdated_packages
+      ;;
+    rev-upgrade)
+      if (( CURRENT == 3 )); then
+        _describe 'Rev-upgrade options' revupgrade_options
+      fi
       ;;
     *)
       # Cache the list of all ports.
