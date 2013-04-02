@@ -73,8 +73,14 @@ _port() {
     '-y[Perform a dry run.]' \
     '-t[enable trace mode debug facilities on platforms that support it (Mac OS X).]' \
     "1:Port actions:($actions)" \
-    '*:extra:_port_dispatch' \
+    '*:extra:->extra' \
     && return 0
+
+  case "$state" in
+    extra)
+      _port_dispatch
+      ;;
+  esac
 }
 
 _port_dispatch() {
