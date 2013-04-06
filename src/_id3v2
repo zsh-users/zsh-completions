@@ -80,6 +80,9 @@ _id3v2 () {
         _describe -t frames 'id3v2 frames' _id3v2_frames && ret=0
     fi
 
+    local showfiles=''
+    (( CURRENT <= 2 )) && showfiles='!'
+
     # regular arguments either way
     _arguments \
       - tagging \
@@ -99,7 +102,7 @@ _id3v2 () {
         '(-R --list-rfc822)'{-R,--list-rfc822}'[lists using an rfc822-style format for output]' \
         '(-)'{-D,--delete-all}'[deletes both id3v1 and id3v2 tags]' \
         '(-)'{-l,--list}'[lists the tag(s) on the file(s)]' \
-        '*:mp3 file:_files -g "*.mp3"' \
+        $showfiles'*:mp3 file:_files -g "*.mp3"' \
       - meta \
         '(- *)'{-f,--list-frames}'[display all possible frames for id3v2]' \
         '(- *)'{-L,--list-genres}'[lists all id3v1 genres]' \
