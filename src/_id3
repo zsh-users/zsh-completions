@@ -46,19 +46,25 @@ _id3_genre () {
 
 }
 
+# only show files if at least one argument or something has been provided
+local showfiles=''
+(( CURRENT <= 2 )) && showfiles='!'
+
 _arguments \
-  '-t[Modifies a Title tag]:title' \
-  '-T[Modifies a Track tag]:track' \
-  '-a[Modifies an Artist tag]:artist' \
-  '-A[Modifies an Album tag]:album' \
-  '-y[Modifies a Year tag]:year' \
-  '-c[Modifies a Comment tag]:comment' \
-  '-g[Modifies a Genre tag]:genre:_id3_genre' \
-  '(-)-l[Lists an ID3 tag]' \
-  '-R[Uses an rfc822-style format for output]' \
-  '(-)-d[Deletes an ID3 tag]' \
-  '(- *)-L[Lists all genres]' \
-  '(- *)-h[Displays this help info]' \
-  '(- *)-v[Prints version info]' \
-   '*:mp3 file:_files -g \*.mp3' && return 0
+  - tagging \
+      '-t[modify title tag]:title' \
+      '-T[modify track tag]:track' \
+      '-a[modify artist tag]:artist' \
+      '-A[modify album tag]:album' \
+      '-y[modify year tag]:year' \
+      '-c[modify comment tag]:comment' \
+      '-g[modify genre tag]:genre:_id3_genre' \
+      '(-)-l[lists tags]' \
+      '-R[use rfc822-style format for output]' \
+      '(-)-d[delete id3 tag]' \
+      $showfiles'*:mp3 file:_files -g \*.mp3' \
+  - meta \
+      '(- *)-L[list all genres]' \
+      '(- *)-h[display help info]' \
+      '(- *)-v[print version info]' && return 0
 
