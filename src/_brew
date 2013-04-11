@@ -23,11 +23,15 @@
 
 
 _brew_all_formulae() {
-  formulae=(`brew search`) # FIXME _call_program should be used here
+  formulae=(${(f)"$(_call_program formulae brew search 2>/dev/null)"})
 }
 
 _brew_installed_formulae() {
-  installed_formulae=(`brew list`) # FIXME _call_program should be used here
+  installed_formulae=(${(f)"$(_call_program formulae brew list 2>/dev/null)"})
+}
+
+_brew_outdated_formulae() {
+  outdated_formulae=(${(f)"$(_call_program formulae brew outdated 2>/dev/null)"})
 }
 
 local -a _1st_arguments
@@ -58,6 +62,7 @@ _1st_arguments=(
   'test:a few formulae provide a test method'
   'unlink:unlink a formula'
   'untap:remove a tapped repository'
+  'unpin:unpin specified formulae'
   'update:freshen up links'
   'upgrade:upgrade outdated formulae'
   'uses:show formulae which depend on a formula'
@@ -65,7 +70,7 @@ _1st_arguments=(
 )
 
 local expl
-local -a formulae installed_formulae
+local -a formulae installed_formulae outdated_formulae
 
 _arguments \
   '(-v)-v[verbose]' \
@@ -87,10 +92,17 @@ case "$words[1]" in
   search|-S)
     _arguments \
       '(--macports)--macports[search the macports repository]' \
-      '(--fink)--fink[search the fink repository]' ;;
+      '(--fink)--fink[search the fink repository]' \
+      '1: :->forms' &&  return 0
+
+      if [[ "$state" == forms ]]; then
+        _brew_all_formulae
+        _wanted formulae expl 'all formulae' compadd -a formulae
+      fi ;;
   list|ls)
     _arguments \
       '(--unbrewed)--unbrewed[files in brew --prefix not controlled by brew]' \
+      '(--pinned)--pinned[list all versions of pinned formulae]' \
       '(--versions)--versions[list all installed versions of a formula]' \
       '1: :->forms' &&  return 0
 
@@ -101,9 +113,12 @@ case "$words[1]" in
   install|home|homepage|log|info|abv|uses|cat|deps|edit|options)
     _brew_all_formulae
     _wanted formulae expl 'all formulae' compadd -a formulae ;;
-  remove|rm|uninstall|unlink|cleanup|link|ln|test)
+  remove|rm|uninstall|unlink|cleanup|link|ln|pin|unpin|test)
     _brew_installed_formulae
     _wanted installed_formulae expl 'installed formulae' compadd -a installed_formulae ;;
+  upgrade)
+    _brew_outdated_formulae
+    _wanted outdated_formulae expl 'outdated formulae' compadd -a outdated_formulae ;;
 esac
 
 # Local Variables:
@@ -113,3 +128,4 @@ esac
 # sh-basic-offset: 2
 # End:
 # vim: ft=zsh sw=2 ts=2 et
+
