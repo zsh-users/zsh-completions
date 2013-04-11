@@ -162,8 +162,40 @@ case "$words[1]" in
 
 _arguments \
   $_command_args \
-  '(--app)--app[the app name]' \
+  '(-a|--app)'{-a,--app}'[the app name]' \
+  '(-r|--remote)'{-r,--remote}'[the git remote name]:remote:->remotes' \
   &&  return 0
+
+__heroku_git_remotes () {
+	local expl gitdir remotes
+
+	gitdir=$(_call_program gitdir git rev-parse --git-dir 2>/dev/null)
+	__heroku_git_command_successful || return
+
+	remotes=(${${(f)"$(_call_program remotes git config --get-regexp '"^remote\..*\.url$"')"}//#(#b)remote.(*).url */$match[1]})
+	__heroku_git_command_successful || return
+
+	# TODO: Should combine the two instead of either or.
+	if (( $#remotes > 0 )); then
+		_wanted remotes expl remote compadd $* - $remotes
+	else
+		_wanted remotes expl remote _files $* - -W "($gitdir/remotes)" -g "$gitdir/remotes/*"
+	fi
+}
+
+__heroku_git_command_successful () {
+	if (( ${#pipestatus:#0} > 0 )); then
+		_message 'not a git repository'
+		return 1
+	fi
+	return 0
+}
+
+case $state in
+  (remotes)
+   __heroku_git_remotes && return 0
+  ;;
+esac
 
 # Local Variables:
 # mode: Shell-Script
