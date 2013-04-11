@@ -1,4 +1,4 @@
-#compdef gem gem1.9
+#compdef gem gem1.9 macgem
 # ------------------------------------------------------------------------------
 # Description
 # -----------
@@ -28,10 +28,29 @@ _gem() {
     $nul_arg
   )
 
+  extra_gems=$(_call_program commands ${words[1]} list --no-version gem-browse gemedit gem-edit)
+
+  local gem_edit_command="edit[Edit installed gem in editor]"
+  local gem_clone_command="clone[Clone a gem's source from GitHub]"
+  local gem_browse_command="browse[browse the gem's homepage]"
+
+  if [ ${#extra_gems} -eq 0 ] ; then
+    extra_gem_commands_desc=""
+    extra_gem_commands=""
+  elif [[ "${extra_gems[(i)gem-browse]}" -le ${#extra_gems} ]] ; then
+    extra_gem_commands_desc=(${gem_edit_command} ${gem_browse_command} ${gem_clone_command})
+    extra_gem_commands=(clone browse edit)
+
+  elif [[ "${extra_gems[(r)gem-edit]}" -le ${#extra_gems} ]] \
+    || [[ "${extra_gems[(r)gemedit]}" -le ${#extra_gems} ]] ; then
+    extra_gem_commands_desc=${gem_edit_command}
+    extra_gem_commands=edit
+  fi
+
   if (( CURRENT > 2 )); then
     (( CURRENT-- ))
     shift words
-    _call_function 1 _gem_${words[1]}
+    _call_function - _gem_${words[1]}
   else
     _values "gem command" \
       "build[Build a gem from a gemspec]" \
@@ -40,6 +59,7 @@ _gem() {
       "cleanup[Clean up old versions of installed gems in the local repository]" \
       "contents[Display the contents of the installed gems]" \
       "dependency[Show the dependencies of an installed gem]" \
+      ${extra_gem_commands_desc} \
       "environment[Display information about the RubyGems environment]" \
       "fetch[Download a gem and place it in the current directory]" \
       "generate_index[Generates the index files for a gem server directory]" \
@@ -84,6 +104,7 @@ __gem_help_arguments() {
     "cleanup"
     "contents"
     "dependency"
+    $(extra_gem_commands)
     "environment"
     "fetch"
     "generate_index"
@@ -178,6 +199,16 @@ _gem_dependency() {
     "(-R --no-reverse-dependencies)"{-R,--no-reverse-dependencies}"[Include reverse dependencies in the output]" \
     "(-p --pipe)"{-p,--pipe}"[Pipe Format (name --version ver)]" \
     $gem_general_flags && ret=0
+}
+_gem_edit() {
+  _arguments \
+    "*:gemname:__all_gems" \
+    "(-e --editor)"{-e,--editor}"[GEMEDITOR, BUNDLER_EDITOR, VISUAL and EDITOR environment variables are used to by default]" \
+    $gem_general_flags && ret=0
+}
+
+_gem_browse() {
+  _gem_edit
 }
 
 _gem_environment() {
@@ -469,3 +500,4 @@ _gem_which() {
 # sh-basic-offset: 2
 # End:
 # vim: ft=zsh sw=2 ts=2 et
+
