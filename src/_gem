@@ -34,8 +34,10 @@ _gem() {
     $nul_arg
   )
 
+  extra_gems=$(_call_program commands ${words[1]} list --no-version gem-browse gemedit gem-edit)
 
   local gem_edit_command="edit[Edit installed gem in editor]"
+  local gem_open_command="open[open installed gem in editor]"
   local gem_clone_command="clone[Clone a gem's source from GitHub]"
   local gem_browse_command="browse[browse the gem's homepage]"
 
@@ -51,8 +53,8 @@ _gem() {
   if [ ${#_gem_extensions} -eq 0 ] ; then
       extra_gem_commands_desc=""
       extra_gem_commands=""
-  elif [[ "${_gem_extensions[(i)gem-browse]}" -le ${#_gem_extensions} ]] ; then
-      extra_gem_commands_desc=(${gem_edit_command} ${gem_browse_command} ${gem_clone_command})
+  elif [[ "${extra_gems[(i)gem-browse]}" -le ${#extra_gems} ]] ; then
+    extra_gem_commands_desc=(${gem_edit_command} ${gem_open_command} ${gem_browse_command} ${gem_clone_command})
       extra_gem_commands=(clone browse edit)
 
   elif [[ "${_gem_extensions[(r)gem-edit]}" -le ${#_gem_extensions} ]] \
@@ -223,6 +225,10 @@ _gem_edit() {
 }
 
 _gem_browse() {
+  _gem_edit
+}
+
+_gem_open() {
   _gem_edit
 }
 
