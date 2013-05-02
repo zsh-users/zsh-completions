@@ -61,13 +61,6 @@ _ralio ()
             "--rootcause[Root cause]"
 				;;
 
-        (create | delete)
-          _arguments \
-            "-n[Name of the task]" \
-            "-t[Task - I don't know what this does!]"
-        ;;
-
-
         (task)
           __ralio-task
 		    ;;
