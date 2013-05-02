@@ -95,8 +95,8 @@ __ralio-task ()
 
 				(create|delete)
 					_arguments \
-            -n"[Name of the task]" \
-            -t"[Task - I don't know what this does]"  # TODO fix this!
+            -n"[Name of the new task]" \
+            -t"[Name of the parent task]"
 				;;
 
 			esac
