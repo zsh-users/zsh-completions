@@ -42,7 +42,7 @@
 _ack_version() {
     local version
     version=(${(f)"$(_call_program version $words[1] --version)"})
-    version=${${version[1]}#ack }
+    version=${${(z)${version[1]}}[2]}
     printf $version
 }
 
