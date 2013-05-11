@@ -1,9 +1,9 @@
-#compdef primus
+# compdef primus
 # ------------------------------------------------------------------------------
 # Description
 # -----------
 #
-#  Completion script for ack 1.94 (http://betterthangrep.com).
+#  Completion script for primus (https://github.com/amonakov/primus).
 #
 # ------------------------------------------------------------------------------
 # Authors
