@@ -36,7 +36,7 @@ _ralio ()
         "task:Allow you to create and delete story tasks."
         "configure:Set your Rally configurations."
 			)
-			_describe -t commands 'git flow' subcommands
+			_describe -t commands 'ralio commands' subcommands
 
       _arguments -C \
         {-V,--version}"[display version information]" \
