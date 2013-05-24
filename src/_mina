@@ -1,0 +1,43 @@
+#compdef mina
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for Mina (http://nadarei.co/mina/).
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Kazuya Takeshima (https://github.com/mitukiii)
+#
+# ------------------------------------------------------------------------------
+
+
+local curcontext="$curcontext" state line cmds ret=1
+
+_arguments -C \
+  {-h,--help}'[Show help]' \
+  {-V,--version}'[Show program version]' \
+  {-v,--verbose}'[Show commands as they happen]' \
+  {-s,--simulate}'[Run in simulation mode]' \
+  {-t,--trace}'[Show backtraces when errors occur]' \
+  -f'[Use FILE as the deploy configuration]:file:_files' \
+  '*: :->cmds' && ret=0
+
+case $state in
+  cmds)
+    cmds=( ${(f)"$(_call_program commands mina -T 2> /dev/null | sed -e 's/:/\\:/g; s/\[/\\[/g; s/\]/\\]/g; s/mina \([^ ]*\) .*# /\1:/g')"} )
+    _describe -t commands 'mina command' cmds && ret=0
+    ;;
+esac
+
+return ret
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
