@@ -28,15 +28,23 @@
 # Description
 # -----------
 #
-#  Completion script for ack 1.94 (http://betterthangrep.com).
+#  Completion script for ack 1.94 and 2.04 (http://betterthangrep.com).
 #
 # ------------------------------------------------------------------------------
 # Authors
 # -------
 #
-#  * Julien Nicoulaud <julien.nicoulaud@gmail.com>
+#  * Julien Nicoulaud <julien.nicoulaud@gmail.com> (version 1.94)
+#  * Zhao Cai <caizhaoff@gmail.com> (version 2.04)
 #
 # ------------------------------------------------------------------------------
+
+_ack_version() {
+    local version
+    version=(${(f)"$(_call_program version $words[1] --version)"})
+    version=${${(z)${version[1]}}[2]}
+    printf $version
+}
 
 
 _ack() {
@@ -49,15 +57,38 @@ _ack() {
 
   unset _ack_raw_types
   if ( [[ ${+_ack_raw_types} -eq 0 ]] || _cache_invalid "ack-grep" ) && ! _retrieve_cache "ack-grep"; then
-    _ack_raw_types=(${(S)${(f)${${"$(_call_program types $words[1] --help=types)"}#*--\[no\]}}#*no\]})
+
+    _ack_raw_types=(${(S)${(S)${(f)${${"$(_call_program types $words[1] --help=types)"}#*--\[no\]}}%; first line matches \/*\/}#*no\]})
     [[ $#_ack_raw_types -gt 0 ]] && _store_cache "ack-grep" _ack_raw_types
+  fi
+
+  ack_20_options=( 
+    '(- 1 *)--dump[Writes the list of options loaded and where they came from to standard output]'
+    '(- 1 *)--create-ackrc[create custom ackrc files based on the default settings loaded by ackr]'
+    '(- 1 *)--bar[consult Admiral Ackbar]'
+    '*--ignore-file=[ignore file]:ignore file filter: _describe "ignore file filter" ignore_filter_opts'
+    '*--file-from=[Read the list of files to search from FILE]:file:_files'
+    '-s[Suppress error messages about nonexistent or unreadable files]'
+    '--ignore-ack-defaults[ignore ack default options in favor of their own]' 
+  )
+
+  ack_19_options=( '(-a --all -u --unrestricted)'{-a,--all}'[operate on all files, regardless of type (but still skip directories like blib, CVS, etc.)]' 
+    '(-u --unrestricted -a --all)'{-u,--unrestricted}'[all files and directories (including blib/, core.*, ...) are searched, nothing is skipped]' 
+    '-G+[only paths matching the given regex are included in the search]:regex'
+    '--invert-file-match[print/search handle files that do not match -g/-G]' 
+  )
+
+  if (( $(_ack_version) > 2.0 )); then
+    ack_version_options=(${ack_20_options})
+  else
+    ack_version_options=(${ack_19_options})
   fi
 
   _arguments -C -s -S -n \
     '(- 1 *)--version[display version and copyright information]' \
     '(- 1 *)--help[print a short help statement]' \
     '(- 1 *)--man[print the manual page]' \
-    '(-a --all -u --unrestricted)'{-a,--all}'[operate on all files, regardless of type (but still skip directories like blib, CVS, etc.)]' \
+    $ack_version_options \
     '(-A --after-context -C --context)'{-A+,--after-context=}'[print N lines of trailing context after matching lines]:number' \
     '(-B --before-context -C --context)'{-B+,--before-context=}'[print N lines of leading context before matching lines]:number' \
     '(-C --context -A --after-context -B --before-context)'{-C-,--context=}'[print N lines (default 2) of context around matching lines]:number' \
@@ -74,16 +105,14 @@ _ack() {
     '-f[only print the files that would be searched, without actually doing any searching]' \
     '(--nofollow)--follow[follow symlinks]' \
     '(--follow)--nofollow[don'\''t follow symlinks]' \
-    '-G+[only paths matching the given regex are included in the search]:regex' \
     '-g+[print files where the relative path + filename matches the given regex]:regex' \
     '(--nogroup)--group[group matches by file name]' \
     '(--group)--nogroup[do not group matches by file name]' \
     '(-H --with-filename -h --no-filename)'{-H,--with-filename}'[print the filename for each match]' \
     '(-h --no-filename -H --with-filename)'{-h,--no-filename}'[suppress the prefixing of filenames on output when multiple files are searched]' \
     '(-i --ignore-case)'{-i,--ignore-case}'[ignore case in the search strings]' \
-    '*--ignore-dir[ignore directory]:directory:_files -/' \
-    '*--noignore-dir[don'\''t ignore directory]:directory:_files -/' \
-    '--invert-file-match[print/search handle files that do not match -g/-G]' \
+    '*--ignore-dir=[ignore directory]:directory:_files' \
+    '*--noignore-dir=[ignore directory]:directory:_files' \
     '--line=[only print given line of each file]:number' \
     '(-l --files-with-matches -L --files-without-matches)'{-l,--files-with-matches}'[only print the filenames of matching files, instead of the matching text]' \
     '(-L --files-without-matches -l --files-with-matches)'{-L,--files-without-matches}'[only print the filenames of files that do NOT match]' \
@@ -105,7 +134,6 @@ _ack() {
     '*--type=[specify the types of files to include or exclude from a search]:type:->types' \
     '*--type-add[files with the given extensions are recognized as being of the given type]:type-def:->type-defs' \
     '*--type-set[files with the given extensions are recognized as being of the given type]:type-def:->type-defs' \
-    '(-u --unrestricted -a --all)'{-u,--unrestricted}'[all files and directories (including blib/, core.*, ...) are searched, nothing is skipped]' \
     '(-v --invert-match)'{-v,--invert-match}'[invert match: select non-matching lines]' \
     '(-w --word-regexp)'{-w,--word-regexp}'[force the given pattern to match only whole words]' \
     '-1[stops after reporting first match of any kind]' \
@@ -163,6 +191,13 @@ _ack() {
   return ret
 }
 
+ignore_filter_opts=(
+  'is\::FILENAME'
+  'ext\::[EXTENSION,EXTENSION2,...]'
+  'match\::PATTERN'
+  'firstlinematch\::PATTERN'
+)
+
 _ack_types_caching_policy() {
 
   # Rebuild if ackrc more recent than cache.
@@ -185,3 +220,4 @@ _ack "$@"
 # sh-basic-offset: 2
 # End:
 # vim: ft=zsh sw=2 ts=2 et
+
