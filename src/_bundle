@@ -45,7 +45,7 @@ case $state in
 	args)
 		case $line[1] in
 			help)
-				_values 'commands' 'install update package exec config check list show console open viz init gem help' && ret=0
+				_values 'commands' 'install' 'update' 'package' 'exec' 'config' 'check' 'list' 'show' 'console' 'open' 'viz' 'init' 'gem' 'help' 'platform' 'outdated' && ret=0
 				;;
 			install)
 				_arguments \
