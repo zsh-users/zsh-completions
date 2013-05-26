@@ -19,6 +19,12 @@
 _gem() {
   local -a gem_general_flags
 
+  local context curcontext="$curcontext" update_policy
+
+  zstyle -s ":completion:${curcontext}:" cache-policy update_policy
+  [[ -z "$update_policy" ]] && \
+  zstyle ":completion:${curcontext}:" cache-policy _gem_extensions_caching_policy
+
   gem_general_flags=("(-h --help)"{-h,--help}"[Get help on this command]"
     "(-V --verbose)"{-V,--verbose}"[Set the verbose level of output]"
     "(-q --quiet)"{-q,--quiet}"[Silence commands]"
@@ -31,21 +37,32 @@ _gem() {
   extra_gems=$(_call_program commands ${words[1]} list --no-version gem-browse gemedit gem-edit)
 
   local gem_edit_command="edit[Edit installed gem in editor]"
+  local gem_open_command="open[open installed gem in editor]"
   local gem_clone_command="clone[Clone a gem's source from GitHub]"
   local gem_browse_command="browse[browse the gem's homepage]"
 
-  if [ ${#extra_gems} -eq 0 ] ; then
-    extra_gem_commands_desc=""
-    extra_gem_commands=""
-  elif [[ "${extra_gems[(i)gem-browse]}" -le ${#extra_gems} ]] ; then
-    extra_gem_commands_desc=(${gem_edit_command} ${gem_browse_command} ${gem_clone_command})
-    extra_gem_commands=(clone browse edit)
+  unset _gem_extra_commands
+  if ( [[ ${+_gem_extra_commands} -eq 0 ]] || \
+    _cache_invalid "gem_extensions" ) && ! _retrieve_cache "gem_extensions"; then
 
-  elif [[ "${extra_gems[(r)gem-edit]}" -le ${#extra_gems} ]] \
-    || [[ "${extra_gems[(r)gemedit]}" -le ${#extra_gems} ]] ; then
-    extra_gem_commands_desc=${gem_edit_command}
-    extra_gem_commands=edit
+    _gem_extensions=$(_call_program commands ${words[1]} list --no-version gem-browse gemedit gem-edit)
+
+    _store_cache "gem_extensions" _gem_extensions
   fi
+
+  if [ ${#_gem_extensions} -eq 0 ] ; then
+      extra_gem_commands_desc=""
+      extra_gem_commands=""
+  elif [[ "${extra_gems[(i)gem-browse]}" -le ${#extra_gems} ]] ; then
+    extra_gem_commands_desc=(${gem_edit_command} ${gem_open_command} ${gem_browse_command} ${gem_clone_command})
+      extra_gem_commands=(clone browse edit)
+
+  elif [[ "${_gem_extensions[(r)gem-edit]}" -le ${#_gem_extensions} ]] \
+    || [[ "${_gem_extensions[(r)gemedit]}" -le ${#_gem_extensions} ]] ; then
+      extra_gem_commands_desc=${gem_edit_command}
+      extra_gem_commands=edit
+    fi
+
 
   if (( CURRENT > 2 )); then
     (( CURRENT-- ))
@@ -208,6 +225,10 @@ _gem_edit() {
 }
 
 _gem_browse() {
+  _gem_edit
+}
+
+_gem_open() {
   _gem_edit
 }
 
@@ -493,6 +514,22 @@ _gem_which() {
     $gem_general_flags && ret=0
 }
 
+_gem_extensions_caching_policy() {
+  if [[ -n $GEM_HOME ]]; then
+    gem_home=$GEM_HOME
+  else
+    gem_home=$(_call_program commands ${words[1]} env gemdir)
+  fi
+
+  # Rebuild if gems directory is more recent than cache.
+  [[ $gem_home/gems -nt "$1" ]] && return 0
+
+  # Rebuild if cache is older than one week.  
+  local -a oldp
+  oldp=( "$1"(Nmw+1) )
+  (( $#oldp ))
+}
+
 # Local Variables:
 # mode: Shell-Script
 # sh-indentation: 2
@@ -500,4 +537,5 @@ _gem_which() {
 # sh-basic-offset: 2
 # End:
 # vim: ft=zsh sw=2 ts=2 et
+
 
