@@ -219,11 +219,13 @@ _yaourt() {
     _yaourt_opts_common=(
         '-b[Alternate database location]:database_location:_files -/'
         '-h[Display syntax for the given operation]'
-        '-r[Set alternate installation root]:installation root:_files -/'
+        '-r[Alternate installation root]:installation root:_files -/'
         '-v[Be more verbose]'
         '--cachedir[Alternate package cache location]:cache_location:_files -/'
-        '--config[An alternate configuration file]:config file:_files'
-        '--logfile[An alternate log file]:config file:_files'
+        '--config[Alternate configuration file]:config file:_files'
+        '--debug[Display debug messages]'
+        '--gpgdir[Alternate GnuPG home directory]:gpg_directory:_files -/'
+        '--logfile[Alternate log file]:config file:_files'
         '--noconfirm[Do not ask for confirmation]'
         '--noprogressbar[Do not show a progress bar when downloading files]'
         '--noscriptlet[Do not execute the install scriptlet if one exists]'
@@ -301,6 +303,7 @@ _yaourt() {
             _yaourt_completions_all_groups'
         '--asdeps[Install packages as non-explicitly installed]'
         '--asexplicit[Install packages as explicitly installed]'
+        '--needed[Do not reinstall up to date packages]'
     )
 
     case $words[2] in
