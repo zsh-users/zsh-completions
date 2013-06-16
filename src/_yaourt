@@ -305,6 +305,7 @@ _yaourt() {
         '--asdeps[Install packages as non-explicitly installed]'
         '--asexplicit[Install packages as explicitly installed]'
         '--needed[Do not reinstall up to date packages]'
+        '--devel[Used with -u updates all cvs/svn/git/hg/bzr packages]'
     )
 
     case $words[2] in
