@@ -264,6 +264,7 @@ _yaourt() {
         '-u[List packages that can be upgraded]'
         '--aur[Install packages from aur, even if they are in community, or, with the -u option, update packages installed from aur]'
         '--devel[Used with -u updates all cvs/svn/git/hg/bzr packages]'
+        '--date[List packages sorted ascendingly (oldest is printed first) by installation date]'
     )
 
     # options for passing to _arguments: options for --remove command
@@ -304,6 +305,7 @@ _yaourt() {
         '--asdeps[Install packages as non-explicitly installed]'
         '--asexplicit[Install packages as explicitly installed]'
         '--needed[Do not reinstall up to date packages]'
+        '--devel[Used with -u updates all cvs/svn/git/hg/bzr packages]'
     )
 
     case $words[2] in
