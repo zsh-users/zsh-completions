@@ -70,7 +70,7 @@ __rails_setup_application_directory() {
   application_directory="$(pwd)"
 
   while [ -n "$application_directory" ]; do
-    if [ -f "${application_directory}/script/rails" ]; then
+    if [ -f "${application_directory}/script/rails" -o -f "${application_directory}/bin/rails" ]; then
       return
     fi
     application_directory="${application_directory%/*}"
