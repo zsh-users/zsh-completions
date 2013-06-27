@@ -180,10 +180,12 @@ __rails_generate_commands() {
   )
   _describe -t rails_generators 'rails generator' rails_generators
 
+  local application_directory
+  __rails_setup_application_directory
   local cache_name
-  local -a all_generators
-  cache_name="rails_${$(pwd)##*/}_all_generators"
+  cache_name="rails/${application_directory##*/}/all_generators"
   if ! _retrieve_cache ${cache_name}; then
+    local -a all_generators
     all_generators=($(_call_program rails_generators rails generate 2> /dev/null | awk '/^  [a-zA-Z_]+/{ print $1 }'))
     _store_cache ${cache_name} all_generators
   fi
