@@ -160,6 +160,13 @@ _rails_g() {
 }
 
 __rails_generate_commands() {
+  local context curcontext="$curcontext" update_policy
+
+  zstyle -s ":completion:${curcontext}:" cache-policy update_policy
+  if [ -z "$update_policy" ]; then
+    zstyle ":completion:${curcontext}:" cache-policy _rails_generate_commands_caching_policy
+  fi
+
   local -a rails_generators
   rails_generators=(
     assets:'Stubs out new asset placeholders'
@@ -198,6 +205,19 @@ __rails_generate_commands() {
     generators=(${${(M)all_generators:#${namespace}:*}/:/\\:})
     _describe -t ${namespace}_generators "${namespace/_/ } generator" generators
   done
+}
+
+_rails_generate_commands_caching_policy() {
+  local application_directory
+  __rails_setup_application_directory
+
+  if [ "${application_directory}/Gemfile" -nt "$1" ]; then
+    return 0
+  fi
+
+  local -a oldp
+  oldp=( "$1"(Nmw+1) )
+  (( $#oldp ))
 }
 
 _rails_generate_default() {
