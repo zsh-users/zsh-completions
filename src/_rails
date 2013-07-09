@@ -167,26 +167,6 @@ __rails_generate_commands() {
     zstyle ":completion:${curcontext}:" cache-policy _rails_generate_commands_caching_policy
   fi
 
-  local -a rails_generators
-  rails_generators=(
-    assets:'Stubs out new asset placeholders'
-    controller:'Stubs out a new controller and its views'
-    generator:'Stubs out a new generator at lib/generators'
-    helper:'Stubs out a new helper'
-    integration_test:'Stubs out a new integration test'
-    mailer:'Stubs out a new mailer and its views'
-    migration:'Stubs out a new database migration'
-    model:'Stubs out a new model'
-    observer:'Stubs out a new observer'
-    performance_test:'Stubs out a new performance test'
-    resource:'Stubs out a new resource including an empty model and controller suitable for a restful, resource-oriented application'
-    scaffold:'Scaffolds an entire resource, from model and migration to controller and views, along with a full test suite'
-    scaffold_controller:'Stubs out a scaffolded controller, its seven RESTful actions and related views. Pass the model name, either CamelCased or under_scored'
-    session_migration:'Creates a migration to add the sessions table used by the ORM session store'
-    task:'Stubs out a new Rake task'
-  )
-  _describe -t rails_generators 'rails generator' rails_generators
-
   local application_directory
   __rails_setup_application_directory
   local cache_name
@@ -196,6 +176,10 @@ __rails_generate_commands() {
     all_generators=($(_call_program rails_generators rails generate 2> /dev/null | awk '/^  [a-zA-Z_]+/{ print $1 }'))
     _store_cache ${cache_name} all_generators
   fi
+
+  local -a rails_generators
+  rails_generators=(${all_generators:#*:*})
+  _describe -t rails_generators 'rails generator' rails_generators
 
   local -a -U namespaces
   local namespace
