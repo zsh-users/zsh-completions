@@ -270,6 +270,16 @@ _rails_generate_integration_test() {
     ': :_guard "^-*" "name"' \
 }
 
+_rails_generate_jbuilder() {
+  local -a generators_options
+  __rails_setup_generators_options
+
+  _arguments \
+    $generators_options \
+    ': :_guard "^-*" "name"' \
+    '*: :__rails_migration_fields'
+}
+
 _rails_generate_mailer() {
   local -a generators_options
   __rails_setup_generators_options
