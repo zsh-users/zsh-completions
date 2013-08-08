@@ -70,7 +70,7 @@ __rails_setup_application_directory() {
   application_directory="$(pwd)"
 
   while [ -n "$application_directory" ]; do
-    if [ -f "${application_directory}/script/rails" ]; then
+    if [ -f "${application_directory}/script/rails" -o -f "${application_directory}/bin/rails" ]; then
       return
     fi
     application_directory="${application_directory%/*}"
@@ -160,33 +160,26 @@ _rails_g() {
 }
 
 __rails_generate_commands() {
-  local -a rails_generators
-  rails_generators=(
-    assets:'Stubs out new asset placeholders'
-    controller:'Stubs out a new controller and its views'
-    generator:'Stubs out a new generator at lib/generators'
-    helper:'Stubs out a new helper'
-    integration_test:'Stubs out a new integration test'
-    mailer:'Stubs out a new mailer and its views'
-    migration:'Stubs out a new database migration'
-    model:'Stubs out a new model'
-    observer:'Stubs out a new observer'
-    performance_test:'Stubs out a new performance test'
-    resource:'Stubs out a new resource including an empty model and controller suitable for a restful, resource-oriented application'
-    scaffold:'Scaffolds an entire resource, from model and migration to controller and views, along with a full test suite'
-    scaffold_controller:'Stubs out a scaffolded controller, its seven RESTful actions and related views. Pass the model name, either CamelCased or under_scored'
-    session_migration:'Creates a migration to add the sessions table used by the ORM session store'
-    task:'Stubs out a new Rake task'
-  )
-  _describe -t rails_generators 'rails generator' rails_generators
+  local context curcontext="$curcontext" update_policy
 
+  zstyle -s ":completion:${curcontext}:" cache-policy update_policy
+  if [ -z "$update_policy" ]; then
+    zstyle ":completion:${curcontext}:" cache-policy _rails_generate_commands_caching_policy
+  fi
+
+  local application_directory
+  __rails_setup_application_directory
   local cache_name
-  local -a all_generators
-  cache_name="rails_${$(pwd)##*/}_all_generators"
+  cache_name="rails/${application_directory##*/}/all_generators"
   if ! _retrieve_cache ${cache_name}; then
+    local -a all_generators
     all_generators=($(_call_program rails_generators rails generate 2> /dev/null | awk '/^  [a-zA-Z_]+/{ print $1 }'))
     _store_cache ${cache_name} all_generators
   fi
+
+  local -a rails_generators
+  rails_generators=(${all_generators:#*:*})
+  _describe -t rails_generators 'rails generator' rails_generators
 
   local -a -U namespaces
   local namespace
@@ -196,6 +189,19 @@ __rails_generate_commands() {
     generators=(${${(M)all_generators:#${namespace}:*}/:/\\:})
     _describe -t ${namespace}_generators "${namespace/_/ } generator" generators
   done
+}
+
+_rails_generate_commands_caching_policy() {
+  local application_directory
+  __rails_setup_application_directory
+
+  if [ "${application_directory}/Gemfile" -nt "$1" ]; then
+    return 0
+  fi
+
+  local -a oldp
+  oldp=( "$1"(Nmw+1) )
+  (( $#oldp ))
 }
 
 _rails_generate_default() {
@@ -262,6 +268,16 @@ _rails_generate_integration_test() {
     $generators_options \
     --integration-tool='[Integration tool to be invoke]:integration tool' \
     ': :_guard "^-*" "name"' \
+}
+
+_rails_generate_jbuilder() {
+  local -a generators_options
+  __rails_setup_generators_options
+
+  _arguments \
+    $generators_options \
+    ': :_guard "^-*" "name"' \
+    '*: :__rails_migration_fields'
 }
 
 _rails_generate_mailer() {
