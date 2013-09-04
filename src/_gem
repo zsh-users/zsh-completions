@@ -17,6 +17,7 @@
 
 
 _gem() {
+  local -a gem_general_flags
 
   local context curcontext="$curcontext" update_policy
 
