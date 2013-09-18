@@ -1,0 +1,41 @@
+#compdef gist
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for gist (https://github.com/defunkt/gist)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Akira Maeda <https://github.com/glidenote>
+#
+# ------------------------------------------------------------------------------
+# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
+# vim: ft=zsh sw=2 ts=2 et
+# ------------------------------------------------------------------------------
+
+local curcontext="$curcontext" state line ret=1
+typeset -A opt_args
+
+_arguments -C \
+  '(--login)--login[Authenticate gist on this computer.]' \
+  '(-f --filename)'{-f,--filename}'[Sets the filename and syntax type.]:NAME' \
+  '(-t --type)'{-t,--type}'[Sets the file extension and syntax type.]:EXT' \
+  '(-p --private)'{-p,--private}'[Makes your gist private.]' \
+  '(--no-private)'--no-private'[Makes your gist no private.]' \
+  '(-d --description)'{-d,--description}'[Adds a description to your gist.]:DESCRIPTION' \
+  '(-s --shorten)'{-s,--shorten}'[Shorten the gist URL using git.io.]' \
+  '(-u --update)'{-u,--update}'[Update an existing gist.]:URL ID' \
+  '(-a --anonymous)'{-a,--anonymous}'[Create an anonymous gist.]' \
+  '(-c --copy)'{-c,--copy}'[Copy the resulting URL to the clipboard]' \
+  '(-e --embed)'{-e,--embed}'[Copy the embed code for the gist to the clipboard]' \
+  '(-o --open)'{-o,--open}'[Open the resulting URL in a browser]' \
+  '(--no-open)'--no-open'[No open the resulting URL in a browser]' \
+  '(-P --paste)'{-P,--paste}'[Paste from the clipboard to gist]' \
+  '(-h --help)'{-h,--help}'[print options help]' \
+  '(-v --version)'{-v,--version}'[print version]' \
+  '*: :_files' && ret=0
+
+return ret
