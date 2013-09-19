@@ -65,6 +65,7 @@ _1st_arguments=(
   "plugins":"list installed plugins"
   "plugins\:install":"install a plugin"
   "plugins\:uninstall":"uninstall a plugin"
+  "plugins\:update":"updates all plugins or a single plugin by name"
   "ps\:dynos":"scale to QTY web processes"
   "ps\:workers":"scale to QTY background processes"
   "ps":"list processes for an app"
