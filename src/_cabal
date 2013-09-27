@@ -68,14 +68,17 @@ _cabal_command ()
     'list:list packages matching a search string'
     'info:display detailed information about a particular package'
     'fetch:downloads packages for later installation'
-    'unpack:unpacks packages for user inspection'
+    "get:get a package's source code"
     'check:check the package for common mistakes'
     'sdist:generate a source distribution file (.tar.gz)'
     'upload:uploads source packages to Hackage'
     'report:upload build reports to a remote server'
+    'run:runs the compiled executable'
     'init:interactively create a .cabal file'
     'configure:prepare to build the package'
     'build:make this package ready for installation'
+    'repl:open an interpreter session for the given target'
+    'sandbox:create/modify/delete a sandbox'
     'copy:copy the files into the install locations'
     'haddock:generate Haddock HTML documentation'
     'clean:clean up after a build'
@@ -85,6 +88,22 @@ _cabal_command ()
     'bench:run the benchmark, if any (configure with UserHooks)'
     'help:help about commands'
   )
+
+  local -a _cabal_programs
+  _cabal_programs=()
+
+  programs=(alex ar c2hs cpphs ffihugs gcc ghc ghc-pkg greencard haddock
+    happy hmake hpc hsc2hs hscolour hugs jhc ld lhc lhc-pkg nhc98 pkg-config
+    ranlib strip tar uhc)
+
+  for program in $programs; do
+    _cabal_programs+=(
+      "--with-${program}=[give the path to ${program}]:file:_files"
+      "--${program}-options=[give extra options to ${program}]"
+      "--${program}-option=[give an extra option to ${program}]"
+    )
+  done
+
   if (( CURRENT == 1 )) then
     _describe -t commands 'command' _cabal_cmds || compadd "$@"
   else
@@ -105,7 +124,9 @@ _cabal_bench ()
     {-v-,--verbose=}'[control verbosity]:level:(0 1 2 3)' \
     '--builddir=[the directory where Cabal puts generated build files]:directory:_files -/' \
     '--benchmark-options=[give extra options to benchmark executables]' \
-    '--benchmark-option=[give an extra option to benchmark executables (no need to quote options containing spaces)]'
+    '--benchmark-option=[give an extra option to benchmark executables (no need to quote options containing spaces)]' \
+    {-j,--jobs=}'[run NUM jobs simultaneously]' \
+    "--only[don't reinstall add-source dependencies (sandbox-only)]"
 }
 
 _cabal_build ()
@@ -114,9 +135,9 @@ _cabal_build ()
     {-h,--help}'[show help]' \
     {-v-,--verbose=}'[control verbosity]:level:(0 1 2 3)' \
     '--builddir=[the directory where Cabal puts generated build files]:directory:_files -/' \
-    '--with-PROG=[give the path to PROG]:file:_files' \
-    '--PROG-options=[give extra options to PROG]' \
-    '--PROG-option=[give an extra option to PROG (no need to quote options containing spaces)]'
+    $_cabal_programs \
+    {-j,--jobs=}'[run NUM jobs simultaneously]' \
+    "--only[don't reinstall add-source dependencies (sandbox-only)]"
 }
 
 _cabal_check ()
@@ -157,6 +178,7 @@ _cabal_configure ()
     '--docdir=[installation directory for documentation]:directory:_files -/' \
     '--htmldir=[installation directory for HTML]:directory:_files -/' \
     '--haddockdir=[installation directory for haddock interfaces]:directory:_files -/' \
+    '--sysconfdir=[installation directory for configuration files]:directory:_files -/' \
     {-b,--scratchdir=}'[directory to receive the built package]:directory:_files -/' \
     '--program-prefix=[prefix to be applied to installed executables]' \
     '--program-suffix=[suffix to be applied to installed executables]' \
@@ -185,15 +207,14 @@ _cabal_configure ()
     {-f,--flags=}'[force values for the given flags]:flags:' \
     '--extra-include-dirs=[a list of directories to search for header files]:directory:_files -/' \
     '--extra-lib-dirs=[a list of directories to search for externallibraries]:directory:_files -/' \
+    '--extra-prog-path=[A list of directories to search for required programs]:directory:_files -/' \
     '--enable-tests[enable dependency checking and compilation for test suites listed in the package description file]' \
     '--disable-tests[disable dependency checking and compilation for test suites listed in the package description file]' \
     '--enable-library-coverage[enable build library and test suites with, Haskell Program Coverage enabled. (GHC only)]' \
     '--disable-library-coverage[disable build library and test suites with, Haskell Program Coverage enabled. (GHC only)]' \
     '--enable-benchmarks[enable dependency checking and compilation, for benchmarks listed in the package]' \
     '--disable-benchmarks[disable dependency checking and compilation, for benchmarks listed in the package]' \
-    '--with-PROG=[give the path to PROG]:file:_files' \
-    '--PROG-options=[give extra options to PROG]' \
-    '--PROG-option=[give an extra option to PROG (no need to quote options containing spaces)]' \
+    $_cabal_programs \
     '--cabal-lib-version=[select which version of the Cabal lib to use]' \
     '--constraint=[a list of additional constraints on the dependencies]' \
     '--preference=[specify preferences on the version of a package]' \
@@ -224,16 +245,31 @@ _cabal_fetch ()
     '*:package:_cabal_list_packages'
 }
 
+_cabal_get ()
+{
+  _arguments \
+    {-h,--help}'[show help]' \
+    {-v-,--verbose=}'[control verbosity]:level:(0 1 2 3)' \
+    {-d,--destdir=}'[where to unpack the packages]:directory:_files -/' \
+    {-s,--source-repository=}"[copy the package's source repository]" \
+    '--pristine[unpack the original pristine tarball, rather than updating the .cabal file with the latest revision from the package archive.]' \
+    '*:package:_cabal_list_packages'
+}
+
 _cabal_haddock ()
 {
   _arguments \
     {-h,--help}'[show help]' \
     {-v-,--verbose=}'[control verbosity]:level:(0 1 2 3)' \
     '--builddir=[the directory where Cabal puts generated files]:directory:_files -/' \
+    '--keep-temp-files[keep temporary files]' \
     '--hoogle[generate a hoogle database]' \
     '--html[generate HTML documentation]' \
     '--html-location=[location of HTML documentation]:url:' \
     '--executables[run haddock for Executables targets]' \
+    '--tests[run haddock for Test Suite targets]' \
+    '--benchmarks[run haddock for Benchmark targets]' \
+    '--all[run haddock for all targets]' \
     '--internal[run haddock for internal modules]' \
     '--css=[path to the haddock stylesheet]:file:_files' \
     '--hyperlink-source[hyperlink the documentation to the source code]' \
@@ -241,17 +277,16 @@ _cabal_haddock ()
     '--contents-location=[bake URL in as the location for the contents page]:url:' \
     '--with-ghc=[path to ghc]:file:_files' \
     '--with-haddock=[path to haddock]:file:_files' \
+    '--PROG-option=[give an extra option to PROG (no need to quote options containing spaces)]:option:' \
     '--ghc-options=[give extra options to ghc]:option:' \
     '--haddock-options=[give extra options to haddock]:option:' \
-    '--ghc-option=[give an extra option to ghc (no need to quote options containing spaces)]:option:' \
-    '--haddock-option=[give an extra option to haddock (no need to quote options containing spaces)]:option:'
 }
 
 _cabal_help ()
 {
   local -a cmds
-  cmds=(configure install list info update fetch upload bench init
-    check sdist report unpack build copy haddock clean hscolour register test help)
+  cmds=(install update list info fetch get check sdist upload report run init
+    configure build repl sandbox copy haddock clean hscolour register test bench help)
   _arguments \
     {-h,--help}'[Show help]' \
     '*::command:( $cmds )'
@@ -264,6 +299,9 @@ _cabal_hscolour ()
     {-v-,--verbose=}'[control verbosity]:level:(0 1 2 3)' \
     '--builddir=[the directory where Cabal puts generated files]:directory:_files -/' \
     '--executables[run hscolour for Executables targets]' \
+    '--tests[run hscolour for Test Suite targets]' \
+    '--benchmarks[run hscolour for Benchmarks targets]' \
+    '--all[run hscolour for all targets]' \
     '--css=[path to stylesheet]:file:_files'
 }
 
@@ -277,6 +315,9 @@ _cabal_info ()
 
 _cabal_install ()
 {
+  local context state state_descr line
+  typeset -A opt_args
+
   _arguments \
     {-h,--help}'[show help]' \
     {-v-,--verbose=}'[control verbosity]:level:(0 1 2 3)' \
@@ -299,6 +340,7 @@ _cabal_install ()
     '--docdir=[installation directory for documentation]:directory:_files -/' \
     '--htmldir=[installation directory for HTML]:directory:_files -/' \
     '--haddockdir=[installation directory for haddock interfaces]:directory:_files -/' \
+    '--sysconfdir=[installation directory for configuration files]:directory:_files -/' \
     {-b,--scratchdir=}'[directory to receive the built package]:directory:_files -/' \
     '--program-prefix=[prefix to be applied to installed executables]' \
     '--program-suffix=[suffix to be applied to installed executables]' \
@@ -326,16 +368,15 @@ _cabal_install ()
     '--package-db=[use a specific package database]:files:_files' \
     {-f,--flags=}'[force values for the given flags]:flags:' \
     '--extra-include-dirs=[a list of directories to search for header files]:directory:_files -/' \
-    '--extra-lib-dirs=[a list of directories to search for externallibraries]:directory:_files -/' \
+    '--extra-lib-dirs=[a list of directories to search for external libraries]:directory:_files -/' \
+    '--extra-prog-path=[a list of directories to search for required programs]:directory:_files -/' \
     '--enable-tests[enable dependency checking and compilation for test suites listed in the package description file]' \
     '--disable-tests[disable dependency checking and compilation for test suites listed in the package description file]' \
     '--enable-library-coverage[enable build library and test suites with, Haskell Program Coverage enabled. (GHC only)]' \
     '--disable-library-coverage[disable build library and test suites with, Haskell Program Coverage enabled. (GHC only)]' \
     '--enable-benchmarks[enable dependency checking and compilation, for benchmarks listed in the package]' \
     '--disable-benchmarks[disable dependency checking and compilation, for benchmarks listed in the package]' \
-    '--with-PROG=[give the path to PROG]:file:_files' \
-    '--PROG-options=[give extra options to PROG]' \
-    '--PROG-option=[give an extra option to PROG (no need to quote options containing spaces)]' \
+    $_cabal_programs \
     '--cabal-lib-version=[select which version of the Cabal lib to use]' \
     '--constraint=[a list of additional constraints on the dependencies]' \
     '--preference=[specify preferences on the version of a package]' \
@@ -351,14 +392,14 @@ _cabal_install ()
     '--avoid-reinstalls[do not select versions that would destructively overwrite installed packages]' \
     '--force-reinstalls[reinstall packages even if they will most likely break other installed packages]' \
     '--upgrade-dependencies[pick the latest version for all dependencies, rather than trying to pick an installed version]' \
-    '--only-dependencies[install only the dependencies necessary to build the given packages]' \
+    {--only-dependencies,--dependencies-only}'[install only the dependencies necessary to build the given packages]' \
     '--root-cmd=[command used to gain root privileges]::' \
     '--symlink-bindir=[add symlinks into this directory]:directory:_files -/' \
     '--build-summary=[save build summaries to file]:file:_files' \
     '--build-log=[log all builds to file]:file:_files' \
     '--remote-build-reporting=[generate build reports to send to a remote]:level:(none anonymous detailed)' \
     '--one-shot[do not record the packages in the world file]' \
-    {-j,--jobs=}'[run NUM jobs simultaneously.]' \
+    {-j,--jobs=}'[run NUM jobs simultaneously]' \
     '--haddock-hoogle[generate a hoogle database]' \
     '--haddock-html[generate HTML documentation]' \
     '--haddock-html-location=[location of HTML documentation]:url:' \
@@ -368,7 +409,15 @@ _cabal_install ()
     '--haddock-hyperlink-source[hyperlink the documentation to the source code]' \
     '--haddock-hscolour-css=[path to the HsColour stylesheet]:file:_files' \
     '--haddock-contents-location=[bake URL in as the location for the contents page]:url:' \
-    '*:package:_cabal_list_packages'
+    '*:: :->package-or-cabal-file'
+
+  case $state in
+    (package-or-cabal-file)
+      _alternative \
+         ':package:_cabal_list_packages' \
+         ':files:_files -g "*.cabal"'
+    ;;
+  esac
 }
 
 _cabal_list ()
@@ -394,6 +443,15 @@ _cabal_register ()
     '--gen-pkg-config=[generate package registration file]'
 }
 
+_cabal_repl ()
+{
+  _arguments \
+    {-h,--help}'[show help]' \
+    {-v-,--verbose=}'[control verbosity]:level:(0 1 2 3)' \
+    '--builddir=[the directory where Cabal puts generated build files]:directory:_files -/' \
+    $_cabal_programs
+}
+
 _cabal_report ()
 {
   _arguments \
@@ -403,12 +461,58 @@ _cabal_report ()
     {-p,--password=}'[hackage password]'
 }
 
+_cabal_run ()
+{
+  _arguments \
+    {-h,--help}'[show help]' \
+    {-v-,--verbose=}'[control verbosity]:level:(0 1 2 3)' \
+    '--builddir=[the directory where Cabal puts generated build files]:directory:_files -/' \
+    $_cabal_programs \
+    {-j,--jobs=}'[run NUM jobs simultaneously]' \
+    "--only[don't reinstall add-source dependencies (sandbox-only)]"
+}
+
+_cabal_sandbox ()
+{
+  _arguments \
+    {-h,--help}'[show help]' \
+    {-v-,--verbose=}'[control verbosity]:level:(0 1 2 3)' \
+    '--sandbox=[Sandbox location]:sandbox:_files -/'
+
+  if (( CURRENT == 2 )); then
+    local -a _cabal_sandbox_cmds
+    _cabal_sandbox_cmds=(
+      'init:initialize the sandbox'
+      'delete:delete the sandbox'
+      'add-source:add sources path to sandbox'
+      'hc-pkg:call sandbox related haskell compiler package database'
+      'list-sources:list added sources paths'
+    )
+    _describe -t sandbox-commands 'sandbox-command' _cabal_sandbox_cmds || compadd "$@"
+  else
+    case $WORDS[3] in
+      add-source)
+        _arguments \
+          {-h,--help}'[show help]' \
+          {-v-,--verbose=}'[control verbosity]:level:(0 1 2 3)' \
+          '--snapshot[take a snapshot instead of creating a link]' \
+          '--sandbox=[Sandbox location]:sandbox:_files -/' \
+          '*:sources:_files -/'
+        ;;
+      *)
+        _message "unknown cabal sandbox command: $WORDS[3]"
+        ;;
+    esac
+  fi
+}
+
 _cabal_sdist ()
 {
   _arguments \
     {-h,--help}'[show help]' \
     {-v,--verbose=}'[control verbosity]:level:(0 1 2 3)' \
     '--builddir=[the directory where Cabal puts generated files]:directory:_files -/' \
+    "--list-sources=[just write a list of the package's sources to a file]:directory:_files -/" \
     '--snapshot[produce a snapshot source distribution]' \
     '--output-directory=[generate a source distribution in the given directory]:directory:_files -/' \
     '--targz[produce a .tar.gz format archive]' \
@@ -426,17 +530,9 @@ _cabal_test ()
     '--show-details=[when to show results of individual test cases?]:filter:(always never failures)' \
     '--keep-tix-files[keep .tix files for HPC between test runs]' \
     '--test-options=[give extra options to test executables]' \
-    '--test-option=[give an extra option to test executables]'
-}
-
-_cabal_unpack ()
-{
-  _arguments \
-    {-h,--help}'[show help]' \
-    {-v-,--verbose=}'[control verbosity]:level:(0 1 2 3)' \
-    {-d,--destdir=}'[where to unpack the packages]:directory:_files -/' \
-    '--pristine[unpack the original pristine tarball, rather than updating the .cabal file with the latest revision from the package archive.]' \
-    '*:package:_cabal_list_packages'
+    '--test-option=[give an extra option to test executables]' \
+    {-j,--jobs=}'[run NUM jobs simultaneously]' \
+    "--only[don't reinstall add-source dependencies (sandbox-only)]"
 }
 
 _cabal_update ()
