@@ -23,7 +23,6 @@ _arguments -C \
   '--bin[path for binaries to be placed (~/.rvm/bin/)]:path:_files' \
   '--source[src directory to use (~/.rvm/src/)]:path:_files' \
   '--archives[directory for downladed files (~/.rvm/archives/)]:path:_files' \
-  '-n[Name for new ruby install]:name:' \
   '-S[Specify a script file to attempt to load and run (rubydo)]:file:_files' \
   '-e[Execute code from the command line]:code' \
   '-G[root gem path to use]:path:_files' \
@@ -38,7 +37,7 @@ _arguments -C \
   '--default[with ruby select, sets a default ruby for new shells]' \
   '--debug[Toggle debug mode on for very verbose output]' \
   '--trace[Toggle trace mode on to see EVERYTHING rvm is doing]' \
-  '--force[Force install, removes old install & source before install]' \
+  '--force[Force install, even given ruby is already install]' \
   '--summary[Used with rubydo to print out a summary of the commands run]' \
   '--latest[with gemset --dump skips version strings for latest gem]' \
   '--gems[with uninstall/remove removes gems with the interpreter]' \
@@ -57,7 +56,7 @@ case $state in
 
   cmds)
 
-    cmds=( ${(f)"$(_call_program commands rvm help 2> /dev/null | sed -e '/^== Action/,/^== Implementation/!d; / \(::\|-\) /!d; s/^[ *]*\([^ *]*\)[ *]*\(::\|-\) *\(.*\)/\1:\3/')"} )
+    cmds=( ${(f)"$(_call_program commands rvm help 2> /dev/null | __rvm_sed -e '/^== Action/,/^== Implementation/!d; / :: /!d; s/^[ *]*\([^ ]*\) *:: *\(.*\)/\1:\2/')"} )
     cmds+=( $(rvm list strings) )
     _describe -t commands 'rvm command' cmds && ret=0
     ;;
@@ -70,15 +69,15 @@ case $state in
 
         if (( CURRENT == 3 )); then
           # See if we’ve made it to the ‘@’; eg, 1.9.2@
-          if ! GREP_OPTIONS="" \grep '@' <<< "${line[CURRENT-1]}" >/dev/null ; then
+          if ! __rvm_grep '@' <<< "${line[CURRENT-1]}" >/dev/null ; then
             _values -S , 'rubies' \
-              $(rvm list strings | sed -e 's/ruby-\([^) ]*\)-\([^) ]*\)/ruby-\1-\2 \1-\2 \1/g') \
-              default system $(rvm alias list | cut -d' ' -f1) && ret=0
+              $(rvm list strings | __rvm_sed -e 's/ruby-\([^) ]*\)-\([^) ]*\)/ruby-\1-\2 \1-\2 \1/g') \
+              default system $(rvm alias list names) && ret=0
           else
             # Construct a full version string for each of the gemsets.
             # Eg, 1.9.2@min 1.9.2@rail3 …
             _values -S , 'gemsets' \
-              $(rvm ${line[CURRENT-1]%%@*} gemset list | awk '/^[ -_[:alnum:]]+$/ {print "'${line[CURRENT-1]%%@*}'@"$1}')
+              $(rvm ${line[CURRENT-1]%%@*} gemset list | __rvm_awk '/^[ -_[:alnum:]]+$/ {print "'${line[CURRENT-1]%%@*}'@"$1}')
           fi
         fi
         ;;
@@ -91,10 +90,10 @@ case $state in
       gemset)
 
         if (( CURRENT == 3 )); then
-          _values 'gemset_commands' $(rvm gemset | sed -e '/create/!d; s/^.*[{]\(.*\)[}].*$/\1/; s/,/ /g')
+          _values 'gemset_commands' $(rvm gemset help | __rvm_sed -e '/create/!d; s/^.*[{]\(.*\)[}].*$/\1/; s/,/ /g')
         else
-          #_values -S , 'gemsets' $(rvm gemset list | GREP_OPTIONS="" \grep -v gemset 2>/dev/null)
-          _values -S , 'gemsets' $(rvm gemset list | GREP_OPTIONS="" \grep -Ev '(gemset|info)' 2>/dev/null | awk '/^[ -_[:alnum:]]+$/ {print '$1'}')
+          #_values -S , 'gemsets' $(rvm gemset list | __rvm_grep -v gemset 2>/dev/null)
+          _values -S , 'gemsets' $(rvm gemset list | __rvm_grep -Ev '(gemset|info)' 2>/dev/null | __rvm_awk '/^[ -_[:alnum:]]+$/ {print '$1'}')
         fi
         ret=0
         ;;
@@ -102,9 +101,9 @@ case $state in
       package)
 
         if (( CURRENT == 3 )); then
-          _values 'package_commands' $(rvm package | sed -e '/Usage/!d; s/^.*[{]\(.*\)[}] [{].*$/\1/; s/,/ /g')
+          _values 'package_commands' $(rvm package | __rvm_sed -e '/Usage/!d; s/^.*[{]\(.*\)[}] [{].*$/\1/; s/,/ /g')
         else
-          _values 'packages' $(rvm package | sed -e '/Usage/!d; s/^.*[}] [{]\(.*\)[}].*$/\1/; s/,/ /g')
+          _values 'packages' $(rvm package | __rvm_sed -e '/Usage/!d; s/^.*[}] [{]\(.*\)[}].*$/\1/; s/,/ /g')
         fi
         ret=0
         ;;
