@@ -1,0 +1,117 @@
+#compdef salt
+# ------------------------------------------------------------------------------
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of the zsh-users nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL ZSH-USERS BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for salt (http://saltstack.com/).
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Massimiliano Torromeo <massimiliano.torromeo@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+_minions() {
+    ls /etc/salt/pki/master/minions | while read minion; do
+        _wanted 'target' expl 'target' compadd $minion
+    done
+}
+
+_modules() {
+    for module in $(salt-call sys.list_modules 2&>/dev/null --output=key | tail -n+2); do
+        _wanted 'module' expl 'module' compadd $module
+    done
+}
+
+_functions() {
+    for fn in $(salt-call sys.list_functions 2&>/dev/null --output=key | tail -n+2); do
+        _wanted 'function' expl 'function' compadd $fn
+    done
+}
+
+_salt() {
+  local _loglevels
+  _loglevels=(all garbage trace debug info warning error quiet)
+
+  _arguments -s \
+    "--version[show program's version number and exit]" \
+    "--versions-report[show program's dependencies version number and exit]" \
+    "(-h --help)"{-h,--help}"[show help message and exit]" \
+    "(-c --config-dir)"{-c+,--config-dir=}"[Pass in an alternative configuration directory.]:configuration directory:_files -/" \
+    "(-t --timeout)"{-t+,--timeout=}"[Change the timeout, if applicable, for the running command]:timeout" \
+    "(-s --static)"{-s,--static}"[Return the data from minions as a group after they all return]" \
+    "--async[Run the salt command but don't wait for a reply]" \
+    "(--state-output --state_output)"{--state-output=,--state_output=}"[Override the configured state_output value for minion output]:state output" \
+    "--subset=[Execute the routine on a random subset of the targeted minions]:subset" \
+    "(-v --verbose)"{-v,--verbose}"[Turn on command verbosity, display jid and active job queries]" \
+    "--show-timeout[Display minions that timeout]" \
+    "(-b --batch --batch-size)"{-b+,--batch=,--batch-size=}"[Execute the salt job in batch mode]:batch" \
+    "(-a --auth --eauth --extended-auth)"{-a+,--auth=,--eauth=,--extended--auth=}"[Specify an extended authentication system to use]:eauth" \
+    "(-T --make-token)"{-T,--make-token}"[Generate and save an authentication token for re-use]" \
+    "--return=[Set an alternative return method]:returner" \
+    "(-d --doc --documentation)"{-d,--doc,--documentation}"[Return the documentation for the specified module or for all modules]::function:_functions" \
+    "--args-separator=[Set the special argument used as a delimiter between command arguments of compound commands]:args separator" \
+    \
+    "(-l --log-level)"{-l+,--log-level=}"[Console logging log level]:level:($_loglevels[@])" \
+    "--log-file=[Log file path]:log file:_files" \
+    "--log-file-level=[Logfile logging log level]:level:($_loglevels[@])" \
+    \
+    "(-E --pcre)"{-E,--pcre}"[Target servers using pcre regular expressions]" \
+    "(-L --list)"{-L,--list}"[Target servers using a comma or space delimited list of servers]" \
+    "(-G --grain)"{-G,--grain}"[Target servers using a grain value]" \
+    "--grain-pcre[Target servers using a grain value matched by a pcre regular expression]" \
+    "(-N --nodegroup)"{-N,--nodegroup}"[Target servers using a predefined nodegroup]" \
+    "(-R --range)"{-R,--range}"[Target servers using range expression]" \
+    "(-C --compound)"{-C,--compound}"[Target servers using compound selectors]" \
+    "(-X --exsel)"{-X,--exsel}"[Target servers using the return code of a function]" \
+    "(-I --pillar)"{-I,--pillar}"[Target servers using a pillar value]" \
+    "(-S --ipcidr)"{-S,--ipcidr}"[Match servers based on subnet (CIDR or IPv4 address)]" \
+    \
+    "(--out --output)"{--out=,--output=}"[Print the output using the specified outputter]:outputter:(no_return grains yaml overstatestage json pprint nested raw highstate quiet key txt virt_query)" \
+    "(--out-indent --output-indent)"{--out-indent=,--output-indent=}"[Print the output indented by the provided value in spaces]:nr spaces" \
+    "(--out-file --output-file)"{--out-file=,--output-file=}"[Write the output to the specified file]:output:_files" \
+    "(--no-color --no-colour)"{--no-color,--no-colour}"[Disable all colored output]" \
+    "(--force-color --force-colour)"{--force-color,--force-colour}"[Force colored output]" \
+    \
+    '1:target:_minions' \
+    '2:function:_functions' \
+    '*::arguments'
+}
+
+case "$service" in
+    salt)
+        _salt "@"
+    ;;
+esac
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
