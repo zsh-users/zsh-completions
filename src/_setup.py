@@ -251,7 +251,6 @@ _setuppy_install() {
     "-f[force installation (overwrite any existing files)]" \
     "--skip-build[skip rebuilding everything (for testing/debugging)]" \
     "--record=[filename in which to record list of installed files]" \
-    "--install-layout=[installation layout to choose (known values: deb, unix)]" \
     "--old-and-unmanageable[Try not to use this!]" \
     "--single-version-externally-managed[used by system package builders to create 'flat' eggs]" \
     "*::setup.py commands:_setup.py"
@@ -524,9 +523,6 @@ _setuppy_develop() {
     "-i[base URL of Python Package Index]" \
     "--find-links=[additional URL(s) to search for packages]" \
     "-f[additional URL(s) to search for packages]" \
-    "--delete-conflicting[no longer needed; don't use this]" \
-    "-D[no longer needed; don't use this]" \
-    "--ignore-conflicts-at-my-risk[no longer needed; don't use this]" \
     "--build-directory=[download/extract/build in DIR; keep the results]" \
     "-b[download/extract/build in DIR; keep the results]" \
     "--optimize=[also compile with optimization: -O1 for \"python -O\", -O2 for \"python -OO\", and -O0 to disable \[default: -O0\]]" \
@@ -545,9 +541,6 @@ _setuppy_develop() {
     "--local-snapshots-ok[allow building eggs from local checkouts]" \
     "-l[allow building eggs from local checkouts]" \
     "--version[print version information and exit]" \
-    "--install-layout=[installation layout to choose (known values: deb)]" \
-    "--force-installation-into-system-dir[force installation into /usr]" \
-    "-0[force installation into /usr]" \
     "--no-find-links[Don't load find-links defined in packages being installed]" \
     "--user[install in user site-package]" \
     "--uninstall[Uninstall this source package]" \
@@ -578,9 +571,6 @@ _setuppy_easy_install() {
     "-i[base URL of Python Package Index]" \
     "--find-links=[additional URL(s) to search for packages]" \
     "-f[additional URL(s) to search for packages]" \
-    "--delete-conflicting[no longer needed; don't use this]" \
-    "-D[no longer needed; don't use this]" \
-    "--ignore-conflicts-at-my-risk[no longer needed; don't use this]" \
     "--build-directory=[download/extract/build in DIR; keep the results]" \
     "-b[download/extract/build in DIR; keep the results]" \
     "--optimize=[also compile with optimization: -O1 for \"python -O\", -O2 for \"python -OO\", and -O0 to disable \[default: -O0\]]" \
@@ -599,9 +589,6 @@ _setuppy_easy_install() {
     "--local-snapshots-ok[allow building eggs from local checkouts]" \
     "-l[allow building eggs from local checkouts]" \
     "--version[print version information and exit]" \
-    "--install-layout=[installation layout to choose (known values: deb)]" \
-    "--force-installation-into-system-dir[force installation into /usr]" \
-    "-0[force installation into /usr]" \
     "--no-find-links[Don't load find-links defined in packages being installed]" \
     "--user[install in user site-package]" \
     "*::setup.py commands:_setup.py"
