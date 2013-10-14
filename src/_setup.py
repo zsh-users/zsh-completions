@@ -232,7 +232,7 @@ _setuppy_install() {
     "--prefix=[installation prefix]" \
     "--exec-prefix=[(Unix only) prefix for platform-specific files]" \
     "--home=[(Unix only) home directory to install under]" \
-    "--user[install in user site-package '/home/hattori/.local/lib/python2.7/site-packages']" \
+    "--user[install in user site-package]" \
     "--install-base=[base installation directory (instead of --prefix or --home)]" \
     "--install-platbase=[base installation directory for platform-specific files (instead of --exec-prefix or --home)]" \
     "--root=[install everything relative to this alternate root directory]" \
@@ -549,7 +549,7 @@ _setuppy_develop() {
     "--force-installation-into-system-dir[force installation into /usr]" \
     "-0[force installation into /usr]" \
     "--no-find-links[Don't load find-links defined in packages being installed]" \
-    "--user[install in user site-package '/home/hattori/.local/lib/python2.7/site-packages']" \
+    "--user[install in user site-package]" \
     "--uninstall[Uninstall this source package]" \
     "-u[Uninstall this source package]" \
     "--egg-path=[Set the path to be used in the .egg-link file]" \
@@ -603,7 +603,7 @@ _setuppy_easy_install() {
     "--force-installation-into-system-dir[force installation into /usr]" \
     "-0[force installation into /usr]" \
     "--no-find-links[Don't load find-links defined in packages being installed]" \
-    "--user[install in user site-package '/home/hattori/.local/lib/python2.7/site-packages']" \
+    "--user[install in user site-package]" \
     "*::setup.py commands:_setup.py"
 }
 
