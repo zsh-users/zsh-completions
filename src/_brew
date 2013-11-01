@@ -96,8 +96,12 @@ fi
 case "$words[1]" in
   search|-S)
     _arguments \
-      '(--macports)--macports[search the macports repository]' \
-      '(--fink)--fink[search the fink repository]' \
+      '(--debian)--debian[search the Debian repository]' \
+      '(--fedora)--fedora[search the Fedora repository]' \
+      '(--fink)--fink[search the Fink repository]' \
+      '(--macports)--macports[search the Macports repository]' \
+      '(--opensuse)--opensuse[search the OpenSuse repository]' \
+      '(--ubuntu)--ubuntu[search the Ubuntu repository]' \
       '1: :->forms' &&  return 0
 
       if [[ "$state" == forms ]]; then
@@ -115,12 +119,31 @@ case "$words[1]" in
         _brew_installed_formulae
         _wanted installed_formulae expl 'installed formulae' compadd -a installed_formulae
       fi ;;
-  install|audit|reinstall|home|homepage|log|info|abv|uses|cat|deps|edit|options)
+  install|reinstall)
+    _arguments \
+      '(--devel)--devel[install the development version]' \
+      '(--env=std)--env=std[use the standard build environment instead of superenv]' \
+      '(--env=super)--env=super[use superenv even if the formula specifies the standard build environment]' \
+      '(--fresh)--fresh[the installation process will not re-use any options from previous installs]' \
+      '(--ignore-dependencies)--ignore-dependencies[skip any dependencies installation]' \
+      '(--use-clang)--use-clang[attempt to compile using clang]' \
+      '(--use-gcc)--use-gcc[attempt to compile using GCC]' \
+      '(--use-llvm)--use-llvm[attempt to compile using the LLVM front-end to GCC]' \
+      '1: :->forms' && return 0
+    
+      if [[ "$state" == forms ]]; then
+        _brew_all_formulae
+        _wanted formulae expl 'all formulae' compadd -a formulae
+      fi ;;
+  audit|home|homepage|log|info|abv|uses|cat|deps|edit|options)
     _brew_all_formulae
     _wanted formulae expl 'all formulae' compadd -a formulae ;;
   remove|rm|uninstall|unlink|cleanup|link|ln|pin|unpin|test)
     _brew_installed_formulae
     _wanted installed_formulae expl 'installed formulae' compadd -a installed_formulae ;;
+  tap)
+    _arguments \
+      '(--repair)--repair[repair all tap formula, i.e. symlinks and dead formula]' && return 0 ;;
   upgrade)
     _brew_outdated_formulae
     _wanted outdated_formulae expl 'outdated formulae' compadd -a outdated_formulae ;;
