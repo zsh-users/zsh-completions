@@ -1,0 +1,59 @@
+#compdef http
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for httpie 0.7.2  (http://httpie.org)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Akira Maeda <https://github.com/glidenote>
+#
+# ------------------------------------------------------------------------------
+# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
+# vim: ft=zsh sw=2 ts=2 et
+# ------------------------------------------------------------------------------
+
+local -a _method
+_method=(GET POST PUT DELETE HEAD OPTIONS TRACE CONNECT PATCH LINK UNLINK)
+
+_describe -t commands 'METHOD' _method || compadd "$@"
+
+_httpie_urls() {
+  local expl
+  compset -S '[^:]*'
+  _wanted url-schemas expl 'URL schema' compadd -S '' - \
+    http:// https://
+}
+
+_arguments -C -s \
+  {-j,--json}'[Data items from the command line are serialized as a JSON object.]' \
+  {-f,--form}'[Data items from the command line are serialized as form fields.]' \
+  '--pretty[Controls output processing.]:PRETTY:(all colors format none)' \
+  {-s,--style}'[Output coloring style]:STYLE:(autumn borland bw colorful default emacs friendly fruity manni monokai murphy native pastie perldoc ttr solarized tango trac vim vs)' \
+  {-p,--print}'[String specifying what the output should contain]:OUTPUT_OPTIONS:(H B h b)' \
+  {-v,--verbose}'[Print the whole request as well as the response.]' \
+  {-h,--headers}'[Print only the response headers.]' \
+  {-b,--body}'[Print only the response body.]' \
+  {-S,--stream}'[Always stream the output by line, i.e., behave like `tail -f`.]' \
+  {-o,--output}'[Save output to FILE.]:FILE:_files' \
+  {-d,--download}'[Do not print the response body to stdout.]' \
+  {-c,--continue}'[Resume an interrupted download.]' \
+  '--session[Create, or reuse and update a session.]:SESSION_NAME_OR_PATH' \
+  '--session-read-only[Create or read a session without updating it form the request/response exchange.]:SESSION_NAME_OR_PATH' \
+  {-a,--auth}'[If only the username is provided (-a username)]:USER\:PASS' \
+  '--auth-type[The authentication mechanism to be used. Defaults to "basic".]:AUTH-TYPE:(basic digest)' \
+  '--proxy[String mapping protocol to the URL of the proxy (e.g.http:foo.bar:3128).]:PROXY' \
+  '--follow[Set this flag if full redirects are allowed]' \
+  "--verify[Set to \"no\" to skip checking the host's SSL certificate.]:VERIFY:(yes no)" \
+  '--allow-redirects[Set this flag if full redirects are allowed (e.g. re-POST-ing of data at new ``Location``)]' \
+  '--timeout[Float describes the timeout of the request (Use socket.setdefaulttimeout() as fallback).]:SECONDS' \
+  '--check-status[This flag instructs HTTPie to also check the HTTP status code and exit with an error if the status indicates one.  ]' \
+  '--ignore-stdin[Do not attempt to read stdin.]' \
+  '--help[show help message.]' \
+  "--version[show program's version number and exit.]" \
+  '--traceback[Prints exception traceback should one occur.]' \
+  '--debug[Prints exception traceback should one occur and other information useful for debugging HTTPie itself.]' \
+ '*:URL:_httpie_urls' && return 0
