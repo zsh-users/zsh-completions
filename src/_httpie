@@ -10,16 +10,12 @@
 # -------
 #
 #  * Akira Maeda <https://github.com/glidenote>
+#  * Valodim <https://github.com/Valodim>
 #
 # ------------------------------------------------------------------------------
 # -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
 # vim: ft=zsh sw=2 ts=2 et
 # ------------------------------------------------------------------------------
-
-local -a _method
-_method=(GET POST PUT DELETE HEAD OPTIONS TRACE CONNECT PATCH LINK UNLINK)
-
-_describe -t commands 'METHOD' _method || compadd "$@"
 
 _httpie_urls() {
   local expl
@@ -56,4 +52,5 @@ _arguments -C -s \
   "--version[show program's version number and exit.]" \
   '--traceback[Prints exception traceback should one occur.]' \
   '--debug[Prints exception traceback should one occur and other information useful for debugging HTTPie itself.]' \
- '*:URL:_httpie_urls' && return 0
+  '1:method:(GET POST PUT DELETE HEAD OPTIONS TRACE CONNECT PATCH LINK UNLINK)' \
+  '*:URL:_httpie_urls' && return 0
