@@ -102,6 +102,9 @@ _httpie_printflags () {
 
     local ret=1
 
+    # not sure why this is necessary, but it will complete "-pH" style without it
+    [[ $IPREFIX == "-p" ]] && IPREFIX+=" "
+
     compset -P '(#b)([a-zA-Z]#)'
 
     local -a flags
