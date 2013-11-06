@@ -17,11 +17,85 @@
 # vim: ft=zsh sw=2 ts=2 et
 # ------------------------------------------------------------------------------
 
+_httpie_params () {
+
+    local ret=1 expl
+
+    # or a url
+    if (( CURRENT <= 3 )) && [[ $words[2] != *:* ]] ; then
+        _httpie_urls && ret=0
+
+    # regular param, if we already have a url
+    elif (( CURRENT > 2 )); then
+
+        # if the suffix is precisely : this is shorthand for a header
+        if [[ -prefix ':' ]]; then
+            PREFIX=
+            SUFFIX=:
+        fi
+
+        # if we are in front of a : (possibly due to the PREFIX move before)
+        if [[ -suffix ':' ]]; then
+
+            # this is rather buggy with normal tab behavior :\
+            compstate[insert]=menu
+            _wanted http_header expl 'HTTP Header' \
+                compadd -s ':' -S '' -- Content-Type Cookie && return 0
+        fi
+
+        # ignore all prefix stuff
+        compset -P '(#b)([^:@=]#)'
+        local name=$match[1]
+
+        if compset -P ':'; then
+            _message "$name header content"
+        elif compset -P '@'; then
+            _files
+        elif compset -P ':='; then
+            _message "$name raw json data"
+        elif compset -P '=='; then
+            _message "$name url parameter value"
+        elif compset -P '='; then
+            _message "$name data field value"
+        else
+            typeset -a ops
+            ops=(
+                '=:data field'
+                '\::header'
+                '==:request parameter'
+                '@:data file field'
+                '\:=:raw json field'
+            )
+            _describe -t httpparams "parameter types" ops -Q -S ''
+        fi
+
+        ret=0
+
+    fi
+
+    # first arg may be a request method
+    (( CURRENT == 2 )) &&
+        _wanted http_method expl 'Request Method' \
+            compadd GET POST PUT DELETE HEAD OPTIONS TRACE CONNECT PATCH LINK UNLINK && ret=0
+
+    return $ret
+
+}
+
 _httpie_urls() {
-  local expl
-  compset -S '[^:]*'
-  _wanted url-schemas expl 'URL schema' compadd -S '' - \
-    http:// https://
+
+  local ret=1
+
+  if ! [[ -prefix [-+.a-z0-9]#:// ]]; then
+    local expl
+    compset -S '[^:/]*' && compstate[to_end]=''
+    _wanted url-schemas expl 'URL schema' compadd -S '' http:// https:// && ret=0
+  else
+    _urls && ret=0
+  fi
+
+  return $ret
+
 }
 
 _arguments -C -s \
@@ -52,5 +126,4 @@ _arguments -C -s \
   "--version[show program's version number and exit.]" \
   '--traceback[Prints exception traceback should one occur.]' \
   '--debug[Prints exception traceback should one occur and other information useful for debugging HTTPie itself.]' \
-  '1:method:(GET POST PUT DELETE HEAD OPTIONS TRACE CONNECT PATCH LINK UNLINK)' \
-  '*:URL:_httpie_urls' && return 0
+  '*:args:_httpie_params' && return 0
