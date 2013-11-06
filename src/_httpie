@@ -22,11 +22,11 @@ _httpie_params () {
     local ret=1 expl
 
     # or a url
-    if (( CURRENT <= 3 )) && [[ $words[2] != *:* ]] ; then
+    if (( CURRENT <= NORMARG+1 )) && [[ $words[NORMARG] != *:* ]] ; then
         _httpie_urls && ret=0
 
     # regular param, if we already have a url
-    elif (( CURRENT > 2 )); then
+    elif (( CURRENT > NORMARG )); then
 
         # if the suffix is precisely : this is shorthand for a header
         if [[ -prefix ':' ]]; then
@@ -74,7 +74,7 @@ _httpie_params () {
     fi
 
     # first arg may be a request method
-    (( CURRENT == 2 )) &&
+    (( CURRENT == NORMARG )) &&
         _wanted http_method expl 'Request Method' \
             compadd GET POST PUT DELETE HEAD OPTIONS TRACE CONNECT PATCH LINK UNLINK && ret=0
 
@@ -116,7 +116,9 @@ _httpie_printflags () {
 
 }
 
-_arguments -C -s \
+integer NORMARG
+
+_arguments -n -C -s \
   '(-f)'{-j,--json}'[Data items from the command line are serialized as a JSON object.]' \
   '(-j)'{-f,--form}'[Data items from the command line are serialized as form fields.]' \
   '--pretty[Controls output processing.]:PRETTY:(all colors format none)' \
