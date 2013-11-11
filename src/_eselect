@@ -46,8 +46,7 @@
 #<app-admin/eselect-1.0.11>
 #
 
-
-_eselect_env () {
+_eselect_env() {
     if (( $words[(I)(update)] )); then
         _values 'update options' \
             'makelinks[force updating of links]' \
@@ -57,7 +56,7 @@ _eselect_env () {
         'update[Collect environment variables from all scripts]' && return 0
 }
 
-_eselect_binutils () {
+_eselect_binutils() {
     local binutilslist
         if (( $words[(I)(set)] )); then
             binutilslist=(${${${(M)${(f)"$(eselect --no-color binutils list)"}## *}// \**/}//(  \[*\]   |  \[*\]  )/})
@@ -69,18 +68,18 @@ _eselect_binutils () {
             'set[Activate one of the installed binutils]' && return 0
 }
 
-_eselect_kernel () {
+_eselect_kernel() {
     local kernellist
         if (( $words[(I)(set)] )); then
             kernellist=(${${${(M)${(f)"$(eselect --no-color kernel list)"}## *}// \**/}//(  \[*\]   |  \[*\]  )/})
             _values 'available kernel version' $kernellist[@] && return 0
         fi
-        _values 'kenrel options' $stdopts[@] \
+        _values 'kernel options' $stdopts[@] \
             'list[List available kernel symlink targets]' \
             'show[Show the current kernel symlink]' \
             'set[Set a new kernel symlink target]' && return 0
 }
-_eselect_ctags () {
+_eselect_ctags() {
     local ctagslist
         if (( $words[(I)(set)] )); then
             ctagslist=(${${${(M)${(f)"$(eselect --no-color ctags list)"}## *}// \**/}//(  \[*\]   |  \[*\]  )/})
@@ -92,7 +91,7 @@ _eselect_ctags () {
             'update[Automatically update the ctags symlink]' \
             'set[Set a new ctags symlink target]' && return 0
 }
-_eselect_profile () {
+_eselect_profile() {
     local profilelist
         if (( $words[(I)(set)] )); then
             profilelist=(${${${(M)${(f)"$(eselect --no-color profile list)"}## *}// \**/}//(  \[*\]   |  \[*\]  )/})
@@ -104,7 +103,7 @@ _eselect_profile () {
             'show[Show the current make.profile symlink]' \
             'set[Set a new profile symlink target]' && return 0
 }
-_eselect_fontconfig () {
+_eselect_fontconfig() {
     local fclistenabled fclistdisabled
         if (( $words[(I)(enable)] )); then
             fclistdisabled=(${${${${(M)${(f)"$(eselect --no-color fontconfig list)"}## *}#*\*}// \**/}//(  \[*\]   |  \[*\]  )/})
@@ -118,7 +117,7 @@ _eselect_fontconfig () {
             'disable[Disable specified fontconfig .conf file(s)]' \
             'enable[Enable specified fontconfig .conf file(s)]' && return 0
 }
-_eselect_opengl () {
+_eselect_opengl() {
     local opengllist
         if (( $words[(I)(set)] )); then
             opengllist=(${${${(M)${(f)"$(eselect --no-color opengl list)"}## *}// \**/}//(  \[*\]   |  \[*\]  )/})
@@ -133,7 +132,7 @@ _eselect_opengl () {
             'set[Select the OpenGL implementation]' \
             'show[Print the current OpenGL implementation]' && return 0
 }
-_eselect_vi () {
+_eselect_vi() {
     local vilist
         if (( $words[(I)(set)] )); then
             vilist=(${${${(M)${(f)"$(eselect --no-color vi list)"}## *}// \**/}//(  \[*\]   |  \[*\]  )/})
@@ -147,7 +146,46 @@ _eselect_vi () {
             'show[Show the current vi implementation]' \
             'update[Automatically update the vi provider]' && return 0
 }
-_eselect () {
+
+_eselect_news() {
+
+    ##
+    ## TODO: Normal numeric sorting.
+    ##         I've spent all the day (12.11.2013) on trying to rewrite this
+    ##         function to normally sort (to DO NOT sort, actually) news,
+    ##         but it start to grow to very big size and going to be too
+    ##         complicated.
+    ##       So, I either need to help to do it normally, or to completely
+    ##         rewrite this compdef.
+    ##
+
+    local -a newslist;
+    if ((CURRENT == 3)); then
+        _values 'news options' $stdopts[@] \
+            'list[List news items]' \
+            'count[Display number of news items]' \
+            'purge[Purge read news]' \
+            'read[Read news items]' \
+            'unread[Mark read news items as unread again]' && return 0
+    elif ((CURRENT == 4)); then
+        if (( $words[(I)(count)] )); then
+            _values -w 'news' 'new[Count only new news items]' 'all[Count all news items]' && return 0
+        fi
+
+        newslist=(${${${${${${${(M)${(f)"$(eselect --no-color news list)"}## *}// \**/}/  \[/}/\] ##/\[}/%/]}/ \[/ (}/\] /) })
+
+        if (( $words[(I)(read)] )); then
+            newslist+=( "new[Read unread news items (default)]" "all[Read all news items]" "--mbox[Output in mbox format]" "--quiet[Suppress output, only change status]" "--raw[Output in raw format]" )
+        fi;
+
+        if (( $words[(I)(unread)] )); then
+            newslist+=( "all[Unread all news items]" )
+        fi
+
+         _values -w 'news' $newslist[@] && return 0
+    fi
+}
+_eselect() {
     local globopts sedcmd modnames modopts
     local stdopts
     stdopts=(
@@ -169,10 +207,10 @@ _eselect () {
             _arguments -s \
                 "*:portage:_values 'eselect modules' \$modnames[@]" && return 0
         elif (( $modnames[(I)$words[2]] )); then
-            if [[ "$words[2]" == (env|binutils|kernel|ctags|profile|fontconfig|opengl|vi) ]]; then
+            if [[ "$words[2]" == (env|binutils|kernel|ctags|profile|fontconfig|opengl|vi|news) ]]; then
                 _eselect_$words[2] "$@"
             else
-                modopts=(${${${(M)${(f)"$(eselect --no-color $words[2] usage)"}## *}//   */}//  /})
+                modopts=(${${${${(M)${(f)"$(eselect --no-color $words[2] usage)"}## *}//   */}//  /}// */})
                 _arguments -s \
                     "*:portage:_values 'eselect $words[2] options' \$modopts[@]" && return 0
             fi
@@ -180,7 +218,7 @@ _eselect () {
     elif ((CURRENT >= 4)); then
         if (( $words[(I)(--no-color|--no-colour)] )); then
             if (( $modnames[(I)$words[3]] )); then
-                if [[ "$words[3]" == (env|binutils|kernel|ctags|profile|fontconfig|opengl|vi) ]]; then
+                if [[ "$words[3]" == (env|binutils|kernel|ctags|profile|fontconfig|opengl|vi|news) ]]; then
                     _eselect_$words[3] "$@"
                 else
                     modopts=(${${${${(M)${(f)"$(eselect --no-color $words[3] usage)"}## *}//   */}//  /}// *})
@@ -190,7 +228,7 @@ _eselect () {
             fi
         else
             if (( $modnames[(I)$words[2]] )); then
-                _eselect_$words[2] "$@"
+                (whence _eselect_$words[2] &>/dev/null) && _eselect_$words[2] "$@"
             fi
         fi
     fi
