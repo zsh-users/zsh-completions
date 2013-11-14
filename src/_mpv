@@ -1,4 +1,17 @@
 #compdef mpv
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for mpv 0.2.3  (http://mpv.io)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Valodim <https://github.com/Valodim>
+#
+# ------------------------------------------------------------------------------
 
 local suf ret=1 curcontext="$curcontext"
 local -a vals state line expl
