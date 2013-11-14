@@ -408,34 +408,44 @@ else
         done
       ;;
       audio-drivers)
+          compset -P '*,'
           _message "format: <driver1[:suboption1[=value]:...],driver2,...[,]>"
           vals=( help ${${${(f)"$(_call_program audio-drivers $words[1] --ao=help 2>/dev/null)"}[(r)  *,-1]## #}/ #:/:} )
           _describe -t audio-drivers 'audio drivers' vals -S '' && ret=0
       ;;
 
       audio-decoders)
+          compset -P '*,'
+          compset -P '(+|-)'
+          _message "format: <[+|-]family1:(*|decoder1),[+|-]family2:(*|decoder2),...[-]>"
           vals=( help ${${${${(f)"$(_call_program audio-decoders $words[1] --ad=help 2>/dev/null)"}[(r)  *,-1]## #}/:/\\:}/ - /:} )
           _describe -t audio-decoders 'audio decoders' vals -S '' && ret=0
       ;;
 
       audio-filters)
+          compset -P '*,'
           _message "format: <filter1[=parameter1:parameter2:...],filter2,...>"
           vals=( help ${${${(f)"$(_call_program audio-filters $words[1] --af=help 2>/dev/null)"}[(r)  *,-1]## #}/ #:/:} )
           _describe -t audio-filters 'audio filters' vals -S '' && ret=0
       ;;
 
       video-drivers)
+          compset -P '*,'
           _message "format: <driver1[:suboption1[=value]:...],driver2,...[,]>"
           vals=( help ${${${(f)"$(_call_program video-drivers $words[1] --vo=help 2>/dev/null)"}[(r)  *,-1]## #}/ #:/:} )
           _describe -t video-drivers 'video drivers' vals -S '' && ret=0
       ;;
 
       video-decoders)
+          compset -P '*,'
+          compset -P '(+|-)'
+          _message "format: <[+|-]family1:(*|decoder1),[+|-]family2:(*|decoder2),...[-]>"
           vals=( help ${${${${(f)"$(_call_program video-decoders $words[1] --vd=help 2>/dev/null)"}[(r)  *,-1]## #}/:/\\:}/ - /:} )
           _describe -t video-decoders 'video decoders' vals -S '' && ret=0
       ;;
 
       video-filters)
+          compset -P '*,'
           _message "format: <filter1[=parameter1:parameter2:...],filter2,...>"
           vals=( help ${${${(f)"$(_call_program video-filters $words[1] --vf=help 2>/dev/null)"}[(r)  *,-1]## #}/ #:/:} )
           _describe -t video-filters 'video filters' vals -S '' && ret=0
