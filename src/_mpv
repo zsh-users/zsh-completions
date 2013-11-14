@@ -303,7 +303,7 @@ else
         '--softvol-max=[Set the maximum amplification level in percent]:maximum volume level (default 200)' \
         '--speed=[Slow down or speed up playback by the factor given as parameter]:speed factor (default 1.0)' \
         '--srate=[Select the output sample rate to be used (of course sound cards have limits on this)]:output sample rate' \
-        '--start=[Seek to given time position]:time position' \
+        '--start=[Seek to given time position]:time position (percent, seconds, or hh:mm:ss)' \
         '--ssf=[Specifies software scaler parameters]:software scaler parameters' \
         '--sstep=[Skip specified number of seconds after every frame]:skip step (seconds)' \
         '--stop-screensaver[Turns off the screensaver at startup and turns it on again on exit]' \
@@ -346,40 +346,13 @@ else
           (( ret )) || return 0
         done
       ;;
-      audio-codecs)
-        vals=( help ${${${(f)"$(_call_program audio-codecs $words[1] -ac help -quiet 2>/dev/null)"}[(r)ac:*,-1]}[2,-1]/ ##[^ ]# #[^ ]# #/:} )
-        _describe -t audio-codecs 'audio codec' vals && ret=0
-      ;;
       audio-drivers)
-        vals=( help ${${${(f)"$(_call_program audio-drivers mplayer -ao help 2>/dev/null)"}[(r)	*,-1]#?}/	/:} )
+        vals=( help ${${${(f)"$(_call_program audio-drivers $words[1] --ao help 2>/dev/null)"}[(r)  *,-1]# #}/ #:/:} )
         _describe -t audio-drivers 'audio drivers' vals && ret=0
       ;;
-      audio-codec-families)
-        compset -P '*,'
-        compset -S ',*'
-        vals=( help ${${${(f)"$(_call_program audio-codec-families mplayer -afm help 2>/dev/null)"}[(r) [^:]#,-1]## ##}/ ##/:} )
-        _describe -t audio-codec-families 'audio drivers' vals && ret=0
-      ;;
-      audio-plugins)
-        _values -s : 'audio output plugin' \
-          'list[specify list of plugins]:plugin:(resample surround format volume extrastereo volnorm delay)' \
-          'format[output format]:format' \
-          'fout[output frequency]:frequency (Hz)' \
-          'volume[volume level]:volume <0-255>' \
-          'mul[stereo coefficient]:coefficient' \
-          'softclip[compressor]' && ret=0
-      ;;
-      video-codecs)
-        vals=( help ${${${(f)"$(_call_program audio-codecs $words[1] -vc help -quiet 2>/dev/null)"}[(r)vc:*,-1]}[2,-1]/ ##[^ ]# #[^ ]# #/:} )
-        _describe -t video-codecs 'video codec' vals && ret=0
-      ;;
       video-drivers)
-        vals=( help ${${${(f)"$(_call_program video-drivers mplayer -vo help 2>/dev/null)"}[(r)	*,-1]#?}/	/:} )
+        vals=( help ${${${(f)"$(_call_program video-drivers $words[1] --vo=help 2>/dev/null)"}[(r)  *,-1]# #}/ #:/:} )
         _describe -t video-drivers 'video drivers' vals && ret=0
-      ;;
-      video-output-plugins)
-        vals=( help ${${${${(f)"$(_call_program video-output-plugins mplayer -vop help 2>/dev/null)"}[(r)	*,-1]}/	/}/ #: /:} )
-        _describe -t video-output-plugins 'video output plugin' vals && ret=0
       ;;
     esac
 
