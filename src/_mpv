@@ -130,29 +130,67 @@ elif [[ -prefix --no-* ]]; then
 
 else
 
-    local -a optgroups
-    optgroups=(
-        '--ass-:ass subtitles'
-        '--demuxer-:demuxer settings'
-        '--input-:input'
-        '--sub-:subtitles'
-        '--osd-:on-screen display'
-        '--vd-:lavc video decoding'
-        '--video-:video settings'
-        '--no-:negative flags'
+    # describe additional prefix-groups of options
+    if [[ -prefix -* ]]; then
+        local -a optgroups
+        optgroups=(
+            '--ass-:ass subtitles'
+            '--demuxer-:demuxer settings'
+            '--input-:input'
+            '--sub-:subtitles'
+            '--osd-:on-screen display'
+            '--vd-:lavc video decoding'
+            '--video-:video settings'
+            '--no-:negative flags'
+        )
+        _describe -t option-prefixes "option groups" optgroups -S '' && ret=0
+    fi
+
+    ofopts=(
+        '--of=[Specify output format]:output format:->output_format'
+        '--ofopts=[Set output format options]:output format option'
+        '--ofopts-add=[Append output format option to list]'
+        '--ofopts-pre=[Prepend output format option to list]'
+        '--ofopts-del=[Delete output format option at index]:option index (zero-based)'
+        '--ofopts-clr[Clear output format option list]'
+        '--ofps=[Specify output forma time base]:time base (default 24000)'
+        '--oautofps[Try to guess output format time base from input video]'
+        '--omaxfps=[Set output format maximum fps]:maximum fps (default 0, ie no limit)'
+        '--oharddup[Duplicate frames instead of skipping time codes to increase frame rate]'
+        '--oneverdrop[Never drop frames]'
+        '--oac=[Specify output format audio codec]'
+        '--oaoffset=[Set audio data offset]:offset (seconds)'
+        '--oacopts=[Specify output audio codec options]:audio output format option'
+        '--oacopts-add=[Append audio output format option to list]:audio output format option'
+        '--oacopts-pre=[Prepend audio output format option to list]:audio output format option'
+        '--oacopts-del=[Delete audio output format option at index]:option index (zero-based)'
+        '--oacopts-clr[Clear audio output format option list]'
+        '--oafirst[Force audio stream as first output stream]'
+        '--ovc=[Specify output format video codec]'
+        '--ovoffset=[Set video offset]:offset (seconds)'
+        '--ovc=[Specify output format video codec]'
+        '--ovcopts=[Specify output video codec options]:video output format option'
+        '--ovcopts-add=[Append video output format option to list]:video output format option'
+        '--ovcopts-pre=[Prepend video output format option to list]:video output format option'
+        '--ovcopts-del=[Delete video output format option at index]:option index (zero-based)'
+        '--ovcopts-clr[Clear video output format option list]'
+        '--ovfirst[Force video stream as first output stream]'
+        '--ocopyts[Copy input pts to output video, but fix discontinuities]'
+        '--orawts[Copy input pts to output video, leave discontinuities as-is]'
     )
 
-    # describe additional prefix-groups of options
-    _describe -o "Option groups" optgroups -S '' && ret=0
+    # don't show these if there is no -o yet
+    (( $+words[(r)-o(|=*)] )) || ofopts=( !$^ofopts )
 
     _arguments -C \
-        $demuxer_actualopts \
-        '--ad=[Specify a priority list of audio decoders to be used, according to their family and decoder name]:audio decoders' \
+        '-o[Enable encoding mode to specified output filename]:output file:_files' \
+        $ofopts \
+        '--ad=[Specify a priority list of audio decoders to be used, according to their family and decoder name]:audio decoders:->audio-decoders' \
         '--ad-lavc-ac3drc=[Select the Dynamic Range Compression level for AC-3 audio streams]:compression level' \
         '--ad-lavc-downmix=[Whether to request audio channel downmixing from the decoder (default\: yes)]:downmixing:(yes no)' \
         '--ad-lavc-o=[Pass AVOptions to libavcodec decoder]:libavcodec decoder options' \
         '--ad-spdif-dtshd=[When using DTS passthrough, output any DTS-HD track as-is]:' \
-        '--af=[Specify a list of audio filters to apply to the audio stream]:audio filters' \
+        '--af=[Specify a list of audio filters to apply to the audio stream]:audio filters:->audio-filters' \
         '--aid=[Select audio channel]:audio channel' \
         '--alang=[Specify a priority list of audio languages to use]:audio language list' \
         '--ao=[Specify a priority list of audio output drivers to be used]:audio driver(s):->audio-drivers:' \
@@ -320,9 +358,9 @@ else
         '--tvscan=[Tune the TV channel scanner]:tv channel' \
         '--use-filedir-conf[Look for a file-specific configuration file in the same directory as the file that is being played]' \
         '--user-agent=[Use <string> as user agent for HTTP streaming]:user agent (string)' \
-        '--vd=[Specify a priority list of video decoders to be used, according to their family and name]:' \
+        '--vd=[Specify a priority list of video decoders to be used]:video decoders:->video-decoders' \
         '(*)--version[Print version string and exit]' \
-        '--vf=[Specify a list of video filters to apply to the video stream]:' \
+        '--vf=[Specify a list of video filters to apply to the video stream]:video filters:->video-filters' \
         '--vid=[Select video channel]:video channel' \
         '--vo=[Specify a priority list of video output drivers to be used]:video drivers:->video-drivers' \
         '--volstep=[Set the step size of mixer volume changes in percent of the full range]:volume step size (default 3)' \
@@ -347,12 +385,37 @@ else
         done
       ;;
       audio-drivers)
-        vals=( help ${${${(f)"$(_call_program audio-drivers $words[1] --ao help 2>/dev/null)"}[(r)  *,-1]# #}/ #:/:} )
-        _describe -t audio-drivers 'audio drivers' vals && ret=0
+          _message "format: <driver1[:suboption1[=value]:...],driver2,...[,]>"
+          vals=( help ${${${(f)"$(_call_program audio-drivers $words[1] --ao=help 2>/dev/null)"}[(r)  *,-1]## #}/ #:/:} )
+          _describe -t audio-drivers 'audio drivers' vals -S '' && ret=0
       ;;
+
+      audio-decoders)
+          vals=( help ${${${${(f)"$(_call_program audio-decoders $words[1] --ad=help 2>/dev/null)"}[(r)  *,-1]## #}/:/\\:}/ - /:} )
+          _describe -t audio-decoders 'audio decoders' vals -S '' && ret=0
+      ;;
+
+      audio-filters)
+          _message "format: <filter1[=parameter1:parameter2:...],filter2,...>"
+          vals=( help ${${${(f)"$(_call_program audio-filters $words[1] --af=help 2>/dev/null)"}[(r)  *,-1]## #}/ #:/:} )
+          _describe -t audio-filters 'audio filters' vals -S '' && ret=0
+      ;;
+
       video-drivers)
-        vals=( help ${${${(f)"$(_call_program video-drivers $words[1] --vo=help 2>/dev/null)"}[(r)  *,-1]# #}/ #:/:} )
-        _describe -t video-drivers 'video drivers' vals && ret=0
+          _message "format: <driver1[:suboption1[=value]:...],driver2,...[,]>"
+          vals=( help ${${${(f)"$(_call_program video-drivers $words[1] --vo=help 2>/dev/null)"}[(r)  *,-1]## #}/ #:/:} )
+          _describe -t video-drivers 'video drivers' vals -S '' && ret=0
+      ;;
+
+      video-decoders)
+          vals=( help ${${${${(f)"$(_call_program video-decoders $words[1] --vd=help 2>/dev/null)"}[(r)  *,-1]## #}/:/\\:}/ - /:} )
+          _describe -t video-decoders 'video decoders' vals -S '' && ret=0
+      ;;
+
+      video-filters)
+          _message "format: <filter1[=parameter1:parameter2:...],filter2,...>"
+          vals=( help ${${${(f)"$(_call_program video-filters $words[1] --vf=help 2>/dev/null)"}[(r)  *,-1]## #}/ #:/:} )
+          _describe -t video-filters 'video filters' vals -S '' && ret=0
       ;;
     esac
 
