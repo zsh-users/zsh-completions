@@ -7,16 +7,39 @@ typeset -A opt_args
 if [[ -prefix --ass-* ]]; then
 
     _arguments -C \
-        '--ass-force-style=[Override some style or script info parameters.]:style parameters' \
-        '--ass-hinting=[Set font hinting type.]:font hinting style' \
-        '--ass-line-spacing=[Set line spacing value for SSA/ASS renderer.]:line spacing' \
-        '--ass-shaper=[Set the text layout engine used by libass.]:text layout engine' \
-        '--ass-styles=[Load all SSA/ASS styles found in the specified file and use them for rendering text subtitles.]:styles file:_files' \
-        '--ass-style-override=[Control whether user style overrides should be applied.]:apply overrides:(yes no)' \
-        '--ass-use-margins[Enables placing toptitles and subtitles in black borders when they are available.]' \
-        '--ass-vsfilter-aspect-compat=[Stretch SSA/ASS subtitles when playing anamorphic videos for compatibility with traditional VSFilter behavior.]:' \
-        '--ass-vsfilter-blur-compat=[Scale blur tags by video resolution instead of script resolution (enabled by default).]:' \
-        '--ass-vsfilter-color-compat=[Mangle colors like (xy-)vsfilter do (default\: basic).]:' && ret=0
+        '--ass-force-style=[Override some style or script info parameters]:style parameters' \
+        '--ass-hinting=[Set font hinting type]:font hinting style' \
+        '--ass-line-spacing=[Set line spacing value for SSA/ASS renderer]:line spacing' \
+        '--ass-shaper=[Set the text layout engine used by libass]:text layout engine' \
+        '--ass-styles=[Load all SSA/ASS styles found in the specified file and use them for rendering text subtitles]:styles file:_files' \
+        '--ass-style-override=[Control whether user style overrides should be applied]:apply overrides:(yes no)' \
+        '--ass-use-margins[Enables placing toptitles and subtitles in black borders when they are available]' \
+        '--ass-vsfilter-aspect-compat=[Stretch SSA/ASS subtitles when playing anamorphic videos for compatibility with traditional VSFilter behavior]:' \
+        '!--ass-vsfilter-blur-compat=[Scale blur tags by video resolution instead of script resolution]:' \
+        '--ass-vsfilter-color-compat=[Mangle colors like (xy-)vsfilter do (default\: basic)]:' && ret=0
+
+elif [[ -prefix --demuxer-* ]]; then
+
+    _arguments -C \
+        '--demuxer-lavf-analyzeduration=[Maximum length in seconds to analyze the stream properties]:' \
+        '--demuxer-lavf-probescore=[Minimum required libavformat probe score]:' \
+        '--demuxer-lavf-allow-mimetype=[Allow deriving the format from the HTTP MIME type (default\: yes)]:' \
+        '--demuxer-lavf-format=[Force a specific libavformat demuxer]:' \
+        '--demuxer-lavf-genpts-mode=[Mode for deriving missing packet PTS values from packet DTS]:' \
+        '--demuxer-lavf-o=[Pass AVOptions to libavformat demuxer]:' \
+        '--demuxer-lavf-probesize=[Maximum amount of data to probe during the detection phase]:' \
+        '--demuxer-lavf-buffersize=[Size of the stream read buffer allocated for libavformat in bytes (default\: 32768)]:' \
+        '--demuxer-lavf-cryptokey=[Encryption key the demuxer should use]:' \
+        '--demuxer-rawaudio-channels=[Number of channels (or channel layout) if --demuxer=rawaudio is used (default\: stereo)]:' \
+        '--demuxer-rawaudio-format=[Sample format for --demuxer=rawaudio (default\: s16le)]:' \
+        '--demuxer-rawaudio-rate=[Sample rate for --demuxer=rawaudio (default\: 44KHz)]:' \
+        '--demuxer-rawvideo-fps=[Rate in frames per second for --demuxer=rawvideo (default\: 25.0)]:' \
+        '--demuxer-rawvideo-w=[Image width in pixels for --demuxer=rawvideo]:' \
+        '--demuxer-rawvideo-h=[Image height in pixels for --demuxer=rawvideo]:' \
+        '--demuxer-rawvideo-format=[Colorspace (fourcc) in hex or string for --demuxer=rawvideo (default\: YV12)]:' \
+        '--demuxer-rawvideo-mp-format=[Colorspace by internal video format for --demuxer=rawvideo]:' \
+        '--demuxer-rawvideo-codec=[Set the video codec instead of selecting the rawvideo codec when using --demuxer=rawvideo]:' \
+        '--demuxer-rawvideo-size=[Frame size in bytes when using --demuxer=rawvideo]:' && ret=0
 
 elif [[ -prefix --input-* ]]; then
 
@@ -78,12 +101,22 @@ elif [[ -prefix --vd-* ]]; then
         '--vd-lavc-skipframe=[Skips decoding of frames completely]:' \
         '--vd-lavc-threads=[Number of threads to use for decoding]:' && ret=0
 
+elif [[ -prefix --video-* ]]; then
+
+    _arguments -C \
+        '--video-align-x=[Move video padding on x or y axis]:x align (pixels)' \
+        '--video-align-y=[Move video padding on x or y axis]:y align (pixels)' \
+        '--video-pan-x=[Moves the displayed video rectangle by the given value in the X or Y direction]:x pan (pixels)' \
+        '--video-pan-y=[Moves the displayed video rectangle by the given value in the X or Y direction]:y pan (pixels)' \
+        '--video-unscaled[Disable scaling of the video]' \
+        '--video-zoom=[Adjust the video display scale factor by the given value]:zoom factor' && ret=0
+
 elif [[ -prefix --no-* ]]; then
 
     _arguments -C \
-        '--no-fixed-vo[--no-fixed-vo enforces closing and reopening the video window for multiple files (one (un)initialization for each file)]' \
+        '--no-fixed-vo[Enforce closing and reopening the video window for multiple files]' \
         '--no-input-default-bindings[Disable mpv default (builtin) key bindings]' \
-        '--no-keepaspect[--no-keepaspect will always stretch the video to window size, and will disable the window manager hints that force the window aspect ratio]' \
+        '--no-keepaspect[Always stretch the video to window size]' \
         '--no-msgcolor[Disable colorful console output on terminals]' \
         '--no-aspect[Ignore aspect ratio information from video file and assume the video has square pixels]' \
         '--no-cache[Turn off input stream caching]' \
@@ -97,82 +130,72 @@ elif [[ -prefix --no-* ]]; then
 
 else
 
-    typeset -A demuxer_opts
-    demuxer_opts=(
-        lavf
-            '--demuxer-lavf-analyzeduration=[Maximum length in seconds to analyze the stream properties.]:' \
-            '--demuxer-lavf-probescore=[Minimum required libavformat probe score.]:' \
-            '--demuxer-lavf-allow-mimetype=[Allow deriving the format from the HTTP MIME type (default\: yes).]:' \
-            '--demuxer-lavf-format=[Force a specific libavformat demuxer.]:' \
-            '--demuxer-lavf-genpts-mode=[Mode for deriving missing packet PTS values from packet DTS.]:' \
-            '--demuxer-lavf-o=[Pass AVOptions to libavformat demuxer.]:' \
-            '--demuxer-lavf-probesize=[Maximum amount of data to probe during the detection phase.]:' \
-            '--demuxer-lavf-buffersize=[Size of the stream read buffer allocated for libavformat in bytes (default\: 32768).]:' \
-            '--demuxer-lavf-cryptokey=[Encryption key the demuxer should use.]:' \
-        rawaudio
-            '--demuxer-rawaudio-channels=[Number of channels (or channel layout) if --demuxer=rawaudio is used (default\: stereo).]:' \
-            '--demuxer-rawaudio-format=[Sample format for --demuxer=rawaudio (default\: s16le).]:' \
-            '--demuxer-rawaudio-rate=[Sample rate for --demuxer=rawaudio (default\: 44KHz).]:' \
-        rawvideo
-            '--demuxer-rawvideo-fps=[Rate in frames per second for --demuxer=rawvideo (default\: 25.0).]:' \
-            '--demuxer-rawvideo-w=[Image width in pixels for --demuxer=rawvideo.]:' \
-            '--demuxer-rawvideo-h=[Image height in pixels for --demuxer=rawvideo.]:' \
-            '--demuxer-rawvideo-format=[Colorspace (fourcc) in hex or string for --demuxer=rawvideo (default\: YV12)]:' \
-            '--demuxer-rawvideo-mp-format=[Colorspace by internal video format for --demuxer=rawvideo]:' \
-            '--demuxer-rawvideo-codec=[Set the video codec instead of selecting the rawvideo codec when using --demuxer=rawvideo]:' \
-            '--demuxer-rawvideo-size=[Frame size in bytes when using --demuxer=rawvideo]:' \
+    local -a optgroups
+    optgroups=(
+        '--ass-:ass subtitles'
+        '--demuxer-:demuxer settings'
+        '--input-:input'
+        '--sub-:subtitles'
+        '--osd-:on-screen display'
+        '--vd-:lavc video decoding'
+        '--video-:video settings'
+        '--no-:negative flags'
     )
 
+    # describe additional prefix-groups of options
+    _describe -o "Option groups" optgroups -S '' && ret=0
+
     _arguments -C \
-        '--ad=[Specify a priority list of audio decoders to be used, according to their family and decoder name.]:audio decoders' \
-        '--ad-lavc-ac3drc=[Select the Dynamic Range Compression level for AC-3 audio streams.]:compression level' \
-        '--ad-lavc-downmix=[Whether to request audio channel downmixing from the decoder (default\: yes).]:downmixing:(yes no)' \
+        $demuxer_actualopts \
+        '--ad=[Specify a priority list of audio decoders to be used, according to their family and decoder name]:audio decoders' \
+        '--ad-lavc-ac3drc=[Select the Dynamic Range Compression level for AC-3 audio streams]:compression level' \
+        '--ad-lavc-downmix=[Whether to request audio channel downmixing from the decoder (default\: yes)]:downmixing:(yes no)' \
         '--ad-lavc-o=[Pass AVOptions to libavcodec decoder]:libavcodec decoder options' \
-        '--ad-spdif-dtshd=[When using DTS passthrough, output any DTS-HD track as-is.]:' \
-        '--af=[Specify a list of audio filters to apply to the audio stream.]:audio filters' \
+        '--ad-spdif-dtshd=[When using DTS passthrough, output any DTS-HD track as-is]:' \
+        '--af=[Specify a list of audio filters to apply to the audio stream]:audio filters' \
         '--aid=[Select audio channel]:audio channel' \
-        '--alang=[Specify a priority list of audio languages to use.]:audio language list' \
+        '--alang=[Specify a priority list of audio languages to use]:audio language list' \
         '--ao=[Specify a priority list of audio output drivers to be used]:audio driver(s):->audio-drivers:' \
-        '--ar[Enable/disable AppleIR remote support.]' \
-        '--aspect=[Override movie aspect ratio, in case aspect information is incorrect or missing in the file being played.]:aspect ratio' \
-        '--ass[Render ASS subtitles natively (enabled by default).]' \
-        '--audio-demuxer=[Use this audio demuxer type when using --audiofile.]:audio demuxer' \
-        '--audiofile=[Play audio from an external file (WAV, MP3 or Ogg Vorbis) while viewing a movie.]:external audio file:_files -g "*.(wav|mp3|ogg)"' \
-        '--audiofile-cache=[Enables caching for the stream used by --audiofile, using the specified amount of memory.]:cache (bytes)' \
+        '--ar[Enable/disable AppleIR remote support]' \
+        '--aspect=[Override movie aspect ratio, in case aspect information is incorrect or missing in the file being played]:aspect ratio' \
+        '!--ass[Render ASS subtitles natively (enabled by default)]' \
+        '--audio-demuxer=[Use this audio demuxer type when using --audiofile]:audio demuxer' \
+        '--audiofile=[Play audio from an external file (WAV, MP3 or Ogg Vorbis) while viewing a movie]:external audio file:_files -g "*.(wav|mp3|ogg)"' \
+        '--audiofile-cache=[Enables caching for the stream used by --audiofile, using the specified amount of memory]:cache (bytes)' \
         "(--autofit-larger)--autofit=[Set initial window size]:initial window size (WxH)" \
         '(--autofit)--autofit-larger=[Set maximum initial window size]:initial window size(WxH)' \
-        '--autosub[Load additional subtitle files matching the video filename. ]' \
+        '--autosub[Load additional subtitle files matching the video filename]' \
         '--autosub-match=[Adjust matching fuzziness when searching for subtitles]:subtitle fuzziness' \
-        '--autosync=[Gradually adjusts the A/V sync based on audio delay measurements.]:' \
-        '--untimed[Do not sleep when outputting video frames. ]' \
+        '--autosync=[Gradually adjusts the A/V sync based on audio delay measurements]:' \
+        '--untimed[Do not sleep when outputting video frames]' \
         '--bluray-angle=[Specify Blu-ray view angle]:bluray view angle' \
         '--bluray-device=[Specify Blu-ray disc location]:bluray disc location (device, iso or directory):_files' \
         '--border[Play movie with window border and decorations]' \
-        '--brightness=[Adjust the brightness of the video signal.]:additional brightness (default 0)' \
+        '--brightness=[Adjust the brightness of the video signal]:additional brightness (default 0)' \
         '--cache=[Set size of the cache]:cache size (no, auto or integer in kb; default auto)' \
         '!--cache-default=[Set size of the cache]:cache size (kb, default 320)' \
         '--cache-pause=[Pause if cache percentage goes below specified value]:cache percentage' \
         '--cache-min=[Playback will start when the cache has been filled up to percentage]:cache percentage (default 20)' \
         '--cache-seek-min=[Wait for cache fill to set percentage on seek]:cache percentage' \
-        '--cdda=[This option can be used to tune the CD Audio reading feature of mpv.]:cdda parameters' \
-        '--cdrom-device=[Specify the CD-ROM device.]:specify cdrom source (device, iso or directory; default /dev/cdrom):_files' \
-        '--channels=[Request the number of playback channels.]:playback channels' \
+        '--cdda=[This option can be used to tune the CD Audio reading feature of mpv]:cdda parameters' \
+        '--cdrom-device=[Specify the CD-ROM device]:specify cdrom source (device, iso or directory; default /dev/cdrom):_files' \
+        '--channels=[Request the number of playback channels]:playback channels' \
         '--chapter=[Specify which chapter to start playing at]:chapter' \
         '--chapter-merge-threshold=[Threshold for merging almost consecutive ordered chapter parts]:chapter merge threshold (ms, default 100)' \
         '--chapter-seek-threshold=[Threshold to go to previous chapter on backwards seek]:chapter seek threshold (seconds, default 5.0)' \
-        '--colormatrix=[Controls the YUV to RGB color space conversion when playing video.]:' \
-        '--colormatrix-input-range=[YUV color levels used with YUV to RGB conversion.]:' \
-        '--colormatrix-output-range=[RGB color levels used with YUV to RGB conversion.]:' \
-        '--consolecontrols[--no-consolecontrols prevents the player from reading key events from standard input. ]' \
-        '--contrast[=[Adjust the contrast of the video signal.]:contrast adjustment (-100 to 100, default 0)' \
-        '--cookies[(network only) Support cookies when making HTTP requests. ]' \
+        '--colormatrix=[Controls the YUV to RGB color space conversion when playing video]:' \
+        '--colormatrix-input-range=[YUV color levels used with YUV to RGB conversion]:' \
+        '--colormatrix-output-range=[RGB color levels used with YUV to RGB conversion]:' \
+        '--consolecontrols[--no-consolecontrols prevents the player from reading key events from standard input]' \
+        '--contrast=[Adjust the contrast of the video signal]:contrast adjustment (-100 to 100, default 0)' \
+        '--cookies[(network only) Support cookies when making HTTP requests]' \
         '--cookies-file=[File to read HTTP cookies from]:cookie file:_files' \
         '--correct-pts[switches mpv to a mode where video timing is determined using a fixed framerate value]' \
-        '!--cursor-autohide=[Make mouse cursor automatically hide after given number of milliseconds.]:cursor hide delay (ms)' \
-        '!--cursor-autohide-fs-only[If this option is given, the cursor is always visible in windowed mode. ]' \
+        '!--cursor-autohide=[Make mouse cursor automatically hide after given number of milliseconds]:cursor hide delay (ms)' \
+        '!--cursor-autohide-fs-only[If this option is given, the cursor is always visible in windowed mode]' \
         '--audio-delay=[Specify an audio delay]:audio delay (signed float in seconds, default 0)' \
-        '--deinterlace=[Enable or disable interlacing (default\: auto, which usually means no).]:' \
-        '--demuxer=[Force demuxer type.]:demuxer type' \
+        '--deinterlace=[Enable or disable interlacing (default\: auto, which usually means no)]:' \
+        '--demuxer=[Force demuxer type]:demuxer type' \
         '--demuxer-mkv-subtitle-preroll[Try harder to show embedded soft subtitles when seeking somewhere]' \
         '!--doubleclick-time=[Time in milliseconds to recognize two consecutive button presses as a double-click]:doubleclick time (ms, default 300)' \
         '--dvbin=[Pass the following parameters to the DVB input module, in order to override the default ones:]:dvb input parameters' \
@@ -183,7 +206,7 @@ else
         '--embeddedfonts[Use fonts embedded in Matroska container files and ASS scripts (default\: enabled)]' \
         '--end=[Stop at given absolute time]:stop time' \
         '--field-dominance=[Set first field for interlaced content]:' \
-        '--flip[Flip image upside-down.]' \
+        '--flip[Flip image upside-down]' \
         '--force-rgba-osd-rendering[Change how some video outputs render the OSD and text subtitles]' \
         '--force-window[Create a video output window even if there is no video]' \
         "--force-window-position[Forcefully move mpv's video output window to default location whenever there is a change in video parameters, video stream or file]" \
@@ -239,7 +262,7 @@ else
         '--native-keyrepeat[Use system settings for keyrepeat delay and rate, instead of --input-ar-delay and --input-ar-rate]' \
         '--sub-visibility[Can be used to disable display of subtitles, but still select and decode them]' \
         '--ontop[Makes the player window stay on top of other windows]' \
-        '--ordered-chapters[Enabled by default]' \
+        '!--ordered-chapters[Enabled by default]' \
         '--osc[Whether to load the on-screen-controller (default\: yes)]' \
         '--panscan=[Enables pan-and-scan functionality]:panscan (default 0):(0 1)' \
         '--playing-msg=[Print out a string after starting playback]:outpust string' \
@@ -277,7 +300,7 @@ else
         '--slave-broken[Switches on the old slave mode]' \
         '--softsleep[Time frames by repeatedly checking the current time instead of asking the kernel to wake up mpv at the correct time]' \
         '--softvol=[Control whether to use the volume controls of the audio output driver or the internal mpv volume filter]:' \
-        '--softvol-max=[Set the maximum amplification level in percent (default\: 200)]:maximum volume level (default 200)' \
+        '--softvol-max=[Set the maximum amplification level in percent]:maximum volume level (default 200)' \
         '--speed=[Slow down or speed up playback by the factor given as parameter]:speed factor (default 1.0)' \
         '--srate=[Select the output sample rate to be used (of course sound cards have limits on this)]:output sample rate' \
         '--start=[Seek to given time position]:time position' \
@@ -301,12 +324,6 @@ else
         '(*)--version[Print version string and exit]' \
         '--vf=[Specify a list of video filters to apply to the video stream]:' \
         '--vid=[Select video channel]:video channel' \
-        '--video-align-x=[Move video padding on x or y axis]:x align (pixels)' \
-        '--video-align-y=[Move video padding on x or y axis]:y align (pixels)' \
-        '--video-pan-x=[Moves the displayed video rectangle by the given value in the X or Y direction]:x pan (pixels)' \
-        '--video-pan-y=[Moves the displayed video rectangle by the given value in the X or Y direction]:y pan (pixels)' \
-        '--video-unscaled[Disable scaling of the video]' \
-        '--video-zoom=[Adjust the video display scale factor by the given value]:zoom factor' \
         '--vo=[Specify a priority list of video output drivers to be used]:video drivers:->video-drivers' \
         '--volstep=[Set the step size of mixer volume changes in percent of the full range]:volume step size (default 3)' \
         '--volume=[Set the startup volume]:volume' \
@@ -365,6 +382,7 @@ else
         _describe -t video-output-plugins 'video output plugin' vals && ret=0
       ;;
     esac
+
 fi
 
-return ret
+return $ret
