@@ -228,7 +228,7 @@ _eselect() {
             fi
         else
             if (( $modnames[(I)$words[2]] )); then
-                (whence _eselect_$words[2] &>/dev/null) && _eselect_$words[2] "$@"
+                (( $+functions[_eselect_$words[2]] )) && _eselect_$words[2] "$@"
             fi
         fi
     fi
