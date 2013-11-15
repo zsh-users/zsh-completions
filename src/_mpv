@@ -222,13 +222,13 @@ else
         '--alang=[Specify a priority list of audio languages to use]:audio language list' \
         '--ao=[Specify a priority list of audio output drivers to be used]:audio driver(s):->audio-drivers:' \
         $noadv'--ar[Enable/disable AppleIR remote support]' \
-        '--aspect=[Override movie aspect ratio, in case aspect information is incorrect or missing in the file being played]:aspect ratio' \
+        '--aspect=[Override movie aspect ratio]:aspect ratio' \
         $noadv'--audio-demuxer=[Use this audio demuxer type when using --audiofile]:audio demuxer' \
         $noadv'--audiofile=[Play audio from an external file (WAV, MP3 or Ogg Vorbis) while viewing a movie]:external audio file:_files -g "*.(wav|mp3|ogg)"' \
         $noadv'--audiofile-cache=[Enables caching for the stream used by --audiofile, using the specified amount of memory]:cache (bytes)' \
         $noadv"(--autofit-larger)--autofit=[Set initial window size]:initial window size (WxH)" \
         $noadv'(--autofit)--autofit-larger=[Set maximum initial window size]:initial window size(WxH)' \
-        '--autosub[Load additional subtitle files matching the video filename]' \
+        $noadv'--autosub[Load additional subtitle files matching the video filename]' \
         $noadv'--autosub-match=[Adjust matching fuzziness when searching for subtitles]:subtitle fuzziness' \
         $noadv'--autosync=[Gradually adjusts the A/V sync based on audio delay measurements]:' \
         $noadv'--untimed[Do not sleep when outputting video frames]' \
@@ -450,6 +450,12 @@ else
           vals=( help ${${${(f)"$(_call_program video-filters $words[1] --vf=help 2>/dev/null)"}[(r)  *,-1]## #}/ #:/:} )
           _describe -t video-filters 'video filters' vals -S '' && ret=0
       ;;
+
+      profiles)
+          vals=( help ${${${(f)"$(_call_program profiles $words[1] --profile=help 2>/dev/null)"}[(r)	*,-1]#	}/	/:} )
+          _describe -t profile 'profile' vals && ret=0
+      ;;
+
     esac
 
 fi
