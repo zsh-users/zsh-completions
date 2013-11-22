@@ -135,7 +135,16 @@ _managepy-sqlinitialdata(){}
 _managepy-sqlreset(){}
 _managepy-sqlsequencereset(){}
 _managepy-startapp(){}
-_managepy-startproject(){}
+
+_managepy-startproject(){
+  _arguments -s : \
+    "(-v --verbosity)"{-v,--verbosity}"[Verbosity level; 0=minimal output, 1=normal output, 2=verbose output, 3=very verbose output.]:Verbosity:((0\:minimal 1\:normal 2\:verbose 4\:very\ verbose))" \
+    '--template[The path or URL to load the template from.]:file:_files' \
+    "(-e --extension)"{-e,--extension}"[The file extension(s) to render (default: "py").  Separate multiple extensions with commas, or use -e multiple times.]" \
+    "(-n --name)"{-n,--name}"[The file name(s) to render. Separate multiple extensions with commas, or use -n multiple times. --version show program\'s version number and exit]:file:_files" \
+    $nul_args \
+    '*::args:_gnu_generic'
+}
 
 _managepy-syncdb() {
   _arguments -s : \
