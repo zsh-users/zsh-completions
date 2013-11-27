@@ -1,4 +1,4 @@
-#compdef manage.py
+#compdef manage.py django-admin.py
 # ------------------------------------------------------------------------------
 # Description
 # -----------
@@ -16,11 +16,8 @@
 # ------------------------------------------------------------------------------
 
 
-_managepy-adminindex(){
-  _arguments -s : \
-    $nul_args \
-    '*::directory:_directories' && ret=0
-}
+_managepy-cleanup(){}
+_managepy-compilemessages(){}
 
 _managepy-createcachetable(){
   _arguments -s : \
@@ -78,6 +75,8 @@ _managepy-loaddata(){
     '*::file:_files' \
     $nul_args && ret=0
 }
+
+_managepy-makemessages(){}
 
 _managepy-reset(){
   _arguments -s : \
@@ -174,11 +173,17 @@ _managepy-validate() {
     $nul_args && ret=0
 }
 
+_managepy-changepassword(){}
+_managepy-createsuperuser(){}
+_managepy-collectstatic(){}
+_managepy-findstatic(){}
+
 _managepy-commands() {
   local -a commands
   
   commands=(
-    'adminindex:prints the admin-index template snippet for the given app name(s).'
+    'cleanup:Can be run as a cronjob or directly to clean out old data from the database (only expired sessions at the moment).'
+    'compilemessages:Compiles .po files to .mo files for use with builtin gettext support.'
     'createcachetable:creates the table needed to use the SQL cache backend.'
     'dbshell:runs the command-line client for the current DATABASE_ENGINE.'
     "diffsettings:displays differences between the current settings.py and Django's default settings."
@@ -187,6 +192,7 @@ _managepy-commands() {
     'help:manage.py help.'
     'inspectdb:Introspects the database tables in the given database and outputs a Django model module.'
     'loaddata:Installs the named fixture(s) in the database.'
+    'makemessages:Runs over the entire source tree of the current directory and pulls out all strings marked for translation.'
     'reset:Executes ``sqlreset`` for the given app(s) in the current database.'
     'runfcgi:Run this project as a fastcgi (or some other protocol supported by flup) application,'
     'runserver:Starts a lightweight Web server for development.'
@@ -207,6 +213,14 @@ _managepy-commands() {
     'testserver:Runs a development server with data from the given fixture(s).'
     'validate:Validates all installed models.'
   )
+  if [[ $words[1] =~ "manage.py$" ]]; then
+    commands=($commands
+      "changepassword:Change a user's password for django.contrib.auth."
+      'createsuperuser:Used to create a superuser.'
+      'collectstatic:Collect static files in a single location.'
+      'findstatic:Finds the absolute paths for the given static file(s).'
+    )
+  fi
   
   _describe -t commands 'manage.py command' commands && ret=0
 }
