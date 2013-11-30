@@ -1,0 +1,192 @@
+#compdef xinput
+
+# ZSH completion for `xinput`
+# Copyright © 2011 Red Hat, Inc.
+# Author: Peter Hutterer
+
+
+_xinput()
+{
+
+_xinput_zstyle_default () {
+    zstyle -t $1 $2
+    if (( $status == 2 )); then
+        zstyle $*
+    fi
+}
+
+(( $+functions[_xinput_commands] )) ||
+_xinput_commands()
+{
+    local ret
+    local -a set_commands
+    local -a get_commands
+    local -a xinput_commands
+
+    # all commands that use device ID + other command
+    set_commands=(
+        'set-ptr-feedback:set pointer feedback setting'
+        'set-integer-feedback:get integer feedback setting'
+        'set-button-map:set device button map'
+        'set-pointer:switch core pointer to device (deprecated)'
+        'set-mode:set relative/absolute mode'
+        'create-master:create a new master device'
+        'reattach:attach a slave device to a new master'
+        'set-cp:set the client pointer'
+        'set-int-prop:set a property of type int'
+        'set-float-prop:set a property of type float'
+        'set-atom-prop:set a property of type atom'
+        'delete-prop:delete a property'
+        'set-prop:set a property of any type'
+    )
+
+    # all commands that just use a device ID
+    get_commands=(
+        'get-feedbacks:get pointer feedback setting'
+        'get-button-map:get device button map'
+        'list:list all devices'
+        'query-state:query device state'
+        'test:print input events on device'
+        'remove-master:remove a master device'
+        'float:float a slave device'
+        'list-props:list all properties on device'
+        'watch-props:watch properties for changes'
+        'test-xi2:print XI2 eventsl'
+        'enable:enables an input device'
+        'disable:enables an input device'
+    )
+
+    __xinput_zstyle_default () {
+        zstyle -t $1 $2
+        if (( $status == 2 )); then
+            zstyle $*
+        fi
+    }
+
+    xinput_commands=($set_commands)
+    xinput_commands+=($get_commands)
+
+    _describe -t command 'xinput command' xinput_commands
+}
+
+(( $+functions[_xinput_device_list] )) ||
+_xinput_device_list()
+{
+    local expl
+    declare -a devices
+    devices=(${${(f)"$(_call_program devlist xinput --list --name-only 2>/dev/null)"}})
+
+    _wanted devices expl device compadd $* - $devices
+}
+
+# xinput disable <device>
+(( $+functions[_xinput_disable] )) ||
+_xinput_disable()
+{
+    _xinput_device_list
+}
+
+# xinput enable <device>
+(( $+functions[_xinput_enable] )) ||
+_xinput_enable()
+{
+    _xinput_device_list
+}
+
+# xinput get-feedbacks <device>
+(( $+functions[_xinput_get-feedbacks] )) ||
+_xinput_get-feedbacks()
+{
+    _xinput_device_list
+}
+
+# xinput get-button-map <device>
+(( $+functions[_xinput_get-button-map] )) ||
+_xinput_get-button-map()
+{
+    _xinput_device_list
+}
+
+# xinput list <device>
+(( $+functions[_xinput_list] )) ||
+_xinput_list()
+{
+    _xinput_device_list
+}
+
+# xinput query-state <device>
+(( $+functions[_xinput_query-state] )) ||
+_xinput_query-state()
+{
+    _xinput_device_list
+}
+
+# xinput test <device>
+(( $+functions[_xinput_test] )) ||
+_xinput_test()
+{
+    _xinput_device_list
+}
+
+# xinput remove-master <device>
+# FIXME: should only list master devices
+(( $+functions[_xinput_remove-master] )) ||
+_xinput_remove-master()
+{
+    _xinput_device_list
+}
+
+# xinput float <device>
+# FIXME: should only list slave devices
+(( $+functions[_xinput_float] )) ||
+_xinput_float()
+{
+    _xinput_device_list
+}
+
+# xinput list-props <device>
+(( $+functions[_xinput_list-props] )) ||
+_xinput_list-props()
+{
+    _xinput_device_list
+}
+
+# xinput watch-props <device>
+(( $+functions[_xinput_watch-props] )) ||
+_xinput_watch-props()
+{
+    _xinput_device_list
+}
+
+# xinput test-xi2
+(( $+functions[_xinput_test-xi2] )) ||
+_xinput_test-xi2()
+{
+}
+
+if [[ $service == xinput ]]; then
+    local curcontext=$curcontext
+    local ret=1
+    local state line
+    declare -A opt_args
+    _arguments -C \
+        '(- :)--version[display version information]'\
+        '(- :)--help[display help message]'\
+        '*::arg:->cmd_or_options' && return
+
+    case $state in
+        (cmd_or_options)
+            if (( CURRENT == 1 )); then
+                _xinput_commands
+            else
+                curcontext="${curcontext%:*:*}:xinput_$words[1]:"
+                _call_function ret _xinput_$words[1]
+            fi
+            ;;
+    esac
+fi
+}
+
+_xinput
+
+# vim: set sw=4 ts=8 et ft=zsh :
