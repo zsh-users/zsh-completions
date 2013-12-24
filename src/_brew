@@ -108,6 +108,17 @@ case "$words[1]" in
         _brew_all_formulae
         _wanted formulae expl 'all formulae' compadd -a formulae
       fi ;;
+  link|ln)
+    _arguments \
+      '(-n --dry-run)'{-n,--dry-run}'[All files would be linked or be deleted will be listed, but no real linking or deletion will be done]' \
+      '(--force)--force[Allow keg-only formulae to be linked]' \
+      '(--overwrite)--overwrite[Also delete files which already exist in the prefix while linking]' \
+      '1: :->forms' && return 0
+
+      if [[ "$state" == forms ]]; then
+        _brew_installed_formulae
+        _wanted installed_formulae expl 'installed formulae' compadd -a installed_formulae
+      fi ;;
   list|ls)
     _arguments \
       '(--unbrewed)--unbrewed[files in brew --prefix not controlled by brew]' \
@@ -138,7 +149,7 @@ case "$words[1]" in
   audit|home|homepage|log|info|abv|uses|cat|deps|edit|options)
     _brew_all_formulae
     _wanted formulae expl 'all formulae' compadd -a formulae ;;
-  remove|rm|uninstall|unlink|cleanup|link|ln|pin|unpin|test)
+  remove|rm|uninstall|unlink|cleanup|pin|unpin|test)
     _brew_installed_formulae
     _wanted installed_formulae expl 'installed formulae' compadd -a installed_formulae ;;
   tap)
