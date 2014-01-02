@@ -172,7 +172,7 @@ _xinput(){
 	':list option:($_xinput_devices_id)' # [Floating|AttachToMaster (dflt:Floating)] [returnPointer] [returnKeyboard]
     ;; 
     # --set-cp|set-cp); window device;; 
-    --|set-prop)
+    --set-prop|set-prop)
       _arguments \
 	':list option:($_xinput_devices)' \
 	':list option:(--type={atom,float,int} --format={8,16,32})' \
