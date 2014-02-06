@@ -1,0 +1,46 @@
+#compdef glances
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for glances (http://nicolargo.github.com/glances/).
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * loranger (https://github.com/loranger)
+#
+# ------------------------------------------------------------------------------
+
+_glances() {
+
+	_arguments \
+		"-b[Display network rate in Byte per second]" \
+		"-B[Bind server to the given IP or host NAME]:host:_hosts" \
+		"-c[Connect to a Glances server]:host:_hosts" \
+		"-C[Path to the configuration file]:configuration path:_files -/" \
+		"-d[Disable disk I/O module]" \
+		"-e[Enable the sensors module (Linux-only)]" \
+		"-f[Set the output folder (HTML) or file (CSV)]:output path:_files -/" \
+		"-h[Display the syntax and exit]" \
+		"-m[Disable mount module]" \
+		"-n[Disable network module]" \
+		"-o[Define additional output (available: HTML or CSV)]:output type:(HTML CSV)" \
+		"-p[Define the client or server TCP port (default: 61209)]:port:_ports" \
+		"-P[Client/server password]:password:" \
+		"-s[Run Glances in server mode]" \
+		"-t[Set the refresh time in seconds (default: 3)]:seconds:" \
+		"-v[Display the version and exit]" \
+		"-z[Do not use the bold color attribute]" \
+}
+
+_glances "$@"
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
