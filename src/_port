@@ -225,8 +225,16 @@ _port_select() {
 }
 
 _port_caching_policy() {
-  local reg_time comp_time
-  reg_time=$(stat -c '%Z' $port_prefix/var/macports/registry/registry.db)
+  local reg_time comp_time check_file
+  case "${1##*/}" in
+    PORT_INSTALLED_PACKAGES)
+      check_file=$port_prefix/var/macports/registry/registry.db
+      ;;
+    PORT_AVAILABLE_PACKAGES)
+      check_file=${$(port dir MacPorts)%/*/*}/PortIndex
+      ;;
+  esac
+  reg_time=$(stat -c '%Z' $check_file)
   comp_time=$(stat -c '%Z' $1)
   return $(( reg_time < comp_time ))
 }
