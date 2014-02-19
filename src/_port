@@ -116,12 +116,6 @@ _port() {
     '--no-replace\:Do\ not\ replace\ one\ port\ with\ another\ according\ to\ the\ replaced_by\ field.' \
   )
 
-  local cache_policy
-  zstyle -s ":completion:${curcontext}:" cache-policy cache_policy
-  if [[ -z "$cache_policy" ]]; then
-    zstyle ":completion:${curcontext}:" cache-policy _port_caching_policy
-  fi
-
   _arguments -s -C \
     '-v[Verbose mode (generate verbose messages)]' \
     '-d[Debug mode (generate debugging messages, implies -v)]' \
@@ -141,17 +135,15 @@ _port() {
     '-y[Perform a dry run.]' \
     '-t[Enable trace mode debug facilities on platforms that support it (Mac OS X).]' \
     "1:Port actions:(($actions))" \
-    '*:extra:->extra' \
+    '*:extra:_port_dispatch' \
     && return 0
-
-  case "$state" in
-    extra)
-      _port_dispatch
-      ;;
-  esac
 }
 
 _port_dispatch() {
+  local cache_policy
+  zstyle -s ":completion:${curcontext}:" cache-policy cache_policy
+  zstyle ":completion:${curcontext}:" cache-policy ${cache_policy:-_port_caching_policy}
+
   case "$words[2]" in
     provides)
       _files
@@ -170,7 +162,7 @@ _port_dispatch() {
       if ( [[ ${+_port_installed_packages} -eq 0 ]] || _cache_invalid PORT_INSTALLED_PACKAGES ) &&
         ! _retrieve_cache PORT_INSTALLED_PACKAGES;
       then
-        _port_installed_packages=( $(_call_program path-all "port echo installed | cut -d ' ' -f 1") )
+        _port_installed_packages=( $(_call_program path-all "port -q echo installed") )
         _store_cache PORT_INSTALLED_PACKAGES _port_installed_packages
       fi
       _alternative \
@@ -181,7 +173,7 @@ _port_dispatch() {
     upgrade)
       # No good reason to actually cache outdated ports list
       local outdated_packages
-      outdated_packages=( $(_call_program path-outdated "port echo outdated | cut -d ' ' -f 1") )
+      outdated_packages=( $(_call_program path-outdated "port -q echo outdated") )
       _alternative -- \
         "upgrade-options:Upgrade options:(($upgrade_options))" \
         "ports:Outdated ports:($outdated_packages)" \
@@ -198,7 +190,7 @@ _port_dispatch() {
       if ( [[ ${+_port_available_packages} -eq 0 ]] || _cache_invalid PORT_AVAILABLE_PACKAGES ) &&
         ! _retrieve_cache PORT_AVAILABLE_PACKAGES;
       then
-        _port_available_packages=( $(_call_program path-all "port echo all") )
+        _port_available_packages=( $(_call_program path-all "port -q echo all") )
         _store_cache PORT_AVAILABLE_PACKAGES _port_available_packages
       fi
       _alternative \
@@ -227,8 +219,16 @@ _port_select() {
 }
 
 _port_caching_policy() {
-  local reg_time comp_time
-  reg_time=$(stat -c '%Z' $port_prefix/var/macports/registry/registry.db)
+  local reg_time comp_time check_file
+  case "${1##*/}" in
+    PORT_INSTALLED_PACKAGES)
+      check_file=$port_prefix/var/macports/registry/registry.db
+      ;;
+    PORT_AVAILABLE_PACKAGES)
+      check_file=${$(port dir MacPorts)%/*/*}/PortIndex
+      ;;
+  esac
+  reg_time=$(stat -c '%Z' $check_file)
   comp_time=$(stat -c '%Z' $1)
   return $(( reg_time < comp_time ))
 }
