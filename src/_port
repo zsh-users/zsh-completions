@@ -20,7 +20,7 @@ _port() {
   typeset -A opt_args
   local   context state state_descr line
 
-  local -a  revupgrade_options select_options \
+  local -a  upgrade_options revupgrade_options select_options \
               actions pseudo_common pseudo_advanced port_prefix
 
   port_prefix=$(which port | sed 's|/bin/port||')
@@ -50,6 +50,12 @@ _port() {
   )
 
   revupgrade_options=('--id-loadcmd-check:Run more checks against a special loadcommand in Mach-O binaries')
+
+  upgrade_options=(
+    '--force\:Ignore\ circumstances\ that\ would\ normally\ cause\ ports\ to\ be\ skipped\ \(e.g.\ not\ outdated\).' \
+    '--enforce-variants\:If\ the\ installed\ variants\ do\ not\ match\ those\ requested,\ upgrade\ even\ if\ the\ port\ is\ not\ outdated.' \
+    '--no-replace\:Do\ not\ replace\ one\ port\ with\ another\ according\ to\ the\ replaced_by\ field.' \
+  )
 
   local cache_policy
   zstyle -s ":completion:${curcontext}:" cache-policy cache_policy
@@ -114,9 +120,14 @@ _port_dispatch() {
         "pseudo-advanced:Advanced Pseudo-portnames:($pseudo_advanced)"
       ;;
     upgrade)
+      # No good reason to actually cache outdated ports list
       local outdated_packages
-      outdated_packages=("${(f)$(port outdated | sed -e '1 d' -e 's/^\([[:graph:]]*\).*/\1/')}")
-      _describe "Outdated ports" outdated_packages
+      outdated_packages=( $(_call_program path-outdated "port echo outdated | cut -d ' ' -f 1") )
+      _alternative -- \
+        "upgrade-options:Upgrade options:(($upgrade_options))" \
+        "ports:Outdated ports:($outdated_packages)" \
+        "pseudo-common:Common Pseudo-portnames:($pseudo_common)" \
+        "pseudo-advanced:Advanced Pseudo-portnames:($pseudo_advanced)"
       ;;
     rev-upgrade)
       if (( CURRENT == 3 )); then
