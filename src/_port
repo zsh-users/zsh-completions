@@ -16,10 +16,6 @@
 # ------------------------------------------------------------------------------
 
 _port() {
-  # Variables for _argument
-  typeset -A opt_args
-  local   context state state_descr line
-
   local -a  upgrade_options revupgrade_options select_options \
               actions pseudo_common pseudo_advanced port_prefix
 
@@ -135,14 +131,8 @@ _port() {
     '-y[Perform a dry run.]' \
     '-t[Enable trace mode debug facilities on platforms that support it (Mac OS X).]' \
     "1:Port actions:(($actions))" \
-    '*:extra:->extra' \
+    '*:Per-action arguments:_port_dispatch' \
     && return 0
-
-  case "$state" in
-    extra)
-      _port_dispatch
-      ;;
-  esac
 }
 
 _port_dispatch() {
