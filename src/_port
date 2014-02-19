@@ -20,84 +20,19 @@ _port() {
   typeset -A opt_args
   local   context state state_descr line
 
-  typeset -a  upgrade_options revupgrade_options select_options \
-              actions pseudo_common pseudo_advanced port_prefix
+  local   actions pseudo_common pseudo_advanced select_options port_prefix
 
   port_prefix=$(which port | sed 's|/bin/port||')
 
-  actions=(
-    'activate\:Activate\ the\ given\ ports'
-    'archive\:Archive\ the\ given\ ports,\ i.e.\ install\ the\ port\ image\ but\ do\ not\ activate'
-    'archivefetch\:Fetch\ archive\ for\ the\ given\ ports'
-    'build\:Build\ the\ given\ ports'
-    'cat\:Writes\ the\ Portfiles\ of\ the\ given\ ports\ to\ stdout'
-    'cd\:Changes\ to\ the\ directory\ of\ the\ given\ port'
-    'checksum\:Compares\ the\ checksums\ for\ the\ downloaded\ files\ of\ the\ given\ ports'
-    'clean\:Removes\ files\ associated\ with\ the\ given\ ports'
-    'configure\:Removes\ files\ associated\ with\ the\ given\ ports'
-    'contents\Returns\ a\ list\ of\ files\ installed\ by\ given\ ports'
-    'deactivate\:Deactivates\ the\ given\ ports'
-    'dependents\:Returns\ a\ list\ of\ installed\ dependents\ for\ each\ of\ the\ given\ ports'
-    'deps\:Display\ a\ dependency\ listing\ for\ the\ given\ ports'
-    'destroot\:Destroot\ the\ given\ ports'
-    'dir\:Returns\ the\ directories\ of\ the\ given\ ports'
-    'distcheck\:Checks\ if\ the\ given\ ports\ can\ be\ fetched\ from\ all\ of\ its\ master_sites'
-    'distfiles\:Returns\ a\ list\ of\ distfiles\ for\ the\ given\ port'
-    'dmg\:Creates\ a\ dmg\ for\ each\ of\ the\ given\ ports'
-    'dpkg\:Creates\ a\ dpkg\ for\ each\ of\ the\ given\ ports'
-    'echo\:Returns\ the\ list\ of\ ports\ the\ argument\ expands\ to'
-    'edit'
-    'exit'
-    'extract\:Extract\ the\ downloaded\ files\ of\ the\ given\ ports'
-    'fetch'
-    'file'
-    'gohome'
-    'help'
-    'info'
-    'install'
-    'installed'
-    'lint'
-    'list'
-    'livecheck'
-    'load'
-    'location'
-    'log'
-    'logfile'
-    'mdmg'
-    'mirror'
-    'mpkg'
-    'notes'
-    'outdated'
-    'patch'
-    'pkg'
-    'platform'
-    'portpkg'
-    'provides'
-    'quit'
-    'rdependents'
-    'rdeps'
-    'rev-upgrade'
-    'rpm'
-    'search'
-    'select'
-    'selfupdate'
-    'setrequested'
-    'space'
-    'srpm'
-    'submit'
-    'sync'
-    'test'
-    'unarchive'
-    'uninstall'
-    'unload'
-    'unsetrequested'
-    'upgrade'
-    'url'
-    'usage'
-    'variants'
-    'version'
-    'work'
-  )
+  actions=( activate archive archivefetch build cat cd
+  checksum clean configure contents deactivate dependents deps
+  destroot dir distcheck distfiles dmg dpkg echo edit exit
+  extract fetch file gohome help info install installed lint list
+  livecheck load location log logfile mdmg mirror mpkg notes
+  outdated patch pkg platform portpkg provides quit rdependents
+  rdeps rev-upgrade rpm search select selfupdate setrequested space
+  srpm submit sync test unarchive uninstall unload unsetrequested
+  upgrade url usage variants version work )
 
   pseudo_common=(all current active inactive actinact installed uninstalled outdated
   obsolete requested unrequested leaves)
@@ -114,12 +49,6 @@ _port() {
   )
 
   revupgrade_options=('--id-loadcmd-check:Run more checks against a special loadcommand in Mach-O binaries')
-
-  upgrade_options=(
-    '--force\:Ignore\ circumstances\ that\ would\ normally\ cause\ ports\ to\ be\ skipped\ \(e.g.\ not\ outdated\).' \
-    '--enforce-variants\:If\ the\ installed\ variants\ do\ not\ match\ those\ requested,\ upgrade\ even\ if\ the\ port\ is\ not\ outdated.' \
-    '--no-replace\:Do\ not\ replace\ one\ port\ with\ another\ according\ to\ the\ replaced_by\ field.' \
-  )
 
   local cache_policy
   zstyle -s ":completion:${curcontext}:" cache-policy cache_policy
@@ -184,14 +113,9 @@ _port_dispatch() {
         "pseudo-advanced:Advanced Pseudo-portnames:($pseudo_advanced)"
       ;;
     upgrade)
-      # No good reason to actually cache outdated ports list
       local outdated_packages
-      outdated_packages=( $(_call_program path-outdated "port echo outdated | cut -d ' ' -f 1") )
-      _alternative -- \
-        "upgrade-options:Upgrade options:(($upgrade_options))" \
-        "ports:Outdated ports:($outdated_packages)" \
-        "pseudo-common:Common Pseudo-portnames:($pseudo_common)" \
-        "pseudo-advanced:Advanced Pseudo-portnames:($pseudo_advanced)"
+      outdated_packages=("${(f)$(port outdated | sed -e '1 d' -e 's/^\([[:graph:]]*\).*/\1/')}")
+      _describe "Outdated ports" outdated_packages
       ;;
     rev-upgrade)
       if (( CURRENT == 3 )); then
