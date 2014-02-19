@@ -20,7 +20,8 @@ _port() {
   typeset -A opt_args
   local   context state state_descr line
 
-  local   actions pseudo_common pseudo_advanced select_options port_prefix
+  local -a  revupgrade_options select_options \
+              actions pseudo_common pseudo_advanced port_prefix
 
   port_prefix=$(which port | sed 's|/bin/port||')
 
