@@ -20,19 +20,84 @@ _port() {
   typeset -A opt_args
   local   context state state_descr line
 
-  local   actions pseudo_common pseudo_advanced select_options port_prefix
+  typeset -a  upgrade_options revupgrade_options select_options \
+              actions pseudo_common pseudo_advanced port_prefix
 
   port_prefix=$(which port | sed 's|/bin/port||')
 
-  actions=( activate archive archivefetch build cat cd
-  checksum clean configure contents deactivate dependents deps
-  destroot dir distcheck distfiles dmg dpkg echo edit exit
-  extract fetch file gohome help info install installed lint list
-  livecheck load location log logfile mdmg mirror mpkg notes
-  outdated patch pkg platform portpkg provides quit rdependents
-  rdeps rev-upgrade rpm search select selfupdate setrequested space
-  srpm submit sync test unarchive uninstall unload unsetrequested
-  upgrade url usage variants version work )
+  actions=(
+    'activate\:Activate\ the\ given\ ports'
+    'archive\:Archive\ the\ given\ ports,\ i.e.\ install\ the\ port\ image\ but\ do\ not\ activate'
+    'archivefetch\:Fetch\ archive\ for\ the\ given\ ports'
+    'build\:Build\ the\ given\ ports'
+    'cat\:Writes\ the\ Portfiles\ of\ the\ given\ ports\ to\ stdout'
+    'cd\:Changes\ to\ the\ directory\ of\ the\ given\ port'
+    'checksum\:Compares\ the\ checksums\ for\ the\ downloaded\ files\ of\ the\ given\ ports'
+    'clean\:Removes\ files\ associated\ with\ the\ given\ ports'
+    'configure\:Removes\ files\ associated\ with\ the\ given\ ports'
+    'contents\Returns\ a\ list\ of\ files\ installed\ by\ given\ ports'
+    'deactivate\:Deactivates\ the\ given\ ports'
+    'dependents\:Returns\ a\ list\ of\ installed\ dependents\ for\ each\ of\ the\ given\ ports'
+    'deps\:Display\ a\ dependency\ listing\ for\ the\ given\ ports'
+    'destroot\:Destroot\ the\ given\ ports'
+    'dir\:Returns\ the\ directories\ of\ the\ given\ ports'
+    'distcheck\:Checks\ if\ the\ given\ ports\ can\ be\ fetched\ from\ all\ of\ its\ master_sites'
+    'distfiles\:Returns\ a\ list\ of\ distfiles\ for\ the\ given\ port'
+    'dmg\:Creates\ a\ dmg\ for\ each\ of\ the\ given\ ports'
+    'dpkg\:Creates\ a\ dpkg\ for\ each\ of\ the\ given\ ports'
+    'echo\:Returns\ the\ list\ of\ ports\ the\ argument\ expands\ to'
+    'edit'
+    'exit'
+    'extract\:Extract\ the\ downloaded\ files\ of\ the\ given\ ports'
+    'fetch'
+    'file'
+    'gohome'
+    'help'
+    'info'
+    'install'
+    'installed'
+    'lint'
+    'list'
+    'livecheck'
+    'load'
+    'location'
+    'log'
+    'logfile'
+    'mdmg'
+    'mirror'
+    'mpkg'
+    'notes'
+    'outdated'
+    'patch'
+    'pkg'
+    'platform'
+    'portpkg'
+    'provides'
+    'quit'
+    'rdependents'
+    'rdeps'
+    'rev-upgrade'
+    'rpm'
+    'search'
+    'select'
+    'selfupdate'
+    'setrequested'
+    'space'
+    'srpm'
+    'submit'
+    'sync'
+    'test'
+    'unarchive'
+    'uninstall'
+    'unload'
+    'unsetrequested'
+    'upgrade'
+    'url'
+    'usage'
+    'variants'
+    'version'
+    'work'
+  )
 
   pseudo_common=(all current active inactive actinact installed uninstalled outdated
   obsolete requested unrequested leaves)
@@ -50,6 +115,12 @@ _port() {
 
   revupgrade_options=('--id-loadcmd-check:Run more checks against a special loadcommand in Mach-O binaries')
 
+  upgrade_options=(
+    '--force\:Ignore\ circumstances\ that\ would\ normally\ cause\ ports\ to\ be\ skipped\ \(e.g.\ not\ outdated\).' \
+    '--enforce-variants\:If\ the\ installed\ variants\ do\ not\ match\ those\ requested,\ upgrade\ even\ if\ the\ port\ is\ not\ outdated.' \
+    '--no-replace\:Do\ not\ replace\ one\ port\ with\ another\ according\ to\ the\ replaced_by\ field.' \
+  )
+
   local cache_policy
   zstyle -s ":completion:${curcontext}:" cache-policy cache_policy
   if [[ -z "$cache_policy" ]]; then
@@ -57,23 +128,23 @@ _port() {
   fi
 
   _arguments -s -C \
-    '-v[verbose mode (generate verbose messages)]' \
-    '-d[debug mode (generate debugging messages, implies -v)]' \
-    '-q[quiet mode (suppress messages)]' \
-    "-n[don't upgrade dependencies (affects upgrade and install)]" \
-    "-R[also upgrade dependents (only affects upgrade) - note that this does not upgrade dependents' dependencies]" \
-    '-u[uninstall non-active ports when upgrading and uninstalling]' \
-    '-f[force mode (ignore state file)]' \
-    '-o[honor state files even if the Portfile has been modified since (called -o because it used to mean "older")]' \
-    '-s[source-only mode (build and install from source, do not attempt to fetch binary archives)]' \
-    '-b[binary-only mode (build and install from binary archives, ignore source, abort if no archive available)]' \
-    '-c[autoclean mode (execute clean after install)]' \
-    "-k[keep mode (don't autoclean after install)]" \
-    '-D[specify portdir]' \
+    '-v[Verbose mode (generate verbose messages)]' \
+    '-d[Debug mode (generate debugging messages, implies -v)]' \
+    '-q[Quiet mode (suppress messages)]' \
+    "-n[Don't upgrade dependencies (affects upgrade and install)]" \
+    "-R[Also upgrade dependents (only affects upgrade) - note that this does not upgrade dependents' dependencies]" \
+    '-u[Uninstall non-active ports when upgrading and uninstalling]' \
+    '-f[Force mode (ignore state file)]' \
+    '-o[Honor state files even if the Portfile has been modified since (called -o because it used to mean "older")]' \
+    '-s[Source-only mode (build and install from source, do not attempt to fetch binary archives)]' \
+    '-b[Binary-only mode (build and install from binary archives, ignore source, abort if no archive available)]' \
+    '-c[Autoclean mode (execute clean after install)]' \
+    "-k[Keep mode (don't autoclean after install)]" \
+    '-D[Specify portdir]' \
     '-F[Read and process the file of commands specified by the argument.]' \
     '-p[Despite any errors encountered, proceed to process multiple ports and commands.]' \
     '-y[Perform a dry run.]' \
-    '-t[enable trace mode debug facilities on platforms that support it (Mac OS X).]' \
+    '-t[Enable trace mode debug facilities on platforms that support it (Mac OS X).]' \
     "1:Port actions:($actions)" \
     '*:extra:->extra' \
     && return 0
@@ -104,7 +175,7 @@ _port_dispatch() {
       if ( [[ ${+_port_installed_packages} -eq 0 ]] || _cache_invalid PORT_INSTALLED_PACKAGES ) &&
         ! _retrieve_cache PORT_INSTALLED_PACKAGES;
       then
-        _port_installed_packages=( $(_call_program path-all "port echo all") )
+        _port_installed_packages=( $(_call_program path-all "port echo installed | cut -d ' ' -f 1") )
         _store_cache PORT_INSTALLED_PACKAGES _port_installed_packages
       fi
       _alternative \
@@ -113,9 +184,14 @@ _port_dispatch() {
         "pseudo-advanced:Advanced Pseudo-portnames:($pseudo_advanced)"
       ;;
     upgrade)
+      # No good reason to actually cache outdated ports list
       local outdated_packages
-      outdated_packages=("${(f)$(port outdated | sed -e '1 d' -e 's/^\([[:graph:]]*\).*/\1/')}")
-      _describe "Outdated ports" outdated_packages
+      outdated_packages=( $(_call_program path-outdated "port echo outdated | cut -d ' ' -f 1") )
+      _alternative -- \
+        "upgrade-options:Upgrade options:(($upgrade_options))" \
+        "ports:Outdated ports:($outdated_packages)" \
+        "pseudo-common:Common Pseudo-portnames:($pseudo_common)" \
+        "pseudo-advanced:Advanced Pseudo-portnames:($pseudo_advanced)"
       ;;
     rev-upgrade)
       if (( CURRENT == 3 )); then
