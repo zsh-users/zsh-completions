@@ -6,7 +6,7 @@ local context state state_descr line
 typeset -A opt_args
 local filterexcl="(-A -a -C -d -e -g -G --group --Group -p --pid --ppid -s --sid -t --tty -u -U --user --User)"
 
-_arguments -s \
+_arguments -s -w \
     "$filterexcl-A[all processes]"\
     "$filterexcl-a[all w/ tty except session leaders]"\
     "--cumulative[include some dead child process data (as a sum with the parent)]"\
