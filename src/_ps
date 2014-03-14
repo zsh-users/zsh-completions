@@ -1,5 +1,7 @@
 #compdef ps
 
+# This works with procps version 3.2.8 
+
 local context state state_descr line
 typeset -A opt_args
 local filterexcl="(-A -a -C -d -e -g -G --group --Group -p --pid --ppid -s --sid -t --tty -u -U --user --User)"
