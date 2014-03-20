@@ -1,0 +1,11 @@
+#autoload
+
+# This function can be used to complete comma separated values.
+# The first argument should be a description for the completion items,
+# and any further args are the completion items themselves.
+
+compset -P '*,'
+local -a used vals
+used=(${(s:,:)IPREFIX})
+_wanted tty expl $1 compadd -S ',' -q -F used "$@[2,-1]"
+
