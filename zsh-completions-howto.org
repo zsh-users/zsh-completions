@@ -6,8 +6,8 @@ understand explanation for creating zsh completion functions. I do not go into a
 and examples to get you up and running. If you need more details you can look it up for yourself in the [[http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-System][official documentation]].
 
 Please make any scripts that you create publically available for others (e.g. by forking this repo and making a [[id:64bcd501-b0f0-48c7-b8e2-07af708b95ec][pull request]]).
-
-** Defining completion functions
+* Getting started
+** defining a completion function to use for a command
 Completion functions for commands are stored in files with names beginning with an underscore _, and these files should 
 be placed in a directory listed in the $fpath variable.
 You can add a directory to $fpath by adding a line like this to your ~/.zshrc file: 
@@ -22,8 +22,8 @@ This tells zsh that the file contains code for completing the foobar command.
 This is the format that you will use most often for the first line, but you can also use the same file for completing
 several different functions if you want. See [[http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Autoloaded-files][here]] for more details.
 
-You can also use the compdef command directly on the command line to tell zsh which function to use for completing a 
-command like this:
+You can also use the compdef command directly (e.g. in your ~/.zshrc file) to tell zsh which function to use for completing 
+a command like this:
 #+BEGIN_SRC sh 
 > compdef _function foobar
 #+END_SRC
@@ -32,6 +32,25 @@ or if you want to supply arguments:
 > compdef '_function arg1 arg2' foobar
 #+END_SRC
 See [[http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Functions-4][here]] for more details.
+** completing generic gnu commands
+Many [[http://www.gnu.org/][gnu]] commands have a standardized way of listing option descriptions (when the --help option is used).
+For these commands you can use the _gnu_generic function for automatically creating completions, like this:
+#+BEGIN_SRC sh 
+> compdef _gnu_generic foobar
+#+END_SRC
+** using completions from one command for completing another command
+If you want a command, say cmd1, to have the same completions as another, say cmd2, you can do this:
+#+BEGIN_SRC sh 
+> compdef cmd1=cmd2
+#+END_SRC
+This can be useful for example if you have created an alias for a command to help you remember it.
+** Writing your own completion functions
+A good way to get started is to look at some already defined completion functions.
+On my linux installation these are found in /usr/share/zsh/functions/Completion/Unix 
+and /usr/share/zsh/functions/Completion/Linux and a few other subdirs.
+
+You will notice that the _arguments function is used a lot. This is a utility function that makes
+it easy to write simple completion functions. 
 * Utility functions with example code
 ** compadd
 ** _gnu_generic
