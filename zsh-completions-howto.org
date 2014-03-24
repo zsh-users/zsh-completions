@@ -27,6 +27,10 @@ a command like this:
 #+BEGIN_SRC sh 
 > compdef _function foobar
 #+END_SRC
+or to use the same completions for several commands:
+#+BEGIN_SRC sh 
+> compdef _function foobar goocar hoodar
+#+END_SRC
 or if you want to supply arguments:
 #+BEGIN_SRC sh 
 > compdef '_function arg1 arg2' foobar
@@ -38,13 +42,19 @@ For these commands you can use the _gnu_generic function for automatically creat
 #+BEGIN_SRC sh 
 > compdef _gnu_generic foobar
 #+END_SRC
+or to use _gnu_generic with several different commands:
+#+BEGIN_SRC sh 
+> compdef _gnu_generic foobar goocar hoodar
+#+END_SRC
+This line can be placed in your ~/.zshrc file.
 ** Copying completions from another command
-If you want a command, say cmd1, to have the same completions as another, say cmd2, you can do this:
+If you want a command, say cmd1, to have the same completions as another, say cmd2, which has already had 
+completions defined for it, you can do this:
 #+BEGIN_SRC sh 
 > compdef cmd1=cmd2
 #+END_SRC
 This can be useful for example if you have created an alias for a command to help you remember it.
-** Writing your own completion functions
+* Writing your own completion functions
 A good way to get started is to look at some already defined completion functions.
 On my linux installation these are found in /usr/share/zsh/functions/Completion/Unix 
 and /usr/share/zsh/functions/Completion/Linux and a few other subdirs.
@@ -55,6 +65,18 @@ The _arguments function is a wrapper around the compadd builtin function.
 The compadd builtin is the core function used to add completion words to the command line, and control its behaviour.
 However, most of the time you will not need to use compadd, since there are many utility functions such as _arguments
 and _values which are easier to use.
+** Writing completion functions using _arguments
+The _arguments function makes it easy to create completion functions.
+As arguments it takes special strings specifying the options & arguments to the function being completed, 
+e.g. like this:
+#+BEGIN_SRC sh 
+_arguments '--help[show help]' '-?[show help]' '1:First arg:_files'
+#+END_SRC
+This example completes the options --help & -? when trying to complete a hyphen, which will both be listed together
+with the same description in this case. The first non-option argument is completed using the _files function which 
+completes file/directories. 
+
+
 * Utility functions with example code
 ** compadd
 ** _gnu_generic
