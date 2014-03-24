@@ -2,14 +2,18 @@
 The official documentation for writing zsh completion functions is difficult to understand, and doesn't give many examples.
 At the time of writing this document I was able to find two other tutorials on the web, however both of those tutorials only
 explain a small portion of the capabilities of the completion system. This document aims to give more complete and easy to
-understand explanation for creating zsh completion functions. I do not go into all the details, which can be looked up in the
-[[http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-System][official documentation]].
+understand explanation for creating zsh completion functions. I do not go into all the details, but will give enough information
+and examples to get you up and running. If you need more details you can look it up for yourself in the [[http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-System][official documentation]].
 
-Hopefully, after reading this, you will be able to get up and running with your own completion scripts pretty quickly.
-Please make any scripts that you create publically available for others (e.g. by forking this repository and making a [[id:64bcd501-b0f0-48c7-b8e2-07af708b95ec][pull request]]).
+Please make any scripts that you create publically available for others (e.g. by forking this repo and making a [[id:64bcd501-b0f0-48c7-b8e2-07af708b95ec][pull request]]).
 
 ** Defining completion functions
-Completion functions for a given command
+Completion functions for commands are stored in files with names beginning with an underscore _, and these files should 
+be placed in a directory listed in the $fpath variable.
+You can add a directory to $fpath by adding a line like this to your ~/.zshrc file: 
+#+BEGIN_SRC sh 
+fpath=(~/newdir $fpath)
+#+END_SRC
 * Utility functions with example code
 ** compadd
 ** _gnu_generic
