@@ -49,8 +49,12 @@ A good way to get started is to look at some already defined completion function
 On my linux installation these are found in /usr/share/zsh/functions/Completion/Unix 
 and /usr/share/zsh/functions/Completion/Linux and a few other subdirs.
 
-You will notice that the _arguments function is used a lot. This is a utility function that makes
-it easy to write simple completion functions. 
+You will notice that the _arguments function is used a lot in these files. 
+This is a utility function that makes it easy to write simple completion functions. 
+The _arguments function is a wrapper around the compadd builtin function.
+The compadd builtin is the core function used to add completion words to the command line, and control its behaviour.
+However, most of the time you will not need to use compadd, since there are many utility functions such as _arguments
+and _values which are easier to use.
 * Utility functions with example code
 ** compadd
 ** _gnu_generic
