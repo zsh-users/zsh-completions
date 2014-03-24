@@ -1,8 +1,15 @@
-* Test
-hi
-** this
-there
-*** foobar
-does
-** one
-this look ok?
+* Intro
+** Defining completion functions
+* Utility functions with example code
+** compadd
+** _gnu_generic
+** _arguments
+** _regex_arguments
+** _regex_words
+** _values
+** _comma_separated
+* Putting it all together
+* Other resources
+Nicely formatted short tutorial showing basic usage of the _arguments function: http://wikimatze.de/writing-zsh-completion-for-padrino.html
+A slightly more advanced tutorial showing usage of the _arguments function: http://www.linux-mag.com/id/1106/
+zshcompsys man page: http://linux.die.net/man/1/zshcompsys
