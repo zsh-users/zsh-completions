@@ -4,12 +4,15 @@
 ** compadd
 ** _gnu_generic
 ** _arguments
+   :PROPERTIES:
+   :ID:       64bcd501-b0f0-48c7-b8e2-07af708b95ec
+   :END:
 ** _regex_arguments
 ** _regex_words
 ** _values
 ** _comma_separated
 * Putting it all together
 * Other resources
-Nicely formatted short tutorial showing basic usage of the _arguments function: http://wikimatze.de/writing-zsh-completion-for-padrino.html
-A slightly more advanced tutorial showing usage of the _arguments function: http://www.linux-mag.com/id/1106/
-zshcompsys man page: http://linux.die.net/man/1/zshcompsys
+[[http://wikimatze.de/writing-zsh-completion-for-padrino.html][Here]] is a nicely formatted short tutorial showing basic usage of the [[id:64bcd501-b0f0-48c7-b8e2-07af708b95ec][_arguments]] function, 
+and [[http://www.linux-mag.com/id/1106/][here]] is a slightly more advanced tutorial using the [[id:64bcd501-b0f0-48c7-b8e2-07af708b95ec][_arguments]] function.
+[[http://linux.die.net/man/1/zshcompsys][Here]] is the zshcompsys man page.
