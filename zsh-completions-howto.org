@@ -14,15 +14,34 @@ You can add a directory to $fpath by adding a line like this to your ~/.zshrc fi
 #+BEGIN_SRC sh 
 fpath=(~/newdir $fpath)
 #+END_SRC
+The first line of a completion function file can look something like this:
+#+BEGIN_SRC sh 
+#compdef foobar
+#+END_SRC
+This tells zsh that the file contains code for completing the foobar command.
+This is the format that you will use most often for the first line, but you can also use the same file for completing
+several different functions if you want. See [[http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Autoloaded-files][here]] for more details.
+
+You can also use the compdef command directly on the command line to tell zsh which function to use for completing a 
+command like this:
+#+BEGIN_SRC sh 
+> compdef _function foobar
+#+END_SRC
+or if you want to supply arguments:
+#+BEGIN_SRC sh 
+> compdef '_function arg1 arg2' foobar
+#+END_SRC
+See [[http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Functions-4][here]] for more details.
 * Utility functions with example code
 ** compadd
 ** _gnu_generic
 ** _arguments
-
 ** _regex_arguments
 ** _regex_words
 ** _values
 ** _comma_separated
+** _files
+** _net_interfaces
 * gotchas
 * Putting it all together
 * Other resources
