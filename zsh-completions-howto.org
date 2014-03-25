@@ -71,9 +71,10 @@ and _describe which are easier to use.
 Here is a list of some of the utility functions that may be of use. 
 The full list of utility functions, with full explanations, is available [[http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-Functions][here]].
 Examples of how to use these functions are given in the next section.
+
 *** main utility functions for overall completion
 | _alternative     | Loop over tag labels and perform actions based on matching tag label.                                                             |
-| _arguments       | Used to specify how to complete individual command line options for a command with unix style options.                            |
+| _arguments       | Used to specify how to complete individual options & arguments for a command with unix style options.                             |
 | _describe        | Used for creating simple completions consisting of single words with descriptions (but no actions). Easier to use than _arguments |
 | _gnu_generic     | Can be used to complete options for commands that understand the `--help' option.                                                 |
 | _regex_arguments | Creates a function for matching commandline arguments with regular expressions, and then performing actions/completions.          |
@@ -112,11 +113,6 @@ The actions can take one of the following forms:
 | =ACTION                       | Inserts a dummy word into completion command line without changing the point at which completion takes place. |
 Not all action types are available for all utility functions that use them. For example the ->STRING type is not available in the
 _regex_arguments or _alternative functions. 
-**** Examples
-Here the non-option argument
-#+BEGIN_SRC sh 
-_arguments '--help[show help]' '-?[show help]' '1:First arg:_files'
-#+END_SRC
 ** Writing completion functions using _describe
 The _describe function can be used for simple completions where the order and position of the options/arguments is
 not important. You just need to create an array parameter to hold the options & their descriptions, and then pass 
@@ -137,6 +133,20 @@ _describe 'values' options -- arguments
 #+END_SRC
 See the [[http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-Functions][official documentation]] for more info.
 ** Writing completion functions using _alternative
+This function can be used to perform more sophisticated completion strategies than _describe.
+
+As arguments it takes a list of specifications each in the form `TAG:DESCR:ACTION' where TAG is a tag name, 
+DESCR is a description, and ACTION is one of the action types listed previously.
+For example:
+#+BEGIN_SRC sh 
+_alternative 'args:custom args:(a b c)' 'interfaces:network interfaces:_net_interfaces'
+#+END_SRC
+The first specification 'args:custom args:(a b c)' adds completion candidates a, b & c with description
+'custom args'. The second specification calls the _net_interfaces command which adds network interfaces as completion 
+candidates. 
+
+
+
 ** Writing completion functions using _arguments
 The _arguments function makes it easy to create completion functions.
 As arguments it takes special strings specifying the options & arguments to the function being completed, 
