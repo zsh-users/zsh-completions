@@ -65,16 +65,17 @@ This is a utility function that makes it easy to write simple completion functio
 The _arguments function is a wrapper around the compadd builtin function.
 The compadd builtin is the core function used to add completion words to the command line, and control its behaviour.
 However, most of the time you will not need to use compadd, since there are many utility functions such as _arguments
-and _regex_arguments which are easier to use.
+and _describe which are easier to use.
 
 ** Utility functions
 Here is a list of some of the utility functions that may be of use. 
 The full list of utility functions, with full explanations, is available [[http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-Functions][here]].
 *** main utility functions for overall completion
-| _arguments       | Used to specify how to complete individual command line options for a command with unix style options. Often used.       |
-| _regex_arguments | Creates a function for matching commandline arguments with regular expressions, and then performing actions/completions. |
-| _gnu_generic     | Can be used to complete options for commands that understand the `--help' option.                                        |
-| _alternative     | Loop over tag labels and perform actions based on matching tag label.                                                    |
+| _arguments       | Used to specify how to complete individual command line options for a command with unix style options. Often used.                |
+| _regex_arguments | Creates a function for matching commandline arguments with regular expressions, and then performing actions/completions.          |
+| _gnu_generic     | Can be used to complete options for commands that understand the `--help' option.                                                 |
+| _alternative     | Loop over tag labels and perform actions based on matching tag label.                                                             |
+| _describe        | Used for creating simple completions consisting of single words with descriptions (but no actions). Easier to use than _arguments |
 *** functions for performing complex completions 
 | _values      | Used for completing arbitrary keywords (values) and their arguments, or comma separated lists of such combinations.                                                  |
 | _combination | Used to complete combinations of values, for example pairs of hostnames and usernames.                                                                               |
@@ -88,11 +89,32 @@ The full list of utility functions, with full explanations, is available [[http:
 | _groups         | Used for completing group names                                                                           |
 | _options        | Used for completing the names of shell options.                                                           |
 | _parameters     | Used for completing the names of shell parameters/variables (can restrict to those matching a pattern).   |
+*** functions for handling cached completions
+If you have a very large number of completions you can save them in a cache file so that the completions load quickly.
+| _cache_invalid  | indicates whether the completions cache corresponding to a given cache identifier needs rebuilding |
+| _retrieve_cache | retrieves completion information from a cache file                                                 |
+| _store_cache    | store completions corresponding to a given cache identifier in a cache file                        |
 *** other functions
 | _message     | Used for displaying help messages in places where no completions can be generated.                                      |
 | _regex_words | Can be used to generate arguments for the _regex_arguments command. This is easier than writing the arguments manually. |
 | _guard       | Can be used in the ACTION of specifications for _arguments and similar functions to check the word being completed.     |
-
+*** Actions
+Many of the utility functions such as _arguments, _regex_arguments, _alternative and _values may include an action
+at the end of an option/argument specification. This action indicates how to complete the corresponding argument.
+The actions can take one of the following forms:
+| ( )                                     | Argument is required but no matches are generated for it.                                                     |
+| (ITEM1 ITEM2 ETC)                       | List of possible matches                                                                                      |
+| ((ITEM1\:DESC1 ITEM2\:DESC2 ETC\:BLAH)) | List of possible matches, with descriptions.                                                                  |
+| ->STRING                                | Set $state to STRING and continue ($state can be checked in a case statement after the utility function call) |
+| {EVAL-STRING}                           | Evaluate string as shell code to generate matches.                                                            |
+| =ACTION                                 | Inserts a dummy word into completion command line without changing the point at which completion takes place. |
+Not all action types are available for all utility functions that use them. For example the ->STRING type is not available in the
+_regex_arguments or _alternative functions. 
+**** Examples
+Here the non-option argument
+#+BEGIN_SRC sh 
+_arguments '--help[show help]' '-?[show help]' '1:First arg:_files'
+#+END_SRC
 ** Writing completion functions using _arguments
 The _arguments function makes it easy to create completion functions.
 As arguments it takes special strings specifying the options & arguments to the function being completed, 
@@ -107,24 +129,6 @@ completes file/directories.
 There are a couple of tutorials on how to use _arguments [[http://www.linux-mag.com/id/1106/][here]] and [[http://wikimatze.de/writing-zsh-completion-for-padrino.html][here]], so I won't cover any more here.
 Also have a look at the many completion functions listed [[https://github.com/vapniks/zsh-completions/tree/master/src][here]] many of which use _arguments.
 The full documentation for _arguments is available [[http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-Functions][here]].
-** Actions
-Many of the utility functions such as _arguments, _regex_arguments, _alternative and _values may include an action
-at the end of an option/argument specification. This action indicates how to complete the corresponding argument.
-The actions can take one of the following forms:
-| ( )                                     | Argument is required but no matches are generated for it.                                                     |
-| (ITEM1 ITEM2 ETC)                       | List of possible matches                                                                                      |
-| ((ITEM1\:DESC1 ITEM2\:DESC2 ETC\:BLAH)) | List of possible matches, with descriptions.                                                                  |
-| ->STRING                                | Set $state to STRING and continue ($state can be checked in a case statement after the utility function call) |
-| {EVAL-STRING}                           | Evaluate string as shell code to generate matches.                                                            |
-| \=ACTION                                | Inserts a dummy word into completion command line without changing the point at which completion takes place. |
-Not all action types are available for all utility functions that use them. For example the ->STRING type is not available in the
-_regex_arguments or _alternative functions. 
-*** Examples
-Here the non-option argument
-#+BEGIN_SRC sh 
-_arguments '--help[show help]' '-?[show help]' '1:First arg:_files'
-#+END_SRC
-
 
 
 ** Patterns
