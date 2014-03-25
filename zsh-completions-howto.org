@@ -70,12 +70,13 @@ and _describe which are easier to use.
 ** Utility functions
 Here is a list of some of the utility functions that may be of use. 
 The full list of utility functions, with full explanations, is available [[http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-Functions][here]].
+Examples of how to use these functions are given in the next section.
 *** main utility functions for overall completion
-| _arguments       | Used to specify how to complete individual command line options for a command with unix style options. Often used.                |
-| _regex_arguments | Creates a function for matching commandline arguments with regular expressions, and then performing actions/completions.          |
-| _gnu_generic     | Can be used to complete options for commands that understand the `--help' option.                                                 |
 | _alternative     | Loop over tag labels and perform actions based on matching tag label.                                                             |
+| _arguments       | Used to specify how to complete individual command line options for a command with unix style options.                            |
 | _describe        | Used for creating simple completions consisting of single words with descriptions (but no actions). Easier to use than _arguments |
+| _gnu_generic     | Can be used to complete options for commands that understand the `--help' option.                                                 |
+| _regex_arguments | Creates a function for matching commandline arguments with regular expressions, and then performing actions/completions.          |
 *** functions for performing complex completions 
 | _values      | Used for completing arbitrary keywords (values) and their arguments, or comma separated lists of such combinations.                                                  |
 | _combination | Used to complete combinations of values, for example pairs of hostnames and usernames.                                                                               |
@@ -115,6 +116,8 @@ Here the non-option argument
 #+BEGIN_SRC sh 
 _arguments '--help[show help]' '-?[show help]' '1:First arg:_files'
 #+END_SRC
+** Writing completion functions using _describe
+** Writing completion functions using _alternative
 ** Writing completion functions using _arguments
 The _arguments function makes it easy to create completion functions.
 As arguments it takes special strings specifying the options & arguments to the function being completed, 
@@ -130,32 +133,25 @@ There are a couple of tutorials on how to use _arguments [[http://www.linux-mag.
 Also have a look at the many completion functions listed [[https://github.com/vapniks/zsh-completions/tree/master/src][here]] many of which use _arguments.
 The full documentation for _arguments is available [[http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-Functions][here]].
 
-
-** Patterns
-** Writing completion functions using _values
-The _values function
-** Functions for completing specific types of objects
-| _files          | completes files & directories     |
-| _net_interfaces | completes network interface names |
-| _values         | for completing comma se           |
-* Utility functions with example code
-** compadd
-** _gnu_generic
-** _arguments
-** _regex_arguments
-** _regex_words
-** _values
-** _comma_separated
-** _files
-** _net_interfaces
-* testing & debugging
+** Writing completion functions using _regex_arguments and _regex_words
+*** Patterns
+* Testing & debugging
 To reload a completion function:
 #+BEGIN_SRC sh 
 > unfunction _func
 > autoload -U _func
 #+END_SRC
 
-* gotchas
+The following functions can be called to obtain useful information. 
+If the default keybindings don't work you can try pressing Alt+x and then enter the command name.
+| Function        | Default keybinding | Description                                                                                                                    |
+|-----------------+--------------------+--------------------------------------------------------------------------------------------------------------------------------|
+| _complete_help  | Ctrl+x h           | displays information about context names, tags, and completion functions used when completing at the current cursor position   |
+| _complete_help  | Alt+2 Ctrl+x h     | as above but displays even more information                                                                                    |
+| _complete_debug | Ctrl+x ?           | performs ordinary completion, but captures in a temporary file a trace of the shell commands executed by the completion system |
+* Gotchas
+Take care to use the correct type of quotes around specifications to _arguments or _regex_arguments:
+use double quotes if there is a parameter that needs to be expanded in the specification, single quotes otherwise.
 * Putting it all together
 * Other resources
 [[http://wikimatze.de/writing-zsh-completion-for-padrino.html][Here]] is a nicely formatted short tutorial showing basic usage of the _arguments function, 
