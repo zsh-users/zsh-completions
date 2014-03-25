@@ -68,27 +68,31 @@ However, most of the time you will not need to use compadd, since there are many
 and _regex_arguments which are easier to use.
 
 ** Utility functions
-Here is a list of some of the utility functions that may be of use. The full list of utility functions, with full explanations, is
-available [[http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-Functions][here]].
-| _alternative     | Loop over tag labels and perform actions based on matching tag label.                                                                                                        |
-| _arguments       | Used to specify how to complete individual command line options for a command with unix style options. Often used.                                                           |
-| _combination     | Used to complete combinations of values, for example pairs of hostnames and usernames.                                                                                       |
-| _gnu_generic     | Wrapper around the _arguments function. Can be used to complete options for commands that understand the `--help' option.                                                    |
-| _guard           | Can be used in the ACTION of specifications for _arguments and similar functions to check the word being completed.                                                          |
-| _message         | Used for displaying help messages in places where no completions can be generated.                                                                                           |
-| _multi_parts     | Used for completing multiple parts of word separately where each part is seperated by some char, e.g. for completing partial filepaths: /u/i/sy -> /usr/include/sys          |
-| _options         | Can be used to complete the names of shell options.                                                                                                                          |
-| _parameters      | Used to complete the names of shell parameters/variables (can restrict to those matching a pattern).                                                                         |
-| _pick_variant    | Used for resolving situations where there are several different commands with the same name each having different completion strategies.                                     |
-| _regex_arguments | Creates a function for matching commandline arguments with regular expressions, and then performing actions/completions.                                                     |
-| _regex_words     | Can be used to generate arguments for the _regex_arguments command. This should be easier than writing the arguments manually.                                               |
-| _sep_parts       | Given a list of alternating arrays and separators, use the arrays to complete corresponding parts of string containing separators (see also _multi_parts)                    |
-| _values          | Used for completing arbitrary keywords (values) and their arguments, or comma separated lists of such combinations. Can be an ACTION in an _arguments/_regex_arguments spec. |
-| _path_files      | Used to complete filepaths. Can complete partial paths, e.g. /u/i/sy -> /usr/include/sys                                                                                     |
-| _files           | Calls _path_files with all options except -g and -/. These options depend on file-patterns style setting.                                                                    |
-| _net_interfaces  | Used for completing network interface names                                                                                                                                  |
-| _users           |                                                                                                                                                                              |
-| _groups          |                                                                                                                                                                              |
+Here is a list of some of the utility functions that may be of use. 
+The full list of utility functions, with full explanations, is available [[http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-Functions][here]].
+*** main utility functions for overall completion
+| _arguments       | Used to specify how to complete individual command line options for a command with unix style options. Often used.       |
+| _regex_arguments | Creates a function for matching commandline arguments with regular expressions, and then performing actions/completions. |
+| _gnu_generic     | Can be used to complete options for commands that understand the `--help' option.                                        |
+| _alternative     | Loop over tag labels and perform actions based on matching tag label.                                                    |
+*** functions for performing complex completions 
+| _values      | Used for completing arbitrary keywords (values) and their arguments, or comma separated lists of such combinations.                                                  |
+| _combination | Used to complete combinations of values, for example pairs of hostnames and usernames.                                                                               |
+| _multi_parts | Used for completing multiple parts of words separately where each part is separated by some char, e.g. for completing partial filepaths: /u/i/sy -> /usr/include/sys |
+| _sep_parts   | Like _multi_parts but allows different separators at different parts of the completion.                                                                              |
+*** functions for completing specific types of objects
+| _path_files     | Used to complete filepaths. Take several options to control behaviour.                                    |
+| _files          | Calls _path_files with all options except -g and -/. These options depend on file-patterns style setting. |
+| _net_interfaces | Used for completing network interface names                                                               |
+| _users          | Used for completing user names                                                                            |
+| _groups         | Used for completing group names                                                                           |
+| _options        | Used for completing the names of shell options.                                                           |
+| _parameters     | Used for completing the names of shell parameters/variables (can restrict to those matching a pattern).   |
+*** other functions
+| _message     | Used for displaying help messages in places where no completions can be generated.                                      |
+| _regex_words | Can be used to generate arguments for the _regex_arguments command. This is easier than writing the arguments manually. |
+| _guard       | Can be used in the ACTION of specifications for _arguments and similar functions to check the word being completed.     |
+
 ** Writing completion functions using _arguments
 The _arguments function makes it easy to create completion functions.
 As arguments it takes special strings specifying the options & arguments to the function being completed, 
@@ -99,8 +103,6 @@ _arguments '--help[show help]' '-?[show help]' '1:First arg:_files'
 This example completes the options --help & -? when trying to complete a hyphen, which will both be listed together
 with the same description in this case. The first non-option argument is completed using the _files function which 
 completes file/directories. 
-
-The
 
 There are a couple of tutorials on how to use _arguments [[http://www.linux-mag.com/id/1106/][here]] and [[http://wikimatze.de/writing-zsh-completion-for-padrino.html][here]], so I won't cover any more here.
 Also have a look at the many completion functions listed [[https://github.com/vapniks/zsh-completions/tree/master/src][here]] many of which use _arguments.
