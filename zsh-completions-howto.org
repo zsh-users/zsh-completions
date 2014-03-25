@@ -117,6 +117,22 @@ Here the non-option argument
 _arguments '--help[show help]' '-?[show help]' '1:First arg:_files'
 #+END_SRC
 ** Writing completion functions using _describe
+The _describe function can be used for simple completions where the order and position of the options/arguments is
+not important. You just need to create an array parameter to hold the options & their descriptions, and then pass 
+the parameter name as an argument to _describe, e.g. like this:
+#+BEGIN_SRC sh 
+local -a options 
+options=('-c:description for -c opt' '-d:description for -d opt')
+_describe 'values' options
+#+END_SRC
+You can use several different lists separated by -- e.g. like this:
+#+BEGIN_SRC sh 
+local -a options arguments 
+options=('-c:description for -c opt' '-d:description for -d opt')
+arguments=('e:description for e arg' 'f:description for f arg')
+_describe 'values' options -- arguments
+#+END_SRC
+
 ** Writing completion functions using _alternative
 ** Writing completion functions using _arguments
 The _arguments function makes it easy to create completion functions.
