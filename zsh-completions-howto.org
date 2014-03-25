@@ -133,25 +133,42 @@ _describe 'values' options -- arguments
 #+END_SRC
 See the [[http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-Functions][official documentation]] for more info.
 ** Writing completion functions using _alternative
-This function can be used to perform more sophisticated completion strategies than _describe.
+Like _describe, this function performs simple completions where the order and position of options/arguments is not important.
+However, unlike _describe, you can call execute shell code or call functions to obtain the completion candidates.
 
 As arguments it takes a list of specifications each in the form `TAG:DESCR:ACTION' where TAG is a tag name, 
 DESCR is a description, and ACTION is one of the action types listed previously.
 For example:
 #+BEGIN_SRC sh 
-_alternative 'args:custom args:(a b c)' 'interfaces:network interfaces:_net_interfaces'
+_alternative 'args:custom args:(a b c)' 'files:filenames:_files'
 #+END_SRC
-The first specification adds completion candidates a, b & c with description 'custom args', and the second specification 
-calls the _net_interfaces command which adds network interfaces as completion candidates. 
+The first specification adds completion candidates a, b & c, and the second specification calls the _files function 
+for completing filepaths.
 
 We could split the specifications over several lines with \ and add descriptions to each of the custom args like this:
 #+BEGIN_SRC sh 
 _alternative 'args:custom args:((a\:"description a" b\:"description b" c\:"description c"))'\
-             'interfaces:network interfaces:_net_interfaces'
+             'files:filenames:_files'
 #+END_SRC
 
+If we want to call _files with arguments we can put it in braces, like this:
+#+BEGIN_SRC sh 
+_alternative 'args:custom args:((a\:"description a" b\:"description b" c\:"description c"))'\
+             'files:filenames:{_files -/}'
+#+END_SRC
+
+To use parameter expansion to create our list of completions we must use double quotes to quote the specifications,
+e.g:
+#+BEGIN_SRC sh 
+_alternative "dirs:user directories:($userdirs)"\
+             "pids:process IDs:($(ps -A o pid=))"
+#+END_SRC
+In this case the first specification adds the words stored in the $userdirs variable, and the second specification
+evaluates 'ps -A o pid=' to get a list of pids to use as completion candidates.
+
+
 ** Writing completion functions using _arguments
-The _arguments function makes it easy to create completion functions.
+With the _arguments function you can create much more sophisticated completion functions
 As arguments it takes special strings specifying the options & arguments to the function being completed, 
 e.g. like this:
 #+BEGIN_SRC sh 
