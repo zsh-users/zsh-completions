@@ -103,13 +103,13 @@ If you have a very large number of completions you can save them in a cache file
 Many of the utility functions such as _arguments, _regex_arguments, _alternative and _values may include an action
 at the end of an option/argument specification. This action indicates how to complete the corresponding argument.
 The actions can take one of the following forms:
-| ( )                                     | Argument is required but no matches are generated for it.                                                     |
-| (ITEM1 ITEM2 ETC)                       | List of possible matches                                                                                      |
-| ((ITEM1\:DESC1 ITEM2\:DESC2 ETC\:BLAH)) | List of possible matches, with descriptions.                                                                  |
-| ->STRING                                | Set $state to STRING and continue ($state can be checked in a case statement after the utility function call) |
-| FUNCTION                                | Name of a function to call for generating matches or performing some other action, e.g. _files or _message    |
-| {EVAL-STRING}                           | Evaluate string as shell code to generate matches.                                                            |
-| =ACTION                                 | Inserts a dummy word into completion command line without changing the point at which completion takes place. |
+| ( )                           | Argument is required but no matches are generated for it.                                                     |
+| (ITEM1 ITEM2)                 | List of possible matches                                                                                      |
+| ((ITEM1\:DESC1 ITEM2\:DESC2)) | List of possible matches, with descriptions.                                                                  |
+| ->STRING                      | Set $state to STRING and continue ($state can be checked in a case statement after the utility function call) |
+| FUNCTION                      | Name of a function to call for generating matches or performing some other action, e.g. _files or _message    |
+| {EVAL-STRING}                 | Evaluate string as shell code to generate matches.                                                            |
+| =ACTION                       | Inserts a dummy word into completion command line without changing the point at which completion takes place. |
 Not all action types are available for all utility functions that use them. For example the ->STRING type is not available in the
 _regex_arguments or _alternative functions. 
 **** Examples
