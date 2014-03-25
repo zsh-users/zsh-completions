@@ -145,8 +145,6 @@ The first specification 'args:custom args:(a b c)' adds completion candidates a,
 'custom args'. The second specification calls the _net_interfaces command which adds network interfaces as completion 
 candidates. 
 
-
-
 ** Writing completion functions using _arguments
 The _arguments function makes it easy to create completion functions.
 As arguments it takes special strings specifying the options & arguments to the function being completed, 
