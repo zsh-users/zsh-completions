@@ -144,10 +144,10 @@ _alternative 'args:custom args:(a b c)' 'interfaces:network interfaces:_net_inte
 The first specification adds completion candidates a, b & c with description 'custom args', and the second specification 
 calls the _net_interfaces command which adds network interfaces as completion candidates. 
 
-We could split the specifications over several lines and add descriptions to each of the custom args like this:
+We could split the specifications over several lines with \ and add descriptions to each of the custom args like this:
 #+BEGIN_SRC sh 
 _alternative 'args:custom args:((a\:"description a" b\:"description b" c\:"description c"))'\
- 'interfaces:network interfaces:_net_interfaces'
+             'interfaces:network interfaces:_net_interfaces'
 #+END_SRC
 
 ** Writing completion functions using _arguments
