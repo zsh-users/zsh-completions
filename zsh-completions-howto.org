@@ -107,6 +107,7 @@ The actions can take one of the following forms:
 | (ITEM1 ITEM2 ETC)                       | List of possible matches                                                                                      |
 | ((ITEM1\:DESC1 ITEM2\:DESC2 ETC\:BLAH)) | List of possible matches, with descriptions.                                                                  |
 | ->STRING                                | Set $state to STRING and continue ($state can be checked in a case statement after the utility function call) |
+| FUNCTION                                | Name of a function to call for generating matches or performing some other action, e.g. _files or _message    |
 | {EVAL-STRING}                           | Evaluate string as shell code to generate matches.                                                            |
 | =ACTION                                 | Inserts a dummy word into completion command line without changing the point at which completion takes place. |
 Not all action types are available for all utility functions that use them. For example the ->STRING type is not available in the
@@ -119,20 +120,22 @@ _arguments '--help[show help]' '-?[show help]' '1:First arg:_files'
 ** Writing completion functions using _describe
 The _describe function can be used for simple completions where the order and position of the options/arguments is
 not important. You just need to create an array parameter to hold the options & their descriptions, and then pass 
-the parameter name as an argument to _describe, e.g. like this:
+the parameter name as an argument to _describe. The following example creates completion candidates -c and -d, with
+the descriptions.
 #+BEGIN_SRC sh 
 local -a options 
 options=('-c:description for -c opt' '-d:description for -d opt')
 _describe 'values' options
 #+END_SRC
-You can use several different lists separated by -- e.g. like this:
+
+You can use several different lists separated by a double hyphen e.g. like this:
 #+BEGIN_SRC sh 
 local -a options arguments 
 options=('-c:description for -c opt' '-d:description for -d opt')
 arguments=('e:description for e arg' 'f:description for f arg')
 _describe 'values' options -- arguments
 #+END_SRC
-
+See the [[http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-Functions][official documentation]] for more info.
 ** Writing completion functions using _alternative
 ** Writing completion functions using _arguments
 The _arguments function makes it easy to create completion functions.
