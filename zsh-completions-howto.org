@@ -194,18 +194,17 @@ For example:
 _arguments '-f[input file]:filename:_files' 
 #+END_SRC
 
-| -OPT                  | single option                                                                                                                                    |
-| +OPT                  | single option beginning with +                                                                                                                   |
-| -+OPT                 | single option beginning with + or -                                                                                                              |
-| +-OPT                 | single option beginning with + or -                                                                                                              |
-| {-OPT1,--OPT2}        | list of alternatives for an option (e.g. short & long forms). This is not a different specification but a trick that relies on braces expansion. |
-| -OPT-                 | indicates the argument of the option must come directly after the option name, e.g. -optARG                                                      |
-| -OPT+                 | indicates the argument of the option may come directly after the option or as a separate word, e.g. -optARG or -opt ARG                          |
-| -OPT=                 | indicates the argument of the option may come as a separate word, or separated from the option with an = sign, e.g. -opt=ARG or -opt ARG         |
-| -OPT=-                | indicates the argument of the option must appear after an = sign, not as a separate word                                                         |
-| OPTSPEC[explanation]  | the explanation string will be displayed along with the option (OPTSPEC is any of the previously mentioned option specifications)                |
-| *OPTSPEC              | indicates that the option may be repeated (OPTSPEC is any of the previously mentioned option specifications)                                     |
-| OPTSPEC:ARG1:ARG2:etc | for specifying options that take arguments (see below for option argument specification)                                                         |
+Command argument specifications take the form 'N:MESSAGE:ACTION' where N indicates that it is the Nth command argument,
+and MESSAGE & ACTION are as before. If the N is omitted then it just means the next command argument (after any that have
+already been specified). For example:
+#+BEGIN_SRC sh 
+_arguments '-s[sort output]' '1:first arg:_net_interfaces'
+#+END_SRC
+
+
+
+
+
 
 
 
