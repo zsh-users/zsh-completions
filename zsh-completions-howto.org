@@ -246,7 +246,8 @@ _regex_arguments SEQ1 '|' SEQ2 \( SEQ2a '|' SEQ2b \)
 #+END_SRC
 this specifies a command line matching either SEQ1, or SEQ2 followed by SEQ2a or SEQ2b.
 
-A specification in a sequence can take the form: / PATTERN / ':TAG:DESCR:ACTION'\
+A specification in a sequence can take the form: / PATTERN / ':TAG:DESCR:ACTION'
+
 The ':TAG:DESCR:ACTION' part is the same as for the _alternative function (see above), and specifies how to complete
 the word on the command line corresponding to that position.
 The PATTERN is a regular expression to match the word after it has been completed. 
