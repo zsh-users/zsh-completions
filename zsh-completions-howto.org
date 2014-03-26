@@ -78,7 +78,7 @@ Examples of how to use these functions are given in the next section.
 | _describe        | Used for creating simple completions consisting of single words with descriptions (but no actions). Easier to use than _arguments |
 | _gnu_generic     | Can be used to complete options for commands that understand the `--help' option.                                                 |
 | _regex_arguments | Creates a function for matching commandline arguments with regular expressions, and then performing actions/completions.          |
-*** functions for performing complex individual completions 
+*** functions for performing complex completions of single words 
 | _values      | Used for completing arbitrary keywords (values) and their arguments, or comma separated lists of such combinations.                                                  |
 | _combination | Used to complete combinations of values, for example pairs of hostnames and usernames.                                                                               |
 | _multi_parts | Used for completing multiple parts of words separately where each part is separated by some char, e.g. for completing partial filepaths: /u/i/sy -> /usr/include/sys |
@@ -204,27 +204,27 @@ _arguments '-s[sort output]' '1:first arg:_net_interfaces' '::optional arg:_file
 here the first arg is a network interface, the next optional arg is a file name, the last arg can be either a, b or c,
 and the -s option may be completed at any position.
 
+The _arguments function allows the full set of ACTION forms listed in the ACTION section above.
+This means that you can use actions for selecting case statement branches like this:
+#+BEGIN_SRC sh 
+_arguments '-m[music file]:filename:->files' '-f[flags]:flag:->flags'
+case "$state" in
+    files)
+        local -a music_files
+        music_files=( Music/**/*.{mp3,wav,flac,ogg} )
+        _multi_parts / music_files
+        ;;
+    flags)
+        _values -s , 'flags' a b c d e
+        ;;
+esac
+#+END_SRC
+In this case paths to music files are completed stepwise descending down directories using the _multi_parts function, 
+and the flags are completed as a comma separated list using the _values function.
+
 I have just given you the basics of _arguments specifications here, you can also specify mutually exclusive options,
 repeated options & arguments, options beginning with + insead of -, etc. For more details see the [[http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-System][official documentation]].
-
-
-
-
-
-
-As arguments it takes special strings specifying the options & arguments to the function being completed, 
-e.g. like this:
-#+BEGIN_SRC sh 
-_arguments '--help[show help]' '-?[show help]' '1:First arg:_files'
-#+END_SRC
-This example completes the options --help & -? when trying to complete a hyphen, which will both be listed together
-with the same description in this case. The first non-option argument is completed using the _files function which 
-completes file/directories. 
-
-There are a couple of tutorials on how to use _arguments [[http://www.linux-mag.com/id/1106/][here]] and [[http://wikimatze.de/writing-zsh-completion-for-padrino.html][here]], so I won't cover any more here.
-Also have a look at the many completion functions listed [[https://github.com/vapniks/zsh-completions/tree/master/src][here]] many of which use _arguments.
-The full documentation for _arguments is available [[http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-Functions][here]].
-
+Also have a look at the tutorials mentioned at the end of this document, and the completion functions in the [[https://github.com/vapniks/zsh-completions/tree/master/src][src directory]].
 ** Writing completion functions using _regex_arguments and _regex_words
 *** Patterns
 * Testing & debugging
