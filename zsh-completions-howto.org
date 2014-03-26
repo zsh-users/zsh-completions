@@ -104,16 +104,16 @@ If you have a very large number of completions you can save them in a cache file
 Many of the utility functions such as _arguments, _regex_arguments, _alternative and _values may include an action
 at the end of an option/argument specification. This action indicates how to complete the corresponding argument.
 The actions can take one of the following forms:
-| ( )                           | Argument is required but no matches are generated for it.                                                     |
-| (ITEM1 ITEM2)                 | List of possible matches                                                                                      |
-| ((ITEM1\:DESC1 ITEM2\:DESC2)) | List of possible matches, with descriptions.                                                                  |
-| ->STRING                      | Set $state to STRING and continue ($state can be checked in a case statement after the utility function call) |
-| FUNCTION                      | Name of a function to call for generating matches or performing some other action, e.g. _files or _message    |
-| {EVAL-STRING}                 | Evaluate string as shell code to generate matches.                                                            |
-| =ACTION                       | Inserts a dummy word into completion command line without changing the point at which completion takes place. |
+| ( )                           | Argument is required but no matches are generated for it.                                                                                |
+| (ITEM1 ITEM2)                 | List of possible matches                                                                                                                 |
+| ((ITEM1\:DESC1 ITEM2\:DESC2)) | List of possible matches, with descriptions.                                                                                             |
+| ->STRING                      | Set $state to STRING and continue ($state can be checked in a case statement after the utility function call)                            |
+| FUNCTION                      | Name of a function to call for generating matches or performing some other action, e.g. _files or _message                               |
+| {EVAL-STRING}                 | Evaluate string as shell code to generate matches. This can be used to call a utility function with arguments, e.g. _values or _describe |
+| =ACTION                       | Inserts a dummy word into completion command line without changing the point at which completion takes place.                            |
 Not all action types are available for all utility functions that use them. For example the ->STRING type is not available in the
 _regex_arguments or _alternative functions. 
-** Writing completion functions using _describe
+** Writing simple completion functions using _describe
 The _describe function can be used for simple completions where the order and position of the options/arguments is
 not important. You just need to create an array parameter to hold the options & their descriptions, and then pass 
 the parameter name as an argument to _describe. The following example creates completion candidates -c and -d, with
@@ -131,7 +131,9 @@ options=('-c:description for -c opt' '-d:description for -d opt')
 arguments=('e:description for e arg' 'f:description for f arg')
 _describe 'values' options -- arguments
 #+END_SRC
-See the [[http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-Functions][official documentation]] for more info.
+
+The _describe function can be used in an ACTION as part of a specification for _alternative, _arguments or _regex_arguments.
+In this case you will have to put it in braces with its arguments, e.g. 'TAG:DESCRIPTION:{_describe 'values' options}'
 ** Writing completion functions using _alternative
 Like _describe, this function performs simple completions where the order and position of options/arguments is not important.
 However, unlike _describe, you can call execute shell code or call functions to obtain the completion candidates.
@@ -166,9 +168,16 @@ _alternative "dirs:user directories:($userdirs)"\
 In this case the first specification adds the words stored in the $userdirs variable, and the second specification
 evaluates 'ps -A o pid=' to get a list of pids to use as completion candidates.
 
+We can use other utility functions such as _values in the ACTION to perform more complex completions, e.g:
+#+BEGIN_SRC sh 
+_alternative "dirs:user directories:($userdirs)"\
+             'opts:comma separated opts:{_values -s , a b c}'
+#+END_SRC
 
+The _alternative function can itself be used in an ACTION as part of a specification for _arguments or _regex_arguments.
+In this case you will have to put it in braces with its arguments, e.g. 'TAG:DESCRIPTION:{_alternative 'values' options}'
 ** Writing completion functions using _arguments
-With the _arguments function you can create much more sophisticated completion functions
+With the _arguments function you can create much more sophisticated completion functions.
 As arguments it takes special strings specifying the options & arguments to the function being completed, 
 e.g. like this:
 #+BEGIN_SRC sh 
