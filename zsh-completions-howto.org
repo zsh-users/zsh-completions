@@ -182,6 +182,7 @@ With the _arguments function you can create much more sophisticated completion f
 Like the _alternative function, _arguments takes a list of specification strings as arguments.
 These specification strings can be for specifying options and any corresponding option arguments (e.g. -f filename), 
 or command arguments. 
+
 Basic option specifications take the form '-OPT[DESCRIPTION]', e.g. like this:
 #+BEGIN_SRC sh 
 _arguments '-s[sort output]' '--l[long output]' '-l[long output]'
