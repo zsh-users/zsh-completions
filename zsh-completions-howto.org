@@ -237,15 +237,21 @@ _regex_arguments _cmd OTHER_ARGS..
 _cmd "$@"
 #+END_SRC
 
-The OTHER_ARGS should be sequences of specifications for matching & completing sequences of words on the command line.
-These sequences can be separated by '|' to represent alternative command line specifications, and you can use 
-bracketing to arbitrary depth to specify alternate subsequences.
+The OTHER_ARGS should be sequences of specifications for matching & completing words on the command line.
+These sequences can be separated by '|' to represent alternative sequences of words.
+You can use bracketing to arbitrary depth to specify alternate subsequences.
 For example:
 #+BEGIN_SRC sh 
 _regex_arguments SEQ1 '|' SEQ2 \( SEQ2a '|' SEQ2b \)
 #+END_SRC
 this specifies a command line matching either SEQ1, or SEQ2 followed by SEQ2a or SEQ2b.
 
+A specification in a sequence can take the form: /PATTERN/ ':TAG:DESCR:ACTION'
+The ':TAG:DESCR:ACTION' part is the same as for the _alternative function (see above), and specifies how to complete
+the word on the command line corresponding to that position.
+The PATTERN is a regular expression to match the word after it has been completed. 
+The start of the command line matching PATTERN is then removed before moving on to the next specification (which will 
+then be matched against the remaining command line).
 
 *** Patterns
 * Testing & debugging
