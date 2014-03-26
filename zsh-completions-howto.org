@@ -249,12 +249,16 @@ this specifies a command line matching either SEQ1, or SEQ2 followed by SEQ2a or
 A specification in a sequence can take the form: / PATTERN/  ':TAG:DESCR:ACTION'
 
 The ':TAG:DESCR:ACTION' part is the same as for the _alternative function (see above), and specifies how to complete
-the word on the command line corresponding to that position.
-The PATTERN is a regular expression to match the word after it has been completed. 
+the corresponding word on the command line.
+The PATTERN is a regular expression to match the word after it has been completed (see below for more details).
 The start of the command line matching PATTERN is then removed before moving on to the next specification (which will 
 then be matched against the remaining command line).
 
+If this sounds complicated that's because it is. A simpler alternative is to use the _regex_words function for creating
+specifications for _regex_arguments.
+
 *** Patterns
+Note 
 * Testing & debugging
 To reload a completion function:
 #+BEGIN_SRC sh 
