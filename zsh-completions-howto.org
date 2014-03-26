@@ -78,7 +78,7 @@ Examples of how to use these functions are given in the next section.
 | _describe        | Used for creating simple completions consisting of single words with descriptions (but no actions). Easier to use than _arguments |
 | _gnu_generic     | Can be used to complete options for commands that understand the `--help' option.                                                 |
 | _regex_arguments | Creates a function for matching commandline arguments with regular expressions, and then performing actions/completions.          |
-*** functions for performing complex completions 
+*** functions for performing complex individual completions 
 | _values      | Used for completing arbitrary keywords (values) and their arguments, or comma separated lists of such combinations.                                                  |
 | _combination | Used to complete combinations of values, for example pairs of hostnames and usernames.                                                                               |
 | _multi_parts | Used for completing multiple parts of words separately where each part is separated by some char, e.g. for completing partial filepaths: /u/i/sy -> /usr/include/sys |
@@ -104,13 +104,13 @@ If you have a very large number of completions you can save them in a cache file
 Many of the utility functions such as _arguments, _regex_arguments, _alternative and _values may include an action
 at the end of an option/argument specification. This action indicates how to complete the corresponding argument.
 The actions can take one of the following forms:
-| ( )                           | Argument is required but no matches are generated for it.                                                                                |
-| (ITEM1 ITEM2)                 | List of possible matches                                                                                                                 |
-| ((ITEM1\:DESC1 ITEM2\:DESC2)) | List of possible matches, with descriptions.                                                                                             |
-| ->STRING                      | Set $state to STRING and continue ($state can be checked in a case statement after the utility function call)                            |
-| FUNCTION                      | Name of a function to call for generating matches or performing some other action, e.g. _files or _message                               |
-| {EVAL-STRING}                 | Evaluate string as shell code to generate matches. This can be used to call a utility function with arguments, e.g. _values or _describe |
-| =ACTION                       | Inserts a dummy word into completion command line without changing the point at which completion takes place.                            |
+| ( )                               | Argument is required but no matches are generated for it.                                                                                |
+| (ITEM1 ITEM2)                     | List of possible matches                                                                                                                 |
+| ((ITEM1\:'DESC1' ITEM2\:'DESC2')) | List of possible matches, with descriptions. Make sure to use different quotes than those around the whole specification.                |
+| ->STRING                          | Set $state to STRING and continue ($state can be checked in a case statement after the utility function call)                            |
+| FUNCTION                          | Name of a function to call for generating matches or performing some other action, e.g. _files or _message                               |
+| {EVAL-STRING}                     | Evaluate string as shell code to generate matches. This can be used to call a utility function with arguments, e.g. _values or _describe |
+| =ACTION                           | Inserts a dummy word into completion command line without changing the point at which completion takes place.                            |
 Not all action types are available for all utility functions that use them. For example the ->STRING type is not available in the
 _regex_arguments or _alternative functions. 
 ** Writing simple completion functions using _describe
@@ -138,8 +138,8 @@ In this case you will have to put it in braces with its arguments, e.g. 'TAG:DES
 Like _describe, this function performs simple completions where the order and position of options/arguments is not important.
 However, unlike _describe, you can call execute shell code or call functions to obtain the completion candidates.
 
-As arguments it takes a list of specifications each in the form `TAG:DESCR:ACTION' where TAG is a tag name, 
-DESCR is a description, and ACTION is one of the action types listed previously.
+As arguments it takes a list of specifications each in the form `TAG:DESCRIPTION:ACTION' where TAG is a tag name, 
+DESCRIPTION is a description, and ACTION is one of the action types listed previously (apart from the ->STRING and =ACTION forms).
 For example:
 #+BEGIN_SRC sh 
 _alternative 'args:custom args:(a b c)' 'files:filenames:_files'
@@ -174,10 +174,20 @@ _alternative "dirs:user directories:($userdirs)"\
              'opts:comma separated opts:{_values -s , a b c}'
 #+END_SRC
 
-The _alternative function can itself be used in an ACTION as part of a specification for _arguments or _regex_arguments.
-In this case you will have to put it in braces with its arguments, e.g. 'TAG:DESCRIPTION:{_alternative 'values' options}'
+As with _describe, the _alternative function can itself be used in an ACTION as part of a specification for _arguments 
+or _regex_arguments. 
 ** Writing completion functions using _arguments
 With the _arguments function you can create much more sophisticated completion functions.
+Like the _alternative function, _arguments takes a list of specification strings as arguments.
+These specification strings can be for specifying options and any corresponding option arguments (e.g. -f filename), 
+or command arguments. 
+Basic option specifications take the form '-OPT[DESCRIPTION]'. Arguments for the option can be specified after the option 
+description like this '-OPT[DESCRIPTION]:MESSAGE1:ACTION1:MESSAGE2:ACTION2' where MESSAGE1 & MESSAGE2 are the messages 
+printed for the first and second args, and ACTION1 & ACTION2 determine how the completion candidates for those args 
+are determined (see the ACTIONS section above).
+
+
+
 As arguments it takes special strings specifying the options & arguments to the function being completed, 
 e.g. like this:
 #+BEGIN_SRC sh 
@@ -207,9 +217,10 @@ If the default keybindings don't work you can try pressing Alt+x and then enter 
 | _complete_help  | Ctrl+x h           | displays information about context names, tags, and completion functions used when completing at the current cursor position   |
 | _complete_help  | Alt+2 Ctrl+x h     | as above but displays even more information                                                                                    |
 | _complete_debug | Ctrl+x ?           | performs ordinary completion, but captures in a temporary file a trace of the shell commands executed by the completion system |
-* Gotchas
-Take care to use the correct type of quotes around specifications to _arguments or _regex_arguments:
-use double quotes if there is a parameter that needs to be expanded in the specification, single quotes otherwise.
+* Gotchas (things to watch out for)
+Take care to use the correct type of quoting for specifications to _arguments or _regex_arguments:
+use double quotes if there is a parameter that needs to be expanded in the specification, single quotes otherwise,
+and make sure to use different quotes around item descriptions.
 * Putting it all together
 * Other resources
 [[http://wikimatze.de/writing-zsh-completion-for-padrino.html][Here]] is a nicely formatted short tutorial showing basic usage of the _arguments function, 
