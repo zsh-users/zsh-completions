@@ -187,7 +187,7 @@ Basic option specifications take the form '-OPT[DESCRIPTION]', e.g. like this:
 #+BEGIN_SRC sh 
 _arguments '-s[sort output]' '--l[long output]' '-l[long output]'
 #+END_SRC
-Arguments for the option can be specified after the option description like this '-OPT[DESCRIPTION]:MESSAGE:ACTION',
+Arguments for the option can be specified after the option description in this form '-OPT[DESCRIPTION]:MESSAGE:ACTION',
 where MESSAGE is a message to display and ACTION can be any of the forms mentioned in the ACTIONS section above.
 For example:
 #+BEGIN_SRC sh 
