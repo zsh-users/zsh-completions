@@ -173,6 +173,7 @@ We can use other utility functions such as _values in the ACTION to perform more
 _alternative "dirs:user directories:($userdirs)"\
              'opts:comma separated opts:{_values -s , a b c}'
 #+END_SRC
+this will complete the items in $userdirs, aswell as a comma separated list containing a, b &/or c.
 
 As with _describe, the _alternative function can itself be used in an ACTION as part of a specification for _arguments 
 or _regex_arguments. 
@@ -181,10 +182,18 @@ With the _arguments function you can create much more sophisticated completion f
 Like the _alternative function, _arguments takes a list of specification strings as arguments.
 These specification strings can be for specifying options and any corresponding option arguments (e.g. -f filename), 
 or command arguments. 
-Basic option specifications take the form '-OPT[DESCRIPTION]'. Arguments for the option can be specified after the option 
-description like this '-OPT[DESCRIPTION]:MESSAGE1:ACTION1:MESSAGE2:ACTION2' where MESSAGE1 & MESSAGE2 are the messages 
-printed for the first and second args, and ACTION1 & ACTION2 determine how the completion candidates for those args 
-are determined (see the ACTIONS section above).
+Basic option specifications take the form '-OPT[DESCRIPTION]', e.g. like this:
+#+BEGIN_SRC sh 
+_arguments '-s[sort output]' '--l[long output]' '-l[long output]'
+#+END_SRC
+Arguments for the option can be specified after the option description like this '-OPT[DESCRIPTION]:MESSAGE:ACTION',
+where MESSAGE is a message to display and ACTION can be any of the forms mentioned in the ACTIONS section above.
+For example:
+#+BEGIN_SRC sh 
+_arguments '-f[input file]:filename:_files' 
+#+END_SRC
+
+
 
 
 
