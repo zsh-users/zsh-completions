@@ -196,13 +196,16 @@ _arguments '-f[input file]:filename:_files'
 
 Command argument specifications take the form 'N:MESSAGE:ACTION' where N indicates that it is the Nth command argument,
 and MESSAGE & ACTION are as before. If the N is omitted then it just means the next command argument (after any that have
-already been specified). For example:
+already been specified). If a double colon is used at the start (after N) then the argument is optional.
+For example:
 #+BEGIN_SRC sh 
-_arguments '-s[sort output]' '1:first arg:_net_interfaces'
+_arguments '-s[sort output]' '1:first arg:_net_interfaces' '::optional arg:_files' ':next arg:(a b c)'
 #+END_SRC
+here the first arg is a network interface, the next optional arg is a file name, the last arg can be either a, b or c,
+and the -s option may be completed at any position.
 
-
-
+I have just given you the basics of _arguments specifications here, you can also specify mutually exclusive options,
+repeated options & arguments, options beginning with + insead of -, etc. For more details see the [[http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-System][official documentation]].
 
 
 
