@@ -254,7 +254,9 @@ _cmd "$@"
 this specifies a command line matching either SEQ1, or SEQ2 followed by SEQ2a or SEQ2b.
 
 Each specification in a sequence must contain a / PATTERN/ part at the start followed by an optional ':TAG:DESCRIPTION:ACTION' 
-part. Each PATTERN is a regular expression to match a word on the command line. These patterns are processed sequentially
+part. 
+
+Each PATTERN is a regular expression to match a word on the command line. These patterns are processed sequentially
 until we reach a pattern that doesn't match at which point any corresponding ACTION is performed to obtain completions
 for that word. Note that there needs to be a pattern to match the initial command itself.
 See below for further explanation about PATTERNs.
