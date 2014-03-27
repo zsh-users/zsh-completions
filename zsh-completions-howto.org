@@ -277,7 +277,7 @@ word is allowed which can be word2 followed by and a, b, or c, or a filename.
 If this sounds too complicated a much simpler alternative is to use the _regex_words function for creating
 specifications for _regex_arguments. 
 *** Patterns
-You may notice that the / PATTERN/ specs in the previous example doesn't look like normal regular expressions.
+You may notice that the / PATTERN/ specs in the previous example don't look like normal regular expressions.
 Often a string parameter in the form $'foo\0' is used. This is so that the \0 in the string is interpreted correctly
 as a null char which is used to separate words in the internal representation. If you don't include the \0 at the end
 of the pattern you may get problems matching the next word. If you need to use the contents of a variable in a pattern, 
