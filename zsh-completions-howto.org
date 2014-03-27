@@ -284,11 +284,13 @@ of the pattern you may get problems matching the next word. If you need to use t
 you can double quote it so that it gets expanded and then put a string parameter containing a null char afterwards, 
 like this: "$somevar"$'\0'
 
-The regular expressions used in / PATTERN/ specs can use the following special chars:
-| *  | wildcard - any number of chars    |
-| ?  | wildcard - single char            |
-| #  | zero or more of the previous char |
-| ## | one or more of the previous char  |
+The regular expression syntax for patterns seems to be a bit different from normal regular expressions,
+and I can't find documentation anywhere. 
+However I have managed to work out what the following special chars are for:
+| *  | wildcard - any number of chars                                            |
+| ?  | wildcard - single char                                                    |
+| #  | zero or more of the previous char (like * in a normal regular expression) |
+| ## | one or more of the previous char (like + in a normal regular expression)  |
 *** _regex_words
 The _regex_words function makes it much easier to create specifications for _regex_arguments. 
 The results of calling _regex_words can be stored in a variable which can then be used instead 
