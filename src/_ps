@@ -1,18 +1,6 @@
 #compdef ps
 
-# This works with procps version 3.2.8
-
-# This depends on the _comma_separated function, which should be available from the same
-# place you got this file. If it isn't then you can uncomment the following lines to define
-# the function:
-#
-# _comma_separated()
-# {
-#     compset -P '*,'
-#     local -a used vals
-#     used=(${(s:,:)IPREFIX})
-#     _wanted tty expl $1 compadd -S ',' -q -F used "$@[2,-1]"
-# }
+# This works with procps version 3.2.8 
 
 local context state state_descr line
 typeset -A opt_args
@@ -34,9 +22,9 @@ _arguments -s -w \
     "(--context -F --format -o -O)-f[full format listing]"\
     "(--context -f --format -o -O)-F[extra full format]"\
     "(--context -f -F -j -l -o -O)--format[user-defined format]:output format:->format"\
-    "$filterexcl-g[by session OR by effective group name]:groups:->groups"\
+    "$filterexcl-g[by session OR by effective group name]:groups:_groups"\
     "$filterexcl-G[by real group ID (supports names)]:groups:->rgid"\
-    "$filterexcl--group[by session OR by effective group name]:groups:->groups"\
+    "$filterexcl--group[by session OR by effective group name]:groups:_groups"\
     "$filterexcl--Group[by real group ID (supports names)]:groups:->rgid"\
     "-H[show process hierarchy]"\
     "(--no-heading)--heading[repeat header lines, one per page of output]"\
@@ -59,10 +47,10 @@ _arguments -s -w \
     "$filterexcl-t[by tty]:ttys:->tty"\
     "-T[show threads, possibly with SPID column]"\
     "$filterexcl--tty[by tty]:ttys:->tty"\
-    "$filterexcl-u[by effective user ID (supports names)]:users:->users"\
-    "$filterexcl-U[by real user ID (supports names)]:users:->users"\
-    "$filterexcl--user[by effective user ID (supports names)]:users:->users"\
-    "$filterexcl--User[by real user ID (supports names)]:users:->users"\
+    "$filterexcl-u[by effective user ID (supports names)]:users:_users"\
+    "$filterexcl-U[by real user ID (supports names)]:users:_users"\
+    "$filterexcl--user[by effective user ID (supports names)]:users:_users"\
+    "$filterexcl--User[by real user ID (supports names)]:users:_users"\
     "(--version)-V[print the procps version]"\
     "(-V)--version[print the procps version]"\
     "-w[wide output]"\
@@ -72,24 +60,10 @@ _arguments -s -w \
 
 case "$state" in
     pid)
-        compset -P '*,'
-        local -a used pid
-        used=(${(s:,:)IPREFIX})
-        pid=(${(uon)$(ps -A o pid=)})
-        _wanted pgid expl 'process id' compadd -S ',' -q -F used $pid
-        ;;
-    users)
-        _users
+        _values -s , 'process id' "${(uonzf)$(ps -A o pid=)}"
         ;;
     rgid)
-        compset -P '*,'
-        local -a used rgid
-        used=(${(s:,:)IPREFIX})
-        rgid=(${(uon)$(ps -A o rgid=)})
-        _wanted rgid expl 'process group id' compadd -S ',' -q -F used $rgid
-        ;;
-    groups)
-        _groups
+        _values -s , 'process group id' "${(uonzf)$(ps -A o rgid=)}"
         ;;
     pname)
         local ispat="pattern matching "
@@ -105,38 +79,24 @@ case "$state" in
         fi
     ;;
     sid)
-        compset -P '*,'
-        local -a used sid
-        used=(${(s:,:)IPREFIX})
-        sid=(${(uon)$(ps -A o sid=)})
-        _wanted sid expl 'session id' compadd -S ',' -q -F used $sid
+        _values -s , 'session id' "${(uonzf)$(ps -A o sid=)}"
     ;;
     tty)
-        compset -P '*,'
-        local -a used ttys
-        used=(${(s:,:)IPREFIX})
+        local -a ttys
         ttys=( /dev/tty*(N) /dev/pts/*(N) )
-        _wanted tty expl 'terminal device' compadd -S ',' -q -F used ${ttys#/dev/}
+        _values -s , 'terminal device' ${ttys#/dev/}
         ;;
     ppid)
-        compset -P '*,'
-        local -a used ppid
-        used=(${(s:,:)IPREFIX})
-        ppid=(${(uon)$(ps -A o ppid=)})
-        _wanted ppid expl 'parent process id' compadd -S ',' -q -F used $ppid
+        _values -s , 'parent process id' "${(uonzf)$(ps -A o ppid=)}"
         ;;
     sortspec)
-        compset -P '*,'
-        local -a used spec minuspec pluspec allspec
-        used=(${(s:,:)IPREFIX/[-+]/})
-        spec=(${(uo)$(ps L|cut -f 1 -d" ")})
-        _wanted spec expl 'format specifier (prefix with - for decreasing order)' compadd -S ',' -q -F used $spec
+        _values -s , 'format specifier (prefix with - for decreasing order)' "${(uozf)$(ps L|cut -f 1 -d" ")}"
         ;;
     format)
-        compset -P '*,'
-        local -a used spec
-        used=(${(s:,:)IPREFIX})
-        spec=(${(uo)$(ps L|cut -f 1 -d" ")})
-        _wanted spec expl 'format specifier' compadd -S ',' -q -F used $spec
+        _values -s , 'format specifier' "${(uozf)$(ps L|cut -f 1 -d" ")}"        
         ;;
 esac
+
+# Local Variables: 
+# mode:shell-script
+# End:             
