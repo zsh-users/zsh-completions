@@ -68,13 +68,15 @@ The compadd builtin is the core function used to add completion words to the com
 However, most of the time you will not need to use compadd, since there are many utility functions such as _arguments
 and _describe which are easier to use.
 
+For very basic completions the _describe function should be adequate
+
 ** Utility functions
 Here is a list of some of the utility functions that may be of use. 
 The full list of utility functions, with full explanations, is available [[http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-Functions][here]].
 Examples of how to use these functions are given in the next section.
 
 *** main utility functions for overall completion
-| _alternative     | Loop over tag labels and perform actions based on matching tag label.                                                             |
+| _alternative     | Can be used to generate completion candidates from other utility functions or shell code.                         |
 | _arguments       | Used to specify how to complete individual options & arguments for a command with unix style options.                             |
 | _describe        | Used for creating simple completions consisting of single words with descriptions (but no actions). Easier to use than _arguments |
 | _gnu_generic     | Can be used to complete options for commands that understand the `--help' option.                                                 |
@@ -313,11 +315,10 @@ firstword2=("$reply[@]")
 _regex_arguments _hello /$'[^\0]##\0'/ "${firstword[@]}" "${firstword2[@]}"
 _hello "$@"
 #+END_SRC
-
-
-
-
-
+In this case the first word can be one of "foo", "man", "chu", "boo", "ga" or "loo".
+If the first word is "boo" or "ga" then the second word can be "woo" or "hoo", 
+and if the first word is "loo" then the second word can be "yee" or "haa", in the other
+cases there is no second word.
 *** Patterns
 Note * = wildcard, # = wildcard
 * Testing & debugging
