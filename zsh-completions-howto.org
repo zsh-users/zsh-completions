@@ -240,7 +240,9 @@ _cmd "$@"
 
 The OTHER_ARGS should be sequences of specifications for matching & completing words on the command line.
 These sequences can be separated by '|' to represent alternative sequences of words.
-You can use bracketing to arbitrary depth to specify alternate subsequences.
+You can use bracketing to arbitrary depth to specify alternate subsequences, but the brackets must be quoted 
+like this \( \) or '(' ')'.
+
 For example:
 #+BEGIN_SRC sh 
 _regex_arguments _cmd SEQ1 '|' SEQ2 \( SEQ2a '|' SEQ2b \)
