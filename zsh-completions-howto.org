@@ -300,14 +300,18 @@ Note that I have added an extra pattern for the initial command word itself.
 Here is a more complex example where we call _regex_words for different words on the command line
 #+BEGIN_SRC sh 
 local -a firstword firstword2 secondword secondword2
-_regex_words word 'The first word' 'word1a:a word:' 'word1b:b word:' 'word1c:c word'
-firstword="$reply[@]"
-_regex_words word 'Another first word' 'word11a:1a word:$secondword' 'word11b:1b word:$secondword' 'word11c:1c word:$secondword2'
-firstword2="$reply[@]"
-_regex_words word 'The second word' 'word2a:a word' 'word2b:b word' 'word2c:c word'
-secondword="$reply[@]"
-_regex_words word 'Another second word' 'word22a:2a word' 'word22b:2b word' 'word22c:2c word'
-secondword2="$reply[@]"
+_regex_words word1 'The second word' 'woo:tang clan' 'hoo:not me'
+secondword=("$reply[@]")
+_regex_words word2 'Another second word' 'yee:thou' 'haa:very funny!'
+secondword2=("$reply[@]")
+_regex_words commands 'The first word' 'foo:do foo' 'man:yeah man' 'chu:at chu'
+firstword=("$reply[@]")
+_regex_words word4 'Another first word' 'boo:scare somebody:$secondword' 'ga:baby noise:$secondword'\
+ 'loo:go to the toilet:$secondword2'
+firstword2=("$reply[@]")
+
+_regex_arguments _hello /$'[^\0]##\0'/ "${firstword[@]}" "${firstword2[@]}"
+_hello "$@"
 #+END_SRC
 
 
@@ -336,6 +340,9 @@ Remember to include a #compdef line at the beginning of the file containing the 
 Take care to use the correct type of quoting for specifications to _arguments or _regex_arguments:
 use double quotes if there is a parameter that needs to be expanded in the specification, single quotes otherwise,
 and make sure to use different quotes around item descriptions.
+
+Check that you have the correct number of :'s in the correct places for specifications for _arguments, 
+_alternative, _regex_arguments, etc.
 
 Remember to include an initial pattern to match the command word when using _regex_arguments (it does not need a matching action).
 * Putting it all together
