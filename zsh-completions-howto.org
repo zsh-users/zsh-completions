@@ -117,8 +117,9 @@ _regex_arguments or _alternative functions.
 The _describe function can be used for simple completions where the order and position of the options/arguments is
 not important. You just need to create an array parameter to hold the options & their descriptions, and then pass 
 the parameter name as an argument to _describe. The following example creates completion candidates -c and -d, with
-the descriptions.
+the descriptions (note this should be put in a file called _cmd in some directory listed in $fpath).
 #+BEGIN_SRC sh 
+#compdef cmd
 local -a options 
 options=('-c:description for -c opt' '-d:description for -d opt')
 _describe 'values' options
@@ -126,6 +127,7 @@ _describe 'values' options
 
 You can use several different lists separated by a double hyphen e.g. like this:
 #+BEGIN_SRC sh 
+#compdef cmd
 local -a options arguments 
 options=('-c:description for -c opt' '-d:description for -d opt')
 arguments=('e:description for e arg' 'f:description for f arg')
@@ -138,10 +140,11 @@ In this case you will have to put it in braces with its arguments, e.g. 'TAG:DES
 Like _describe, this function performs simple completions where the order and position of options/arguments is not important.
 However, unlike _describe, you can call execute shell code or call functions to obtain the completion candidates.
 
-As arguments it takes a list of specifications each in the form `TAG:DESCRIPTION:ACTION' where TAG is a tag name, 
+As arguments it takes a list of specifications each in the form 'TAG:DESCRIPTION:ACTION' where TAG is a tag name, 
 DESCRIPTION is a description, and ACTION is one of the action types listed previously (apart from the ->STRING and =ACTION forms).
 For example:
 #+BEGIN_SRC sh 
+#compdef cmd
 _alternative 'args:custom args:(a b c)' 'files:filenames:_files'
 #+END_SRC
 The first specification adds completion candidates a, b & c, and the second specification calls the _files function 
@@ -149,12 +152,14 @@ for completing filepaths.
 
 We could split the specifications over several lines with \ and add descriptions to each of the custom args like this:
 #+BEGIN_SRC sh 
+#compdef cmd
 _alternative 'args:custom args:((a\:"description a" b\:"description b" c\:"description c"))'\
              'files:filenames:_files'
 #+END_SRC
 
 If we want to call _files with arguments we can put it in braces, like this:
 #+BEGIN_SRC sh 
+#compdef cmd
 _alternative 'args:custom args:((a\:"description a" b\:"description b" c\:"description c"))'\
              'files:filenames:{_files -/}'
 #+END_SRC
@@ -162,6 +167,7 @@ _alternative 'args:custom args:((a\:"description a" b\:"description b" c\:"descr
 To use parameter expansion to create our list of completions we must use double quotes to quote the specifications,
 e.g:
 #+BEGIN_SRC sh 
+#compdef cmd
 _alternative "dirs:user directories:($userdirs)"\
              "pids:process IDs:($(ps -A o pid=))"
 #+END_SRC
@@ -170,6 +176,7 @@ evaluates 'ps -A o pid=' to get a list of pids to use as completion candidates.
 
 We can use other utility functions such as _values in the ACTION to perform more complex completions, e.g:
 #+BEGIN_SRC sh 
+#compdef cmd
 _alternative "dirs:user directories:($userdirs)"\
              'opts:comma separated opts:{_values -s , a b c}'
 #+END_SRC
@@ -185,12 +192,14 @@ or command arguments.
 
 Basic option specifications take the form '-OPT[DESCRIPTION]', e.g. like this:
 #+BEGIN_SRC sh 
+#compdef cmd
 _arguments '-s[sort output]' '--l[long output]' '-l[long output]'
 #+END_SRC
 Arguments for the option can be specified after the option description in this form '-OPT[DESCRIPTION]:MESSAGE:ACTION',
 where MESSAGE is a message to display and ACTION can be any of the forms mentioned in the ACTIONS section above.
 For example:
 #+BEGIN_SRC sh 
+#compdef cmd
 _arguments '-f[input file]:filename:_files' 
 #+END_SRC
 
@@ -199,6 +208,7 @@ and MESSAGE & ACTION are as before. If the N is omitted then it just means the n
 already been specified). If a double colon is used at the start (after N) then the argument is optional.
 For example:
 #+BEGIN_SRC sh 
+#compdef cmd
 _arguments '-s[sort output]' '1:first arg:_net_interfaces' '::optional arg:_files' ':next arg:(a b c)'
 #+END_SRC
 here the first arg is a network interface, the next optional arg is a file name, the last arg can be either a, b or c,
@@ -206,7 +216,8 @@ and the -s option may be completed at any position.
 
 The _arguments function allows the full set of ACTION forms listed in the ACTION section above.
 This means that you can use actions for selecting case statement branches like this:
-#+BEGIN_SRC sh 
+#+BEGIN_SRC sh
+#compdef cmd 
 _arguments '-m[music file]:filename:->files' '-f[flags]:flag:->flags'
 case "$state" in
     files)
@@ -233,6 +244,7 @@ _regex_arguments creates a completion function whose name is given by the first 
 Hence you need to first call _regex_arguments to create the completion function, and then call that function, 
 e.g. like this:
 #+BEGIN_SRC sh 
+#compdef cmd
 _regex_arguments _cmd OTHER_ARGS..
 _cmd "$@"
 #+END_SRC
@@ -242,19 +254,28 @@ These sequences can be separated by '|' to represent alternative sequences of wo
 You can use bracketing to arbitrary depth to specify alternate subsequences.
 For example:
 #+BEGIN_SRC sh 
-_regex_arguments SEQ1 '|' SEQ2 \( SEQ2a '|' SEQ2b \)
+#compdef cmd
+_regex_arguments _cmd SEQ1 '|' SEQ2 \( SEQ2a '|' SEQ2b \)
+_cmd "$@"
 #+END_SRC
 this specifies a command line matching either SEQ1, or SEQ2 followed by SEQ2a or SEQ2b.
 
-A specification in a sequence can take the form: / PATTERN/  ':TAG:DESCR:ACTION'
+Each specification in a sequence must contain a / PATTERN/ part at the start followed by an optional ':TAG:DESCRIPTION:ACTION' 
+part. Each PATTERN is a regular expression to match a word on the command line. These patterns are processed sequentially
+until we reach a pattern that doesn't match at which point any corresponding ACTION is performed to obtain completions
+for that word. Note that there needs to be a pattern to match the initial command itself.
+Note that the ':TAG:DESCRIPTION:ACTION' part is interpreted in the same way as for the _alternative function specifications,
+except that it has an extra : at the start, and now all of the possible ACTION formats listed previously are allowed.
 
-The ':TAG:DESCR:ACTION' part is the same as for the _alternative function (see above), and specifies how to complete
-the corresponding word on the command line.
-The PATTERN is a regular expression to match the word after it has been completed (see below for more details).
-The start of the command line matching PATTERN is then removed before moving on to the next specification (which will 
-then be matched against the remaining command line).
+Here is an example
+#+BEGIN_SRC sh 
+#compdef cmd
+_regex_arguments _cmd /$'[^\0]##\0'/ /$'[^\0]##\0'/ 'file:filename:_files' '|' /$'word2\0'/ 'file:filename:_files' \
+                 \( /$'word1\0'/ 'file:filename:_files' '|' /$'word1\0'/ 'file:filename:_files' \)
+_cmd "$@"
+#+END_SRC
 
-If this sounds complicated that's because it is. A simpler alternative is to use the _regex_words function for creating
+If this sounds too complicated a simpler alternative is to use the _regex_words function for creating
 specifications for _regex_arguments.
 
 *** Patterns
@@ -277,6 +298,8 @@ If the default keybindings don't work you can try pressing Alt+x and then enter 
 Take care to use the correct type of quoting for specifications to _arguments or _regex_arguments:
 use double quotes if there is a parameter that needs to be expanded in the specification, single quotes otherwise,
 and make sure to use different quotes around item descriptions.
+
+Remember to include an initial pattern to match the command word when using _regex_arguments (it does not need a matching action).
 * Putting it all together
 * Other resources
 [[http://wikimatze.de/writing-zsh-completion-for-padrino.html][Here]] is a nicely formatted short tutorial showing basic usage of the _arguments function, 
