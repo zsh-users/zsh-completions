@@ -292,8 +292,22 @@ firstword="$reply[@]"
 we could then use it with _regex_arguments like this:
 #+BEGIN_SRC sh 
 _regex_arguments _cmd /$'[^\0]##\0'/ "$firstword[@]"
+_cmd "$@"
 #+END_SRC
 Note that I have added an extra pattern for the initial command word itself.
+
+Here is a more complex example where we call _regex_words for different words on the command line
+#+BEGIN_SRC sh 
+local -a firstword firstword2 secondword secondword2
+_regex_words word 'The first word' 'word1a:a word:' 'word1b:b word:' 'word1c:c word'
+firstword="$reply[@]"
+_regex_words word 'Another first word' 'word11a:1a word:$secondword' 'word11b:1b word:$secondword' 'word11c:1c word:$secondword2'
+firstword2="$reply[@]"
+_regex_words word 'The second word' 'word2a:a word' 'word2b:b word' 'word2c:c word'
+secondword="$reply[@]"
+_regex_words word 'Another second word' 'word22a:2a word' 'word22b:2b word' 'word22c:2c word'
+secondword2="$reply[@]"
+#+END_SRC
 
 
 
