@@ -365,7 +365,6 @@ Complete some MAC addresses one octet at a time:
 _multi_parts : '(00:11:22:33:44:55 00:23:34:45:56:67 00:23:45:56:67:78)'
 #+END_SRC
 
-
 * Testing & debugging
 To reload a completion function:
 #+BEGIN_SRC sh 
@@ -391,7 +390,8 @@ Check that you have the correct number of :'s in the correct places for specific
 _alternative, _regex_arguments, etc.
 
 Remember to include an initial pattern to match the command word when using _regex_arguments (it does not need a matching action).
-* Putting it all together
+
+Remember to put a null char $'\0' at the end of any PATTERN argument for _regex_arguments
 * Other resources
 [[http://wikimatze.de/writing-zsh-completion-for-padrino.html][Here]] is a nicely formatted short tutorial showing basic usage of the _arguments function, 
 and [[http://www.linux-mag.com/id/1106/][here]] is a slightly more advanced tutorial using the _arguments function.
