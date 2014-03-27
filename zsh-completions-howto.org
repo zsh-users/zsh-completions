@@ -7,6 +7,7 @@ give enough information and examples to get you up and running. If you need more
  [[http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-System][official documentation]].
 
 Please make any scripts that you create publically available for others (e.g. by forking this repo and making a [[id:64bcd501-b0f0-48c7-b8e2-07af708b95ec][pull request]]).
+Also if you have any more information to add or improvements to make to this tutorial, please do.
 * Getting started
 ** Telling zsh which function to use for completing a command
 Completion functions for commands are stored in files with names beginning with an underscore _, and these files should 
