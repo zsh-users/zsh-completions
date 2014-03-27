@@ -268,6 +268,31 @@ word is allowed which can be word2 followed by and a, b, or c, or a filename.
 If this sounds too complicated a much simpler alternative is to use the _regex_words function for creating
 specifications for _regex_arguments. 
 *** _regex_words
+The _regex_words function makes it much easier to create specifications for _regex_arguments. 
+The results of calling _regex_words can be stored in a variable which can then be used instead 
+of a specification for _regex_arguments. 
+
+To create a specification using _regex_words you supply it with a tag followed by a description followed by a list
+of specifications for individual words. These specifications take the form 'WORD:DESCRIPTION:SPEC' where WORD is the 
+word to be completed, DESCRIPTION is a description for it, and SPEC can be another variable created by _regex_words 
+specifying words that come after the current word or blank if there are no further words.
+For example:
+#+BEGIN_SRC sh 
+_regex_words firstword 'The first word' 'word1a:a word:' 'word1b:b word:' 'word1c:c word'
+#+END_SRC
+the results of this function call will be stored in the $reply array, and so we should store it in another array 
+before $reply gets changed again, like this:
+#+BEGIN_SRC sh 
+local -a firstword
+_regex_words word 'The first word' 'word1a:a word:' 'word1b:b word:' 'word1c:c word'
+firstword="$reply[@]"
+#+END_SRC
+we could then use it with _regex_arguments like this:
+#+BEGIN_SRC sh 
+_regex_arguments _cmd /$'[^\0]##\0'/ "$firstword[@]"
+#+END_SRC
+Note that I have added an extra pattern for the initial command word itself.
+
 
 
 
