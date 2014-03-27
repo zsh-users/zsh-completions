@@ -257,7 +257,9 @@ Each specification in a sequence must contain a / PATTERN/ part at the start fol
 part. Each PATTERN is a regular expression to match a word on the command line. These patterns are processed sequentially
 until we reach a pattern that doesn't match at which point any corresponding ACTION is performed to obtain completions
 for that word. Note that there needs to be a pattern to match the initial command itself.
-Note that the ':TAG:DESCRIPTION:ACTION' part is interpreted in the same way as for the _alternative function specifications,
+See below for further explanation about PATTERNs.
+
+The ':TAG:DESCRIPTION:ACTION' part is interpreted in the same way as for the _alternative function specifications,
 except that it has an extra : at the start, and now all of the possible ACTION formats listed previously are allowed.
 
 Here is an example:
@@ -320,7 +322,11 @@ If the first word is "boo" or "ga" then the second word can be "woo" or "hoo",
 and if the first word is "loo" then the second word can be "yee" or "haa", in the other
 cases there is no second word.
 *** Patterns
-Note * = wildcard, # = wildcard
+The following patterns can be used.
+| *  | wildcard - any number of chars   |
+| ?  | wildcard - single char           |
+| #  | zero or more of the previous char |
+| ## | one or more of the previous char |
 * Testing & debugging
 To reload a completion function:
 #+BEGIN_SRC sh 
