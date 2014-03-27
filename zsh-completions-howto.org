@@ -276,6 +276,19 @@ word is allowed which can be word2 followed by and a, b, or c, or a filename.
 
 If this sounds too complicated a much simpler alternative is to use the _regex_words function for creating
 specifications for _regex_arguments. 
+*** Patterns
+You may notice that the / PATTERN/ specs in previous examples don't look like normal regular expressions.
+Often a string parameter in the form $'foo\0' is used. This is so that the \0 in the string is interpreted correctly
+as a null char which is used to separate words in the internal representation. If you don't include the \0 at the end
+of the pattern you may get problems matching the next word. If you need to use the contents of a variable in a pattern, 
+you can double quote it so that it gets expanded and then put a string parameter containing a null char afterwards, 
+like this: "$somevar"$'\0'
+
+The regular expressions used in / PATTERN/ specs can use the following special chars:
+| *  | wildcard - any number of chars    |
+| ?  | wildcard - single char            |
+| #  | zero or more of the previous char |
+| ## | one or more of the previous char  |
 *** _regex_words
 The _regex_words function makes it much easier to create specifications for _regex_arguments. 
 The results of calling _regex_words can be stored in a variable which can then be used instead 
@@ -323,12 +336,6 @@ In this case the first word can be one of "foo", "man", "chu", "boo", "ga" or "l
 If the first word is "boo" or "ga" then the second word can be "woo" or "hoo", 
 and if the first word is "loo" then the second word can be "yee" or "haa", in the other
 cases there is no second word.
-*** Patterns
-The following patterns can be used.
-| *  | wildcard - any number of chars   |
-| ?  | wildcard - single char           |
-| #  | zero or more of the previous char |
-| ## | one or more of the previous char |
 * Testing & debugging
 To reload a completion function:
 #+BEGIN_SRC sh 
