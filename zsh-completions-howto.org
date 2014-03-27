@@ -338,6 +338,34 @@ In this case the first word can be one of "foo", "man", "chu", "boo", "ga" or "l
 If the first word is "boo" or "ga" then the second word can be "woo" or "hoo", 
 and if the first word is "loo" then the second word can be "yee" or "haa", in the other
 cases there is no second word.
+
+For a good example of the usage of _regex_words have a look at the _ip function.
+* complex completions with _values, _sep_parts, & _multi_parts
+The _values, _sep_parts & _multi_parts functions can be used either on their own, or as ACTIONs in specifications for 
+_alternative, _arguments or _regex_arguments. The following examples may be instructive.
+See the [[http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-System][official documentation]] for more info.
+
+Space separated list of mp3 files:
+#+BEGIN_SRC sh 
+_values 'mp3 files' ~/*.mp3
+#+END_SRC
+
+Comma separated list of session id numbers:
+#+BEGIN_SRC sh 
+_values -s , 'session id' "${(uonzf)$(ps -A o sid=)}"
+#+END_SRC
+
+Completes foo@news:woo, or foo@news:laa, or bar@news:woo, etc:
+#+BEGIN_SRC sh 
+_sep_parts '(foo bar)' @ '(news ftp)' : '(woo laa)'
+#+END_SRC
+
+Complete some MAC addresses one octet at a time:
+#+BEGIN_SRC sh 
+_multi_parts : '(00:11:22:33:44:55 00:23:34:45:56:67 00:23:45:56:67:78)'
+#+END_SRC
+
+
 * Testing & debugging
 To reload a completion function:
 #+BEGIN_SRC sh 
