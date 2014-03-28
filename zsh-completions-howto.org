@@ -396,7 +396,7 @@ Remember to put a null char $'\0' at the end of any PATTERN argument for _regex_
 Sometimes you have a situation where there is just one option that can come after a subcommand, and zsh will complete this 
 automatically when tab is pressed after the subcommand. If instead you want it listed with its description before completing 
 you can add another empty option (i.e. \:) to the ACTION like this ':TAG:DESCRIPTION:((opt1\:"description for opt1" \:))' 
-Note this only applies to utility functions that use ACTIONs in their specification arguments.
+Note this only applies to utility functions that use ACTIONs in their specification arguments (_arguments, _regex_arguments, etc.)
 
 * Other resources
 [[http://wikimatze.de/writing-zsh-completion-for-padrino.html][Here]] is a nicely formatted short tutorial showing basic usage of the _arguments function, 
