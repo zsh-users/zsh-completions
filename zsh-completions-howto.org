@@ -392,6 +392,12 @@ _alternative, _regex_arguments, etc.
 Remember to include an initial pattern to match the command word when using _regex_arguments (it does not need a matching action).
 
 Remember to put a null char $'\0' at the end of any PATTERN argument for _regex_arguments
+* Tips
+Sometimes you have a situation where there is just one option that can come after a subcommand, and zsh will complete this 
+automatically when tab is pressed after the subcommand. If instead you want it listed with its description before completing 
+you can add another empty option (i.e. \:) to the ACTION like this ':TAG:DESCRIPTION:((opt1\:"description for opt1" \:))' 
+Note this only applies to utility functions that use ACTIONs in their specification arguments.
+
 * Other resources
 [[http://wikimatze.de/writing-zsh-completion-for-padrino.html][Here]] is a nicely formatted short tutorial showing basic usage of the _arguments function, 
 and [[http://www.linux-mag.com/id/1106/][here]] is a slightly more advanced tutorial using the _arguments function.
