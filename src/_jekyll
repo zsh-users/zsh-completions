@@ -42,7 +42,7 @@ case $state in
       "help:Dislplay global or [command] help documentation"
       "import:Import your old blog to Jekyll"
       "new:Creates a new Jekyll site scaffold in PATH"
-      "serve:Serve your stie locally"
+      "serve:Serve your site locally"
     )
 
     _describe -t subcommands 'jekyll subcommand' subcommands && ret=0
