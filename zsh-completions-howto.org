@@ -340,7 +340,7 @@ and if the first word is "loo" then the second word can be "yee" or "haa", in th
 cases there is no second word.
 
 For a good example of the usage of _regex_words have a look at the _ip function.
-* complex completions with _values, _sep_parts, & _multi_parts
+** complex completions with _values, _sep_parts, & _multi_parts
 The _values, _sep_parts & _multi_parts functions can be used either on their own, or as ACTIONs in specifications for 
 _alternative, _arguments or _regex_arguments. The following examples may be instructive.
 See the [[http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-System][official documentation]] for more info.
