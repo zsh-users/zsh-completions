@@ -365,6 +365,42 @@ Complete some MAC addresses one octet at a time:
 _multi_parts : '(00:11:22:33:44:55 00:23:34:45:56:67 00:23:45:56:67:78)'
 #+END_SRC
 
+** Adding completion words directly using compadd
+For more fine grained control you can use the builtin compadd function to add completion words directly.
+This function has many different options for controlling how completions are displayed and how text on the command line 
+can be altered when words are completed. Read the  [[http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-System][official documentation]] for full details.
+Here I just give a few simple examples.
+
+Add some words to the list of possible completions:
+#+BEGIN_SRC sh 
+compadd foo bar blah
+#+END_SRC
+
+As above but also display an explanation:
+#+BEGIN_SRC sh 
+compadd -X 'Some completions' foo bar blah
+#+END_SRC
+
+As above but automatically insert a prefix of "what_" before the completed word:
+#+BEGIN_SRC sh 
+compadd -P what_ foo bar blah
+#+END_SRC
+
+As above but automatically insert a suffix of "_todo" after the completed word:
+#+BEGIN_SRC sh 
+compadd -S _todo foo bar blah
+#+END_SRC
+
+As above but automatically remove the "_todo" suffix if a blank char is typed after the suffix:
+#+BEGIN_SRC sh 
+compadd -P _todo -q foo bar blah
+#+END_SRC
+
+Add words in array $wordsarray to the list of possible completions
+#+BEGIN_SRC sh 
+compadd -a wordsarray
+#+END_SRC
+
 * Testing & debugging
 To reload a completion function:
 #+BEGIN_SRC sh 
