@@ -186,7 +186,9 @@ _yaourt_completions_repositories() {
 # $cmd must be declared by calling function
 _yaourt_get_command() {
     # this is mostly nicked from _perforce
-    cmd=( "pacman" )
+    cmd=$( grep "^PACMAN=" "/etc/yaourtrc" \
+           && grep "^PACMAN=" "/etc/yaourtrc" | cut -c8- \
+           || echo "pacman" )
     integer i
     for (( i = 2; i < CURRENT - 1; i++ )); do
         if [[ ${words[i]} = "--config" || ${words[i]} = "--root" ]]; then
