@@ -193,6 +193,16 @@ _vboxmanage() {
 				:machine:_vboxmachines \
 				:modifyvm_option:_vboxopts_modifyvm
 		;;
+		modifyhd)
+			_arguments \
+				:filename:_files \
+				'--type:hd type:(normal writethrough immutable shareable readonly multiattach)' \
+				'--autoreset:on off:(on off)' \
+				'--property: :' \
+				'--compact' \
+				'--resize:megabytes:' \
+				'--resizebyte:bytes:'
+		;;
 		import)
 			_arguments \
 				':ovf file:_files -g \*.{ovf,ova}' \
