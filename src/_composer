@@ -1,5 +1,30 @@
 #compdef composer
 # ------------------------------------------------------------------------------
+# Copyright (c) 2011 Github zsh-users - http://github.com/zsh-users
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+# * Redistributions of source code must retain the above copyright
+# notice, this list of conditions and the following disclaimer.
+# * Redistributions in binary form must reproduce the above copyright
+# notice, this list of conditions and the following disclaimer in the
+# documentation and/or other materials provided with the distribution.
+# * Neither the name of the zsh-users nor the
+# names of its contributors may be used to endorse or promote products
+# derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL ZSH-USERS BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# ------------------------------------------------------------------------------
 # Description
 # -----------
 #
@@ -9,240 +34,43 @@
 # Authors
 # -------
 #
+#  * Daniel Gomes (me@danielcsgomes.com)
+#  * Valerii Hiora (https://github.com/vhbit)
 #  * loranger (https://github.com/loranger)
 #
 # ------------------------------------------------------------------------------
 
-_composer_global_options() {
-	_values : \
-		"--xml[To output help as XML]" \
-		"--format[To output help in other formats]:format:" \
-		"--raw[To output raw command help]" \
-		"(help,h)"{--help,-h}"[Display this help message.]" \
-		"(quite,q)"{--quiet,-q}"[Do not output any message.]" \
-		"--verbose[Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug]:Verbosity:(1 2 3)" \
-		"(v,vv,vvv)"{-v,-vv,-vvv}"[Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug]" \
-		"(version,V)"{--version,-V}"[Display this application version.]" \
-		"--ansi[Force ANSI output.]" \
-		"--no-ansi[Disable ANSI output.]" \
-		"(no-interaction,n)"{--no-interaction,-n}"[Do not ask any interactive question.]" \
-		"--profile[Display timing and memory usage information]" \
-		"(working-dir)"{--working-dir,-d}"[If specified, use the given directory as working directory.]:files:_files -/"
+local curcontext=$curcontext state line
+declare -A opt_args
+
+_composer_get_command_list () {
+    composer --no-ansi | sed "1,/Available commands/d" | awk '/^  [a-z]+/ { print $1 }'
 }
 
-_composer_cmd() {
-	_values : \
-		"about[Short information about Composer]" \
-		"archive[Create an archive of this composer package]" \
-		"config[Set config options]" \
-		"create-project[Create new project from a package into given directory.]" \
-		"depends[Shows which packages depend on the given package]" \
-		"diagnose[Diagnoses the system to identify common errors.]" \
-		"dump-autoload[Dumps the autoloader]" \
-		"dumpautoload[Dumps the autoloader]" \
-		"help[Displays help for a command]" \
-		"init[Creates a basic composer.json file in current directory.]" \
-		"install[Installs the project dependencies from the composer.lock file if present, or falls back on the composer.json.]" \
-		"list[Lists commands]" \
-		"require[Adds required packages to your composer.json and installs them]" \
-		"run-script[Run the scripts defined in composer.json.]" \
-		"search[Search for packages]" \
-		"self-update[Updates composer.phar to the latest version.]" \
-		"selfupdate[Updates composer.phar to the latest version.]" \
-		"show[Show information about packages]" \
-		"status[Show a list of locally modified packages]" \
-		"update[Updates your dependencies to the latest version according to composer.json, and updates the composer.lock file.]" \
-		"validate[Validates a composer.json]" \
-		"*:options:_composer_global_options"
+_composer_get_required_list () {
+    composer show -s --no-ansi | sed '1,/requires/d' | awk 'NF > 0 && !/^requires \(dev\)/{ print $1 }'
 }
 
-_composer_cmd_archive() {
-	_arguments : \
-		"(format,f)"{--format,-f}"[Format of the resulting archive: tar or zip (default: 'tar')]:format:(tar zip)" \
-		"--dir[Write the archive to this directory (default: '.')]:working dir:_files -/" \
-		":Package:" \
-		":Version:"
+
+_composer () {
+  local curcontext="$curcontext" state line
+  typeset -A opt_args
+  
+  _arguments \
+    '1: :->command'\
+    '*: :->args'
+  if [ -f composer.json ]; then
+    case $state in
+      command)
+        compadd `_composer_get_command_list`
+        ;;
+      *)
+        compadd `_composer_get_required_list`
+        ;;
+    esac
+  else
+   compadd create-project init search selfupdate show
+  fi
 }
 
-_composer_cmd_config() {
-	_arguments : \
-		"(global,g)"{--global,-g}"[Apply command to the global config file]" \
-		"(editor,e)"{--editor,-e}"[Open editor]" \
-		"--unset[Unset the given setting-key]" \
-		"(list,l)"{--list,-l}"[List configuration settings]" \
-		"(file,f)"{--file,-f}"[If you want to choose a different composer.json or config.json (default: 'composer.json')]:config:_files" \
-		":Setting key:" \
-		":Setting value:"
-}
-
-_composer_cmd_create-project() {
-	_arguments : \
-		"(stability,s)"{--stability,-s}"[Minimum-stability allowed (unless a version is specified). (default: 'stable')]:Stability:" \
-		"--prefer-source[Forces installation from package sources when possible, including VCS information.]" \
-		"--prefer-dist[Forces installation from package dist even for dev versions.]" \
-		"--repository-url[Pick a different repository url to look for the package.]" \
-		"--dev[Whether to install dependencies for development.]" \
-		"--no-custom-installers[Whether to disable custom installers.]" \
-		"--no-scripts[Whether to prevent execution of all defined scripts in the root package.]" \
-		"--no-progress[Do not output download progress.]" \
-		"--keep-vcs[Whether to prevent deletion vcs folder.]" \
-		":Package:" \
-		":Destination directory:_files -/" \
-		":Version:"
-}
-
-_composer_cmd_depends() {
-	_arguments : \
-		"--link-type[Link types to show (require, require-dev) (default: \['require','require-dev'\]) (multiple values allowed)]:Link types:(require require-dev)" \
-		":Package:"
-}
-
-_composer_cmd_dumpautoload() {
-	_arguments : \
-		"(optimize,o)"{--optimize,-o}"[Optimizes PSR0 packages to be loaded with classmaps too, good for production.]"
-}
-
-_composer_cmd_dump-autoload() {
-	_arguments : \
-		"*:args:_composer_cmd_dumpautoload"
-}
-
-_composer_cmd_help() {
-	_arguments : \
-		"(- 1 *):command:_composer_cmd"
-}
-
-_composer_cmd_init() {
-	_arguments : \
-		"--name[Name of the package]" \
-		"--description[Description of package]" \
-		"--author[Author name of package]" \
-		"--homepage[Homepage of package]" \
-		"--require[Package to require with a version constraint (e.g. foo/bar:1.0.0 or foo/bar=1.0.0 or \\\"foo/bar 1.0.0\\\")]" \
-		"--require-dev[Package to require for development with a version constraint (e.g. foo/bar:1.0.0 or foo/bar=1.0.0 or \\\"foo/bar 1.0.0\\\")]" \
-		"(stability,s)"{--stability,-s}"[Minimum stability]:Stability:(stable RC beta alpha dev)" \
-		"(license,l)"{--license,-l}"[License of package]"
-}
-
-_composer_cmd_install() {
-	_arguments : \
-		"--prefer-source[Forces installation from package sources when possible, including VCS information.]" \
-		"--prefer-dist[Forces installation from package dist even for dev versions.]" \
-		"--dry-run[Outputs the operations but will not execute anything (implicitly enables --verbose).]" \
-		"--dev[Enables installation of require-dev packages.]" \
-		"--no-dev[Disables installation of require-dev packages (enabled by default, only present for sanity).]" \
-		"--no-custom-installers[Disables all custom installers.]" \
-		"--no-scripts[Skips the execution of all scripts defined in composer.json file.]" \
-		"--no-progress[Do not output download progress.]" \
-		"--verbose[Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug]:Verbosity:(1 2 3)" \
-		"(v,vv,vvv)"{-v,-vv,-vvv}"[Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug]" \
-		"(optimize-autoloader,o)"{--optimize-autoloader,-o}"[Optimize autoloader during autoloader dump]"
-}
-
-_composer_cmd_list() {
-	_arguments : \
-		"--xml[To output help as XML]" \
-		"--format[To output help in other formats]:format:" \
-		"--raw[To output raw command help]" \
-		":Namespace:"
-}
-
-_composer_cmd_require() {
-	_arguments : \
-		"--dev[Add requirement to require-dev.]" \
-		"--prefer-source[Forces installation from package sources when possible, including VCS information.]" \
-		"--prefer-dist[Forces installation from package dist even for dev versions.]" \
-		"--no-progress[Do not output download progress.]" \
-		"--no-update[Disables the automatic update of the dependencies.]" \
-		":Packages (e.g. foo/bar\:1.0.0 or foo/bar=1.0.0 or \"foo/bar 1.0.0\"):" \
-}
-
-_composer_cmd_run-script() {
-	_arguments : \
-		"--dev[Sets the dev mode.]" \
-		"--no-dev[Disables the dev mode.]" \
-		":Script name:"
-}
-
-_composer_cmd_search() {
-	_arguments : \
-		"(only-name,N)"{--only-name,-N}"[Search only in name]" \
-		":Tokens to search for:"
-}
-
-_composer_cmd_show() {
-	_arguments : \
-		"(installed,i)"{--installed,-i}"[List installed packages only]" \
-		"(platform,p)"{--platform,-p}"[List platform packages only]" \
-		"(available,a)"{--available,-a}"[List available packages only]" \
-		"(self,s)"{--self,-s}"[Show the root package information]" \
-		"(name-only,N)"{--name-only,-N}"[List package names only]" \
-		":Package:" \
-		":Version:"
-}
-
-_composer_cmd_status() {
-	_arguments : \
-		"--verbose[Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug]:Verbosity:(1 2 3)" \
-		"(v,vv,vvv)"{-v,-vv,-vvv}"[Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug]"
-}
-
-_composer_cmd_update() {
-	_arguments : \
-		"--prefer-source[Forces installation from package sources when possible, including VCS information.]" \
-		"--prefer-dist[Forces installation from package dist even for dev versions.]" \
-		"--dry-run[Outputs the operations but will not execute anything (implicitly enables --verbose).]" \
-		"--dev[Enables installation of require-dev packages (enabled by default, only present for sanity).]" \
-		"--no-dev[Disables installation of require-dev packages.]" \
-		"--no-custom-installers[Disables all custom installers.]" \
-		"--no-scripts[Skips the execution of all scripts defined in composer.json file.]" \
-		"--no-progress[Do not output download progress.]" \
-		"--verbose[Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug]:Verbosity:(1 2 3)" \
-		"(v,vv,vvv)"{-v,-vv,-vvv}"[Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug]" \
-		"(optimize-autoloader,o)"{--optimize-autoloader,-o}"[Optimize autoloader during autoloader dump]" \
-		":Packages:"
-}
-
-_composer_cmd_validate() {
-	_arguments : \
-		":Json file:_files"
-}
-
-_composer() {
-	if (( CURRENT > 2)); then
-		cmd=${words[2]}
-		# Set the context for the subcommand.
-		curcontext="${curcontext%:*:*}:composer-$cmd"
-		# Narrow the range of words we are looking at to exclude 'composer'
-		(( CURRENT-- ))
-		shift words
-		# Run the completion for the subcommand
-		(( $+functions[_composer_cmd_$cmd] )) && _composer_cmd_$cmd
-	else
-		_arguments : \
-			"--xml[To output help as XML]" \
-			"--format[To output help in other formats]:format:" \
-			"--raw[To output raw command help]" \
-			"(help,h)"{--help,-h}"[Display this help message.]" \
-			"(quite,q)"{--quiet,-q}"[Do not output any message.]" \
-			"--verbose[Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug]:Verbosity:(1 2 3)" \
-			"(v,vv,vvv)"{-v,-vv,-vvv}"[Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug]" \
-			"(version,V)"{--version,-V}"[Display this application version.]" \
-			"--ansi[Force ANSI output.]" \
-			"--no-ansi[Disable ANSI output.]" \
-			"(no-interaction,n)"{--no-interaction,-n}"[Do not ask any interactive question.]" \
-			"--profile[Display timing and memory usage information]" \
-			"(working-dir)"{--working-dir,-d}"[If specified, use the given directory as working directory.]:files:_files -/" \
-			":command:_composer_cmd"
-	fi
-}
-
-_composer "$@"
-
-# Local Variables:
-# mode: Shell-Script
-# sh-indentation: 2
-# indent-tabs-mode: nil
-# sh-basic-offset: 2
-# End:
-# vim: ft=zsh sw=2 ts=2 et
+compdef _composer composer
