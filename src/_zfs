@@ -1,0 +1,597 @@
+#compdef zfs
+# ------------------------------------------------------------------------------
+# Copyright (c) 2014 Github zsh-users - http://github.com/zsh-users
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of the zsh-users nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL ZSH-USERS BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for zfs
+#
+#  Source: https://github.com/zsh-users/zsh/blob/master/Completion/Unix/Command/_zfs
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Rick van Hattem (https://github.com/wolph)
+#
+# ------------------------------------------------------------------------------
+# Synced with the S11U1 man page
+
+_zfs() {
+	local context state line expl
+	typeset -A opt_args
+	local -a subcmds rw_properties rw_propnames ro_properties create_properties
+	local -a share_nfs_ro_properties share_nfs_rw_properties
+	local -a share_smb_ro_properties share_nfs_rw_properties
+	local -a share_ro_properties share_rw_properties
+	local -a difffields delegatable_perms
+
+	subcmds=(
+		"create" "destroy" "clone" "promote" "rename" "snapshot"
+		"rollback" "list" "set" "get" "inherit" "mount" "unmount"
+		"share" "unshare" "send" "receive" "allow" "unallow"
+		"upgrade" "userspace" "groupspace" "hold" "holds" "release"
+		"diff" "key" "help"
+	)
+
+	share_nfs_ro_properties=(
+		"share.nfs.all"
+	)
+
+	share_nfs_rw_properties=(
+		"share.nfs:value:(on off)"
+		"share.nfs.aclok:value:(on off)"
+		"share.nfs.acflfab:value:(on off)"
+		"share.nfs.anon:uid:"
+		"share.nfs.charset.euc-cn:access-list:"
+		"share.nfs.charset.euc-jpms:access-list:"
+		"share.nfs.charset.euc-kr:access-list:"
+		"share.nfs.charset.euc-tw:access-list:"
+		"share.nfs.charset.iso8859-1:access-list:"
+		"share.nfs.charset.iso8859-2:access-list:"
+		"share.nfs.charset.iso8859-5:access-list:"
+		"share.nfs.charset.iso8859-6:access-list:"
+		"share.nfs.charset.iso8859-7:access-list:"
+		"share.nfs.charset.iso8859-8:access-list:"
+		"share.nfs.charset.iso8859-9:access-list:"
+		"share.nfs.charset.iso8859-13:access-list:"
+		"share.nfs.charset.iso8859-15:access-list:"
+		"share.nfs.charset.koi8-r:access-list:"
+		"share.nfs.index:file:_files"
+		"share.nfs.log:nfslog.conf tag:"
+		"share.nfs.nosub:value:(on off)"
+		"share.nfs.nosuid:value:(on off)"
+		"share.nfs.public:value:(on off)"
+		"share.nfs.sec:security-mode-list:"
+		"share.nfs.sec.default.none:access-list:"
+		"share.nfs.sec.default.ro:access-list:"
+		"share.nfs.sec.default.root:access-list:"
+		"share.nfs.sec.default.root_mapping:uid:"
+		"share.nfs.sec.default.rw:access-list:"
+		"share.nfs.sec.default.window:seconds"
+		"share.nfs.sec.dh.none:access-list:"
+		"share.nfs.sec.dh.ro:access-list:"
+		"share.nfs.sec.dh.root:access-list:"
+		"share.nfs.sec.dh.root_mapping:uid:"
+		"share.nfs.sec.dh.rw:access-list:"
+		"share.nfs.sec.dh.window:seconds"
+		"share.nfs.sec.krb5.none:access-list:"
+		"share.nfs.sec.krb5.ro:access-list:"
+		"share.nfs.sec.krb5.root:access-list:"
+		"share.nfs.sec.krb5.root_mapping:uid:"
+		"share.nfs.sec.krb5.rw:access-list:"
+		"share.nfs.sec.krb5.window:seconds"
+		"share.nfs.sec.krb5i.none:access-list:"
+		"share.nfs.sec.krb5i.ro:access-list:"
+		"share.nfs.sec.krb5i.root:access-list:"
+		"share.nfs.sec.krb5i.root_mapping:uid:"
+		"share.nfs.sec.krb5i.rw:access-list:"
+		"share.nfs.sec.krb5i.window:seconds"
+		"share.nfs.sec.krb5p.none:access-list:"
+		"share.nfs.sec.krb5p.ro:access-list:"
+		"share.nfs.sec.krb5p.root:access-list:"
+		"share.nfs.sec.krb5p.root_mapping:uid:"
+		"share.nfs.sec.krb5p.rw:access-list:"
+		"share.nfs.sec.krb5p.window:seconds"
+		"share.nfs.sec.none.none:access-list:"
+		"share.nfs.sec.none.ro:access-list:"
+		"share.nfs.sec.none.root:access-list:"
+		"share.nfs.sec.none.root_mapping:uid:"
+		"share.nfs.sec.none.rw:access-list:"
+		"share.nfs.sec.none.window:seconds"
+		"share.nfs.sec.sys.none:access-list:"
+		"share.nfs.sec.sys.ro:access-list:"
+		"share.nfs.sec.sys.root:access-list:"
+		"share.nfs.sec.sys.root_mapping:uid:"
+		"share.nfs.sec.sys.rw:access-list:"
+		"share.nfs.sec.sys.window:seconds"
+	)
+
+	share_smb_ro_properties=(
+		"share.smb.all"
+	)
+
+	share_smb_rw_properties=(
+		"share.smb:value:(on off)"
+		"share.smb.ad-container"
+		"share.smb.abe"
+		"share.smb.csc:value:(disabled manual auto vdo)"
+		"share.smb.catia:value:(on off)"
+		"share.smb.dfsroot:value:(on off)"
+		"share.smb.guestok:value:(on off)"
+		"share.smb.ro:access-list:"
+		"share.smb.rw:access-list:"
+		"share.smb.none:access-list:"
+	)
+
+	share_ro_properties=(
+		"share.all"
+		"share.fs"
+		"share.name"
+		"share.point"
+		"share.protocols"
+		"share.state"
+		$share_nfs_ro_properties
+		$share_smb_ro_properties
+	)
+
+	share_rw_properties=(
+		"share.desc:description:"
+		"share.noauto:value:(on off)"
+		"share.path:path:"
+		$share_nfs_rw_properties
+		$share_smb_rw_properties
+	)
+
+	# TODO: userused@ and groupused@ could have more extensive handling
+	ro_properties=(
+		"name" "type" "creation" "used" "available" "referenced"
+		"compressratio" "mounted" "origin" "usedbychildren"
+		"usedbydataset" "usedbyrefreservation" "usedbysnapshots"
+		"defer_destroy" "userused@" "userrefs" "groupused@"
+		"keychangedate" "keystatus" "rekeydate"
+		$share_ro_properties
+	)
+
+	# TODO: Be cleverer about what values can be set.  Is there any way to
+	# set the sorting for *size properties to false by default?
+	rw_properties=(
+		"aclinherit:value:(discard noallow restricted passthrough passthrough-x)"
+		"aclmode:value:(discard mask passthrough)"
+		"atime:value:(on off)"
+		"canmount:value:(on off noauto)"
+		"checksum:value:(on off fletcher2 fletcher4 sha256 sha256+mac)"
+		"compression:value:(on off lzjb gzip gzip-{1..9} zle)"
+		"copies:value:(1 2 3)"
+		"dedup:value:(on off verify sha256 sha256,verify)"
+		"devices:value:(on off)"
+		"encryption:value:(off on aes128-ccm aes-192-ccm aes-256-ccm aes-128-gcm aes-192-gcm aes-256-gcm)"
+		"exec:value:(on off)"
+		"groupquota@:value:" # TODO: complete group=size|none
+		"keysource:value:_zfs_keysource_props"
+		"logbias:value:(latency throughput)"
+		"mlslabel:value:(none)" # TODO: list sensitivity labels
+		"mountpoint:path, 'legacy', or 'none':{if [[ -prefix /* ]]; then _path_files -/; else _wanted mountpoints expl 'mountpoint (type \"/\" to start completing paths)' compadd legacy none; fi}"
+		"multilevel:value:(on off)"
+		"nbmand:value:(on off)"
+		"primarycache:value:(all none metadata)"
+		"quota:number or 'none':{if [[ -prefix [0-9]## ]]; then _message -e 'number'; elif [[ $PREFIX == quota= ]]; then _wanted none expl 'number or none' compadd none; else _wanted none expl 'quota' compadd none; fi}"
+		"readonly:value:(on off)"
+		"recordsize:value:(512 1K 2K 4K 8K 16K 32K 64K 128K 256K 512K 1M)"
+		"refquota:number or 'none':{if [[ -prefix [0-9]## ]]; then _message -e 'number'; elif [[ $PREFIX == refquota= ]]; then _wanted none expl 'number or none' compadd none; else _wanted none expl 'refquota' compadd none; fi}"
+		"refreservation:number or 'none':{if [[ -prefix [0-9]## ]]; then _message -e 'number'; elif [[ $PREFIX == refreservation= ]]; then _wanted none expl 'number or none' compadd none; else _wanted none expl 'refreservation' compadd none; fi}"
+		"reservation:value:{if [[ -prefix [0-9]## ]]; then _message -e 'number'; elif [[ $PREFIX == reservation= ]]; then _wanted none expl 'number or none' compadd none; else _wanted none expl 'reservation' compadd none; fi}"
+		"rstchown:value:(on off)"
+		"secondarycache:value:(all none metadata)"
+		"setuid:value:(on off)"
+		"shadow:value:" # TODO: complete URI|none
+		"share:share properties:"
+		"snapdir:value:(hidden visible)"
+		"sync:value:(standard always disabled)"
+		"userquota@:value:" # TODO: complete user=size|none
+		"version:value:(1 2 3 4 current)"
+		"volsize:value:" # <size>
+		"vscan:value:(on off)"
+		"xattr:value:(on off)"
+		"zoned:value:(on off)"
+		$share_rw_properties
+	)
+
+	create_properties=(
+		$rw_properties
+		"casesensitivity:value:(sensitive insensitive mixed)"
+		"normalization:value:(none formC formD formKC formKD)"
+		"utf8only:value:(on off)"
+		"volblocksize:value:(512 1K 2K 4K 8K 16K 32K 64K 128K 256K 512K 1M)"
+	)
+
+	delegatable_perms=(
+		"allow" "clone" "create" "destroy" "diff" "hold" "key"
+		"keychange" "mount" "promote" "receive" "release" "rename"
+		"rollback" "send" "share" "snapshot"
+		"groupused" "userused" "userprop"
+		${create_properties%%:*}
+	)
+
+	rw_propnames=( ${rw_properties%%:*} )
+
+	difffields=(
+		object parent size links linkschange name oldname user group
+		ctime mtime atime crtime
+	)
+
+	if [[ $service == "zfs" ]]; then
+		_arguments -C -A "-*" \
+			'-\?[Help]' \
+			'*::command:->subcmd' && return 0
+
+		if (( CURRENT == 1 )); then
+			_wanted commands expl "zfs subcommand" compadd -a subcmds
+			return
+		fi
+		service="$words[1]"
+		curcontext="${curcontext%:*}=$service:"
+	fi
+
+	case $service in
+	("create")
+		_arguments -A "-*" \
+			'-p[Create parent datasets]' \
+			'-u[Filesystem is not mounted]' \
+			'-o[Set initial properties]:property:_values -s , "property" $create_properties' \
+			- set1 \
+			':filesystem:_zfs_dataset -t fs -e "parent dataset"' \
+			- set2 \
+			'-s[Create sparse volume]' \
+			'-b[Set volblocksize]:blocksize:' \
+			'-V[Set size]:size:' \
+			':volume:_zfs_dataset -t fs -e "parent dataset"'
+		;;
+
+	("destroy")
+		_arguments -A "-*" \
+			'-r[Recursively destroy all children]' \
+			'-R[Recursively destroy all dependents]' \
+			'-n[Do a dry run (No-op)]' \
+			'-p[Display numbers exactly]' \
+			'-v[Verbose]' \
+			- set1 \
+			'-d[delete or mark deferred]' \
+			':snapshot:_zfs_dataset -t snap' \
+			- set2 \
+			'-f[Force unmounts]' \
+			':filesystem/volume/snapshot:_zfs_dataset -t fs -t vol'
+		;;
+
+	("snapshot")
+		_arguments -A "-*" \
+			'-r[Recursively snapshot all descendant datasets]' \
+			'-o[Set property]:property:_values -s , "property" $create_properties' \
+			':filesystem/volume:_zfs_dataset -t fs -t vol -S@'
+		;;
+
+	("rollback")
+		_arguments -A "-*" \
+			'-r[Recursively destroy more recent snapshots]' \
+			'-R[Recursively destroy more recent snapshots and clones]' \
+			'-f[Force unmounts]' \
+			':snapshot:_zfs_dataset -t snap'
+		;;
+
+	("clone")
+		# XXX needs to bail if there are no snapshots
+		_arguments -A "-*" \
+			'-p[Create parent datasets]' \
+			'-K[Create encryption key]' \
+			'-o[Set property]:property:_values -s , "property" $create_properties' \
+			':snapshot:_zfs_dataset -t snap' \
+			':filesystem/volume:_zfs_dataset -t fs -e "parent dataset"'
+		;;
+
+	("promote")
+		_arguments \
+			':filesystem:_zfs_dataset -t clone' \
+		;;
+
+	("rename")
+		_arguments -A "-*" \
+			'(-r)-p[Create parent datasets]' \
+			'(-p)-r[Recursively rename snapshots of all descendent datasets]' \
+			'-u[Do not remount file systems]' \
+			'-f[Force unmounts]' \
+			':dataset:_zfs_dataset -r1' \
+			':dataset:_zfs_dataset -r2'
+		;;
+
+	("list")
+		_arguments -A "-*" \
+			'-r[Recursively display children]' \
+			'-H[Scripting mode]' \
+			'-d[Depth]:value:' \
+			'-o[Properties to list]:property:_values -s , "property" $ro_properties $rw_propnames' \
+			'*-s[Sort key (ascending)]:property:_values "property" $ro_properties $rw_propnames' \
+			'*-S[Sort key (descending)]:property:_values "property" $ro_properties $rw_propnames' \
+			'-t[Dataset types to list]:dataset type:_values -s , "dataset type" all filesystem snapshot volume' \
+			'*:filesystem/volume/snapshot/path:_zfs_dataset -p'
+		;;
+
+	("set")
+		_arguments \
+			'-r[Recursively apply value]' \
+			':property:_values -s , "property" $rw_properties' \
+			'*:filesystem/volume:_zfs_dataset -t fs -t vol'
+		;;
+
+	("get")
+		_arguments -A "-*" \
+			"-r[Recursively display children's properties]" \
+			'-d[Depth]:value:' \
+			'-H[Scripting mode]' \
+			'-p[Display numbers exactly]' \
+			'-s[Specify sources]:source:_values -s , "source" local default inherited temporary none' \
+			'-o[Specify fields]:field:_values -s , "field" name property value source' \
+			':property:_values -s , "property" $ro_properties $rw_propnames all' \
+			'*:filesystem/volume/snapshot:_zfs_dataset'
+		;;
+
+	("inherit")
+		_arguments -A "-*" \
+			'-r[Recursively inherit property for all children]' \
+			'-S[Revert to received property value]' \
+			':property:_values -s , "property" $ro_properties $rw_properties' \
+			'*:filesystem/volume:_zfs_dataset -t fs -t vol'
+		;;
+
+	("userspace"|"groupspace")
+		_arguments -A "-*" \
+			'-n[Print numeric ID]' \
+			'-H[Tab-delimited output with no headers]' \
+			'-p[Parseable mode]' \
+			'-o[Properties to list]:property:_values -s , "property" type name used quota' \
+			'*-s[Sort key (ascending)]:property:_values "property" type name used quota' \
+			'*-S[Sort key (descending)]:property:_values "property" type name used quota' \
+			'-t[Types to list]:type:_values -s , "type" all posixuser smbuser posixgroup smbgroup' \
+			'-i[Translate SID to POSIX ID]' \
+			'*:filesystem/volume/snapshot:_zfs_dataset'
+		;;
+
+	("mount")
+		_arguments -A "-*" \
+			'-o[Mount options]:mount options:_values -s , "option" {,no}{devices,exec,setuid} ro rw' \
+			'-O[Overlay mount]' \
+			'-v[Report mount progress]' \
+			- set1 \
+			':filesystem:_zfs_dataset -t fs' \
+			- set2 \
+			'-a[Mount all available ZFS filesystems]'
+		;;
+
+	("unmount")
+		_arguments -A "-*" \
+			- set1 \
+			'-f[Force unmount]' \
+			':filesystem:_zfs_dataset -t fs -t mtpt' \
+			- set2 \
+			'-a[Unmount all ZFS filesystems]'
+		;;
+
+	("share")
+		_arguments -A "-*" \
+			- set1 \
+			'-a[Share all available ZFS filesystems]' \
+			- set2 \
+			'-r[Share filesystems recursively]' \
+			':filesystem:_zfs_dataset -t fs' \
+			- set3 \
+			'*-o[Create a share with these properties]:property:_values -w "share properties" $share_rw_properties' \
+			'-u[Create a share without sharing it]' \
+			':filesystem:_zfs_dataset -t fs' \
+			- set4 \
+			':filesystem:_zfs_dataset -t fs -t mtpt -t share'
+		;;
+
+	("unshare")
+		_arguments -A "-*" \
+			- set1 \
+			'-a[Unshare all shared ZFS filesystems]' \
+			- set2 \
+			'-r[Unshare filesystems recursively]' \
+			':filesystem:_zfs_dataset -t fs' \
+			- set3 \
+			':filesystem:_zfs_dataset -t fs -t mtpt -t share'
+		;;
+
+	("send")
+		_arguments -A "-*" \
+			'-b' \
+			'-i[Generate an incremental stream]:snapshot:_zfs_dataset -t snap' \
+			'-D[Perform dedup processing]' \
+			'-p[Send properties]' \
+			'-n[Do a dry run (No-op)]' \
+			'-P[Display numbers exactly]' \
+			'-v[Verbose]' \
+			- set1 \
+			'-I[Generate an incremental stream with intermediary snapshots]:snapshot:_zfs_dataset -t snap' \
+			'-R[Generate a replication stream package]' \
+			':snapshot:_zfs_dataset -t snap' \
+			- set2 \
+			'-c[Create a self-contained stream]' \
+			'-r[Generate a recursive stream package]' \
+			':snapshot:_zfs_dataset -t snap'
+		;;
+
+	("receive")
+		_arguments -A "-*" \
+			'-v[Verbose]' \
+			'-n[Do not receive the stream]' \
+			'-F[Force a rollback if necessary]' \
+			'-u[Filesystem is not mounted]' \
+			'-o[Include property change in the stream]::' \
+			'-x[Exclude property change from the stream]:property:' \
+			- set1 \
+			':filesystem/volume/snapshot:_zfs_dataset' \
+			- set2 \
+			'(-e)-d[Set path prefix from stream, excluding only pool name]' \
+			'(-d)-e[Set path prefix from stream, using last path element]' \
+			'-:filesystem:_zfs_dataset -t fs'
+		;;
+
+	("allow")
+		_arguments -A "-*" \
+			- set1 \
+			':filesystem/volume:_zfs_dataset -t fs -t vol' \
+			- set2 \
+			'(-g)-u[User]:user:_users' \
+			'(-u)-g[Group]:group:_groups' \
+			'-l[Allow for named dataset]' \
+			'-d[Allow for descendent datasets]' \
+			':permissions or sets:_values -s , "permission or set" $delegatable_perms' \
+			':filesystem/volume:_zfs_dataset -t fs -t vol' \
+			- set3 \
+			'-e[Everyone]' \
+			'-l[Allow for named dataset]' \
+			'-d[Allow for descendent datasets]' \
+			':permissions or sets:_values -s , "permission or set" $delegatable_perms' \
+			':filesystem/volume:_zfs_dataset -t fs -t vol' \
+			- set4 \
+			'-c[Create-time permissions]' \
+			':permissions or sets:_values -s , "permission or set" $delegatable_perms' \
+			':filesystem/volume:_zfs_dataset -t fs -t vol' \
+			- set5 \
+			'-s[Define or modify permission sets]' \
+			':setname:' \
+			':permissions or sets:_values -s , "permission or set" $delegatable_perms' \
+			':filesystem/volume:_zfs_dataset -t fs -t vol'
+		;;
+
+	("unallow")
+		_arguments -A "-*" \
+			'-r[Recursive removal]' \
+			- set1 \
+			'-s[Remove permissions from or delete a permission set]:permission set:' \
+			':permissions or sets:_values -s , "permission or set" $delegatable_perms' \
+			':filesystem/volume:_zfs_dataset -t fs -t vol' \
+			- set2 \
+			'(-g)-u[User]:user:_users' \
+			'(-u)-g[Group]:group:_groups' \
+			'-l[Allow for named dataset]' \
+			'-d[Allow for descendent datasets]' \
+			':permissions or sets:_values -s , "permission or set" $delegatable_perms' \
+			':filesystem/volume:_zfs_dataset -t fs -t vol' \
+			- set3 \
+			'-e[Everyone]' \
+			'-l[Allow for named dataset]' \
+			'-d[Allow for descendent datasets]' \
+			':permissions or sets:_values -s , "permission or set" $delegatable_perms' \
+			':filesystem/volume:_zfs_dataset -t fs -t vol' \
+			- set4 \
+			'-c[Create-time permissions]' \
+			':permissions or sets:_values -s , "permission or set" $delegatable_perms' \
+			':filesystem/volume:_zfs_dataset -t fs -t vol'
+		;;
+
+	("upgrade")
+		_arguments -A "-*" \
+			- set1 \
+			'-v[Verbose]' \
+			- set2 \
+			'-a[Upgrade all filesystems on all pools]' \
+			'-r[Upgrade descendent filesystems, too]' \
+			'-V[Upgrade to specified version]:version:(1 2)' \
+			- set3 \
+			'-r[Upgrade descendent filesystems, too]' \
+			'-V[Upgrade to specified version]:version:(1 2)' \
+			':filesystem:_zfs_dataset -t fs'
+		;;
+
+	("hold")
+		_arguments -A "-*" \
+			'-r[Apply hold recursively]' \
+			':tag:' \
+			':snapshot:_zfs_dataset -t snap'
+		;;
+
+	("holds")
+		_arguments -A "-*" \
+			'-r[List holds recursively]' \
+			':snapshot:_zfs_dataset -t snap'
+		;;
+
+	("release")
+		_arguments -A "-*" \
+			'-r[Release holds recursively]' \
+			':tag:' \
+			':snapshot:_zfs_dataset -t snap'
+		;;
+
+	("diff")
+		_arguments -A "-*" \
+			'-F[Add column for filetype character]' \
+			'-H[Parseable output]' \
+			'-e[Only show new and changed files]' \
+			'*-o[Show fields]:field:_values "field" $difffields' \
+			'-t[Add column for ctime]' \
+			- set1 \
+			':snapshot:_zfs_dataset -t snap' \
+			':snapshot or filesystem:_zfs_dataset -t snap -t fs' \
+			- set2 \
+			'-E[Show difference from empty]' \
+			':snapshot or filesystem:_zfs_dataset -t snap -t fs'
+		;;
+
+	("key")
+		_arguments -A "-*" \
+			- set1 \
+			'-a[Apply to all datasets in all pools]' \
+			'(-u -K -f)-l[Load the encryption key]' \
+			'(-l -K)-u[Unload the encryption key]' \
+			'(-l -u -f)-K[Create a new data encryption key]' \
+			'(-l -K)-f[Unmount the dataset before unloading the encryption key]' \
+			'-r[Apply recursively]' \
+			':filesystem or volume:_zfs_dataset -t fs -t vol' \
+			- set2 \
+			'-c[Change the encryption key]' \
+			'-o[Change a property]:property:_zfs_keysource_props' \
+			':filesystem or volume:_zfs_dataset -t fs -t vol'
+		;;
+
+	("help")
+		_arguments -A "-*" \
+			- set1 \
+			':command:($subcmds $delegatable_perms $ro_properties ${rw_properties%%:*} properties)' \
+			- set2 \
+			'-l[Display property information]' \
+			': :(properties)'
+		;;
+
+	(*)
+		_message "unknown zfs subcommand: $service"
+		;;
+	esac
+}
+
+_zfs "$@"
