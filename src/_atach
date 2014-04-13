@@ -1,9 +1,9 @@
-#compdef attach
+#compdef atach
 # ------------------------------------------------------------------------------
 # Description
 # -----------
 #
-#  Completion script for attach (http://github.com/sorin-ionescu/attach).
+#  Completion script for atach (https://github.com/sorin-ionescu/atach).
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -21,7 +21,7 @@ mode_values=(
   "winch:use sigwinch to redraw"
 )
 
-existing_sessions=($(_call_program session attach))
+existing_sessions=($(_call_program session atach))
 
 _arguments -C -s -S \
   '(--list -l)'{--list,-l}'[list sessions]' \

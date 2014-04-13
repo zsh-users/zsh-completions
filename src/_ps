@@ -1,0 +1,102 @@
+#compdef ps
+
+# This works with procps version 3.2.8 
+
+local context state state_descr line
+typeset -A opt_args
+local filterexcl="(-A -a -C -d -e -g -G --group --Group -p --pid --ppid -s --sid -t --tty -u -U --user --User)"
+
+_arguments -s -w \
+    "$filterexcl-A[all processes]"\
+    "$filterexcl-a[all w/ tty except session leaders]"\
+    "--cumulative[include some dead child process data (as a sum with the parent)]"\
+    "(-f -F --format -l -o -O)--context[display security context format (for SE Linux)]"\
+    "-c[show different scheduler information]"\
+    "$filterexcl-C[by command name]:processes:->pname"\
+    "(--columns)--cols[set screen width]:width:( )"\
+    "(--cols)--columns[set screen width]:width:( )"\
+    "--deselect[negate selection]"\
+    "$filterexcl-d[all except session leaders]"\
+    "$filterexcl-e[all processes]"\
+    "--forest[ASCII art process tree]"\
+    "(--context -F --format -o -O)-f[full format listing]"\
+    "(--context -f --format -o -O)-F[extra full format]"\
+    "(--context -f -F -j -l -o -O)--format[user-defined format]:output format:->format"\
+    "$filterexcl-g[by session OR by effective group name]:groups:_groups"\
+    "$filterexcl-G[by real group ID (supports names)]:groups:->rgid"\
+    "$filterexcl--group[by session OR by effective group name]:groups:_groups"\
+    "$filterexcl--Group[by real group ID (supports names)]:groups:->rgid"\
+    "-H[show process hierarchy]"\
+    "(--no-heading)--heading[repeat header lines, one per page of output]"\
+    "-j[jobs format]"\
+    "-l[long format. the -y option is often useful with this]"\
+    "-L[show threads, possibly with LWP and NLWP columns]"\
+    "-m[show threads after processes]"\
+    "-M[add a column of security data]"\
+    "-N[negate selection]"\
+    "(--heading --header)--no-heading[omit header lines]"\
+    "(--context -f -F --format -j -l)-o[user-defined format]:output format:->format"\
+    "(--context -f -F --format -j -l)-O[preloaded -o (user-defined with some)]:output format:->format"\
+    "$filterexcl-p[by process ID]:process IDs:->pid"\
+    "$filterexcl--pid[by process ID]:process IDs:->pid"\
+    "$filterexcl--ppid[select by parent process ID]:process IDs:->ppid"\
+    "--rows[set screen height.]:height:( )"\
+    "$filterexcl-s[by session IDs]:sessions:->sid"\
+    "$filterexcl--sid[by session IDs]:sessions:->sid"\
+    "--sort[specify sorting order]:sort specs:->sortspec"\
+    "$filterexcl-t[by tty]:ttys:->tty"\
+    "-T[show threads, possibly with SPID column]"\
+    "$filterexcl--tty[by tty]:ttys:->tty"\
+    "$filterexcl-u[by effective user ID (supports names)]:users:_users"\
+    "$filterexcl-U[by real user ID (supports names)]:users:_users"\
+    "$filterexcl--user[by effective user ID (supports names)]:users:_users"\
+    "$filterexcl--User[by real user ID (supports names)]:users:_users"\
+    "(--version)-V[print the procps version]"\
+    "(-V)--version[print the procps version]"\
+    "-w[wide output]"\
+    "-y[use with -l, do not show flags, show rss in place of addr]"\
+    "1:BSD-style options (complete - to see unix & gnu-style options):((T\:'all processes on this terminal' a\:'all w/ tty, including other users' r\:'only running processes' x\:'processes w/o controlling ttys' t\:'list by tty' j\:'BSD jobs control format' l\:'BSD long format' s\:'signal format' v\:'virtual memory format' u\:'user-oriented format' X\:'register format' L\:'list format codes' S\:'sum info of children into parents' c\:'true command name' n\:'numeric WCHAN & UID' H\:'show threads as if they were processes' U\:'by effective user ID' p\:'by process ID'))"\
+    - debug "--info[print debugging info]"
+
+case "$state" in
+    pid)
+        _values -s , 'process id' "${(uonzf)$(ps -A o pid=)}"
+        ;;
+    rgid)
+        _values -s , 'process group id' "${(uonzf)$(ps -A o rgid=)}"
+        ;;
+    pname)
+        local ispat="pattern matching "
+        if (( ${+opt_args[-x]} ))
+        then
+            ispat=""
+        fi
+        if (( ${+opt_args[-f]} ))
+        then
+            _wanted pname expl $ispat'process command line' compadd ${(u)${(f)"$(ps -A o cmd=)"}}
+        else
+            _wanted pname expl $ispat'process name' compadd ${(u)${(f)"$(ps -A co cmd=)"}}
+        fi
+    ;;
+    sid)
+        _values -s , 'session id' "${(uonzf)$(ps -A o sid=)}"
+    ;;
+    tty)
+        local -a ttys
+        ttys=( /dev/tty*(N) /dev/pts/*(N) )
+        _values -s , 'terminal device' ${ttys#/dev/}
+        ;;
+    ppid)
+        _values -s , 'parent process id' "${(uonzf)$(ps -A o ppid=)}"
+        ;;
+    sortspec)
+        _values -s , 'format specifier (prefix with - for decreasing order)' "${(uozf)$(ps L|cut -f 1 -d" ")}"
+        ;;
+    format)
+        _values -s , 'format specifier' "${(uozf)$(ps L|cut -f 1 -d" ")}"        
+        ;;
+esac
+
+# Local Variables: 
+# mode:shell-script
+# End:             

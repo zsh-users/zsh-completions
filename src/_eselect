@@ -59,7 +59,7 @@ _eselect_env() {
 _eselect_binutils() {
     local binutilslist
         if (( $words[(I)(set)] )); then
-            binutilslist=(${${${(M)${(f)"$(eselect --no-color binutils list)"}## *}// \**/}//(  \[*\]   |  \[*\]  )/})
+            binutilslist=(${${${(M)${(f)"$(eselect --colour=no binutils list)"}## *}// \**/}//(  \[*\]   |  \[*\]  )/})
             _values 'available binutils version' $binutilslist[@] && return 0
         fi
         _values 'binutils options' $stdopts[@] \
@@ -71,7 +71,7 @@ _eselect_binutils() {
 _eselect_kernel() {
     local kernellist
         if (( $words[(I)(set)] )); then
-            kernellist=(${${${(M)${(f)"$(eselect --no-color kernel list)"}## *}// \**/}//(  \[*\]   |  \[*\]  )/})
+            kernellist=(${${${(M)${(f)"$(eselect --colour=no kernel list)"}## *}// \**/}//(  \[*\]   |  \[*\]  )/})
             _values 'available kernel version' $kernellist[@] && return 0
         fi
         _values 'kernel options' $stdopts[@] \
@@ -82,7 +82,7 @@ _eselect_kernel() {
 _eselect_ctags() {
     local ctagslist
         if (( $words[(I)(set)] )); then
-            ctagslist=(${${${(M)${(f)"$(eselect --no-color ctags list)"}## *}// \**/}//(  \[*\]   |  \[*\]  )/})
+            ctagslist=(${${${(M)${(f)"$(eselect --colour=no ctags list)"}## *}// \**/}//(  \[*\]   |  \[*\]  )/})
             _values 'available ctags version' $ctagslist[@] && return 0
         fi
         _values 'ctags options' $stdopts[@] \
@@ -94,7 +94,7 @@ _eselect_ctags() {
 _eselect_profile() {
     local profilelist
         if (( $words[(I)(set)] )); then
-            profilelist=(${${${(M)${(f)"$(eselect --no-color profile list)"}## *}// \**/}//(  \[*\]   |  \[*\]  )/})
+            profilelist=(${${${(M)${(f)"$(eselect --colour=no profile list)"}## *}// \**/}//(  \[*\]   |  \[*\]  )/})
             _values -w 'available profiles' $profilelist[@] \
                 '--force[Forcibly set the symlink]' && return 0
         fi
@@ -106,10 +106,10 @@ _eselect_profile() {
 _eselect_fontconfig() {
     local fclistenabled fclistdisabled
         if (( $words[(I)(enable)] )); then
-            fclistdisabled=(${${${${(M)${(f)"$(eselect --no-color fontconfig list)"}## *}#*\*}// \**/}//(  \[*\]   |  \[*\]  )/})
+            fclistdisabled=(${${${${(M)${(f)"$(eselect --colour=no fontconfig list)"}## *}#*\*}// \**/}//(  \[*\]   |  \[*\]  )/})
             _values -w '.conf to enable' $fclistdisabled[@] && return 0
         elif (( $words[(I)(disable)] )); then
-            fclistenabled=(${${${(M)${(M)${(f)"$(eselect --no-color fontconfig list)"}## *}#*\*}// \**/}//(  \[*\]   |  \[*\]  )/})
+            fclistenabled=(${${${(M)${(M)${(f)"$(eselect --colour=no fontconfig list)"}## *}#*\*}// \**/}//(  \[*\]   |  \[*\]  )/})
             _values -w '.conf to disable' $fclistenabled[@] && return 0
         fi
         _values 'fontconfig options' $stdopts[@] \
@@ -120,7 +120,7 @@ _eselect_fontconfig() {
 _eselect_opengl() {
     local opengllist
         if (( $words[(I)(set)] )); then
-            opengllist=(${${${(M)${(f)"$(eselect --no-color opengl list)"}## *}// \**/}//(  \[*\]   |  \[*\]  )/})
+            opengllist=(${${${(M)${(f)"$(eselect --colour=no opengl list)"}## *}// \**/}//(  \[*\]   |  \[*\]  )/})
             _values -w 'opengl implementations and options' $opengllist[@] \
                 '--use-old[If an implementationis already set, use that one instead]' \
                 '--prefix[Set the source prefix]:path:_files -/' \
@@ -135,7 +135,7 @@ _eselect_opengl() {
 _eselect_vi() {
     local vilist
         if (( $words[(I)(set)] )); then
-            vilist=(${${${(M)${(f)"$(eselect --no-color vi list)"}## *}// \**/}//(  \[*\]   |  \[*\]  )/})
+            vilist=(${${${(M)${(f)"$(eselect --colour=no vi list)"}## *}// \**/}//(  \[*\]   |  \[*\]  )/})
             _values -w 'vi implementation' $vilist[@] && return 0
         elif (( $words[(I)(update)] )); then
             _values -w 'option' '--if-unset[Do not override existing implementation]' && return 0
@@ -172,7 +172,7 @@ _eselect_news() {
             _values -w 'news' 'new[Count only new news items]' 'all[Count all news items]' && return 0
         fi
 
-        newslist=(${${${${${${${(M)${(f)"$(eselect --no-color news list)"}## *}// \**/}/  \[/}/\] ##/\[}/%/]}/ \[/ (}/\] /) })
+        newslist=(${${${${${${${(M)${(f)"$(eselect --colour=no news list)"}## *}// \**/}/  \[/}/\] ##/\[}/%/]}/ \[/ (}/\] /) })
 
         if (( $words[(I)(read)] )); then
             newslist+=( "new[Read unread news items (default)]" "all[Read all news items]" "--mbox[Output in mbox format]" "--quiet[Suppress output, only change status]" "--raw[Output in raw format]" )
@@ -194,34 +194,35 @@ _eselect() {
         'version[Display version information]'
     )
     globopts=(
-            '--no-colour[Disable coloured output]'
-            '--no-color[Disable coloured output]'
+            '--brief[Make output shorter]'
+            '--colour=no[Disable colour output (default "auto")]'
+            '--colour=yes[Enable colour output (default "auto")]'
             )
-    modnames=(${${${(M)${(f)"$(eselect --no-color list-modules)"}## *}//   */}//  /})
+    modnames=(${${${(M)${(f)"$(eselect --colour=no modules list)"}## *}//   */}//  /})
     if ((CURRENT == 2)); then
         _arguments -s \
             "$globopts[@]" \
             "*:portage:_values 'eselect modules' \$modnames[@]" && return 0
     elif ((CURRENT == 3)); then
-        if [[ $words[2] == --no-colour || $words[2] == --no-color ]]; then
+        if [[ $words[2] =~ "--colour" || $words[2] =~ "--brief" ]]; then
             _arguments -s \
                 "*:portage:_values 'eselect modules' \$modnames[@]" && return 0
         elif (( $modnames[(I)$words[2]] )); then
             if [[ "$words[2]" == (env|binutils|kernel|ctags|profile|fontconfig|opengl|vi|news) ]]; then
                 _eselect_$words[2] "$@"
             else
-                modopts=(${${${${(M)${(f)"$(eselect --no-color $words[2] usage)"}## *}//   */}//  /}// */})
+                modopts=(${${${${(M)${(f)"$(eselect --colour=no $words[2] usage)"}## *}//   */}//  /}// */})
                 _arguments -s \
                     "*:portage:_values 'eselect $words[2] options' \$modopts[@]" && return 0
             fi
         fi
     elif ((CURRENT >= 4)); then
-        if (( $words[(I)(--no-color|--no-colour)] )); then
+        if (( $words[(I)(--colour=no|--colour=yes|--brief)] )); then
             if (( $modnames[(I)$words[3]] )); then
                 if [[ "$words[3]" == (env|binutils|kernel|ctags|profile|fontconfig|opengl|vi|news) ]]; then
                     _eselect_$words[3] "$@"
                 else
-                    modopts=(${${${${(M)${(f)"$(eselect --no-color $words[3] usage)"}## *}//   */}//  /}// *})
+                    modopts=(${${${${(M)${(f)"$(eselect --colour=no $words[3] usage)"}## *}//   */}//  /}// *})
                     _arguments -s \
                         "*:portage:_values 'eselect $words[3] options' \$modopts[@]" && return 0
                 fi
