@@ -1,0 +1,18 @@
+#compdef hoogle
+
+# zsh completion for hoogle
+
+_arguments -s -w \
+  "(-?)--help[Display help message]" \
+  "(--help)-?[Display help message]" \
+  "(-V)--version[Print version information]" \
+  "(--version)-V[Print version information]" \
+  "(-v)--verbose[Loud verbosity]" \
+  "(--verbose)-v[Loud verbosity]" \
+  "(-q)--quiet[Quiet verbosity]" \
+  "(--quiet)-q[Quiet verbosity]" \
+  "1:Commands:((\:'Perform a search (enter search term)' data\:'Generate Hoogle databases' server\:'Start a Hoogle server' combine\:'Combine multiple databases into one' convert\:'Convert an input file to a database' test\:'Run tests' dump\:'Dump sections of a database to stdout' rank\:'Generate ranking information' log\:'Analyse log files'))"
+
+# Local Variables: 
+# mode:shell-script
+# End:             
