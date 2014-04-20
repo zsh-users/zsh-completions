@@ -50,9 +50,14 @@ _cabal ()
 
   if (( $#WORDS == 1 )); then
     _arguments \
-    {-h,--help}'[Show help]' \
-    {-V,--version}'[Print version information]' \
-    '--numeric-version[Print just the version number]' \
+    {-h,--help}'[show help]' \
+    {-V,--version}'[print version information]' \
+    '--numeric-version[print just the version number]' \
+    '--config-file=[set an alternate location for the config file]:config file:_files' \
+    '--sandbox-config-file=[set an alternate location for the sandbox config file]:config file:_files' \
+    '--require-sandbox[enable requiring the presence of a sandbox for sandbox-aware commands]' \
+    '--no-require-sandbox[disable requiring the presence of a sandbox for sandbox-aware commands]' \
+    '--ignore-sandbox[ignore any existing sandbox]' \
     '*::command:_cabal_command'
   else
     _arguments '*::command:_cabal_command'
@@ -68,6 +73,7 @@ _cabal_command ()
     'list:list packages matching a search string'
     'info:display detailed information about a particular package'
     'fetch:downloads packages for later installation'
+    'freeze:freeze dependencies'
     "get:get a package's source code"
     'check:check the package for common mistakes'
     'sdist:generate a source distribution file (.tar.gz)'
@@ -76,11 +82,12 @@ _cabal_command ()
     'run:runs the compiled executable'
     'init:interactively create a .cabal file'
     'configure:prepare to build the package'
-    'build:make this package ready for installation'
+    'build:compile all targets or specific targets'
     'repl:open an interpreter session for the given target'
     'sandbox:create/modify/delete a sandbox'
-    'copy:copy the files into the install locations'
     'haddock:generate Haddock HTML documentation'
+    'exec:run a command with the cabal environment'
+    'copy:copy the files into the install locations'
     'clean:clean up after a build'
     'hscolour:generate HsColour colourised code, in HTML format'
     'register:register this package with the compiler'
@@ -126,6 +133,7 @@ _cabal_bench ()
     '--benchmark-options=[give extra options to benchmark executables]' \
     '--benchmark-option=[give an extra option to benchmark executables (no need to quote options containing spaces)]' \
     {-j,--jobs=}'[run NUM jobs simultaneously]' \
+    $_cabal_programs \
     "--only[don't reinstall add-source dependencies (sandbox-only)]"
 }
 
@@ -156,6 +164,9 @@ _cabal_clean ()
 
 _cabal_configure ()
 {
+  local context state state_descr line
+  typeset -A opt_args
+
   _arguments \
     {-h,--help}'[show help]' \
     {-v-,--verbose=}'[control verbosity]:level:(0 1 2 3)' \
@@ -166,6 +177,7 @@ _cabal_configure ()
     '--lhc[compile with LHC]' \
     '--hugs[compile with Hugs]' \
     '--uhc[compile with UHC]' \
+    '--haskell-suite[compile with a haskell-suite compiler]' \
     {-w,--with-compiler=}'[give the path to a particular compiler]:file:_files' \
     '--with-hc-pkg=[give the path to the package tool]:file:_files' \
     '--prefix=[take this prefix in preparation of installation]:directory:_files -/' \
@@ -203,7 +215,7 @@ _cabal_configure ()
     '--configure-option=[extra option for configure]' \
     '--user[enable doing a per-user installation]' \
     '--global[disable doing a per-user installation]' \
-    '--package-db=[use a specific package database]:files:_files' \
+    '--package-db=[use a given package database]:: :->default-db-or-filepath' \
     {-f,--flags=}'[force values for the given flags]:flags:' \
     '--extra-include-dirs=[a list of directories to search for header files]:directory:_files -/' \
     '--extra-lib-dirs=[a list of directories to search for externallibraries]:directory:_files -/' \
@@ -218,7 +230,16 @@ _cabal_configure ()
     '--cabal-lib-version=[select which version of the Cabal lib to use]' \
     '--constraint=[a list of additional constraints on the dependencies]' \
     '--preference=[specify preferences on the version of a package]' \
-    '--solver=[select dependency solver to use]:solver:(topdown modular choose)'
+    '--solver=[select dependency solver to use]:solver:(topdown modular choose)' \
+    '--allow-newer=[ignore upper bounds in dependencies on some or all packages]'
+
+  case $state in
+    (default-db-or-filepath)
+      _alternative \
+        ':default db:(global user clear)' \
+        ':filepath:_files'
+    ;;
+  esac
 }
 
 _cabal_copy ()
@@ -228,6 +249,13 @@ _cabal_copy ()
     {-v-,--verbose=}'[control verbosity]:level:(0 1 2 3)' \
     '--builddir=[the directory where Cabal puts generated build]:directory:_files -/' \
     '--destdir=[directory to copy files to]:directory:_files -/'
+}
+
+_cabal_exec ()
+{
+  _arguments \
+    {-h,--help}'[show help]' \
+    {-v-,--verbose=}'[control verbosity]:level:(0 1 2 3)'
 }
 
 _cabal_fetch ()
@@ -245,12 +273,24 @@ _cabal_fetch ()
     '*:package:_cabal_list_packages'
 }
 
+_cabal_freeze ()
+{
+  _arguments \
+    {-h,--help}'[show help]' \
+    {-v-,--verbose=}'[control verbosity]:level:(0 1 2 3)' \
+    '--dry-run[do not freeze anything, only print what would be frozen]' \
+    '--solver=[select dependency solver to use]:solver:(topdown modular choose)]' \
+    '--max-backjumps=[maximum number of backjumps allowed while solving dependencies]' \
+    '--reorder-goals[try to reorder goals according to certain heuristics]' \
+    '--shadow-installed-packages[if multiple package instances of the same version are installed, treat all but one as shadowed]'
+}
+
 _cabal_get ()
 {
   _arguments \
     {-h,--help}'[show help]' \
     {-v-,--verbose=}'[control verbosity]:level:(0 1 2 3)' \
-    {-d,--destdir=}'[where to unpack the packages]:directory:_files -/' \
+    {-d-,--destdir=}'[where to unpack the packages]:directory:_files -/' \
     {-s,--source-repository=}"[copy the package's source repository]" \
     '--pristine[unpack the original pristine tarball, rather than updating the .cabal file with the latest revision from the package archive.]' \
     '*:package:_cabal_list_packages'
@@ -285,8 +325,8 @@ _cabal_haddock ()
 _cabal_help ()
 {
   local -a cmds
-  cmds=(install update list info fetch get check sdist upload report run init
-    configure build repl sandbox copy haddock clean hscolour register test bench help)
+  cmds=(install update list info fetch freeze get check sdist upload report run init
+    configure build repl sandbox haddock exec copy clean hscolour register test bench help)
   _arguments \
     {-h,--help}'[Show help]' \
     '*::command:( $cmds )'
@@ -307,10 +347,22 @@ _cabal_hscolour ()
 
 _cabal_info ()
 {
+  local context state state_descr line
+  typeset -A opt_args
+
   _arguments \
     {-h,--help}'[show help]' \
     {-v-,--verbose=}'[control verbosity]:level:(0 1 2 3)' \
+    '--package-db=[use a given package database]:: :->default-db-or-filepath' \
     '*:package:_cabal_list_packages'
+
+  case $state in
+    (default-db-or-filepath)
+      _alternative \
+        ':default db:(global user clear)' \
+        ':filepath:_files'
+    ;;
+  esac
 }
 
 _cabal_install ()
@@ -328,6 +380,7 @@ _cabal_install ()
     '--lhc[compile with LHC]' \
     '--hugs[compile with Hugs]' \
     '--uhc[compile with UHC]' \
+    '--haskell-suite[compile with a haskell-suite compiler]' \
     {-w,--with-compiler=}'[give the path to a particular compiler]:file:_files' \
     '--with-hc-pkg=[give the path to the package tool]:file:_files' \
     '--prefix=[take this prefix in preparation of installation]:directory:_files -/' \
@@ -348,10 +401,10 @@ _cabal_install ()
     '--disable-library-vanilla[disable Vanilla libraries]' \
     {-p,--enable-library-profiling}'[enable Library profiling]' \
     '--disable-library-profiling[disable Library profiling]' \
-    '--enable-executable-dynamic[enable Executable dynamic linking]' \
-    '--disable-executable-dynamic[disable Executable dynamic linking]' \
     '--enable-shared[enable Shared library]' \
     '--disable-shared[disable Shared library]' \
+    '--enable-executable-dynamic[enable Executable dynamic linking]' \
+    '--disable-executable-dynamic[disable Executable dynamic linking]' \
     '--enable-executable-profiling[enable Executable profiling]' \
     '--disable-executable-profiling[disable Executable profiling]' \
     {-O-,--enable-optimization=}'[build with optimization]:level:(0 1 2)' \
@@ -365,7 +418,7 @@ _cabal_install ()
     '--configure-option=[extra option for configure]' \
     '--user[enable doing a per-user installation]' \
     '--global[disable doing a per-user installation]' \
-    '--package-db=[use a specific package database]:files:_files' \
+    '--package-db=[use a given package database]:: :->default-db-or-filepath' \
     {-f,--flags=}'[force values for the given flags]:flags:' \
     '--extra-include-dirs=[a list of directories to search for header files]:directory:_files -/' \
     '--extra-lib-dirs=[a list of directories to search for external libraries]:directory:_files -/' \
@@ -381,6 +434,7 @@ _cabal_install ()
     '--constraint=[a list of additional constraints on the dependencies]' \
     '--preference=[specify preferences on the version of a package]' \
     '--solver=[select dependency solver to use]:solver:(topdown modular choose)' \
+    '--allow-newer=[ignore upper bounds in dependencies on some or all packages]' \
     '--enable-documentation[enable building of documentation]' \
     '--disable-documentation[disable building of documentation]' \
     '--doc-index-file=[a central index of haddock API documentation]:file:_files' \
@@ -399,11 +453,15 @@ _cabal_install ()
     '--build-log=[log all builds to file]:file:_files' \
     '--remote-build-reporting=[generate build reports to send to a remote]:level:(none anonymous detailed)' \
     '--one-shot[do not record the packages in the world file]' \
+    '--run-tests[run package test suites during installation]' \
     {-j,--jobs=}'[run NUM jobs simultaneously]' \
     '--haddock-hoogle[generate a hoogle database]' \
     '--haddock-html[generate HTML documentation]' \
     '--haddock-html-location=[location of HTML documentation]:url:' \
     '--haddock-executables[run haddock for Executables targets]' \
+    '--haddock-tests[run haddock for Test Suite targets]' \
+    '--haddock-benchmarks[run haddock for Benchmarks targets]' \
+    '--haddock-all[run haddock for all targets]' \
     '--haddock-internal[run haddock for internal modules]' \
     '--haddock-css=[path to the haddock stylesheet]:file:_files' \
     '--haddock-hyperlink-source[hyperlink the documentation to the source code]' \
@@ -412,6 +470,11 @@ _cabal_install ()
     '*:: :->package-or-cabal-file'
 
   case $state in
+    (default-db-or-filepath)
+      _alternative \
+        ':default db:(global user clear)' \
+        ':filepath:_files'
+    ;;
     (package-or-cabal-file)
       _alternative \
          ':package:_cabal_list_packages' \
@@ -422,12 +485,24 @@ _cabal_install ()
 
 _cabal_list ()
 {
+  local context state state_descr line
+  typeset -A opt_args
+
   _arguments \
     {-h,--help}'[show help]' \
     {-v-,--verbose=}'[control verbosity]:level:(0 1 2 3)' \
     '--installed[only print installed packages]' \
     '--simple-output[print in a easy-to-parse format]' \
+    '--package-db=[use a given package database]:: :->default-db-or-filepath' \
     '*:package:_cabal_list_packages'
+
+  case $state in
+    (default-db-or-filepath)
+      _alternative \
+        ':default db:(global user clear)' \
+        ':filepath:_files'
+    ;;
+  esac
 }
 
 _cabal_register ()
@@ -467,8 +542,8 @@ _cabal_run ()
     {-h,--help}'[show help]' \
     {-v-,--verbose=}'[control verbosity]:level:(0 1 2 3)' \
     '--builddir=[the directory where Cabal puts generated build files]:directory:_files -/' \
-    $_cabal_programs \
     {-j,--jobs=}'[run NUM jobs simultaneously]' \
+    $_cabal_programs \
     "--only[don't reinstall add-source dependencies (sandbox-only)]"
 }
 
@@ -532,6 +607,7 @@ _cabal_test ()
     '--test-options=[give extra options to test executables]' \
     '--test-option=[give an extra option to test executables]' \
     {-j,--jobs=}'[run NUM jobs simultaneously]' \
+    $_cabal_programs \
     "--only[don't reinstall add-source dependencies (sandbox-only)]"
 }
 
@@ -548,8 +624,8 @@ _cabal_upload ()
     {-h,--help}'[show help]' \
     {-v-,--verbose=}'[control verbosity]:level:(0 1 2 3)' \
     {-c,--check}'[do not upload, just do QA checks]' \
-    {-u,--username=}'[hackage username]' \
-    {-p,--password=}'[hackage password]' \
+    {-u-,--username=}'[hackage username]' \
+    {-p-,--password=}'[hackage password]' \
     '*:file:_files -g "*.tar.gz"'
 }
 
