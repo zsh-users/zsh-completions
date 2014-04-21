@@ -56,7 +56,7 @@ _arguments -s -w \
     "-w[wide output]"\
     "-y[use with -l, do not show flags, show rss in place of addr]"\
     "1:BSD-style options (complete - to see unix & gnu-style options):((T\:'all processes on this terminal' a\:'all w/ tty, including other users' r\:'only running processes' x\:'processes w/o controlling ttys' t\:'list by tty' j\:'BSD jobs control format' l\:'BSD long format' s\:'signal format' v\:'virtual memory format' u\:'user-oriented format' X\:'register format' L\:'list format codes' S\:'sum info of children into parents' c\:'true command name' n\:'numeric WCHAN & UID' H\:'show threads as if they were processes' U\:'by effective user ID' p\:'by process ID'))"\
-    - debug "--info[print debugging info]"
+    "--info[print debugging info]"
 
 case "$state" in
     pid)
