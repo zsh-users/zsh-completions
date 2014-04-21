@@ -427,7 +427,9 @@ _alternative, _regex_arguments, etc.
 
 Remember to include an initial pattern to match the command word when using _regex_arguments (it does not need a matching action).
 
-Remember to put a null char $'\0' at the end of any PATTERN argument for _regex_arguments
+Remember to put a null char $'\0' at the end of any PATTERN argument for _regex_arguments.
+
+Remember to declare all local parameters before using them.
 * Tips
 Sometimes you have a situation where there is just one option that can come after a subcommand, and zsh will complete this 
 automatically when tab is pressed after the subcommand. If instead you want it listed with its description before completing 
