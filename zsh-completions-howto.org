@@ -87,13 +87,21 @@ Examples of how to use these functions are given in the next section.
 | _multi_parts | Used for completing multiple parts of words separately where each part is separated by some char, e.g. for completing partial filepaths: /u/i/sy -> /usr/include/sys |
 | _sep_parts   | Like _multi_parts but allows different separators at different parts of the completion.                                                                              |
 *** functions for completing specific types of objects
+These functions and more can be found in the /usr/share/zsh/functions/Completion/Zsh directory on Ubuntu systems.
 | _path_files     | Used to complete filepaths. Take several options to control behaviour.                                    |
 | _files          | Calls _path_files with all options except -g and -/. These options depend on file-patterns style setting. |
+| _dirs           | Used for completing directories                                                                           |
 | _net_interfaces | Used for completing network interface names                                                               |
 | _users          | Used for completing user names                                                                            |
 | _groups         | Used for completing group names                                                                           |
 | _options        | Used for completing the names of shell options.                                                           |
 | _parameters     | Used for completing the names of shell parameters/variables (can restrict to those matching a pattern).   |
+| _aliases        | Used for completing aliases                                                                               |
+| _jobs           | Used for completing all jobs                                                                              |
+| _jobs_bg        | Used for completing background jobs                                                                       |
+| _jobs_fg        | Used for completing foreground jobs                                                                       |
+| _command_names  | Used for completing command names                                                                         |
+| _delimiters     | Used for completing delimiters (-,:,/,%,+)                                                                |
 *** functions for handling cached completions
 If you have a very large number of completions you can save them in a cache file so that the completions load quickly.
 | _cache_invalid  | indicates whether the completions cache corresponding to a given cache identifier needs rebuilding |
