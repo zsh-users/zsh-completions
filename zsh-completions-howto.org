@@ -444,11 +444,25 @@ Remember to declare all local parameters before using them.
 If you are splitting arguments to one of the helper functions over several lines using \'s remember to remove all whitespace after
 the \'s.
 * Tips
+** ensuring the option description is displayed even if its the only one
 Sometimes you have a situation where there is just one option that can come after a subcommand, and zsh will complete this 
 automatically when tab is pressed after the subcommand. If instead you want it listed with its description before completing 
-you can add another empty option (i.e. \:) to the ACTION like this ':TAG:DESCRIPTION:((opt1\:"description for opt1" \:))' 
+you can add another empty option (i.e. \:) to the ACTION like this ':MESSAGE:((opt1\:"description for opt1" \:))' 
 Note this only applies to utility functions that use ACTIONs in their specification arguments (_arguments, _regex_arguments, etc.)
-
+E.g:
+#+BEGIN_SRC sh
+_arguments '-o[Only option]:The one and only option:((opt1\:"description" \:))'
+#+END_SRC
+** non-completing arguments (e.g. numbers)
+When you need to specify what the next argument should look like without completing it, use the _guard function, 
+e.g. for specifying that a number should be entered:
+#+BEGIN_SRC sh
+_arguments '-n[A number]:number:_guard "[0-9]#" "numeric value"'
+#+END_SRC
+To make the number optional use a double colon:
+#+BEGIN_SRC sh
+_arguments '-n[A number]::number:_guard "[0-9]#" "numeric value"'
+#+END_SRC
 * Other resources
 [[http://wikimatze.de/writing-zsh-completion-for-padrino.html][Here]] is a nicely formatted short tutorial showing basic usage of the _arguments function, 
 and [[http://www.linux-mag.com/id/1106/][here]] is a slightly more advanced tutorial using the _arguments function.
