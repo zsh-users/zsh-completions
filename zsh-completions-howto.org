@@ -90,6 +90,8 @@ Examples of how to use these functions are given in the next section.
 These functions and more can be found in the /usr/share/zsh/functions/Completion/Zsh directory on Ubuntu systems.
 | _path_files     | Used to complete filepaths. Take several options to control behaviour.                                    |
 | _files          | Calls _path_files with all options except -g and -/. These options depend on file-patterns style setting. |
+| _tilde_files    | Complete filenames and perform tilde expansion                                                            |
+| _remote_files   | Used for completing files on another system using ssh (requires arguments)                                |
 | _dirs           | Used for completing directories                                                                           |
 | _net_interfaces | Used for completing network interface names                                                               |
 | _users          | Used for completing user names                                                                            |
@@ -438,6 +440,9 @@ Remember to include an initial pattern to match the command word when using _reg
 Remember to put a null char $'\0' at the end of any PATTERN argument for _regex_arguments.
 
 Remember to declare all local parameters before using them.
+
+If you are splitting arguments to one of the helper functions over several lines using \'s remember to remove all whitespace after
+the \'s.
 * Tips
 Sometimes you have a situation where there is just one option that can come after a subcommand, and zsh will complete this 
 automatically when tab is pressed after the subcommand. If instead you want it listed with its description before completing 
