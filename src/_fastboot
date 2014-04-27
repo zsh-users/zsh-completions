@@ -1,0 +1,116 @@
+#compdef fastboot
+# ------------------------------------------------------------------------------
+# Copyright (c) 2011 Github zsh-users - http://github.com/zsh-users
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+# notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+# notice, this list of conditions and the following disclaimer in the
+# documentation and/or other materials provided with the distribution.
+#     * Neither the name of the zsh-users nor the
+# names of its contributors may be used to endorse or promote products
+# derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 'AS IS' AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL ZSH-USERS BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for fastboot
+#  TODO: Add options handler
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Timofey Titovets <nefelim4ag@gmail.com>
+#
+# ------------------------------------------------------------------------------
+_fastboot(){
+    local -a command
+    command=(
+        'update:<filename> reflash device from update.zip'
+        'flashall:flash boot + recovery + system'
+        'flash:<partition> [ <filename> ] write a file to a flash partition'
+        'erase:<partition> erase a flash partition'
+        'format:<partition> format a flash partition'
+        'getvar:<variable> display a bootloader variable'
+        'boot:<kernel> [ <ramdisk> ] download and boot kernel'
+        'flash:raw boot <kernel> [ <ramdisk> ] create bootimage and flash it'
+        'devices:list all connected devices'
+        'continue:continue with autoboot'
+        'reboot:reboot device normally'
+        'reboot-bootloader:reboot device into bootloader'
+        'help:show help'
+    )
+
+     local -a partition
+     partition=(boot recovery system)
+
+#    local -a options
+#    options=(
+#        $command
+#        '-w:erase userdata and cache (and format if supported by partition type)'
+#        '-u:do not first erase partition before formatting'
+#        '-s:<specific device> specify device serial number'
+#        '-l:with "devices", lists device paths'
+#        '-p:<product> specify product name'
+#        '-c:<cmdline> override kernel commandline'
+#        '-i:<vendor id> specify a custom USB vendor id'
+#        '-b:<base_addr> specify a custom kernel base address. default: 0x10000000'
+#        '-n:<page size> specify the nand page size. default: 2048'
+#        '-S:<size>[K|M|G] automatically sparse files greater than size.  0 to disable'
+#    )
+
+    local context state line expl
+    local -A opt_args
+
+    _arguments '*:: :->subcmds' && return 0
+
+#    if (( CURRENT == 1 )); then
+#        _describe -t commands "fastboot commands" options -V1
+#        return
+#    fi
+
+    if (( CURRENT == 1 )); then
+        _describe -t commands "fastboot commands" command -V1
+        return
+    fi
+
+    case $words[1] in
+        update)
+            _arguments \
+            '1: :_files -/'
+        ;;
+        flash)
+            _arguments \
+            '1: :($partition)' \
+            '2: :_files -/'
+        ;;
+        erase)
+            _arguments \
+            '1: :($partition)'
+        ;;
+        format)
+            _arguments \
+            '1: :($partition)'
+        ;;
+        boot)
+            _arguments \
+            '1: :_files -/'
+        ;;
+    esac
+}
+
+_fastboot "$@"
