@@ -52,6 +52,7 @@ _plugin_arguments=(
     'license:NAME LICENSE_FILE Add a license for an installed plugin'
     'list:Lists all installed plugins'
     'uninstall:NAME Uninstall a plugin from the system'
+    'update:[NAMES...] Update all or specified plugins'
 )
 
 __task_list ()
