@@ -278,11 +278,11 @@ Here is an example:
 #+BEGIN_SRC sh 
 _regex_arguments _hello /$'[^\0]##\0'/ \( /$'word1(a|b|c)\0'/ ':word:first word:(word1a word1b word1c)' '|'\
    /$'word11(a|b|c)\0'/ ':word:first word:(word11a word11b word11c)' \( /$'word2(a|b|c)\0'/ ':word:second word:(word2a word2b word2c)'\
-   '|' /$'word22(a|b|c)\0'/ ':word:second word:(word22a word22b word22c)' \) \)
+    \) \)
 _cmd "$@"
 #+END_SRC
 in this case the first word can be word1 or word11 followed by an a, b or c, and if the first word contains 11 then a second
-word is allowed which can be word2 followed by and a, b, or c, or a filename.
+word is allowed which can be word2 followed by and a, b, or c.
 
 If this sounds too complicated a much simpler alternative is to use the _regex_words function for creating
 specifications for _regex_arguments. 
