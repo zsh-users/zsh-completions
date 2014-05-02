@@ -252,16 +252,17 @@ _cmd "$@"
 #+END_SRC
 
 The OTHER_ARGS should be sequences of specifications for matching & completing words on the command line.
-These sequences can be separated by '|' to represent alternative sequences of words.
+These sequences can be separated by '|' to represent alternative sequences of words. 
 You can use bracketing to arbitrary depth to specify alternate subsequences, but the brackets must be backslashed like this \( \) 
 or quoted like this '(' ')'.
+Note that the OTHER_ARGS sequence should match the command word itself at the start.
 
 For example:
 #+BEGIN_SRC sh 
-_regex_arguments _cmd SEQ1 '|' SEQ2 \( SEQ2a '|' SEQ2b \)
+_regex_arguments _cmd CMD \( OPTION SUBCMD '|' SUBCMD \)
 _cmd "$@"
 #+END_SRC
-this specifies a command line matching either SEQ1, or SEQ2 followed by SEQ2a or SEQ2b.
+this specifies a command line matching CMD followed by OPTION then SUBCMD, or just CMD followed by SUBCMD.
 
 Each specification in a sequence must contain a / PATTERN/ part at the start followed by an optional ':TAG:DESCRIPTION:ACTION' 
 part. 
@@ -276,13 +277,15 @@ except that it has an extra : at the start, and now all of the possible ACTION f
 
 Here is an example:
 #+BEGIN_SRC sh 
-_regex_arguments _hello /$'[^\0]##\0'/ \( /$'word1(a|b|c)\0'/ ':word:first word:(word1a word1b word1c)' '|'\
-   /$'word11(a|b|c)\0'/ ':word:first word:(word11a word11b word11c)' \( /$'word2(a|b|c)\0'/ ':word:second word:(word2a word2b word2c)'\
-    \) \)
+_regex_arguments _hello /$'hello\0'/ \( /$'(foo|bar|char)\0'/ ':cmd:command:(foo bar far)' \|
+                        /$'-(a|b|c)\0'/ ':opt:option:(-a -b -c)' /$'(foo|bar|char)\0'/ ':cmd:command:(foo bar far)' \)
 _cmd "$@"
 #+END_SRC
-in this case the first word can be word1 or word11 followed by an a, b or c, and if the first word contains 11 then a second
-word is allowed which can be word2 followed by and a, b, or c.
+in this case the first word on the line must be "hello" and this can be followed by either one of the subcommands (foo, bar or far),
+ or an option (-a, -b or -c) followed by one of those subcommands.
+
+Note: in the example above we matched the command word exactly with /$'hello\0'/, but it is a good idea to match any word using 
+ /$'[^\0]##\0'/ since then you can use the same completion function for aliases of the command.
 
 If this sounds too complicated a much simpler alternative is to use the _regex_words function for creating
 specifications for _regex_arguments. 
