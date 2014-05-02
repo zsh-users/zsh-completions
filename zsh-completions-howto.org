@@ -315,42 +315,34 @@ word to be completed, DESCRIPTION is a description for it, and SPEC can be anoth
 specifying words that come after the current word or blank if there are no further words.
 For example:
 #+BEGIN_SRC sh 
-_regex_words firstword 'The first word' 'word1a:a word:' 'word1b:b word:' 'word1c:c word'
+_regex_words subcmd 'The subcommand' 'foo:do foo' 'bar:do bar' 'far:do far'
 #+END_SRC
 the results of this function call will be stored in the $reply array, and so we should store it in another array 
 before $reply gets changed again, like this:
 #+BEGIN_SRC sh 
-local -a firstword
-_regex_words word 'The first word' 'word1a:a word:' 'word1b:b word:' 'word1c:c word'
-firstword="$reply[@]"
+local -a subcmd
+_regex_words subcmd 'The subcommand' 'foo:do foo' 'bar:do bar' 'far:do far'
+subcmd="$reply[@]"
 #+END_SRC
 we could then use it with _regex_arguments like this:
 #+BEGIN_SRC sh 
-_regex_arguments _cmd /$'[^\0]##\0'/ "$firstword[@]"
+_regex_arguments _cmd /$'[^\0]##\0'/ "$subcmd[@]"
 _cmd "$@"
 #+END_SRC
-Note that I have added an extra pattern for the initial command word itself.
+Note that I have added an extra pattern to match anything for the initial command word itself 
+(so that it can be used with aliases of the command).
 
-Here is a more complex example where we call _regex_words for different words on the command line
+Here is a slightly more complex example which mimics the behaviour of the example in the previous section:
 #+BEGIN_SRC sh 
-local -a firstword firstword2 secondword secondword2
-_regex_words word1 'The second word' 'woo:tang clan' 'hoo:not me'
-secondword=("$reply[@]")
-_regex_words word2 'Another second word' 'yee:thou' 'haa:very funny!'
-secondword2=("$reply[@]")
-_regex_words commands 'The first word' 'foo:do foo' 'man:yeah man' 'chu:at chu'
-firstword=("$reply[@]")
-_regex_words word4 'Another first word' 'boo:scare somebody:$secondword' 'ga:baby noise:$secondword'\
- 'loo:go to the toilet:$secondword2'
-firstword2=("$reply[@]")
+local -a subcmd opt
+_regex_words opt 'options' '-a:set a' '-b:set b' '-c:set c'
+opt=("$reply[@]")
+_regex_words subcmd 'subcommands' 'foo:do foo' 'bar:do bar' 'far:do far'
+subcmd=("$reply[@]")
 
-_regex_arguments _hello /$'[^\0]##\0'/ "${firstword[@]}" "${firstword2[@]}"
+_regex_arguments _hello /$'[^\0]##\0'/ \( "${subcmd[@]}" \| "${opts[@]}" "${subcmd[@]}" \)
 _hello "$@"
 #+END_SRC
-In this case the first word can be one of "foo", "man", "chu", "boo", "ga" or "loo".
-If the first word is "boo" or "ga" then the second word can be "woo" or "hoo", 
-and if the first word is "loo" then the second word can be "yee" or "haa", in the other
-cases there is no second word.
 
 For a good example of the usage of _regex_words have a look at the _ip function.
 ** complex completions with _values, _sep_parts, & _multi_parts
