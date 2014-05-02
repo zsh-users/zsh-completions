@@ -448,7 +448,6 @@ You should almost always use single quotes for _regex_words arguments; if you us
 contains a variable for the next set of words then you will get problems as the variable will be expanded before the
 _regex_words function has a chance to parse it properly.
 
-
 Check that you have the correct number of :'s in the correct places for specifications for _arguments, 
 _alternative, _regex_arguments, etc.
 
@@ -457,6 +456,9 @@ Remember to include an initial pattern to match the command word when using _reg
 Remember to put a null char $'\0' at the end of any PATTERN argument for _regex_arguments.
 
 Remember to declare all local parameters before using them.
+
+Remember to surround complex _regex_arguments SPEC sequences involving \| or \# with \( & \) if you put them in a variable, 
+e.g: opts=( \( SPEC1 \# \| SPEC2 \) ).
 
 If you are splitting arguments to one of the helper functions over several lines using \'s remember to remove all whitespace after
 the \'s.
