@@ -332,7 +332,7 @@ _cmd "$@"
 Note that I have added an extra pattern to match anything for the initial command word itself 
 (so that it can be used with aliases of the command).
 
-Here is a slightly more complex example which mimics the behaviour of the example in the previous section:
+Here is an example which mimics the behaviour of the example in the previous section:
 #+BEGIN_SRC sh 
 local -a subcmd opt
 _regex_words opt 'options' '-a:set a' '-b:set b' '-c:set c'
@@ -343,6 +343,24 @@ subcmd=("$reply[@]")
 _regex_arguments _hello /$'[^\0]##\0'/ \( "${subcmd[@]}" \| "${opts[@]}" "${subcmd[@]}" \)
 _hello "$@"
 #+END_SRC
+
+Here is a slightly more complex example where we specify further subcommands to follow "foo" or "bar":
+#+BEGIN_SRC sh 
+local -a subcmd foocmd barcmd opt
+_regex_words opt 'options' '-a:set a' '-b:set b' '-c:set c'
+opt=("$reply[@]")
+_regex_words foocmd 'foo commands' 'boo:do boo' 'ga:do ga' 'loo:do loo'
+foocmd=("$reply[@]")
+_regex_words barcmd 'bar commands' 'laa:do laa' 'dee:do dee' 'daa:do daa'
+foocmd=("$reply[@]")
+_regex_words subcmd 'subcommands' 'foo:do foo:$foocmd' 'bar:do bar:$barcmd' 'far:do far'
+subcmd=("$reply[@]")
+
+_regex_arguments _hello /$'[^\0]##\0'/ \( "${subcmd[@]}" \| "${opts[@]}" "${subcmd[@]}" \)
+_hello "$@"
+#+END_SRC
+Note that you must use single quotes for arguments containing parameters (e.g. 'bar:do bar:$barcmd'), since
+otherwise the parameter will be expanded before _regex_words gets to parse it properly.
 
 For a good example of the usage of _regex_words have a look at the _ip function.
 ** complex completions with _values, _sep_parts, & _multi_parts
@@ -426,6 +444,10 @@ Remember to include a #compdef line at the beginning of the file containing the 
 Take care to use the correct type of quoting for specifications to _arguments or _regex_arguments:
 use double quotes if there is a parameter that needs to be expanded in the specification, single quotes otherwise,
 and make sure to use different quotes around item descriptions.
+You should almost always use single quotes for _regex_words arguments; if you use double quotes around an argument that
+contains a variable for the next set of words then you will get problems as the variable will be expanded before the
+_regex_words function has a chance to parse it properly.
+
 
 Check that you have the correct number of :'s in the correct places for specifications for _arguments, 
 _alternative, _regex_arguments, etc.
