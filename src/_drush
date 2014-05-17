@@ -13,13 +13,12 @@
 #
 # ------------------------------------------------------------------------------
 
-# TODO
-# move global args to separate array, use compadd
-
 _drush() {
   local curcontext='$curcontext' state line cmds ret=1
   integer NORMARG
   typeset -A opt_args
+
+  global_args=('--debug' '--verbose' '--yes' '--no' '--simulate' '--root=' '--uri=')
 
   _arguments -C \
     '(--*)'{--version,--version}'[Show drush version.]' \
