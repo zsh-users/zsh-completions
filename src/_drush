@@ -73,6 +73,27 @@ case $state in
     ;;
   args)
     case $line[1] in
+      (archive-dump|ard)
+        _arguments \
+          '(--description)--description=[Filter out extensions that are provided by drupal core.]' \
+          '(--destination)--destination=[The full path and filename in which the archive should be stored. If omitted, it will be saved to the drush-backups directory.]' \
+          '(--no-core)--no-core[Exclude Drupal core, so the backup only contains the site specific stuff.]' \
+          '(--pipe)--pipe[Only print the destination of the archive. Useful for scripts that dont pass --destination.]' \
+          '(--tar-options)--tar-options=[Options passed thru to the tar command.]' \
+        && ret=0
+        compadd -a global_args
+      ;;
+      (archive-restore|arr)
+        _arguments \
+          '(--db-prefix)--db-prefix[An optional table prefix to use during restore.]' \
+          '(--db-su)--db-su[Account to use when creating the new database. Optional.]' \
+          '(--db-su-pw)--db-su-pw[Password for the "db-su" account. Optional.]' \
+          '(--db-url)--db-url=[A Drupal 6 style database URL indicating the target for database restore. If not provided, the archived settings.php is used. ]' \
+          '(--destination)--destination[Specify where the Drupal site should be expanded, including the docroot. Defaults to the current working directory.]' \
+          '(--overwrite)--overwrite[Allow drush to overwrite any files in the destination.]' \
+        && ret=0
+        compadd -a global_args
+      ;;
       (user-password|upwd)
         _arguments \
           '--password=:Set the password for the username someuser.' \
