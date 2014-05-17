@@ -14,8 +14,6 @@
 # ------------------------------------------------------------------------------
 
 # TODO
-# commands: ard arr devel dre
-# features
 # move global args to separate array, use compadd
 
 _drush() {
@@ -69,6 +67,20 @@ case $state in
       'sql-sync[Copy and import source database to target database. Transfers via rsync.]' \
       '(user-login)'{user-login,uli}'[Display a one time login link for the given user account (defaults to uid 1).]' \
       '(user-password)'{user-password,upwd}'[(Re)Set the password for the user account with the specified name.]' \
+      '(devel-reinstall)'{devel-reinstall,dre}'[Disable, Uninstall, and Install a list of projects. (devel)]' \
+      '(devel-token)'{devel-token,token}'[List available tokens (devel)]' \
+      '(generate-content)'{generate-content,genc}'[Create content. (devel_generate)]' \
+      '(generate-menus)'{generate-menus,genm}'[Create menus and menu items. (devel_generate)]' \
+      '(generate-terms)'{generate-terms,gent}'[Create terms in specified vocabulary. (devel_generate)]' \
+      '(generate-users)'{generate-users,genu}'[Create users. (devel_generate)]' \
+      '(generate-vocabs)'{generate-vocabs,genv}'[Create vocabularies. (devel_generate)]' \
+      '(features-diff)'{features-diff,fd}'[Show the difference between the default and overridden state of a feature.]' \
+      '(features-export)'{features-export,fe}'[Export a feature from your site into a module.]' \
+      '(features-list)'{features-list,fl}'[List all the available features for your site.]' \
+      '(features-revert)'{features-revert,fr}'[Revert a feature module on your site.]' \
+      '(features-revert-all)'{features-revert-all,fra}'[Revert all enabled feature module on your site.]' \
+      '(features-update)'{features-update,fu}'[Update a feature module on your site.]' \
+      '(features-update-all)'{features-update-all,fua}'[Update all feature modules on your site.]' \
   && ret=0
     ;;
   args)
