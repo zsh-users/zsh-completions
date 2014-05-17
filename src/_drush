@@ -111,7 +111,7 @@ case $state in
         && ret=0
       ;;
       (help)
-        _values 'commands' 'archive-dump' 'ard' 'arb' 'archive-restore' 'arr' 'cache-clear' 'cc' 'core-cron' 'exec' 'drupal-directory' 'dd' 'help' 'image-flush' 'site-alias' 'sa' 'site-install' 'si' 'test-clean' 'test-run' 'updatedb' 'updb' 'pm-list' 'pml' 'pm-uninstall' 'pm-update' 'pm-disable' 'dis' 'pm-download' 'pm-enable' 'en'
+        _values 'commands' 'arb' 'archive-dump' 'archive-restore' 'ard' 'arr' 'cache-clear' 'cc' 'core-cron' 'core-execute' 'core-status' 'cron' 'dd' 'devel-reinstall' 'devel-token' 'dis' 'dl' 'dre' 'drupal-directory' 'en' 'exec' 'fd' 'fe' 'features-diff' 'features-export' 'features-list' 'features-revert' 'features-revert-all' 'features-update' 'features-update-all' 'fl' 'fr' 'fra' 'fu' 'fua' 'genc' 'generate-content' 'generate-menus' 'generate-terms' 'generate-users' 'generate-vocabs' 'genm' 'gent' 'genu' 'genv' 'help' 'image-flush' 'pm-disable' 'pm-download' 'pm-enable' 'pm-list' 'pm-uninstall' 'pm-update' 'pml' 'sa' 'si' 'site-alias' 'site-install' 'sql-cli' 'sql-drop' 'sql-dump' 'sql-query' 'sql-sync' 'sqlc' 'sqlq' 'st' 'status' 'test-clean' 'test-run' 'token' 'uli' 'updatedb' 'updb' 'upwd' 'user-login' 'user-password' 'variable-delete' 'variable-get' 'variable-set' 'vdel' 'vget' 'vset'
       ;;
       (cc)
         _values 'options' 'all' 'drush' 'theme-registry' 'menu' 'css-js' 'block'
