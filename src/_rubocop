@@ -1,0 +1,58 @@
+#compdef rubocop
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for rubocop (https://github.com/bbatsov/rubocop)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Akira Maeda <https://github.com/glidenote>
+#
+# ------------------------------------------------------------------------------
+# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
+# vim: ft=zsh sw=2 ts=2 et
+# ------------------------------------------------------------------------------
+
+local curcontext="$curcontext" state line ret=1
+typeset -A opt_args
+
+_rubocop_format_params() {
+  _values \
+    'FORMATTER' \
+    'progress' \
+    'simple' \
+    'clang' \
+    'disabled' \
+    'fuubar' \
+    'emacs' \
+    'json' \
+    'files' \
+    'offenses' 
+}
+
+_arguments -C \
+  '(--only)--only[Run only the given cop(s)]' \
+  '(-c --config)'{-c,--config}'[Specify configuration file]' \
+  '(--auto-gen-config)--auto-gen-config[Generate a configuration file acting as a TODO list]' \
+  '(--force-exclusion)--force-exclusion[Force excluding files specified in the configuration `Exclude` even if they are explicitly passed as arguments]' \
+  '(-f --format)'{-f,--format}'[Choose an output formatter.]:FORMATTER:_rubocop_format_params' \
+  '(-o --out)'{-o,--out}'[Write output to a file instead of STDOUT]' \
+  '(-r --require)'{-r,--require}'[Require Ruby file.]' \
+  '(--fail-level)--fail-level[Minimum severity for exit with error code.]' \
+  '(--show-cops)--show-cops[Shows the given cops, or all cops by default, and their configurations for the current directory.]' \
+  '(-F --fail-fast)'{-f,--fail-fast}'[Inspect files in order of modification time ant stop after the first file containing offenses]' \
+  '(-d --debug)'{-d,--debug}'[Display debug info]' \
+  '(-D --display-cop-names)'{-D,--display-cop-names}'[Display cop names in offence messages.]' \
+  '(-R --rails)'{-R,--rails}'[Run extra Rails cops.]' \
+  '(-l --lint)'{-l,--lint}'[Run only lint cops.]' \
+  '(-a --auto-correct)'{-a,--auto-correct}'[Auto-correct offences.]' \
+  '(-n --no-color)'{-n,--no-color}'[Disable color output.]' \
+  '(-v --version)'{-v,--version}'[Disable version.]' \
+  '(-V --verbose-version)'{-V,--verbose-version}'[Disable verbose version.]' \
+  '(-h --help)'{-h,--help}'[Show help.]' \
+  '*: :_files' && ret=0
+
+return ret
