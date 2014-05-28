@@ -76,7 +76,7 @@ __plugin_list ()
 
 __vm_list ()
 {
-    _wanted application expl 'command' compadd $(command grep Vagrantfile -oe '^[^#]*\.vm\.define * ['\''":]\?\([a-zA-Z0-9\-]\+\)['\''"]\?' 2>/dev/null | awk '{print $NF}' | sed 's/'\''//g'|sed 's/\"//g'|sed 's/^://' )
+    _wanted application expl 'command' compadd $(command grep Vagrantfile -oe '^[^#]*\.vm\.define * ['\''":]\?\([a-zA-Z0-9\-_]\+\)['\''"]\?' 2>/dev/null | awk '{print $NF}' | sed 's/'\''//g'|sed 's/\"//g'|sed 's/^://' )
 }
 
 __vagrant-box ()
