@@ -436,7 +436,6 @@ To reload a completion function:
 #+END_SRC
 
 The following functions can be called to obtain useful information. 
-You may need to position the cursor right after the word to be completed before using the debug command.
 If the default keybindings don't work, you can try pressing Alt+x and then enter the command name.
 | Function        | Default keybinding | Description                                                                                                                    |
 |-----------------+--------------------+--------------------------------------------------------------------------------------------------------------------------------|
