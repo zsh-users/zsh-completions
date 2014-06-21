@@ -424,6 +424,10 @@ Add words in array $wordsarray to the list of possible completions
 compadd -a wordsarray
 #+END_SRC
 
+** Completion functions for aliases
+If you try completing after an alias then zsh will treat the situation as if you are completing the word(s) that
+are aliased. This means that you can't use a different completion function for an alias.
+If you need to use a different completion function for an alias you will have to define the alias as a function instead.
 * Testing & debugging
 To reload a completion function:
 #+BEGIN_SRC sh 
@@ -432,7 +436,8 @@ To reload a completion function:
 #+END_SRC
 
 The following functions can be called to obtain useful information. 
-If the default keybindings don't work you can try pressing Alt+x and then enter the command name.
+You may need to position the cursor right after the word to be completed before using the debug command.
+If the default keybindings don't work, you can try pressing Alt+x and then enter the command name.
 | Function        | Default keybinding | Description                                                                                                                    |
 |-----------------+--------------------+--------------------------------------------------------------------------------------------------------------------------------|
 | _complete_help  | Ctrl+x h           | displays information about context names, tags, and completion functions used when completing at the current cursor position   |
