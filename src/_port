@@ -131,7 +131,7 @@ _port() {
     '-y[Perform a dry run.]' \
     '-t[Enable trace mode debug facilities on platforms that support it (Mac OS X).]' \
     "1:Port actions:(($actions))" \
-    '*:Per-action arguments:_port_dispatch' \
+    '::Per-action arguments:_port_dispatch' \
     && return 0
 }
 
