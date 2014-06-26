@@ -181,6 +181,13 @@ _port_dispatch() {
         _describe 'Rev-upgrade options' revupgrade_options
       fi
       ;;
+    outdated|sync)
+      # No need to complete anything more here.
+      return 0;
+      ;;
+    selfupdate)
+      _all_labels 'Selfupdate options' '--nosync'
+      ;;
     *)
       # Cache the list of all ports.
       if ( [[ ${+_port_available_packages} -eq 0 ]] || _cache_invalid PORT_AVAILABLE_PACKAGES ) &&
