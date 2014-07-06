@@ -1,0 +1,160 @@
+#compdef bitcoind 
+
+
+local -a matchbcaddr matchtxid matchany matchnum matchalpha matchhex matchipaddr matchtruefalse node filedir comment
+local -a amount passphrase blockhash
+# matches a bitcoin address
+matchbcaddr=(/$'[13][[:alnum:]]##\0'/ ':bcaddress:bitcoin address:')
+# matches a transaction ID
+matchtxid=(/$'[[:xdigit:]]##\0'/ ':txid:transaction ID:')
+# matches any word
+matchany=(/$'[^\0]##\0'/)
+# matches any number
+matchnum=(/$'[[:digit:]]##\0'/)
+# matches any word with lowercase letters
+matchalpha=(/$'[[:alpha:]]##\0'/)
+# matches any hexadecimal number
+matchhex=(/$'[[:xdigit:]]##\0'/)
+# matches an IPv4 address
+matchipaddr=(/$'[[:digit:]][[:digit:]]\.[[:digit:]][[:digit:]]\.[[:digit:]][[:digit:]]\.[[:digit:]][[:digit:]]\0'/
+  ':ipaddress:IPv4 address:( )')
+# match true/false
+matchtruefalse=(/$'(true|false)\0'/)
+# function for completing account names
+function _bitcoin_accounts()
+{
+    local expl bcaccounts
+    local -a disp
+    bcaccounts=$(bitcoind listaccounts | cut -f 2 -d \" | sed '/./!d;$d;1d')
+    _wanted accounts expl 'bitcoin accounts' compadd "$@" "$disp[@]" - "${(f)bcaccounts}"
+}
+node=($matchany ':node:bitcoin node:')
+filedir=($matchany ':file:file or directory:_files')
+comment=($matchany ':comment:comment:')
+amount=($matchnum ':amount:amount of bitcoins to move:')
+passphrase=($matchany ':passphrase:wallet passphrase:')
+blockhash=($matchhex ':hash:block hash:')
+
+local -a createmultisig addmultisigaddress addnode bccmds bcaccount minconf dns getaddednodeinfo getbalance
+local -a getblocktemplate getrawtransaction getreceivedbyaddress getreceivedbyaccount gettxout getwork importprivkey
+local -a listaccounts listreceivedbyaddress listreceivedbyaccount listsinceblock listtransactions listunspent 
+local -a move sendfrom sendmany sendrawtransaction sendtoaddress setgenerate settxfee signmessage signrawtransaction
+local -a submitblock verifymessage walletpassphrase walletpassphrasechange decoderawtransaction setaccount
+
+createmultisig=($matchnum ':nrequired:No of keys required to spend funds:' $matchany ':addresses:comma separated list of bitcoin addresses:')
+bcaccount=($matchany ':account:bitcoin account:_bitcoin_accounts')
+addmultisigaddress=($createmultisig $bcaccount)
+addnode=($node /$'(add|remove|onetry)\0'/ ':action:action:(add remove onetry)')
+bccmds=($matchalpha ':command:bitcoind command:(addmultisigaddress addnode backupwallet createmultisig createrawtransaction decoderawtransaction dumpprivkey getaccount getaccountaddress getaddednodeinfo getaddressesbyaccount getbalance getblock getblockcount getblockhash getblocktemplate getconnectioncount getdifficulty getgenerate gethashespersec getinfo getmemorypool getmininginfo getnewaddress getpeerinfo getrawchangeaddress getrawmempool getrawtransaction getreceivedbyaccount getreceivedbyaddress gettransaction gettxout gettxoutsetinfo getwork importprivkey keypoolrefill listaccounts listaddressgroupings listreceivedbyaccount listreceivedbyaddress listsinceblock listtransactions listunspent listlockunspent lockunspent move sendfrom sendmany sendrawtransaction sendtoaddress setaccount setgenerate settxfee signmessage signrawtransaction stop submitblock validateaddress verifymessage walletlock walletpassphrase walletpassphrasechange)' )
+minconf=($matchnum ':number:Min number of confirmations required (default 1):')
+getaddednodeinfo=($matchtruefalse ':dns:include dns info?:(true false)' $node)
+getbalance=($bcaccount $minconf)
+getblockhash=($matchnum ':index:index of block:')
+getblocktemplate=($matchany ':params:(optional) parameters:')
+getrawtransaction=($matchtxid $matchnum ':verbose:(optional) verbose:') 
+getreceivedbyaccount=($bcaccount $minconf)
+getreceivedbyaddress=($matchbcaddr $minconf)
+gettxout=($matchtxid $matchnum ':num:num:' $matchtruefalse ':includemempool:include memory pool:(true false)')
+getwork=($matchany ':data:data:')
+importprivkey=($matchany ':privkey:private key:' $matchany ':label:label:' $matchtruefalse ':rescan:rescan:(true false)')
+decoderawtransaction=($matchhex ":hexnum:hexadecimal No.:")
+listaccounts=($minconf)
+listreceivedbyaddress=($minconf $matchtruefalse ':includeempty:include empty accounts:(true false)')
+listreceivedbyaccount=($listreceivedbyaddress)
+listsinceblock=($blockhash $matchnum ':number:Number of target confirmations:')
+listtransactions=($bcaccount $matchnum ':number:max number of transactions to list:' $matchnum ':number:number of initial transactions to skip:')
+listunspent=($minconf $matchnum ':number:Max number of confirmations required:' $matchbcaddr)
+move=($bcaccount $bcaccount $amount $minconf $comment)
+sendfrom=($bcaccount $matchbcaddr $amount $minconf $comment $comment)
+sendmany=($bcaccount $matchany ':amounts:addresses & amounts:' $minconf $comment)
+sendrawtransaction=($matchhex ':transaction:raw transaction hex string:')
+sendtoaddress=($matchbcaddr $amount $comment $comment)
+setaccount=($matchbcaddr $bcaccount)
+setgenerate=($matchtruefalse ':generate:generation on:' $matchnum ':limit:processors limit (-1 = unlimited):')
+settxfee=($amount)
+signmessage=($matchbcaddr $comment)
+signrawtransaction=($matchhex ':transaction:hex-encoded transaction:')
+submitblock=($matchhex ':hexdata:hex block data:')
+verifymessage=($matchbcaddr $matchany ':signature:signature:' $comment)
+walletpassphrase=($passphrase $matchnum ':number:timeout in seconds:')
+walletpassphrasechange=($passphrase $passphrase)
+
+local -a args reply
+# Command word.  Don't care what that is.
+args=( $matchany )
+
+_regex_words command "bitcoin command" \
+    'addmultisigaddress:Add a nrequired-to-sign multisignature address to the wallet:$addmultisigaddress' \
+    'addnode:Attempts to add or remove a node from the addnode list or try a connection to node once:$addnode' \
+    'backupwallet:Safely copy wallet.dat to a destination (a directory or filepath.):$filedir' \
+    'createmultisig:Creates a multi-signature address and returns a json object:$createmultisig' \
+    'createrawtransaction:Create a raw transaction spending given inputs.' \
+    'decoderawtransaction:Produce human-readable JSON object for a raw transaction.:$decoderawtransaction' \
+    'dumpprivkey:Reveal private key corresponding to bitcoin address.:$matchbcaddr' \
+    'getaccount:Return account associated with the given address.:$matchbcaddr' \
+    'getaccountaddress:Return current bitcoin address for receiving payments to this account.:$bcaccount' \
+    'getaddednodeinfo:Return information about the given added node, or all added nodes:$getaddednodeinfo' \
+    'getaddressesbyaccount:Return list of addresses for the given account.:$bcaccount' \
+    'getbalance:If account is not specified, returns the servers total available balance.:$getbalance' \
+    'getblock:Return information about the block with the given hash.:$blockhash' \
+    'getblockcount:Return number of blocks in the longest block chain.' \
+    'getblockhash:Return hash of block in best-block-chain at index (index 0 is the genesis block):$getblockhash' \
+    'getblocktemplate:Return data needed to construct a block to work on.:$getblocktemplate' \
+    'getconnectioncount:Return number of connections to other nodes.' \
+    'getdifficulty:Return proof-of-work difficulty as a multiple of the minimum difficulty.' \
+    'getgenerate:Return true or false whether bitcoind is currently generating hashes' \
+    'gethashespersec:Return a recent hashes per second performance measurement while generating.' \
+    'getinfo:Return an object containing various state info.' \
+    'getmemorypool:Replaced with getblocktemplate, submitblock, getrawmempool:$submitblock' \
+    'getmininginfo:Return an object containing mining-related information:' \
+    'getnewaddress:Return a new bitcoin address for receiving payments.:$bcaccount' \
+    'getpeerinfo:Return data about each connected node.' \
+    'getrawchangeaddress:Return a new Bitcoin address, for receiving change.' \
+    'getrawmempool:Return all transaction ids in memory pool.' \
+    'getrawtransaction:Return raw transaction representation for given transaction id.:$getrawtransaction' \
+    'getreceivedbyaccount:Return total amount received by addresses in account.:$getreceivedbyaccount' \
+    'getreceivedbyaddress:Return amount received by bitcoin address.:$getreceivedbyaddress' \
+    'gettransaction:Return an object about the given transaction:$matchtxid' \
+    'gettxout:Return details about an unspent transaction output:$gettxout' \
+    'gettxoutsetinfo:Return statistics about the unspent transaction output set' \
+    'getwork:Return formatted hash data (data not specified) to work on or try to solve block (data specified).:$getwork' \
+    'help:List commands, or get help for a command.:$bccmds' \
+    'importprivkey:Adds a private key (as returned by dumpprivkey) to your wallet.:$importprivkey' \
+    'keypoolrefill:Fills the keypool, requires wallet passphrase to be set.' \
+    'listaccounts:Return Object that has account names as keys, account balances as values.:$listaccounts' \
+    'listaddressgroupings:Return all addresses in the wallet and info used for coincontrol.' \
+    'listreceivedbyaccount:Return an array of objects containing account, amount, and confirmations:$listreceivedbyaccount' \
+    'listreceivedbyaddress:Return an array of objects containing address, account, amount, and confirmations:$listreceivedbyaddress' \
+    'listsinceblock:Get all transactions in blocks since block blockhash, or all transactions if omitted.:$listsinceblock' \
+    'listtransactions:Return most recent transactions.:$listtransactions' \
+    'listunspent:Return array of unspent transaction inputs in the wallet.:$listunspent' \
+    'listlockunspent:Return list of temporarily unspendable outputs:' \
+    'lockunspent:Updates list of temporarily unspendable outputs' \
+    'move:Move from one account in your wallet to another' \
+    'sendfrom:Send given amount to given address.:$sendfrom' \
+    'sendmany:Send given amounts to given addresses.:$sendmany' \
+    'sendrawtransaction:Submit raw transaction (serialized, hex-encoded) to local node and network.:$sendrawtransaction' \
+    'sendtoaddress:Send amount from wallet to bitcoin address.:$sendtoaddress' \
+    'setaccount:Set the account associated with the given address, or create a new address for account.:$setaccount' \
+    'setgenerate:Turn generation on or off.:$setgenerate' \
+    'settxfee:Set transaction fee.:$settxfee' \
+    'signmessage:Sign a message with the private key of an address.:$signmessage' \
+    'signrawtransaction:Add signatures to a raw transaction and return the resulting raw transaction.:$signrawtransaction' \
+    'stop:Stop bitcoin server.' \
+    'submitblock:Attempt to submit new block to network.:$submitblock' \
+    'validateaddress:Return information about bitcoin address.:$matchbcaddr' \
+    'verifymessage:Verify a signed message.:$verifymessage' \
+    'walletlock:Remove the wallet encryption key from memory, locking the wallet.' \
+    'walletpassphrase:Store the wallet decryption key in memory.:$walletpassphrase' \
+    'walletpassphrasechange:Change the wallet passphrase.:$walletpassphrasechange' 
+
+args+=("$reply[@]")
+
+_regex_arguments _bitcoin "${args[@]}"
+
+_bitcoin "$@"
+
+
+# Local Variables: 
+# mode:shell-script
+# End:             
