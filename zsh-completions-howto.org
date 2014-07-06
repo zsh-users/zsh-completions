@@ -300,10 +300,10 @@ like this: "$somevar"$'\0'
 The regular expression syntax for patterns seems to be a bit different from normal regular expressions,
 and I can't find documentation anywhere. 
 However I have managed to work out what the following special chars are for:
-| *  | wildcard - any number of chars                                            |
-| ?  | wildcard - single char                                                    |
-| #  | zero or more of the previous char (like * in a normal regular expression) |
-| ## | one or more of the previous char (like + in a normal regular expression)  |
+| *  | wildcard - any number of chars                                             |
+| ?  | wildcard - single char                                                     |
+| #  | zero or more of the previous thing (like * in a normal regular expression) |
+| ## | one or more of the previous thing (like + in a normal regular expression)  |
 *** _regex_words
 The _regex_words function makes it much easier to create specifications for _regex_arguments. 
 The results of calling _regex_words can be stored in a variable which can then be used instead 
@@ -311,8 +311,8 @@ of a specification for _regex_arguments.
 
 To create a specification using _regex_words you supply it with a tag followed by a description followed by a list
 of specifications for individual words. These specifications take the form 'WORD:DESCRIPTION:SPEC' where WORD is the 
-word to be completed, DESCRIPTION is a description for it, and SPEC can be another variable created by _regex_words 
-specifying words that come after the current word or blank if there are no further words.
+word to be completed, DESCRIPTION is a description for it, and SPEC specifies words that come after WORD.
+SPEC can be another variable created by _regex_words or a _regex_arguments specification, or left blank.
 For example:
 #+BEGIN_SRC sh 
 _regex_words subcmd 'The subcommand' 'foo:do foo' 'bar:do bar' 'far:do far'
