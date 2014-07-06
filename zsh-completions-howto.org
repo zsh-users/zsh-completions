@@ -113,6 +113,8 @@ If you have a very large number of completions you can save them in a cache file
 | _message     | Used for displaying help messages in places where no completions can be generated.                                      |
 | _regex_words | Can be used to generate arguments for the _regex_arguments command. This is easier than writing the arguments manually. |
 | _guard       | Can be used in the ACTION of specifications for _arguments and similar functions to check the word being completed.     |
+| _dispatch    | Used to complete an argument using the completion function for a different command.                                     |
+| compset      | Allows you to alter special builtin parameters used by completion functions.                                            |
 *** Actions
 Many of the utility functions such as _arguments, _regex_arguments, _alternative and _values may include an action
 at the end of an option/argument specification. This action indicates how to complete the corresponding argument.
@@ -387,6 +389,16 @@ Complete some MAC addresses one octet at a time:
 #+BEGIN_SRC sh 
 _multi_parts : '(00:11:22:33:44:55 00:23:34:45:56:67 00:23:45:56:67:78)'
 #+END_SRC
+
+** Using an existing competion function for a different command.
+Sometimes you want to save time by using the completion function from a different command for completing an argument of 
+the current command. For example you could try using this foreign completion function as the ACTION in an _arguments specification.
+However, this might not work since the foreign completion function requires a different command word on the command line.
+
+This is where the _dispatch function is useful. It allows you to fool the foreign completion function into thinking that is it
+completing the command it was designed for. 
+You may need to also use the compset with the -n option to fool the foreign completion function by altering the current word position.
+See the _apt-key function for an example.
 
 ** Adding completion words directly using compadd
 For more fine grained control you can use the builtin compadd function to add completion words directly.
