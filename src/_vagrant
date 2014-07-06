@@ -21,6 +21,7 @@ local -a _1st_arguments
 _1st_arguments=(
     'box:Box commands'
     'destroy:Destroys the vagrant environment'
+    'global-status:Shows the status of the global Vagrant environment.'
     'halt:Halts the currently running vagrant environment'
     'help:[TASK] Describe available tasks or one specific task'
     'init:[box_name] [box_url] Initializes current folder for Vagrant usage'
@@ -60,7 +61,7 @@ __task_list ()
     local expl
     local -a tasks
 
-    tasks=(box destroy halt init package plugin provision reload resume ssh ssh_config status suspend up version)
+    tasks=(box destroy global-status halt init package plugin provision reload resume ssh ssh_config status suspend up version)
 
     _wanted tasks expl 'help' compadd $tasks
 }
