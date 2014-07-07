@@ -1,0 +1,15 @@
+#compdef dglob
+
+_arguments       : '-a[Search through all available packages, not just installed ones.]' \
+    '-f[List all files in the matched packages.]' \
+    '-0[When listing files (with -f) use "\0" as a separator instead of a newline.]' \
+    '-r[The pattern of the current simple filter is a standard POSIX regular expression.]' \
+    '-e[Regard the pattern of the current simple filter as an extended POSIX regular expression.]' \
+    '-i[Ignore case when looking for a match in the current simple filter.]' \
+    '-X[Do an exact match (as opposed to a substring match) in the current simple filter.]' \
+    '-v[Instead of showing all the paragraphs that match, show those paragraphs that do not match.]' \
+    "1:pattern:{_guard \"[^ ]#\" 'pattern'}"
+
+# Local Variables: 
+# mode:shell-script
+# End:             
