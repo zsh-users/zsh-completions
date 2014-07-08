@@ -478,6 +478,8 @@ e.g: opts=( \( SPEC1 \# \| SPEC2 \) ).
 
 If you are splitting arguments to one of the helper functions over several lines using \'s remember to remove all whitespace after
 the \'s, and don't put a \ on the final line.
+
+Make sure you define variables in the correct order (so if $b_opts depends on $a_opts, $a_opts should come before $b_opts in the file).
 * Tips
 ** ensuring the option description is displayed even if its the only one
 Sometimes you have a situation where there is just one option that can come after a subcommand, and zsh will complete this 
