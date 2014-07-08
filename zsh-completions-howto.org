@@ -477,7 +477,7 @@ Remember to surround complex _regex_arguments SPEC sequences involving \| or \# 
 e.g: opts=( \( SPEC1 \# \| SPEC2 \) ).
 
 If you are splitting arguments to one of the helper functions over several lines using \'s remember to remove all whitespace after
-the \'s.
+the \'s, and don't put a \ on the final line.
 * Tips
 ** ensuring the option description is displayed even if its the only one
 Sometimes you have a situation where there is just one option that can come after a subcommand, and zsh will complete this 
