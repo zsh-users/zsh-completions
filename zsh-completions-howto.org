@@ -194,10 +194,11 @@ this will complete the items in $userdirs, aswell as a comma separated list cont
 As with _describe, the _alternative function can itself be used in an ACTION as part of a specification for _arguments 
 or _regex_arguments. 
 ** Writing completion functions using _arguments
-With the _arguments function you can create more sophisticated completion functions.
+With the _arguments function you can create more sophisticated completion functions for handling both options and arguments.
 Like the _alternative function, _arguments takes a list of specification strings as arguments.
 These specification strings can be for specifying options and any corresponding option arguments (e.g. -f filename), 
-or command arguments. 
+or command arguments. When listing completions command arguments will be shown, unless there is a hyphen on the command line 
+in which case options will be listed.
 
 Basic option specifications take the form '-OPT[DESCRIPTION]', e.g. like this:
 #+BEGIN_SRC sh 
