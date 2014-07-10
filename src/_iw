@@ -220,39 +220,21 @@ _regex_words dev-commands "dev commands" \
     'su*rvey:list all gathered channel survey data:$dev_cmds_survey' 
 dev_cmds=( $devices "$reply[@]")
 
-# Arguments to _regex_arguments, built up in array $args.
-local -a args reply
-# Command word.  Don't care what that is.
-args=( $matchany )
-
-local -a phydevs
+local -a phydevs reply
 phy_devs=( \( $(iw list|grep '^[[:alnum:]]\+'|cut -f 2 -d ' ') \) )
 phy_cmds=( \( $matchany ":test:test:$phy_devs[*]" \) "$phy_cmds[@]" )
 
-local -a cmdsdebug
-_regex_words debug_commands "iw command" \
-    'd*ev:commands to control/list the software devices:$dev_cmds' \
-    'e*vent:monitor events from the kernel:$event_opts' \
-    'h*elp:print usage for each command' \
-    'l*ist:list all wireless devices and their capabilities' \
-    'p*hy:commands to control the physical device:$phy_cmds' \
-    'r*eg:get/set regulatory domain:$reg_cmds'
-cmdsdebug+=("$reply[@]")
-
 _regex_words commands "iw command" \
-    '--debug:enable netlink debugging:$cmdsdebug' \
-    '--version:show version (3.2)' \
     'd*ev:commands to control/list the software devices:$dev_cmds' \
     'e*vent:monitor events from the kernel:$event_opts' \
     'h*elp:print usage for each command' \
     'l*ist:list all wireless devices and their capabilities' \
     'p*hy:commands to control the physical device:$phy_cmds' \
     'r*eg:get/set regulatory domain:$reg_cmds'
-args+=("$reply[@]")
 
-_regex_arguments _iw "${args[@]}"
+_regex_arguments _iw_commands "$matchany" \( /$'--(debug|version)\0'/ \) \# "${reply[@]}"
 
-_iw "$@"
+_arguments '--debug[enable netlink debugging]' '--version[show version (3.2)]' '*:subcommand:_iw_commands'
 
 # Local Variables: 
 # mode:shell-script
