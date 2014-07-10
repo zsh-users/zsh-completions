@@ -152,7 +152,7 @@ The _describe function can be used in an ACTION as part of a specification for _
 In this case you will have to put it in braces with its arguments, e.g. 'TAG:DESCRIPTION:{_describe 'values' options}'
 ** Writing completion functions using _alternative
 Like _describe, this function performs simple completions where the order and position of options/arguments is not important.
-However, unlike _describe, you can call execute shell code or call functions to obtain the completion candidates.
+However, unlike _describe, you can execute shell code or call functions to obtain the completion candidates.
 
 As arguments it takes a list of specifications each in the form 'TAG:DESCRIPTION:ACTION' where TAG is a tag name, 
 DESCRIPTION is a description, and ACTION is one of the action types listed previously (apart from the ->STRING and =ACTION forms).
