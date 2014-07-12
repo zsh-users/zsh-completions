@@ -365,7 +365,7 @@ _hello "$@"
 Note that you must use single quotes for arguments containing parameters (e.g. 'bar:do bar:$barcmd'), since
 otherwise the parameter will be expanded before _regex_words gets to parse it properly.
 
-For a good example of the usage of _regex_words have a look at the _ip function.
+For a good example of the usage of _regex_words have a look at the _ip & _beet functions.
 ** complex completions with _values, _sep_parts, & _multi_parts
 The _values, _sep_parts & _multi_parts functions can be used either on their own, or as ACTIONs in specifications for 
 _alternative, _arguments or _regex_arguments. The following examples may be instructive.
@@ -501,6 +501,15 @@ To make the number optional use a double colon:
 #+BEGIN_SRC sh
 _arguments '-n[A number]::number:_guard "[0-9]#" "numeric value"'
 #+END_SRC
+** completing options separately from arguments 
+If your command has a lot of options and arguments, you might want to complete the options separately from the arguments
+to avoid cluttering the screen when you press tab. The _arguments function does this for you, and only completes options
+if there is already a hyphen by the cursor. To get the same behaviour with _regex_arguments you need to use the zstyle
+command to set the tag-order value like this: 
+#+BEGIN_SRC sh
+zstyle ":completion:${curcontext}:" tag-order '! options'
+#+END_SRC 
+This tells zsh to avoid using options for completion if possible - it will only use them if there are no other matches.
 * Other resources
 [[http://wikimatze.de/writing-zsh-completion-for-padrino.html][Here]] is a nicely formatted short tutorial showing basic usage of the _arguments function, 
 and [[http://www.linux-mag.com/id/1106/][here]] is a slightly more advanced tutorial using the _arguments function.
