@@ -107,12 +107,12 @@ _regex_words subcmds "subcommands" "$fieldscmd" "$importcmd" "$listcmd" "$update
     "$versioncmd" "$modifycmd" "$movecmd" "$writecmd" "$configcmd" "$migratecmd" "$helpcmd" 
 subcmds=("$reply[@]")
 # Create main completion function
-_regex_arguments _beet_cmds "$matchany" \( "${globalopts[@]}" \# \) "${subcmds[@]}"
+_regex_arguments _beet "$matchany" \( "${globalopts[@]}" \# \) "${subcmds[@]}"
 # Set tag-order - complete options separately from arguments
 zstyle ":completion:${curcontext}:" tag-order '! options'
 
 # Execute the completion function
-_beet_cmds "$@"
+_beet "$@"
 
 # Local Variables: 
 # mode:shell-script
