@@ -1,0 +1,135 @@
+#compdef bower
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for Bower (http://bower.io).
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Joe Lencioni (https://github.com/lencioni)
+#
+# ------------------------------------------------------------------------------
+
+
+local curcontext="$curcontext" state line _packages _opts ret=1
+
+_arguments -C -A "-v" -A "--version" \
+  '(- 1 *)'{-v,--version}'[display version information]' \
+  '1: :->cmds' \
+  '*:: :->args' && ret=0
+
+case $state in
+  cmds)
+    _values "bower command" \
+      "cache[Manage bower cache]" \
+      "help[Display help information about Bower]" \
+      "home[Opens a package homepage into your favorite browser]" \
+      "info[Info of a particular package]" \
+      "init[Interactively create a bower.json file]" \
+      "install[Install a package locally]" \
+      "link[Symlink a package folder]" \
+      "list[List local packages]" \
+      "lookup[Look up a package URL by name]" \
+      "prune[Removes local extraneous packages]" \
+      "register[Register a package]" \
+      "search[Search for a package by name]" \
+      "update[Update a local package]" \
+      "uninstall[Remove a local package]" \
+      "version[Bump a package version]"
+    _arguments \
+      '(--force)--force[Makes various commands more forceful]' \
+      '(--json)--json[Output consumable JSON]' \
+      '(--log-level)--log-level[What level of logs to report]' \
+      '(--offline)--offline[Do not hit the network]' \
+      '(--quiet)--quiet[Only output important information]' \
+      '(--silent)--silent[Do not output anything, besides errors]' \
+      '(--verbose)--verbose[Makes output more verbose]' \
+      '(--allow-root)--allow-root[Allows running commands as root]'
+    ret=0
+    ;;
+  args)
+    case $line[1] in
+      help)
+        _values 'commands' \
+          'cache' \
+          'home' \
+          'info' \
+          'init' \
+          'install' \
+          'link' \
+          'list' \
+          'lookup' \
+          'prune' \
+          'register' \
+          'search' \
+          'update' \
+          'uninstall' \
+          'version'
+        ret=0
+        ;;
+      (home|info|init|link|lookup|prune|register|search)
+        _arguments \
+          '(--help)--help[Show help message]'
+        ret=0
+        ;;
+      install)
+        _arguments \
+          '(--force-latest)--force-latest[Force latest version on conflict]' \
+          '(--help)--help[Show help message]' \
+          '(--production)--production[Do not install project devDependencies]' \
+          '(--save)--save[Save installed packages into the project''s bower.json dependencies]' \
+          '(--save-dev)--save-dev[Save installed packages into the project''s bower.json devDependencies]'
+        ret=0
+        ;;
+      list)
+        _arguments \
+          '(--help)--help[Show help message]' \
+          '(--paths)--paths[Generate a simple JSON source mapping]' \
+          '(--relative)--relative[Make paths relative to the directory config property, which defaults to bower_components]'
+        ret=0
+        ;;
+      uninstall)
+        _arguments \
+          '(--help)--help[Show help message]' \
+          '(--save)--save[Save installed packages into th projects''s bower.json dependencies]' \
+          '(--save-dev)--save-dev[Save installed packages into th projects''s bower.json devDependencies]'
+        ret=0
+        ;;
+      update)
+        _arguments \
+          '(--force-latest)--force-latest[Force latest version on conflict]' \
+          '(--help)--help[Show help message]' \
+          '(--production)--production[Do not install project devDependencies]'
+        ret=0
+        ;;
+      version)
+        _arguments \
+          '(--message)--message[Custom git commit and tag message]'
+        ret=0
+        ;;
+      exec)
+        _normal && ret=0
+        ;;
+      *)
+        _opts=(  $(bower help $line[1] | sed -e '/^  \[-/!d; s/^  \[\(-[^=]*\)=.*/\1/') )
+        _opts+=( $(bower help $line[1] | sed -e '/^  -/!d; s/^  \(-.\), \[\(-[^=]*\)=.*/\1 \2/') )
+        if [[ $_opts != "" ]]; then
+          _values 'options' $_opts && ret=0
+        fi
+        ;;
+    esac
+    ;;
+esac
+
+return ret
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
