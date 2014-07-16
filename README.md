@@ -42,7 +42,7 @@ Contributing
 
 Contributions are welcome, just make sure you follow the guidelines:
 
- * Completions are not accepted when already available in their available project.
+ * Completions are not accepted when already available in their original project.
  * Please do not just copy/paste someone else completion, ask before.
  * Completions only partially implemented are not accepted.
  * Please add a header containing authors, license info, status and origin of the script (example [here](src/_ack)).
