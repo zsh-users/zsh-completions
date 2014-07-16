@@ -1,6 +1,6 @@
 #compdef teamocil
 # ------------------------------------------------------------------------------
-# Copyright (c) 2011 Github zsh-users - http://github.com/zsh-users
+# Copyright (c) 2014 Github zsh-users - https://github.com/zsh-users
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,28 +28,20 @@
 # Description
 # -----------
 #
-#  Completion script for Teamocil (https://github.com/remiprev/teamocil)
+#  Completion script for Teamocil 0.4.5 (https://github.com/remiprev/teamocil).
 #
 # ------------------------------------------------------------------------------
 # Authors
 # -------
 #
-#  * Grigory V. <floatboth@me.com>
-#  * Julien Nicoulaud <julien.nicoulaud@gmail.com>
+#  * Petr Zelenin <petr.zelenin@gmail.com>
 #
 # ------------------------------------------------------------------------------
 
-
 _arguments \
-  '--here[open the session from the current window]' \
-  '--layout[specify a custom file path to a YAML layout file]:teamocil layout file:_files -g "*.yml"' \
-  '--edit[open the layout file (whether or not --layout is used) with $EDITOR]' \
-  '1:teamocil layout:_files -W ~/.teamocil -g "*.yml(:r)"'
-
-# Local Variables:
-# mode: Shell-Script
-# sh-indentation: 2
-# indent-tabs-mode: nil
-# sh-basic-offset: 2
-# End:
-# vim: ft=zsh sw=2 ts=2 et
+    '--here[set up the first window in the current window]' \
+    '--edit[edit the YAML layout file instead of using it]' \
+    '--layout [use a specific layout file, instead of \`~/.teamocil/<layout>.yml\`]' \
+    '--list[list all available layouts in \`~/.teamocil/\`]' \
+    '--show[show the content of the layout file instead of executing it]' \
+    '*:teamocil layouts:_files -W ~/.teamocil -g "*.yml(:r)"'
