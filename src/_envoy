@@ -40,15 +40,15 @@
 
 
 _envoy_get_command_list () {
-    envoy --no-ansi | sed "1,/Available commands/d" | awk '/^  [a-z]+/ { print $1 }'
+    envoy --no-ansi | sed "1,/Available commands/d" | awk '/ [a-z]+/ { print $1 }'
 }
 
 _envoy_get_option_list () {
-    envoy --no-ansi | sed "1,/Options/d" | awk '/^  --[a-z]+/ { print $1 }'
+    envoy --no-ansi | sed "1,/Options/d" | awk '/ --[a-z]+/ { print $1 }'
 }
 
 _envoy_get_help_list () {
-    envoy help $1 --no-ansi | sed "1,/Options/d" | awk '/^  --[a-z]+/ { print $1 }'
+    envoy help $1 --no-ansi | sed "1,/Options/d" | awk '/ --[a-z]+/ { print $1 }'
 }
 
 _envoy_get_task_list () {
