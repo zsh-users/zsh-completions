@@ -1,0 +1,77 @@
+#compdef rspec
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for RSpec (http://rspec.info/).
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Kazuya Takeshima (https://github.com/mitukiii)
+#
+# ------------------------------------------------------------------------------
+
+
+_rspec() {
+  local context state line curcontext="$curcontext"
+
+  _arguments -C \
+    -I'[Specify PATH to add to $LOAD_PATH (may be used more than once)]:PATH:_files' \
+    '*'{-r,--require}'[Require a file]:PATH:_files' \
+    '*'{-O,--options}'[Specify the path to a custom options file]:PATH:_files' \
+    --order'[Run examples by the specified order type]: :->order' \
+    --seed'[Equivalent of --order rand:SEED]: :_guard "[[\:digit\:]]#" "SEED"' \
+    --fail-fast'[Abort the run on first failure]' \
+    --no-fail-fast'[Do not abort the run on first failure]' \
+    --failure-exit-code'[Override the exit code used when there are failing specs]: :_guard "[[\:digit\:]]#" "CODE"' \
+    --dry-run'[Print the formatter output of your suite without running any examples or hooks]' \
+    '(-X --drb)'{-X,--drb}'[Run examples via DRb]' \
+    --drb-port'[Port to connect to the DRb server]: :_guard "[[\:digit\:]]#" "PORT"' \
+    '(-f --format)'{-f,--format}'[Choose a formatter]:FORMATTER:(progress documentation html json)' \
+    '(-o --out)'{-o,--out}'[Write output to a file instead of $stdout]:FILE:_files' \
+    --deprecation-out'[Write deprecation warnings to a file instead of $stderr]:FILE:_files' \
+    '(-b --backtrace)'{-b,--backtrace}'[Enable full backtrace]' \
+    '(-c --color)'{-c,--color}'[Enable color in the output]' \
+    '(-p --profile)'{-p,--profile}'[Enable profiling of examples and list the slowest examples (default: 10)]: :_guard "[[\:digit\:]]#" "COUNT"' \
+    '(-w --warnings)'{-w,--warnings}'[Enable ruby warnings]' \
+    '(-P --pattern)'{-P,--pattern}'[Load files matching pattern (default: "spec/**/*_spec.rb")]:PATTERN:' \
+    '(-e --example)'{-e,--example}'[Run examples whose full nested names include STRING (may be used more than once)]:STRING:' \
+    '(-t --tag)'{-t,--tag}'[Run examples with the specified tag, or exclude examples by adding ~ before the tag]: :->tag' \
+    --default-path'[Set the default path where RSpec looks for examples (can be a path to a file or a directory)]:PATH:_files' \
+    '(- *)'--init'[Initialize your project with RSpec]' \
+    '(- *)'{-h,--help}"[You're looking at it]" \
+    '(- *)'{-v,--version}'[Display the version]' \
+    '*:files or directories:_files'
+
+  case "$state" in
+    order)
+      if compset -P '*:'; then
+        _guard '[[:digit:]]#' 'SEED'
+      else
+        _values 'TYPE[:SEED]' \
+          defined'[examples and groups are run in the order they are defined]' \
+          rand'[randomize the order of groups and examples]' \
+          random'[alias for rand]'
+      fi
+      ;;
+    tag)
+      if compset -P '*:'; then
+        _message 'VALUE'
+      else
+        _message 'TAG[:VALUE]'
+      fi
+      ;;
+  esac
+}
+
+_rspec "$@"
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
