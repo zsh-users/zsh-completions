@@ -52,3 +52,5 @@ case "$state" in
     _describe -t format format format_values && ret=0
   ;;
 esac
+
+return $ret
