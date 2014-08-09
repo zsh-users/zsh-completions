@@ -10,6 +10,7 @@ Status
 ------
 See [issues](https://github.com/zsh-users/zsh-completions/issues) for details on each completion definition.
 
+Gentoo's completions have been removed, as they are maintained upstream. See: [Gentoo zsh-completions](https://github.com/gentoo/gentoo-zsh-completions)
 
 Usage
 -----
