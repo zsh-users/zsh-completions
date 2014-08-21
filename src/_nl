@@ -29,7 +29,7 @@ format_values=(
 )
 
 _arguments -C -s -S \
-    {-b+,--body-numbering=}'[use STYLE for \[numbering body\] lines]:style:->style' \
+    {-b+,--body-numbering=}'[use STYLE for given number of lines]:style:->style' \
     {-d+,--section-delimiter=}'[use CC for separating logical pages]' \
     {-f+,--footer-numbering=}'[use STYLE for numbering footer lines]:style:->style' \
     {-h+,--header-numbering=}'[use STYLE for numbering header lines]:style:->style' \
