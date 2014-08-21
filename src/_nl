@@ -1,0 +1,56 @@
+#compdef nl
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for GNU nl (coreutils 8.13).
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * github.com/RobSis
+#
+# ------------------------------------------------------------------------------
+
+local arguments style_values format_values ret=1
+
+style_values=(
+    "a:number all lines"
+    "t:number only nonempty lines"
+    "n:number no lines"
+    "pBRE:number only lines that contain a match for the basic regular expresision, BRE"
+)
+
+format_values=(
+    "ln:left justified, no leading zeros"
+    "rn:right justified, no leading zeros"
+    "rz:right justified, leading zeros"
+)
+
+_arguments -C -s -S \
+    {-b+,--body-numbering=}'[use STYLE for given number of lines]:style:->style' \
+    {-d+,--section-delimiter=}'[use CC for separating logical pages]' \
+    {-f+,--footer-numbering=}'[use STYLE for numbering footer lines]:style:->style' \
+    {-h+,--header-numbering=}'[use STYLE for numbering header lines]:style:->style' \
+    {-i+,--line-increment=}'[line number increment at each line]' \
+    {-l+,--join-blank-lines=}'[group of NUMBER empty lines counted as one]' \
+    {-n+,--number-format=}'[insert line numbers according to FORMAT]:format:->format' \
+    {-p,--no-renumber}'[do not reset line numbers at logical pages]' \
+    {-s+,--number-separator=}'[add STRING after (possible) line number]' \
+    {-v+,--starting-line-number=}'[first line number on each logical page]' \
+    {-w+,--number-width=}'[use NUMBER columns for line numbers]' \
+    --help'[display help and exit]' \
+    --version'[output version information and exit]' \
+    '*:filename:_files' && ret=0
+
+case "$state" in
+  (style)
+    _describe -t style style style_values && ret=0
+  ;;
+  (format)
+    _describe -t format format format_values && ret=0
+  ;;
+esac
+
+return $ret
