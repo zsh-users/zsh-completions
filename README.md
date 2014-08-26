@@ -38,6 +38,16 @@ Usage
 
         rm -f ~/.zcompdump; compinit
 
+
+#### Using antigen
+Add
+```bash
+antigen bundle zsh-lovers/zsh-completions
+```
+
+to your `.zshrc`. This will automatically clone the repository and add zsh-completions/src to your `$fpath`. You may have to rebuild zcompdump as listed above under Manual Installation.
+
+
 Contributing
 ------------
 
