@@ -40,7 +40,7 @@ local -a args reply
 
 function _virsh-domains() {
   local -a out
-  out=( ${${${${(f)"$(virsh list "$@")"}:#(---| Id)*}## #[0-9]## ##}%% *} )
+  out=( ${${${${(f)"$(virsh list "$@")"}:#(---| Id)*}## #[0-9-]## ##}%% *} )
   _describe -t domains "${${1#--}:-running} domains" out
   return $?
 }
