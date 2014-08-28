@@ -41,7 +41,7 @@ local -a args reply
 function _virsh-domains() {
   local -a out
   out=( ${${${${(f)"$(virsh list "$@")"}:#(---| Id)*}## #[0-9]## ##}%% *} )
-  compadd -x "${${1#--}:-running} domains" -a out
+  _describe -t domains "${${1#--}:-running} domains" out
   return $?
 }
 
