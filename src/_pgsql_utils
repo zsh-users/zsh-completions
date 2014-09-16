@@ -206,7 +206,7 @@ _pg_dump () {
         {-Z+,--compress=}':compression level:_values "level" 9 8 7 6 5 4 3 2 1 0' \
         ':PostgreSQL database:_pgsql_databases' \
         --section=':dump named section:_values "section" pre-data data post-data' \
-        --disable-dollpgar-quoting'[disable dollar quoting, use SQL standard quoting]' \
+        --disable-dollar-quoting'[disable dollar quoting, use SQL standard quoting]' \
         --disable-triggers'[disable triggers during data-only restore]' \
         --no-security-labels'[do not dump security label assignments]' \
         --no-tablespaces'[do not dump tablespace assignments]' \
