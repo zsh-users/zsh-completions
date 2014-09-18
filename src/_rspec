@@ -37,6 +37,7 @@ _rspec() {
     '(-p --profile)'{-p,--profile}'[Enable profiling of examples and list the slowest examples (default: 10)]: :_guard "[[\:digit\:]]#" "COUNT"' \
     '(-w --warnings)'{-w,--warnings}'[Enable ruby warnings]' \
     '(-P --pattern)'{-P,--pattern}'[Load files matching pattern (default: "spec/**/*_spec.rb")]:PATTERN:' \
+    --exclude-pattern'[Load files except those matching pattern]:PATTERN:' \
     '(-e --example)'{-e,--example}'[Run examples whose full nested names include STRING (may be used more than once)]:STRING:' \
     '(-t --tag)'{-t,--tag}'[Run examples with the specified tag, or exclude examples by adding ~ before the tag]: :->tag' \
     --default-path'[Set the default path where RSpec looks for examples (can be a path to a file or a directory)]:PATH:_files' \
