@@ -136,7 +136,7 @@ __rails_migration_fields() {
     _values 'index' 'index' 'uniq'
   else
     if compset -P '*:'; then
-      _values -s ':' 'type' 'string' 'text' 'integer' 'float' 'decimal' 'datetime' 'timestamp' 'time' 'date' 'binary' 'boolean'
+      _values -s ':' 'type' 'string' 'text' 'integer' 'float' 'decimal' 'datetime' 'timestamp' 'time' 'date' 'binary' 'boolean' 'references'
     else
       _guard '[[:alnum:]_]#' 'field'
     fi
