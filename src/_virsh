@@ -40,8 +40,8 @@ local -a args reply
 
 function _virsh-domains() {
   local -a out
-  out=($(virsh list "$@"))
-  compadd -x "${${1#--}:-running} domains" -a out
+  out=( ${${${${(f)"$(virsh list "$@")"}:#(---| Id)*}## #[0-9-]## ##}%% *} )
+  _describe -t domains "${${1#--}:-running} domains" out
   return $?
 }
 
@@ -54,19 +54,19 @@ expand_dirs=(/$'[^\0]##\0'/ ":dir:dir name:_files -/")
 local -a expand_domains
 expand_domains=(
   /$'[^\0]##\0'/
-  ":domains:domains:{_virsh-domains --all --name}"
+  ":domains:domains:{_virsh-domains --all}"
 )
 
 local -a expand_domains_running
 expand_domains_running=(
   /$'[^\0]##\0'/
-  ":domains:running domains:{_virsh-domains --name}"
+  ":domains:running domains:{_virsh-domains}"
 )
 
 local -a expand_domains_inactive
 expand_domains_inactive=(
   /$'[^\0]##\0'/
-  ":domains:inactive domains:{_virsh-domains --inactive --name}"
+  ":domains:inactive domains:{_virsh-domains --inactive}"
 )
 
 local -a expand_kilobytes
