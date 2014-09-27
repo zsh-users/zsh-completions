@@ -18,7 +18,7 @@ Usage
 #### Using packages
 
 * Arch Linux: [community/zsh-completions](https://www.archlinux.org/packages/zsh-completions) / [AUR/zsh-completions-git](https://aur.archlinux.org/packages/zsh-completions-git/)
-* Gentoo: [scrill overlay](http://gpo.zugaina.org/app-shells/zsh-completions)
+* Gentoo: [Chose apropriate overlay from that list](http://gpo.zugaina.org/app-shells/zsh-completions)
 * Mac OS: [Homebrew](https://github.com/mxcl/homebrew/blob/master/Library/Formula/zsh-completions.rb)
 * Debian based distributions (Debian/Ubuntu/Linux Mint...): Packager needed, please get in touch !
 * RPM based distributions (Fedora/RHEL/CentOS...): Packager needed, please get in touch !
