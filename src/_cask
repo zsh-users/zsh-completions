@@ -14,16 +14,16 @@
 # names of its contributors may be used to endorse or promote products
 # derived from this software without specific prior written permission.
 #
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL ZSH-USERS BE LIABLE FOR ANY
-# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL ZSH-USERS BE LIABLE FOR ANY DIRECT, INDIRECT,
+# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+# PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+# LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+# NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+# EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # ------------------------------------------------------------------------------
 # Description
 # -----------
@@ -41,40 +41,40 @@
 # ------------------------------------------------------------------------------
 
 function _cask() {
-    local ret=1 state
-    _arguments \
-        ':subcommand:->subcommand' \
-        '*:: :->subcmds' && ret=0
+  local ret=1 state
+  _arguments \
+    ':subcommand:->subcommand' \
+    '*:: :->subcmds' && ret=0
 
-    case $state in
-        subcommand)
-            subcommands=(
-                "path:Print Emacs exec-path (including package bin path)"
-                "load-path:Print Emacs load-path (including package dependencies)"
-                "help:Display this help message"
-                "info:Show info about this project"
-                "list:List dependencies"
-                "version:Show the package version"
-                "init:Create basic Cask file"
-                "exec:Execute command with correct dependencies"
-                "update:Update dependencies"
-                "install:Install dependencies"
-                "package:Create -pkg.el file"
-                "package-directory:Print package installation directory"
-            )
-            _describe -t subcommands 'cask subcommands' subcommands && ret=0
-    esac
+  case $state in
+    subcommand)
+      subcommands=(
+        "path:print Emacs exec-path (including package bin path)"
+        "load-path:print Emacs load-path (including package dependencies)"
+        "help:display help message"
+        "info:show info about this project"
+        "list:list dependencies"
+        "version:show the package version"
+        "init:create basic Cask file"
+        "exec:execute command with correct dependencies"
+        "update:update dependencies"
+        "install:install dependencies"
+        "package:create -pkg.el file"
+        "package-directory:print package installation directory"
+      )
+      _describe -t subcommands 'cask subcommands' subcommands && ret=0
+  esac
 
-    case "$words[1]" in
-        init)
-            _arguments \
-                '(--dev)--dev[Run in dev mode]' && ret=0 ;;
-        exec)
-            _generic
-            ;;
-    esac
+  case "$words[1]" in
+    init)
+      _arguments \
+        '(--dev)--dev[Run in dev mode]' && ret=0 ;;
+    exec)
+      _generic
+      ;;
+  esac
 
-    return ret
+  return ret
 }
 
 _cask "$@"
