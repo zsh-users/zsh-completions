@@ -49,18 +49,27 @@ function _cask() {
   case $state in
     subcommand)
       subcommands=(
-        "path:print Emacs exec-path (including package bin path)"
-        "load-path:print Emacs load-path (including package dependencies)"
-        "help:display help message"
-        "info:show info about this project"
+        "build:build all Elisp files in the files directive"
+        "clean-elc:remove all byte compiled Elisp files in the files directive"
+        "exec:execute command with correct 'exec-path' and 'load-path'"
+        "exec-path:print 'exec-path' for all packages and dependencies"
+        "files:print list of files specified in the files directive"
+        "help:display usage information or documentation for specified command"
+        "info:show info about the current package"
+        "init:initialize the current directory with a Cask-file"
+        "install:install all packages specified in the Cask-file"
+        "link:manage links"
         "list:list dependencies"
-        "version:show the package version"
-        "init:create basic Cask file"
-        "exec:execute command with correct dependencies"
-        "update:update dependencies"
-        "install:install dependencies"
-        "package:create -pkg.el file"
-        "package-directory:print package installation directory"
+        "load-path:print 'load-path' for all packages and dependencies"
+        "outdated:print list of outdated packages"
+        "package:build package and put in specified directory (default: dist)"
+        "package-directory:print current package installation directory"
+        "path:print 'exec-path' for all packages and dependencies"
+        "pkg-file:write a 'define-package' file"
+        "update:update package version"
+        "upgrade-cask:upgrade Cask itself and its dependencies"
+        "upgrade:upgrade Cask itself and its dependencies"
+        "version:print program version"
       )
       _describe -t subcommands 'cask subcommands' subcommands && ret=0
   esac
