@@ -35,6 +35,7 @@ _tmuxinator() {
 
   if (( CURRENT == 2 )); then
     _describe -t commands 'commands' commands
+    _describe -t projects 'projects' projects
   elif (( CURRENT == 3 )); then
     case $words[2] in
       copy|delete|open|start)
