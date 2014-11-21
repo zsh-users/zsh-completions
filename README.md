@@ -10,7 +10,7 @@ Status
 ------
 See [issues](https://github.com/zsh-users/zsh-completions/issues) for details on each completion definition.
 
-Gentoo's completions have been removed, as they are maintained upstream. See: [Gentoo zsh-completions](https://github.com/gentoo/gentoo-zsh-completions)
+Gentoo's completions have been removed, as they are maintained upstream. See: [Gentoo zsh-completions](https://github.com/radhermit/gentoo-zsh-completions)
 
 Usage
 -----
@@ -18,7 +18,7 @@ Usage
 #### Using packages
 
 * Arch Linux: [community/zsh-completions](https://www.archlinux.org/packages/zsh-completions) / [AUR/zsh-completions-git](https://aur.archlinux.org/packages/zsh-completions-git/)
-* Gentoo: [Choose apropriate overlay from that list](http://gpo.zugaina.org/app-shells/zsh-completions)
+* [Gentoo](http://packages.gentoo.org/package/app-shells/zsh-completions)
 * Mac OS: [Homebrew](https://github.com/mxcl/homebrew/blob/master/Library/Formula/zsh-completions.rb)
 * Debian based distributions (Debian/Ubuntu/Linux Mint...): Packager needed, please get in touch !
 * RPM based distributions (Fedora/RHEL/CentOS...): Packager needed, please get in touch !
