@@ -38,15 +38,16 @@
 #
 # ------------------------------------------------------------------------------
 
+_find_console () {
+     echo "php $(find . -maxdepth 2 -mindepth 1 -name 'console' -type f | head -n 1)"
+}
 
 _console_get_command_list () {
-    php console --no-ansi | sed "1,/Available commands/d" | awk '/ [a-z]+/ { print $1 }'
+    `_find_console` --no-ansi | sed "1,/Available commands/d" | awk '/ [a-z]+/ { print $1 }'
 }
 
 _console () {
-    if [ -f console ]; then
-        compadd `_console_get_command_list`
-    fi
+    compadd `_console_get_command_list`
 }
 
 compdef _console php console
