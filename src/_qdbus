@@ -1,0 +1,112 @@
+#compdef qdbus
+#
+# Copyright (C) 2015 Thomas Mitterfellner <thomas.mitterfellner@gmail.com>
+#
+# This file is released under the GPLv2.
+#
+#  version 0.1
+
+# get the type of a method: 1 means function, 2 means property
+getType () {
+  case "$1" in
+    "method"*) echo 1 ;;
+    "property"*) echo 2 ;;
+    *) echo 0 ;;
+  esac
+}
+
+# get the index of a method in an array of methods
+getIndex () {
+  local e
+  local index
+  local type_
+  index=0
+  for e in "${@:2}"; do 
+    index=$(( index + 1 ))
+    type_=$(getType "$e")
+    if [[ $type_ == 1 ]] ; then
+      if [[ "$e" == *"$1("* ]] ; then
+        echo $index
+        return 0
+      fi
+    elif [[ $type_ == 2 ]] ; then
+      if [[ "$e" == *"$1" ]] ; then
+        echo $index
+        return 0
+      fi
+    fi
+  done
+  echo 0
+}
+
+_qdbus() {
+  local curcontext="$curcontext" state line
+  local services
+  local path_
+  local methods
+  local names
+  local types
+  local properties
+  local index
+  typeset -A opt_args
+ 
+  _arguments "--system[connect to system bus]"\
+             "--literal[print literal replies]"\
+             "1:service name:->service"\
+             "2:path:->path"\
+             "3:method:->method"\
+             "*:arguments:->arguments"
+  
+  case $state in 
+    service)
+      services=( $(qdbus ${words[@]:1:-1} | grep -E '^([^:])') )
+      compadd "$@" $services
+    ;;
+
+    path)
+      path_=( $(qdbus ${words[@]:1:-1} 2>/dev/null) )
+      
+      compadd "$@" $path_
+    ;;
+
+    method)
+      IFS=$'\n' 
+      methods=( $(qdbus ${words[@]:1:-1} | \
+          grep -e "^method" | \
+          sed -r 's/method (.+) (.+)\((.*)\)/\2:\1(\3)/g' 2>/dev/null) )
+      properties=( $(qdbus ${words[@]:1:-1} | \
+          grep -e "^property" | \
+          sed -r 's/property (.+) (.+) (.+)/\3:\1 \2/g' 2>/dev/null) )
+
+      _describe properties properties -J properties
+      _describe methods methods -J methods
+    ;;
+
+    arguments)
+      IFS=$'\n' 
+     
+      path_pos=$(( ${(M)#words:#--*} + 2))
+      method_pos=$(( $path_pos + 2))
+      names=( $(qdbus ${words[@]:1:$path_pos} | grep -e '^[mp]' 2>/dev/null) )
+      index=$(getIndex "${words[$method_pos]}" $names[@])
+      method=$names[$index]
+
+      arg_pos=$(( ${#words} - $method_pos ))
+      if [[ $(getType "$method") -eq 1 ]] ; then
+        method_args="$(echo $method | sed -r 's/(.+) (.+) (.+)\((.*)\)/\4/g')"
+        IFS=$',' method_args_=(${=method_args})
+        num_args=${#method_args_}
+        if [[ $arg_pos -le $num_args ]] ; then
+          _message "${method_args_[$arg_pos]}"
+        fi
+      else
+        property_=$(echo "$method" |\
+            sed -r 's/property (.+) (.+) (.+)/\1 \2/g')
+        if [[ $arg_pos -eq 1 ]] ; then 
+
+          _message ${property_}
+        fi
+      fi
+    ;;
+  esac
+}
