@@ -40,16 +40,17 @@
 
 declare -a opts args
 args=(
-  '(-h --help)'{-h,--help}'[display help information]'
-  '(-V --version)'{-V,--version}'[display version information]'
-  '(-s --slurp)'{-s,--slurp}'[run the filter just once]'
-  '(-R --raw-input)'{-R,--raw-input}'[parse the input as not JSON but string]'
-  '(-n --null-input)'{-n,--null-input}'[run the filter using null as the input]'
-  '(-c --compact-output)'{-c,--compact-output}'[compact output]' \
   '(-C --color-output)'{-C,--color-output}'[colorize the output even if writing to a pipe or a file]'
   '(-M --monochrome-output)'{-M,--monochrome-output}'[not colorize the output]'
+  '(-R --raw-input)'{-R,--raw-input}'[parse the input as not JSON but string]'
+  '(-S --sort-keys)'{-S, --sort-keys}'[Output the fields of each object with the keys in sorted order.']
+  '(-V --version)'{-V,--version}'[display version information]'
   '(-a --ascii-output)'{-a,--ascii-output}'[output with pure ASCII character]'
+  '(-c --compact-output)'{-c,--compact-output}'[compact output]' \
+  '(-h --help)'{-h,--help}'[display help information]'
+  '(-n --null-input)'{-n,--null-input}'[run the filter using null as the input]'
   '(-r --raw-output)'{-r,--raw-output}'[not format string result as a JSON string with quotes]'
+  '(-s --slurp)'{-s,--slurp}'[run the filter just once]'
   '--arg[passes a value to the jq program, e.g. --arg foo bar]:jq variable: '
   '1: :_guard "^-*" pattern'
   '*:files:->file'
