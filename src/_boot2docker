@@ -48,8 +48,8 @@ _boot2docker_command() {
   _boot2docker_cmds=(
     'init:Create a new boot2docker VM.' \
     'up:Start VM from any states.' \
-    'start:[Start VM from any states.' \
-    'boot:[Start VM from any states.' \
+    'start:Start VM from any states.' \
+    'boot:Start VM from any states.' \
     'ssh:Login to VM via SSH.' \
     'save:Suspend VM and save state to disk.' \
     'suspend:Suspend VM and save state to disk.' \
