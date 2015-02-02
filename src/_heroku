@@ -51,6 +51,7 @@ _1st_arguments=(
   "logs\:drains":"manage syslog drains"
   "maintenance\:on":"put the app into maintenance mode"
   "maintenance\:off":"take the app out of maintenance mode"
+  "open":"open app in a web browser"
   "pg\:info":"display database information"
   "pg\:ingress":"allow direct connections to the database from this IP for one minute"
   "pg\:promote":"sets DATABASE as your DATABASE_URL"
