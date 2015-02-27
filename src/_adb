@@ -83,7 +83,7 @@ _adb() {
         ;;
         (sideload)
           _arguments \
-            '1:local directory:_files -/' \
+            '1:archive:_files -g "*.zip(-.)"' \
           && ret=0
         ;;
         (sync)
