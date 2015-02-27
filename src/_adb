@@ -71,7 +71,7 @@ _adb() {
         ;;
         (push)
           _arguments \
-            '1:local directory:_files -/' \
+            '1:files:_files' \
             '2: :_adb_remote_files -/' \
           && ret=0
         ;;
