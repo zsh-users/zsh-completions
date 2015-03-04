@@ -58,20 +58,10 @@ __host_file_location () {
   # 2. else check /etc/ansible/hosts or /usr/local/etc/...
   #    (depending on platform)
   #
-  if [ -n "${ANSIBLE_HOSTS}" ]; then  # use envvar
-    HOST_FILE=${ANSIBLE_HOSTS}
-  else
-    if [[ "$OSTYPE" == darwin* ]]; then
-      CANDIDATE="/usr/local/etc/ansible/hosts"
-    else
-      CANDIDATE="/etc/ansible/hosts"
-    fi
-    if [ -f "$CANDIDATE" ]; then
-      HOST_FILE=${CANDIDATE}
-    else
-      HOST_FILE=/dev/null
-    fi
-  fi
+  [[ "$OSTYPE" == darwin* ]] && FALLBACK="/usr/local/etc/ansible/hosts"
+  [[ "$OSTYPE" == linux* ]] && FALLBACK="/etc/ansible/hosts"
+  HOST_FILE=${ANSIBLE_HOSTS:=${FALLBACK}}
+  [[ -f ${HOST_FILE} ]] || HOST_FILE=/dev/null
 
   echo ${HOST_FILE}
 }
