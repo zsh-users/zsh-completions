@@ -72,9 +72,10 @@ __ll_group_list () {
   local -a group_list
   group_list=$(command \
       cat ${HOST_FILE} \
-      | awk '$1 ~ /^\[.*\]$/ && !/[:=]/ { gsub(/[\[\]]/, "", $1); print $1 }' \
+      | awk '$1 ~ /^\[.*\]$/ && !/=/ && !/:vars/ \
+        { gsub(/[\[\]]/, "", $1); gsub(/:children/, "", $1) ; print $1 }' \
       | uniq )
- 
+
   echo ${group_list}
 }
 
