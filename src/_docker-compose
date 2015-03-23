@@ -152,10 +152,10 @@ __up() {
 
 # common args
 _arguments \
-  '--verbose:Show more output' \
-  '--version:Print version and exit' \
-  '--file:Specify an alternate compose file:__yml_files_in_current_dir' \
-  '--project-name:Specify an alternate project name:()' \
+  '--verbose[Show more output]' \
+  '--version[Print version and exit]' \
+  '--file[Specify an alternate compose file]:__yml_files_in_current_dir' \
+  '--project-name[Specify an alternate project name]:args' \
   '*:: :->command'
 
 # start machines!
