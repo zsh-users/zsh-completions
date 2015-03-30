@@ -1,11 +1,4 @@
 #compdef pacapt
-# Pacapt plugin for oh-my-zsh
-#
-# Author: letal.vojtech[at]gmail[dot]com
-#
-# The pacapt (http://github.com/icy/pacapt) wrapper is not spread and
-# known enough so I wrapped it to the plugin. Therefore it can be anabled
-# and used in an easy and convinient way.
 
 local zsh_pacapt_path="$(cd "$(dirname "$0")" && pwd)"
 
