@@ -15,6 +15,8 @@
 #
 # ------------------------------------------------------------------------------
 
+# Store $word[1] as manage_cmd to be used for callbacks.
+manage_cmd=${words[1]}
 
 _managepy-cleanup(){}
 _managepy-compilemessages(){}
@@ -58,8 +60,8 @@ _managepy-help(){
 _managepy_cmds(){
     local line
     local -a cmd
-    _call_program help-command ./manage.py help \
-      |& sed -n '/^ /s/[(), ]/ /gp' \
+    _call_program help-command $_managepy_cmd help \
+      2>/dev/null| sed -n '/^ /s/[(), ]/ /gp' \
       | while read -A line; do cmd=($line $cmd) done
     _describe -t managepy-command 'manage.py command' cmd
 }
