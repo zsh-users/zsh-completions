@@ -1,19 +1,7 @@
 #compdef manage.py django-admin.py
-# ------------------------------------------------------------------------------
-# Description
-# -----------
 #
-#  Completion script for Django's manage.py (https://www.djangoproject.com).
+# Completion script for Django's manage.py (https://www.djangoproject.com).
 #
-#  Source: https://github.com/technolize/zsh-completion-funcs
-#
-# ------------------------------------------------------------------------------
-# Authors
-# -------
-#
-#  * technolize (https://github.com/technolize)
-#
-# ------------------------------------------------------------------------------
 
 # Store $word[1] as manage_cmd to be used for callbacks.
 manage_cmd=${words[1]}
@@ -89,7 +77,7 @@ _managepy-reset(){
 
 _managepy-runfcgi(){
   local state
-  
+
   local fcgi_opts
   fcgi_opts=(
     'protocol[fcgi, scgi, ajp, ... (default fcgi)]:protocol:(fcgi scgi ajp)'
@@ -107,7 +95,7 @@ _managepy-runfcgi(){
     'outlog[write stdout to this file.]:file:_files'
     'errlog[write stderr to this file.]:file:_files'
   )
-  
+
   _arguments -s : \
     $nul_args \
     '*: :_values "FCGI Setting" $fcgi_opts' && ret=0
@@ -182,7 +170,7 @@ _managepy-findstatic(){}
 
 _managepy-commands() {
   local -a commands
-  
+
   commands=(
     'cleanup:Can be run as a cronjob or directly to clean out old data from the database (only expired sessions at the moment).'
     'compilemessages:Compiles .po files to .mo files for use with builtin gettext support.'
@@ -229,7 +217,7 @@ _managepy-commands() {
       'findstatic:Finds the absolute paths for the given static file(s).'
     )
   fi
-  
+
   _describe -t commands 'manage.py command' commands && ret=0
 }
 
@@ -256,7 +244,7 @@ _manage.py() {
   )
 
   local curcontext=$curcontext ret=1
-  
+
   if ((CURRENT == 2)); then
     _managepy-commands
   else
@@ -268,11 +256,3 @@ _manage.py() {
 }
 
 _manage.py "$@"
-
-# Local Variables:
-# mode: Shell-Script
-# sh-indentation: 2
-# indent-tabs-mode: nil
-# sh-basic-offset: 2
-# End:
-# vim: ft=zsh sw=2 ts=2 et
