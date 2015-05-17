@@ -1,4 +1,4 @@
-#compdef manage.py django-admin.py
+#compdef manage.py django-manage django-admin.py django-admin
 #
 # Completion script for Django's manage.py (https://www.djangoproject.com).
 #
