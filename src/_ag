@@ -30,13 +30,13 @@ _ag_version() {
 }
 
 # Dynamically build the file type completion
-# Modifies the global $__AG_OPTS array
+# Modifies the global $AG_OPTS array
 _ag_add_file_types() {
   local ttype exts
   for i in $(ag --list-file-types); do
     if [[ "$i" =~ '--' ]]; then
       if [[ "${ttype}x" != "x" ]]; then
-        __AG_OPTS+="(${ttype})${ttype}[${exts%% }]"
+        AG_OPTS+="(${ttype})${ttype}[${exts%% }]"
       fi
       ttype=$i
       exts=
@@ -44,17 +44,17 @@ _ag_add_file_types() {
       exts+="$i "
     fi
   done
-  __AG_OPTS+="(${ttype})${ttype}[${exts%% }]"
+  AG_OPTS+="(${ttype})${ttype}[${exts%% }]"
 }
 
 # Add version appropriate options above base
-# Modifies the global $__AG_OPTS array
+# Modifies the global $AG_OPTS array
 _ag_add_version_opts() {
   local minor
   minor=$(_ag_version)
 
   if [[ $minor -gt 15 ]];then
-    __AG_OPTS+=(
+    AG_OPTS+=(
       '(--color-line-number)--color-line-number[Color codes for line numbers. Default is 1;33.]'
       '(--color-match)--color-match[Color codes for result match numbers. Default is 30;43.]'
       '(--color-path)--color-path[Color codes for path names. Default is 1;32.]'
@@ -63,26 +63,26 @@ _ag_add_version_opts() {
 
   if [[ $minor -gt 21 ]];then
     _ag_add_file_types
-    __AG_OPTS+=(
+    AG_OPTS+=(
       '(--list-file-types)--list-file-types[list supported filetypes to search]'
       '(--silent)--silent[suppress all log messages, including errors]'
     )
   fi
 
   if [[ $minor -gt 22 ]];then
-    __AG_OPTS+=(
+    AG_OPTS+=(
       '(-z --search-zip)'{-z,--search-zip}'[search contents of compressed files]'
     )
   fi
 
   if [[ $minor -le 24 ]];then
-    __AG_OPTS+=(
+    AG_OPTS+=(
       '(--noheading --heading)'{--noheading,--heading}'[print file names above matching contents]'
       '(-s --case-sensitive)'{-s,--case-sensitive}'[match case sensitively]'
     )
   fi
   if [[ $minor -gt 24 ]];then
-    __AG_OPTS+=(
+    AG_OPTS+=(
       '(-H --noheading --heading)'{-H,--noheading,--heading}'[print file names above matching contents]'
       '(-s --case-sensitive)'{-s,--case-sensitive}'[Match case sensitively. Default on.]'
       '(--vimgrep)--vimgrep[output results like vim''s, :vimgrep /pattern/g would (report every match on the line)]'
@@ -90,18 +90,18 @@ _ag_add_version_opts() {
   fi
 
   if [[ $minor -gt 26 ]];then
-    __AG_OPTS+=(
+    AG_OPTS+=(
       '(-0 --null --print0)'{-0,--null,--print0}'[separate the filenames with \\0, rather than \\n]'
     )
   fi
 
   if [[ $minor -le 27 ]];then
-    __AG_OPTS+=(
+    AG_OPTS+=(
       '(--depth)--depth[Search up to NUM directories deep. Default is 25.]:NUM'
     )
   fi
   if [[ $minor -gt 27 ]];then
-    __AG_OPTS+=(
+    AG_OPTS+=(
       '(-c --count)'{-c,--count}'[only print the number of matches in each file]'
       '(--depth)--depth[Search up to NUM directories deep, -1 for unlimited. Default is 25.]:NUM'
       '(-F --fixed-strings)'{-F,--fixed-strings}'[alias for --literal for compatibility with grep]'
@@ -109,12 +109,12 @@ _ag_add_version_opts() {
   fi
 
   if [[ $minor -le 28 ]];then
-    __AG_OPTS+=(
+    AG_OPTS+=(
       '(--no-numbers)--no-numbers[don´t show line numbers]'
     )
   fi
   if [[ $minor -gt 28 ]];then
-    __AG_OPTS+=(
+    AG_OPTS+=(
       '(--nofilename --filename)'{--nofilename,--filename}'[Print file names. Default on, except when searching a single file.]'
       '(--nonumbers --numbers)'{--nonumbers,--numbers}'[Print line numbers. Default is to omit line numbers when searching streams]'
       '(-o --only-matching)'{-o,--only-matching}'[print only the matching part of the lines]'
@@ -128,9 +128,9 @@ _ag() {
   zstyle -s ":completion:${curcontext}:" cache-policy update_policy
   [[ -z "$update_policy" ]] && zstyle ":completion:${curcontext}:" cache-policy _ag_types_caching_policy
 
-  if ( [[ ${+__AG_OPTS} -eq 0 ]] || _cache_invalid "AG_OPTS" ) && ! _retrieve_cache "AG_OPTS"; then
+  if ( [[ ${+AG_OPTS} -eq 0 ]] || _cache_invalid "_AG_OPTS" ) && ! _retrieve_cache "_AG_OPTS"; then
     # Base opts starts at ag version 0.14
-    __AG_OPTS=(
+    AG_OPTS=(
       '(- 1 *)--help[print a short help statement]'
       '(- 1 *)--man[print the manual page]'
       '(- 1 *)--version[display version and copyright information]'
@@ -171,11 +171,11 @@ _ag() {
       '1: :->patterns'
     )
     _ag_add_version_opts
-    [[ $#__AG_OPTS -gt 0 ]] && _store_cache 'AG_OPTS' __AG_OPTS
+    [[ $#AG_OPTS -gt 0 ]] && _store_cache '_AG_OPTS' AG_OPTS
   fi
 
-  _arguments -C ${__AG_OPTS} && ret=0
-  unset __AG_OPTS
+  _arguments -C ${AG_OPTS} && ret=0
+  unset AG_OPTS
 
   case $state in
     patterns)
