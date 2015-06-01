@@ -174,7 +174,7 @@ _ag() {
     [[ $#AG_OPTS -gt 0 ]] && _store_cache '_AG_OPTS' AG_OPTS
   fi
 
-  _arguments -C ${AG_OPTS} && ret=0
+  _arguments -C -s ${AG_OPTS} && ret=0
   unset AG_OPTS
 
   case $state in
