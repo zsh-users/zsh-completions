@@ -56,10 +56,10 @@ _smartctl() {
 		'(-n --nocheck)'{-n,--nocheck}'[No check if MODE]:MODE:(never sleep standby idle)' \
 		\
 		'(-s --smart)'{-s,--smart}'[Enable/disable SMART on device]:VALUE:(on off)' \
-		'(-o --offlineauto)'{-s,--smart}'[Enable/disable automatic offline testing on device]:VALUE:(on off)' \
+		'(-o --offlineauto)'{-o,--offlineauto}'[Enable/disable automatic offline testing on device]:VALUE:(on off)' \
 		'(-S --saveauto)'{-S,--saveauto}'[Enable/disable attribute autosave on device]:VALUE:(on off)' \
 		\
-		'(-H --health)'{-h,--health}'[Show device SMART health status]' \
+		'(-H --health)'{-H,--health}'[Show device SMART health status]' \
 		'(-c --capabilities)'{-c,--capabilities}'[Show device SMART capabilities]' \
 		'(-A --attributes)'{-A,--attributes}'[Show device SMART vendor-specific attributes and values]' \
 		'(-f --format)'{-f,--format}'[Set output format for attributes]:FORMAT:(old brief)' \
