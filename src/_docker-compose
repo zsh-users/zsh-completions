@@ -1,0 +1,197 @@
+#compdef docker-compose
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for Docker Compose (http://docs.docker.com/compose/).
+#  Adapted from boot2docker completion by hhatto (https://github.com/hhatto)
+#  and docker completion by @aeonazaan and @bobmaerten.
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * ilkka (https://github.com/ilkka)
+#
+# ------------------------------------------------------------------------------
+
+# helper function for getting *.yml (compose) files
+__yml_files_in_current_dir() {
+  _values 'YAML files' *.yml
+}
+
+# helper function for completing services in current project
+__services() {
+  declare -a services_cmd
+  services_cmd=($(sed -n -E 's/^([^[:space:]][^:]*):/\1/p' docker-compose.yml | tr \\n ' '))
+  _describe 'services' services_cmd
+}
+
+# subcommands
+local -a _docker_compose_cmds
+
+_docker_compose_cmds=(
+  'build:Build or rebuild services' \
+  'help:Get help on a command' \
+  'kill:Kill containers' \
+  'logs:View output from containers' \
+  'port:Print the public port for a port binding' \
+  'ps:List containers' \
+  'pull:Pulls service images' \
+  'rm:Remove stopped containers' \
+  'run:Run a one-off command' \
+  'scale:Set number of containers for a service' \
+  'start:Start services' \
+  'stop:Stop services' \
+  'restart:Restart services' \
+  'up:Create and start containers'
+)
+
+# subcommand completion functions
+__build() {
+  _arguments \
+    '--no-cache[Do not use cache when building image]'
+  __services
+}
+
+__help() {
+  _values 'Get help for subcommand' \
+    'build' \
+    'help' \
+    'kill' \
+    'logs' \
+    'port' \
+    'ps' \
+    'pull' \
+    'rm' \
+    'run' \
+    'scale' \
+    'start' \
+    'stop' \
+    'restart' \
+    'up'
+}
+
+__kill() {
+  _arguments \
+    '-s[Signal to send instead of SIGKILL]'
+  __services
+}
+
+__logs() {
+  _arguments \
+    '--no-color[Monochrome output]'
+  __services
+}
+
+__port() {
+  _arguments \
+    '--protocol:protocol:(tcp udp)' \
+    '--index[Index of container]:index'
+  __services
+}
+
+__ps() {
+  _arguments \
+    '-q[Only display IDs]'
+  __services
+}
+
+__pull() {
+  _arguments \
+    '--allow-insecure-ssl[Allow insecure connections to the docker registry]'
+  __services
+}
+
+__rm() {
+  _arguments \
+    "--force[Don't ask for confirmation]" \
+    '-v[Remove volumes]'
+  __services
+}
+
+__run() {
+  _arguments \
+    '--allow-insecure-ssl[Allow insecure connections to the docker registry]' \
+    '-d[Detached mode: Run container in the background, print new container name.]' \
+    '--entrypoint[Override the entrypoint of the image.]:command:()' \
+    '-e[Set an environment variable.]:key=val:()' \
+    "--no-deps[Don't start linked services.]" \
+    '--rm[Remove container after run. Ignored in detached mode.]' \
+    "--service-ports[Run command with the service's ports enabled and mapped to the host.]" \
+    '-T[Disable pseudo-tty allocation.]'
+  __services
+}
+
+__scale() {
+  __services
+}
+
+__start() {
+  __services
+}
+
+__stop() {
+  __services
+}
+
+__restart() {
+  __services
+}
+
+__up() {
+  _arguments \
+    '--allow-insecure-ssl[Allow insecure connections to the docker registry]' \
+    '-d[Detached mode: Run containers in the background, print new container names.]' \
+    '--no-color[Produce monochrome output.]' \
+    "--no-deps[Don't start linked services.]" \
+    "--no-recreate[If containers already exist, don't recreate them.]" \
+    "--no-build[Don't build an image, even if it's missing]"
+  __services
+}
+
+# common args
+_arguments \
+  '--verbose[Show more output]' \
+  '--version[Print version and exit]' \
+  '--file[Specify an alternate compose file]:__yml_files_in_current_dir' \
+  '--project-name[Specify an alternate project name]:args' \
+  '*:: :->command'
+
+# start machines!
+if (( CURRENT == 1 )); then
+  _describe -t commands 'docker-compose command' _docker_compose_cmds
+fi
+
+local -a _command_args
+case "$words[1]" in
+  build)
+    __build ;;
+  help)
+    __help ;;
+  kill)
+    __kill ;;
+  logs)
+    __logs ;;
+  port)
+    __port ;;
+  ps)
+    __ps ;;
+  pull)
+    __pull ;;
+  rm)
+    __rm ;;
+  run)
+    __run ;;
+  scale)
+    __scale ;;
+  start)
+    __start ;;
+  stop)
+    __stop ;;
+  restart)
+    __restart ;;
+  up)
+    __up ;;
+esac
+
