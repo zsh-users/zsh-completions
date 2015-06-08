@@ -22,7 +22,7 @@ _arguments -C \
   '(-l --level)'{-l,--level}'+[patch level to use with rvm use / install]:number' \
   '--bin[path for binaries to be placed (~/.rvm/bin/)]:path:_files' \
   '--source[src directory to use (~/.rvm/src/)]:path:_files' \
-  '--archives[directory for downladed files (~/.rvm/archives/)]:path:_files' \
+  '--archives[directory for downloaded files (~/.rvm/archives/)]:path:_files' \
   '-S[Specify a script file to attempt to load and run (rubydo)]:file:_files' \
   '-e[Execute code from the command line]:code' \
   '-G[root gem path to use]:path:_files' \

@@ -70,10 +70,10 @@ _arguments -C \
   '(--show-cops)--show-cops[Shows the given cops, or all cops by default, and their configurations for the current directory.]' \
   '(-F --fail-fast)'{-f,--fail-fast}'[Inspect files in order of modification time ant stop after the first file containing offenses]' \
   '(-d --debug)'{-d,--debug}'[Display debug info]' \
-  '(-D --display-cop-names)'{-D,--display-cop-names}'[Display cop names in offence messages.]' \
+  '(-D --display-cop-names)'{-D,--display-cop-names}'[Display cop names in offense messages.]' \
   '(-R --rails)'{-R,--rails}'[Run extra Rails cops.]' \
   '(-l --lint)'{-l,--lint}'[Run only lint cops.]' \
-  '(-a --auto-correct)'{-a,--auto-correct}'[Auto-correct offences.]' \
+  '(-a --auto-correct)'{-a,--auto-correct}'[Auto-correct offenses.]' \
   '(-n --no-color)'{-n,--no-color}'[Disable color output.]' \
   '(-v --version)'{-v,--version}'[Disable version.]' \
   '(-V --verbose-version)'{-V,--verbose-version}'[Disable verbose version.]' \

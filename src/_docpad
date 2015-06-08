@@ -17,7 +17,7 @@ local curcontext="$curcontext" state line  ret=1
 
 local -a _1st_arguments
 _1st_arguments=(
-  'run: run [options], does everyting - skeleton, generate, watch, server'
+  'run: run [options], does everything - skeleton, generate, watch, server'
   'server: server [options], creates a server for your generated project'
   'skeleton: skeleton [options], will create a new project in your cwd based off an existing skeleton'
   'render: render [path], render the file at <path> and output its results to stdout:path:_files'

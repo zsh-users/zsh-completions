@@ -94,7 +94,7 @@ _ack() {
     '(-C --context -A --after-context -B --before-context)'{-C-,--context=}'[print N lines (default 2) of context around matching lines]:number' \
     '(-c --count)'{-c,--count}'[suppress normal output; instead print a count of matching lines for each input file]' \
     '(--nocolor)--color[highlight the matching text]' \
-    '(--color --color-filename --color-match --color-lineno)--nocolor[supress the color]' \
+    '(--color --color-filename --color-match --color-lineno)--nocolor[suppress the color]' \
     '(--nocolor --color)--color-filename[sets the color to be used for filenames]:color:->colors' \
     '(--nocolor --color)--color-match[sets the color to be used for matches]:color:->colors' \
     '(--nocolor --color)--color-lineno[sets the color to be used for line numbers]:color:->colors' \

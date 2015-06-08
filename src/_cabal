@@ -184,7 +184,7 @@ _cabal_configure ()
     '--bindir=[installation directory for executables]:directory:_files -/' \
     '--libdir=[installation directory for libraries]:directory:_files -/' \
     '--libsubdir=[subdirectory of libdir in which libs are installed]:directory:_files -/' \
-    '--libexecdir=[iinstallation directory for program executables]:directory:_files -/' \
+    '--libexecdir=[installation directory for program executables]:directory:_files -/' \
     '--datadir=[installation directory for read-only data]:directory:_files -/' \
     '--datasubdir=[subdirectory of datadir in which data files are installed]:directory:_files -/' \
     '--docdir=[installation directory for documentation]:directory:_files -/' \

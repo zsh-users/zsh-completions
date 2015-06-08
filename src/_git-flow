@@ -51,7 +51,7 @@ _git-flow ()
 				(init)
 					_arguments \
 						-f'[Force setting of gitflow branches, even if already configured]' \
-						-d'[Use defualt branch naming conventions and prefixes]'
+						-d'[Use default branch naming conventions and prefixes]'
 					;;
 
 					(version)
@@ -95,7 +95,7 @@ __git-flow-release ()
 				'start:Start a new release branch.'
 				'finish:Finish a release branch.'
 				'list:List all your release branches. (Alias to `git flow release`)'
-				'publish:Publish this release banch to origin.`)'
+				'publish:Publish this release branch to origin.`)'
 				'track:Track a release branch from origin.`)'
 			)
 			_describe -t commands 'git flow release' subcommands

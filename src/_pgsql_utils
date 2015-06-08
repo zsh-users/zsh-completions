@@ -223,7 +223,7 @@ _pg_dumpall () {
     _arguments -C -s \
         "$_pgsql_common_opts[@]" \
         {-a,--data-only}'[dump only data]' \
-        {-c,--clean}'[include clean (drop) cmds brefore recreating]' \
+        {-c,--clean}'[include clean (drop) cmds before recreating]' \
         {-g,--globals-only}'[dump only global objects, no databases]' \
         {-f+,--file=}':output file:_files' \
         {-o,--oids}'[dump objects identifiers for every table]' \

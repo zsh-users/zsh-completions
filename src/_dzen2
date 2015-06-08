@@ -28,7 +28,7 @@ _arguments \
        '-fg[Set foreground color]:foreground color:_x_color' \
        '-bg[Set background color]:background color:_x_color' \
        '-fn[Set font]:font:_x_font' \
-       '-ta[Set alignement of title window content]:alignment:( l c r )' \
+       '-ta[Set alignment of title window content]:alignment:( l c r )' \
        '-tw[Set title window width]:width (pixels)' \
        '-sa[Set alignment of slave window]:alignment:( l c r )' \
        '-l[Number of lines to display in slave window]:lines' \

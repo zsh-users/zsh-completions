@@ -63,14 +63,14 @@ arguments=(
   '(--test-args)--test-args[Pass arguments for test commands]'
   '(--install-args)--install-args[Pass arguments for install commands]'
 
-  '--scandeps[Scan the depencencies of given modules and output the tree in a text format]'
+  '--scandeps[Scan the dependencies of given modules and output the tree in a text format]'
   '--format[Specify what format to display the scanned dependency tree]:scandeps format:(tree json yaml dists)'
 
   '--save-dists[Specify the optional directory path to copy downloaded tarballs]'
   '(--uninst-shadows)--uninst-shadows[Uninstalls the shadow files of the distribution that you\''re installing]'
 
   '(--cascade-search)--cascade-search[Specifies whether to cascade search]'
-  '(--skip-installed)--skip-installed[Specifies modules which lastet version are already installed]'
+  '(--skip-installed)--skip-installed[Specifies modules which latest version are already installed]'
   '(--skip-satisfied)--skip-satisfied[Specifies module and version for skipping installation]'
   '(--verify)--verify[Verify the integrity of distribution files]'
   '(--no-report-perl-version)--report-perl-version[Report locally installed perl version as part of User-Agent]'

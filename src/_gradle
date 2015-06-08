@@ -52,7 +52,7 @@ _gradle() {
     '(-a --no-rebuild)'{-a,--no-rebuild}'[do not rebuild project dependencies]' \
     '(-b --build-file)'{-b,--build-file}'[specify the build file]:build file:_gradle_scripts' \
     '(-C --cache)'{-C,--cache}'[specify how compiled build scripts should be cached]:cache strategy:((rebuild\:rebuild\ the\ cache on\:use\ the\ cache\ \(default\)))' \
-    '(-c --settings-file)'{-c,--settings-file}'[speciy the settings file]:settings file:_gradle_scripts' \
+    '(-c --settings-file)'{-c,--settings-file}'[specify the settings file]:settings file:_gradle_scripts' \
     '*'{-D-,--system-prop}'[set system property of the JVM]:property:_gradle_properties' \
     '(-d --debug -q --quiet -i --info)'{-d,--debug}'[log in debug mode (includes normal stacktrace)]' \
     '(--foreground --no-daemon --stop)--daemon[use the Gradle daemon to run the build, starts the daemon if not running]' \
