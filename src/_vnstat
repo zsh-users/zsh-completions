@@ -72,7 +72,7 @@ _arguments : \
   '--sync[Synchronize internal counters]' \
   '--testkernel[Test kernel boot time information]' \
   '(-t --top10)'{-t,--top10}'[Show all time top 10 traffic days]' \
-  '-tr[Calculate amount of trafffic in given time]:seconds:' \
+  '-tr[Calculate amount of traffic in given time]:seconds:' \
   '(-u --update)'{-u,--update}'[Update databases]' \
   '--xml[Show database content in XML format]' \
   '(-)'{-v,--version}'[Show current version]' \

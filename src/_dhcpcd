@@ -49,7 +49,7 @@ _arguments \
     '(-d --debug)'{-d,--debug}'[echo debug and informational messages to the console]' \
     '(-h --hostname)'{-h,--hostname}'[specify the hostname sent, or an empty string to stop any hostname from being sent]:hostname:_hosts' \
     '(-i --classid)'{-i,--classid}'[override the DHCP vendor classid field we send]:classid' \
-    '(-l --leasetime)'{-l,--leasetime}'[request a specific lease time in seconds]:lesae time \(seconds\)' \
+    '(-l --leasetime)'{-l,--leasetime}'[request a specific lease time in seconds]:lease time \(seconds\)' \
     '(-m --metric)'{-m,--metric}'[added routes will use the metric on systems where this is supported]:metric' \
     '(-n --renew)'{-n,--renew}'[notifies an existing dhcpcd process running on the interface to renew it'\''s lease]' \
     '(-p --persistent)'{-p,--persistent}'[don'\''t deconfigure the interface and configuration at exit]' \

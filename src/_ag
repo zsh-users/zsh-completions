@@ -170,7 +170,7 @@ _ag() {
       '(--hidden)--hidden[search hidden files, still obeys ignore files.]'
       '(--ignore)--ignore[Ignore files/directories matching this pattern. Literal file and directory names are also allowed.]'
       '(-i --ignore-case)'{-i,--ignore-case}'[match case insensitively]:PATTERN'
-      '(--ignore-dir)--ignore-dir[alias for --ignore for compatability with ack]'
+      '(--ignore-dir)--ignore-dir[alias for --ignore for compatibility with ack]'
       '(-v --invert-match)'{-v,--invert-match}'[invert match]'
       '(-Q --literal)'{-Q,--literal}'[Do not parse PATTERN as a regular expression. Try to match it literally.]'
       '(-m --max-count)'{-m,--max-count}'[Skip the rest of a file after NUM matches. Default is 10,000.]:NUM'

@@ -132,7 +132,7 @@ _ansible-playbook ()
     '--ask-vault-pass[ask for vault password]'\
     "(-C --check)"{-C,--check}"[don't make any changes]"\
     "(-c --connection)"{-c,--connection}"[CONNECTION connection type to use (default=smart)]:connection type:(smart ssh local chroot)"\
-    "(-D --diff)"{-D,--diff}"[when changing (small files and templates, thow the diff in those. Works great with --check)]"\
+    "(-D --diff)"{-D,--diff}"[when changing (small files and templates, show the diff in those. Works great with --check)]"\
     "(-e --extra-vars)"{-e,--extra-vars}"[EXTRA_VARS set additional variables as key=value or YAML/JSON]:extra vars:(EXTRA_VARS)"\
     '--flush-cache[clear the fact cache]'\
     '--force-handlers[run handlers even if a task fails]'\

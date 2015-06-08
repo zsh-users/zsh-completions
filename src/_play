@@ -63,7 +63,7 @@ _play() {
             '1:: :_play_apps' \
             '(--debug)--debug[Debug mode (even more informations logged than in verbose mode)]' \
             '(--jpda)--jpda[Listen for JPDA connection. The process will  suspended until a client is plugged to the JPDA port.]' \
-            '(--sync)--sync[Keep lib/ and modules/ directory synced. Delete unknow dependencies.]' \
+            '(--sync)--sync[Keep lib/ and modules/ directory synced. Delete unknown dependencies.]' \
             '(--verbose)--verbose[Verbose Mode]' \
           && ret=0
         ;;

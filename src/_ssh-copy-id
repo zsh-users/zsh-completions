@@ -46,7 +46,7 @@ _arguments -A "-*" \
   '-i+[use identity file]:SSH identity file:_files' \
   '-n+[do a dry-run]' \
   '-h+[print usage summary]' \
-  '-p+[specifiy custom port]' \
+  '-p+[specify custom port]' \
   '-o+[additional ssh option]' \
   '1: :_user_at_host'
 

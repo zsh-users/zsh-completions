@@ -24,7 +24,7 @@ args=(
     '--failsafe[run a program even if the nvidia card is unavailable]'
     '--no-failsafe[do not run a program if the nvidia card is unavailable]'
     '--vgl-options[options to be passed to vglrun (example: +tr)]'
-    '(-q --quiet --silent)'{-q,--quiet,--silent}'[supress all logging messages]'
+    '(-q --quiet --silent)'{-q,--quiet,--silent}'[suppress all logging messages]'
     '(-v --verbose)'{-v,--verbose}'[increase the verbosity level of log messages]'
     '--debug[set the verbosity level to the maximum]'
     '(-d --display)'{-d,--display}'[the X display number to use]'

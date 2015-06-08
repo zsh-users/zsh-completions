@@ -338,7 +338,7 @@ _modules=(
 'shell:Execute commands in nodes.'
 'slack:(E) Send Slack notifications'
 'slurp:Slurps a file from remote nodes'
-'snmp_facts:(E) Retrive facts for a device using SNMP.'
+'snmp_facts:(E) Retrieve facts for a device using SNMP.'
 'sns:(E) Send Amazon Simple Notification Service (SNS) messages'
 'stackdriver:(E) Send code deploy and annotation events to stackdriver'
 'stat:retrieve file or file system status'

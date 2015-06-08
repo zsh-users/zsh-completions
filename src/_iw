@@ -53,7 +53,7 @@ reg_cmds=("$reply[@]")
 local -a event_opts
 _regex_words event-options "event option" \
     '-t:print timestamp' \
-    '-r:print relative timstamp' \
+    '-r:print relative timestamp' \
     '-f:print full frame for auth/assoc etc'
 event_opts=("$reply[@]")
 

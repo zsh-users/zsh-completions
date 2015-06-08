@@ -144,7 +144,7 @@ _vpnc_debug_levels() {
     '0:do not print debug information'
     '1:print minimal debug information'
     '2:show statemachine and packet/payload type information'
-    '3:dump everything exluding authentication data'
+    '3:dump everything excluding authentication data'
     '99:dump everything INCLUDING AUTHENTICATION data (e.g. PASSWORDS)'
   )
   _describe -t levels 'debug level' levels "$@"

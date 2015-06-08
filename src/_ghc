@@ -158,7 +158,7 @@ _ghc_compiler ()
         '-dumpdir[Redirect dump files]:directory:_files -/' \
         '-outputdir[Set output directory]:directory:_files -/' \
         '-keep-hc-files[Retain intermediate .hc files]' \
-        '-keep-llvm-files[Retain intermediat LLVM .ll files]' \
+        '-keep-llvm-files[Retain intermediate LLVM .ll files]' \
         '-keep-s-files[Retain intermediate .s files]' \
         '-keep-raw-s-files[Retain intermediate .raw_s files]' \
         '-keep-tmp-files[Retain all intermediate temporary files]' \
@@ -268,7 +268,7 @@ _ghc_compiler_flags ()
         'simpl-tick-factor=:Set the percentage factor for simplifier ticks (default 100)'
         {no-,}'spec-constr:Turn on the SpecConstr transformation'
         {no-,}'spec-constr-threshold=:Set the size threshold for the SpecConstr transformation (default 200)'
-        {no-,}'spec-constr-count=:Set the maximum number of specialisations taht will be created for any one function by the SpecConstr transformation (default 3)'
+        {no-,}'spec-constr-count=:Set the maximum number of specialisations that will be created for any one function by the SpecConstr transformation (default 3)'
         'strictness=before=:Run an additional strictness analysis before a simplifier phase'
         {no-,}'static-argument-transformation:Turn on the static argument transformation'
         {no-,}'unbox-strict-fields:Flatten strict constructor fields'
@@ -500,7 +500,7 @@ _ghc_pkg_command()
         "list:List registered packages"
         "find-module:List registered packages exposing module"
         "latest:Prints the highest registered version of a package"
-        "check:Check the consistency of package depenencies and list broken packages"
+        "check:Check the consistency of package dependencies and list broken packages"
         "describe:Give the registered description for the specified package"
         "field:Extract the specified field of the package description"
         "dump:Dump the registered description for every package"

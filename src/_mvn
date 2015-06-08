@@ -117,13 +117,13 @@ _mvn() {
     "($excl_opts -gs --global-settings)"{-gs,--global-settings}'[alternate path for the global settings file]:global settings file:_mvn_settings_files' \
     "($excl_opts -fae --fail-at-end -ff --fail-fast -fn --fail-never)"{-fae,--fail-at-end}'[only fail the build afterwards, allow all non-impacted builds to continue]' \
     "($excl_opts -ff --fail-fast -fae --fail-at-end -fn --fail-never)"{-ff,--fail-fast}'[stop at first failure in reactorized builds]' \
-    "($excl_opts -fn --fail-never -fae --fail-at-end -ff --fail-fast)"{-fn,--fail-never}'[nerver fail the build, regardless of project result]' \
+    "($excl_opts -fn --fail-never -fae --fail-at-end -ff --fail-fast)"{-fn,--fail-never}'[never fail the build, regardless of project result]' \
     "($excl_opts)*"{-P,--activate-profiles}'[comma-delimited list of profiles to activate]:profile:_mvn_profiles -s ,' \
     "($excl_opts -pl --projects)"{-pl,--projects}'[build specified reactor projects instead of all projects]:project list:_mvn_projects -s ,' \
     "($excl_opts -rf --resume-from)"{-rf,--resume-from}'[resume reactor from specified project]:project:_mvn_projects' \
     "($excl_opts -o --offline -U --update-snapshots -cpu --check-plugin-updates -up --update-plugins)"{-o,--offline}'[work offline]' \
     "($excl_opts -U --update-snapshots -nsu --no-snapshot-updates -o --offline)"{-U,--update-snapshots}'[force a check for updated releases and snapshots on remote repositories]' \
-    "($excl_opts -nsu --no-snapshot-updates -U --update-snapshots -o --offline)"{-nsu,--no-snapshot-updates}'[Supress SNAPSHOT updates]' \
+    "($excl_opts -nsu --no-snapshot-updates -U --update-snapshots -o --offline)"{-nsu,--no-snapshot-updates}'[Suppress SNAPSHOT updates]' \
     "*"{-D-,--define}'[define a system property]:property:_mvn_properties' \
     "${opts[@]}" \
     "($excl_opts)*: :_mvn_args"

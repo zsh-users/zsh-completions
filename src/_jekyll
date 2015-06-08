@@ -39,7 +39,7 @@ case $state in
       "build:Build your site"
       "docs:Launch local server with docs for jekyll"
       "doctor:Search site and print specific deprecation warnings"
-      "help:Dislplay global or [command] help documentation"
+      "help:Display global or [command] help documentation"
       "import:Import your old blog to Jekyll"
       "new:Creates a new Jekyll site scaffold in PATH"
       "serve:Serve your site locally"
@@ -56,7 +56,7 @@ case $state in
 
     local -a config
     config=(
-      "--config[Custome configuration file]: :_files"
+      "--config[Custom configuration file]: :_files"
     )
     local -a help
     help=(

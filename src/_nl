@@ -19,7 +19,7 @@ style_values=(
     "a:number all lines"
     "t:number only nonempty lines"
     "n:number no lines"
-    "pBRE:number only lines that contain a match for the basic regular expresision, BRE"
+    "pBRE:number only lines that contain a match for the basic regular expression, BRE"
 )
 
 format_values=(
