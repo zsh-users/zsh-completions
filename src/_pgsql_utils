@@ -1,4 +1,4 @@
-#compdef psql pg_dump pg_dumpall createdb dropdb vacuumdb createuser dropuser initdb
+#compdef psql pg_dump pg_dumpall pg_restore createdb dropdb vacuumdb createuser dropuser initdb
 # ------------------------------------------------------------------------------
 # Description
 # -----------
@@ -16,6 +16,8 @@
 #  * Johann 'Myrkraverk' Oskarsson <johann@2ndquadrant.com>
 #
 #  * Daniel Serodio <dserodio@gmail.com> pg_dumpall completion
+#
+#  * J Smith <dark.panda@gmail.com> pg_restore completion
 #
 # ------------------------------------------------------------------------------
 
@@ -216,6 +218,43 @@ _pg_dump () {
         --use-set-session-authorization'[use SET SESSION AUTHORIZATION commands instead of ALTER OWNER]'
 }
 
+_pg_restore () {
+    local curcontext="$curcontext" state line expl
+    typeset -A opt_args
+
+    _arguments -C -s \
+        "$_pgsql_common_opts[@]" \
+        {-d+,--dbname=}':database to connect to:_pgsql_databases' \
+        {-f+,--file=}':output file:_files' \
+        {-F+,--format=}':output format:_values "format" "p[plain text]" "t[tar]" "c[custom]"' \
+        {-l,--list}'[list databases]' \
+        {-a,--data-only}'[dump only data]' \
+        {-c,--clean}'[include clean (drop) cmds before recreating]' \
+        {-C,--create}'[include createdb cmds in dump]' \
+        {-e,--exit-on-error}'[exit on error, default is to continue]' \
+        {-I,--index=}':index name:' \
+        {-j,--jobs=}':use this many parallel jobs to restore:' \
+        {-L,--use-list=}':use table of contents from this file for selecting/ordering output:' \
+        {-n,--schema=}':restore only objects in this schema:' \
+        {-O,--no-owner}'[skip restoration of object ownership]' \
+        {-P,--function=}':restore named function:' \
+        {-s,--schema-only}'[restore only the schema, no data]' \
+        {-S,--superuser=}':superuser user name to use for disabling triggers:' \
+        {-t,--table=}':restore named table:' \
+        {-T,--trigger=}':restore named trigger:' \
+        {-x,--no-privileges}'[skip restoration of access privileges (grant/revoke)]' \
+        {-1,--single-transaction}'[restore as a single transaction]' \
+        {-v,--verbose}'[verbose mode]' \
+        {-V,--version}'[display client version]' \
+        --disable-triggers'[disable triggers during data-only restore]' \
+        --if-exists'[use IF EXISTS when dropping objects]' \
+        --no-data-for-failed-tables'[do not restore data of tables that could not be created]' \
+        --no-security-labels'[do not restore security labels]' \
+        --no-tablespaces'[do not restore tablespace assignments]' \
+        --section=':dump named section:_values "section" pre-data data post-data' \
+        --use-set-session-authorization'[use SET SESSION AUTHORIZATION commands instead of ALTER OWNER commands to set ownership]'
+}
+
 _pg_dumpall () {
     local curcontext="$curcontext" state line expl
     typeset -A opt_args
@@ -384,6 +423,7 @@ _pgsql_utils () {
     case "$service" in
         psql)     _psql "$@"     ;;
         pg_dump)  _pg_dump "$@"  ;;
+        pg_restore)  _pg_restore "$@" ;;
         createdb) _createdb "$@" ;;
         dropdb)   _dropdb "$@"   ;;
         vacuumdb) _vacuumdb "$@"   ;;
