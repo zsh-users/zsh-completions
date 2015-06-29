@@ -31,13 +31,14 @@ case $state in
       "init[Interactively create a bower.json file]" \
       "install[Install a package locally]" \
       "link[Symlink a package folder]" \
-      "list[List local packages]" \
+      "list[List local packages - and possible updates]" \
       "lookup[Look up a package URL by name]" \
       "prune[Removes local extraneous packages]" \
       "register[Register a package]" \
       "search[Search for a package by name]" \
       "update[Update a local package]" \
       "uninstall[Remove a local package]" \
+      "unregister[Remove a package from the registry]" \
       "version[Bump a package version]"
     _arguments \
       '(--force)--force[Makes various commands more forceful]' \
@@ -47,7 +48,9 @@ case $state in
       '(--quiet)--quiet[Only output important information]' \
       '(--silent)--silent[Do not output anything, besides errors]' \
       '(--verbose)--verbose[Makes output more verbose]' \
-      '(--allow-root)--allow-root[Allows running commands as root]'
+      '(--allow-root)--allow-root[Allows running commands as root]' \
+      '(--version)--version[Output Bower version]' \
+      '(--no-color)--no-color[Disable colors]'
     ret=0
     ;;
   args)
@@ -67,10 +70,11 @@ case $state in
           'search' \
           'update' \
           'uninstall' \
+          'unregister' \
           'version'
         ret=0
         ;;
-      (home|info|init|link|lookup|prune|register|search)
+      (home|info|init|link|lookup|prune|register|search|unregister)
         _arguments \
           '(--help)--help[Show help message]'
         ret=0
