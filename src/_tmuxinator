@@ -3,51 +3,33 @@
 # Description
 # -----------
 #
-#  Completion script for tmuxinator (https://github.com/aziz/tmuxinator).
-#
-#  Source: https://gist.github.com/2242920
+#  Completion script for tmuxinator (https://github.com/tmuxinator/tmuxinator)
 #
 # ------------------------------------------------------------------------------
 # Authors
 # -------
 #
-#  * ser1zw (https://github.com/ser1zw)
-#  * Ben O'Hara (https://github.com/benohara)
+#  * Christopher Chow (https://github.com/Soliah)
 #
 # ------------------------------------------------------------------------------
 
 _tmuxinator() {
-  local -a projects
-  projects=(`find $HOME/.tmuxinator/ -name \*.yml| awk -F/ '{print $NF}' | sed s:.yml::g`)
-
-  local -a commands
-  commands=(
-    'start:start a tmux session using project'\''s tmuxinator config'
-    'open:create a new project file and open it in your editor'
-    'copy:copy source_project project file to a new project called new_project'
-    'delete:deletes the project called project_name'
-    'implode:deletes all existing projects!'
-    'list:list all existing projects'
-    'doctor:look for problems in your configuration'
-    'help:shows this help document'
-    'version:shows tmuxinator version number'
-  )
+  local commands projects
+  commands=(${(f)"$(tmuxinator commands zsh)"})
+  projects=(${(f)"$(tmuxinator completions start)"})
 
   if (( CURRENT == 2 )); then
-    _describe -t commands 'commands' commands
-    _describe -t projects 'projects' projects
-  elif (( CURRENT == 3 )); then
+    _describe -t commands "tmuxinator subcommands" commands
+    _describe -t projects "tmuxinator projects" projects
+  elif (( CURRENT == 3)); then
     case $words[2] in
-      copy|delete|open|start)
+      copy|debug|delete|open|start)
         _arguments '*:projects:($projects)'
-      ;;
-      list)
-        _arguments '-v[verbose]' # FIXME: doesn't work well
       ;;
     esac
   fi
 
-  return 0
+  return
 }
 
 _tmuxinator
