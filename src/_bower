@@ -32,6 +32,7 @@ case $state in
       "install[Install a package locally]" \
       "link[Symlink a package folder]" \
       "list[List local packages - and possible updates]" \
+      "login[Authenticate with GitHub and store credentials]" \
       "lookup[Look up a package URL by name]" \
       "prune[Removes local extraneous packages]" \
       "register[Register a package]" \
@@ -64,6 +65,7 @@ case $state in
           'install' \
           'link' \
           'list' \
+          'login' \
           'lookup' \
           'prune' \
           'register' \
@@ -93,6 +95,12 @@ case $state in
           '(--help)--help[Show help message]' \
           '(--paths)--paths[Generate a simple JSON source mapping]' \
           '(--relative)--relative[Make paths relative to the directory config property, which defaults to bower_components]'
+        ret=0
+        ;;
+      login)
+        _arguments \
+          '(--help)--help[Show help message]' \
+          '(-t --token)'{-t,--token}'[Pass GitHub auth token (will not prompt for username/password)]'
         ret=0
         ;;
       uninstall)
