@@ -1,0 +1,140 @@
+#compdef pidcat
+# ------------------------------------------------------------------------------
+# Copyright (c) 2011 Github zsh-users - http://github.com/zsh-users
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of the zsh-users nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL ZSH-USERS BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for pidcat 
+#  (https://github.com/JakeWharton/pidcat/)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Raymond Wen <rx.wen218@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+
+_pidcat() {
+  typeset -A opt_args
+  local context state line curcontext="$curcontext" pidcat_args
+  fullcmd=$words
+  local ret=1
+
+  _arguments -C \
+    '(-e -s)-d[Use first device for log input (adb -d option)]' \
+    '(-d -s)-e[Use first emulator for log input (adb -e option)]' \
+    '(-d -e)-s[directs command to the USB device or emulator with the given serial number]: :_pidcat_serial_numbers' \
+    '-w[Width of log tag]' \
+    '-c[Clear the entire log before running]' \
+    '-t[Filter output by specified tag(s)]: :_pidcat_tags' \
+    '-i[Filter output by ignoring specified tag(s)]: :_pidcat_tags' \
+    '-v[Print the version number and exit]' \
+    '-l[Minimum level to be displayed]: :_pidcat_log_levels' \
+    '-a[Print all log messages]' \
+    '--color-gc[Color garbage collection]' \
+    '--always-display-tags[Always display the tag name]' \
+    '--current[Filter logcat by current running app]' \
+    '*:: :_pidcat_processes' \
+  && ret=0
+
+  #pidcat_args="${(fkv)words[(I)-d|-e|-s]}"
+
+  return ret
+}
+
+(( $+functions[_pidcat_log_levels] )) ||
+_pidcat_log_levels() {
+  local levels; levels=(
+    'V:verbose (lowest priority)'
+    'D:debug'
+    'I:info'
+    'W:warning'
+    'E:error'
+    'F:fatal'
+    'S:silent (highest priority, on which nothing is ever printed)'
+  )
+  _describe -t log-levels 'log level' levels "$@"
+}
+
+device=""
+get_device_from_cmd() {
+  if [[ $fullcmd =~ '.*-d.*' ]];
+  then
+      device=$device" -d "
+  fi
+  if [[ $fullcmd =~ '.*-e.*' ]];
+  then
+      device=$device" -e "
+  fi
+  if [[ $fullcmd =~ '.*[[:space:]]*(-s[[:space:]]*[[:alnum:]|.|:]*).*' ]];
+  then
+      device=" "$device${match[1]}" "
+  fi
+}
+
+(( $+functions[__pidcat_serial_numbers] )) ||
+_pidcat_serial_numbers() {
+  local serial_numbers; serial_numbers=(${${(M)${(f)"$(_call_program devices adb devices)"/:/\\:}:#*device}%%[[:space:]]*}":connected device")
+  [[ -n "$ANDROID_SERIAL" ]] && serial_numbers+=("$ANDROID_SERIAL:default value set in ANDROID_SERIAL environment variable")
+  _describe -t serial-numbers 'serial number' serial_numbers "$@" && ret=0
+}
+
+(( $+functions[_pidcat_processes] )) ||
+_pidcat_processes() {
+  get_device_from_cmd
+  local proclist; proclist=(${${${(ps:\r:)"$(_call_program proclist adb $device shell ps 2>/dev/null)"}##*\ [S|D|R]\ }:#USER\ *})
+  _multi_parts "$@" / proclist
+}
+
+(( $+functions[_pidcat_tags] )) ||
+_pidcat_tags() {
+  get_device_from_cmd
+  local tags; tags=(${(u)${${${(f)"$(_call_program tags adb $device logcat -d 2>/dev/null)"}%%[[:space:]]#\(*}##*\/}:#\**\*})
+  _describe -t log-tags 'log tag' tags -qS: "$@" && ret=0
+}
+
+(( $+functions[_pidcat_buffers] )) ||
+_pidcat_buffers() {
+  local buffers; buffers=(
+    'main:view the main log buffer (default)'
+    'radio:view the buffer that contains radio/telephony related messages'
+    'events:view the buffer containing events-related messages'
+  )
+  _describe -t log-buffers 'log buffer' buffers "$@" && ret=0
+}
+
+_pidcat "$@"
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
