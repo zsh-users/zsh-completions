@@ -253,7 +253,7 @@ _adb_product_names() {
 
 (( $+functions[_adb_serial_numbers] )) ||
 _adb_serial_numbers() {
-  local serial_numbers; serial_numbers=(${${(M)${(f)"$(_call_program devices $service devices)"/:/\\:}:#*device}%%[[:space:]]*}":connected device")
+  local serial_numbers; serial_numbers=(${${(M)${(f)"$(_call_program devices $service devices)"//:/\\:}:#*device}%%[[:space:]]*}":connected device")
   [[ -n "$ANDROID_SERIAL" ]] && serial_numbers+=("$ANDROID_SERIAL:default value set in ANDROID_SERIAL environment variable")
   _describe -t serial-numbers 'serial number' serial_numbers "$@" && ret=0
 }
