@@ -38,6 +38,45 @@ _brew_outdated_formulae() {
   outdated_formulae=(${(f)"$(_call_program formulae brew outdated 2>/dev/null)"})
 }
 
+_brew_cask() {
+  local -a _1st_arguments
+  _1st_arguments=(
+    "alfred:displays note about new built-in alfred support"
+    "audit:verifies installability of Casks"
+    "cat:dump raw source of the given Cask to the standard output"
+    "cleanup:cleans up cached downloads and tracker symlinks"
+    "create:creates the given Cask and opens it in an editor"
+    "doctor:checks for configuration issues"
+    "edit:edits the given Cask"
+    "fetch:downloads Cask resources to local cache"
+    "home:opens the homepage of the given Cask"
+    "info:displays information about the given Cask"
+    "install:installs the given Cask"
+    "list:with no args, lists installed Casks; given installed Casks, lists staged files"
+    "search:searches all known Casks"
+    "uninstall:uninstalls the given Cask"
+    "update:a synonym for 'brew update'"
+    "zap:zaps all files associated with the given Cask"
+  )
+
+  if (( CURRENT == 2 )); then
+    _describe -t commands "brew cask subcommand" _1st_arguments
+    return
+  fi
+
+  local expl
+  local -a all_cask_formulae installed_cask_formulae
+  case "$words[2]" in
+    audit|cat|edit|info|install|search)
+      all_cask_formulae=( $(brew cask search 2>/dev/null) )
+      _wanted all_cask_formulae expl 'all cask formulae' compadd -a all_cask_formulae ;;
+    uninstall|zap)
+      installed_cask_formulae=( $(brew cask list 2>/dev/null) )
+      _wanted installed_cask_formulae expl 'installed cask formulae' compadd -a installed_cask_formulae ;;
+    *) ;;
+  esac
+}
+
 local -a _1st_arguments
 _1st_arguments=(
   'audit:check formulae for Homebrew coding style'
@@ -162,6 +201,8 @@ case "$words[1]" in
   untap)
     _brew_installed_taps
     _wanted installed_taps expl 'installed taps' compadd -a installed_taps ;;
+  cask)
+    _brew_cask ;;
 esac
 
 # Local Variables:
