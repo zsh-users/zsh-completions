@@ -40,7 +40,7 @@ __nvm_aliases(){
   local aliases
   aliases=""
   if [ -d $NVM_DIR/alias ]; then
-    aliases="`cd $NVM_DIR/alias && ls`"
+    aliases="$(cd $NVM_DIR/alias && ls)"
   fi
   echo "${aliases}"
 }

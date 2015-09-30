@@ -45,7 +45,7 @@ _artisan_get_command_list () {
 
 _artisan () {
     if [ -f artisan ]; then
-        compadd `_artisan_get_command_list`
+        compadd $(_artisan_get_command_list)
     fi
 }
 
