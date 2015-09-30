@@ -37,10 +37,10 @@ case $state in
       (install)
         ;;
       (restart|stop)
-        _values 'items' `lunchy status | awk '{print $3}' ` 2>/dev/null && ret=0
+        _values 'items' $(lunchy status | awk '{print $3}') 2>/dev/null && ret=0
         ;;
       *)
-        _values 'items' `lunchy ls` 2>/dev/null && ret=0
+        _values 'items' $(lunchy ls) 2>/dev/null && ret=0
         ;;
     esac
     ;;

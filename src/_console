@@ -45,7 +45,7 @@ _console_get_command_list () {
 
 _console () {
     if [ -f console ]; then
-        compadd `_console_get_command_list`
+        compadd $(_console_get_command_list)
     fi
 }
 
