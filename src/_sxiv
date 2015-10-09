@@ -1,0 +1,53 @@
+#compdef sxiv
+
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  completion script for sxiv 1.3.1 (https://github.com/muennich/sxiv)
+#  last updated: 2015-10-07
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * stereolink (https://github.com/stereolink)
+#
+# ------------------------------------------------------------------------------
+
+local curcontext="$curcontext" state line ret=1
+typeset -A opt_args
+
+_arguments -C \
+	'-a[play animations of multi-frame images]' \
+	'-b[do not show info bar on bottom of window]' \
+	'-c[remove all orphaned cache files from thumbnail cache directory, exit]' \
+	'-f[fullscreen mode]' \
+	'-G[set image gamma (-32..32)]:gamma' \
+	'-g[set window position and size]:geometry' \
+	'-N[set resource name of X window]:name' \
+	'-n[start at picture number]:num' \
+	'-h[print usage information]' \
+	'-i[read names of files to open from standard input]' \
+	'-o[write list of all marked files to standard output on quit]' \
+	'-q[be quiet, disable warnings to standard error stream]' \
+	'-r[search the given directories recursively]' \
+	'-S[slideshow mode, set delay between images (seconds)]:delay' \
+	'-s[set scale mode]:mode:->scale_modes' \
+	'-t[thumbnail mode]' \
+	'-v[print version]' \
+	'-Z[same as "-z 100"]' \
+	'-z[set zoom level (percent)]:zoom' \
+	'*:images:_files -g "*"' && ret=0
+
+case "$state" in
+	scale_modes)
+		_values 'scale modes' \
+			'd[down]' \
+			'f[fit]' \
+			'w[width]' \
+			'h[height]'
+		;;
+esac
+
+return ret
