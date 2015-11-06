@@ -121,11 +121,21 @@ _pgsql_databases () {
     local _pgsql_user _pgsql_port _pgsql_host _pgsql_params
     _pgsql_get_identity
 
+    local _pgsql_services _pgsql_service_files
+    _pgsql_service_files=(
+      ~/.pg_service.conf
+      $(pg_config --sysconfdir)/pg_service.conf
+    )
+    _pgsql_services=$( grep -h '^\[.*\]' $_pgsql_service_files 2>/dev/null \
+                         | sed -e 's/^\[/service=/' -e 's/\].*$//' )
+
     local _pgsql_db_sql
     _pgsql_db_sql="select d.datname from pg_catalog.pg_database d \
 	where d.datname <> 'template0'"
 
-    compadd "$@" - $( psql $_pgsql_params[@] -Atq -c $_pgsql_db_sql template1 2>/dev/null )
+    compadd "$@" - \
+            ${(f)_pgsql_services} \
+            $( psql $_pgsql_params[@] -Atq -c $_pgsql_db_sql template1 2>/dev/null )
 }
 
 _pgsql_encodings () {
