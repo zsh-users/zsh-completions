@@ -1,4 +1,11 @@
 #compdef hub
+# Description
+# -----------
+#
+#  Completion script for Github hub (https://github.com/github/hub).
+#  Origin: https://github.com/github/hub/blob/master/etc/hub.zsh_completion
+#
+# ------------------------------------------------------------------------------
 
 # Zsh will source this file when attempting to autoload the "_hub" function,
 # typically on the first attempt to complete the hub command.  We define two new
