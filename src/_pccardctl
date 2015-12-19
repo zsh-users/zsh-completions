@@ -1,0 +1,21 @@
+#compdef pccardctl lspcmcia
+
+local cmds version verbosity socket
+cmds="status\:'Display the current socket status flags.' config\:'Display the socket configuration.' ident\:'Display card identification information.' info\:'Like ident command, but output is formatted as series of Bourne-stype shell variable definitions.' ls\:'Display extended debugging information about the PCMCIA sockets and devices present in the system.' suspend\:'Shut down and then disable power for a socket.' resume\:'Restore power to a socket, and re-configure for use.' eject\:'Notify all client drivers that this card will be ejected, then cut power to the socket.' insert\:'Notify all client drivers that this card has just been inserted.'"
+version='-V[Show version information and exit]'
+verbosity='*-v[Increase the verbosity of the ls command.]'
+socket="{_guard \"[0-9]#\" 'socket number'}" 
+
+case "$service" in
+    pccardctl)
+        _arguments : $version $verbosity "1:command:(($cmds))" "2:socket:$socket"
+        ;;
+    lspcmcia)
+        _arguments : $version $verbosity "1:socket:$socket"
+       ;;
+esac
+
+
+# Local Variables: 
+# mode:shell-script
+# End:             

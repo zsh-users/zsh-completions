@@ -1,0 +1,239 @@
+#autoload
+
+# Filename: _completion_helpers
+# Description: Extra utility functions to help create zsh completion functions
+# Author: Joe Bloggs <vapniks@yahoo.com>
+# Copyleft (Ↄ) 2015, Joe Bloggs, all rites reversed.
+# Created: 2015-12-19 19:00:00
+#           By: Joe Bloggs
+# URL: https://github.com/vapniks/zsh-completions
+
+## License:
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3, or (at your option)
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; see the file COPYING.
+# If not, see <http://www.gnu.org/licenses/>.
+
+# To use the following functions add a call to "_completion_helpers" in your completion script,
+# in order to load this file first.
+
+# This function joins together groups of consecutive lines. The first line in each group is identified by having 
+# less initial whitespace that subsequent lines in the group (i.e. it is indented less).
+# This is useful for preprocessing the output from a command called with its --help argument.
+# The function reads input from a pipe and takes the following three arguments:
+# 1) A separator to place between joined lines.
+# 2) A regular expression matching the initial line of each group. All lines subsequent to the initial line will
+#    be appended to it (after removing leading & trailing whitespace) until the next initial line of a group.
+#    Alternatively this argument can be the maximum number of leading whitespace chars for the initial line.
+#    Any lines with more than this many leading whitespace chars will be appended to previous lines.
+# 3) An optional regular expression matching the line before the beginning of the section of output to be processed.
+#    If this is set to the empty string then processing will start from the beginning of the output.
+# 4) An optional regular expression matching the line after the end of the section of output to be processed
+#    (if this arg is omitted then all output upto the last line will be processed).
+function _join_lines() {
+    awk -v SEP="$1" -v ARG2="$2" -v START="$3" -v END2="$4" 'BEGIN {if(START==""){f=1}{f=0};
+         if(ARG2 ~ "^[0-9]+"){LINE1 = "^[[:space:]]{,"ARG2"}[^[:space:]]"}else{LINE1 = ARG2}}
+         ($0 ~ END2 && f>0 && END2!="") {exit}
+         ($0 ~ START && f<1) {f=1; if(length(START)!=0){next}}
+         ($0 ~ LINE1 && f>0) {if(f<2){f=2; printf("%s",$0)}else{printf("\n%s",$0)}; next}
+         (f>1) {gsub(/^[[:space:]]+|[[:space:]]+$/,"",$0); printf("%s%s",SEP, $0); next}
+         END {print ""}'
+}
+
+# This function can be used to extract parts of lines into arrays. This is useful for extracting
+# completion information about commands by using the --help option.
+# It takes a variable number of arguments: a regexp (first arg), and the names of any number 
+# array variables (other args).
+# For each line of input piped into the function it will try and match the regexp on the line
+# and save each parenthesised subexpression into one of the arrays (first subexpression into
+# the first array, second subexpression into the second array, etc.)
+# For each line that doesn't match the regexp empty elements will be added to the arrays.
+# If a line matches but a subexpressions doesn't then whatever is stored in the corresponding
+# element of $match (see zsh documentation) will be used instead.
+function _extract_parts() {
+    OLDIFS=$IFS;IFS=;
+    while read -r inputtxt; do
+	local i=2 rx="${*[1]}" matched="no"
+	if [[ "$inputtxt" =~ "$rx" ]]; then
+	    matched="yes"
+	fi
+	while [[ "$i" -le "$#" ]]; do
+	    local arr="${*[$i]}"
+	    if [[ -n "$arr" ]]; then
+		if [[ "$matched" =~ "yes" ]]; then
+		    eval "$arr+=\$match[$i-1]"
+		else
+		    eval "$arr+=''"
+		fi
+	    fi
+	    let i=i+1
+	done
+    done
+    IFS=$OLDIFS
+}
+
+# Given three arrays of strings, apply _regex_words to triples formed by taking corresponding elements
+# from the arrays. The result will be stored in the $reply array, and can be viewed with: echo "${reply[@]}"
+# See documentation of _regex_words for more info.
+# This command takes 5 arguments:
+# 1) A tag name for the resulting call to _regex_words
+# 2) A description for the call to _regex_words
+# 3) The name of an array var containing completion words (each used in first part of a _regex_words spec)
+# 4) The name of an array var containing descriptions (each used in second part of a _regex_words spec)
+# 5) Optionally: the name of an array var containing further completions (each used in third part of a _regex_words spec)
+# 6) Optionally: the name of an array var in which to store the results from _regex_words
+#    (otherwise they can be found in ${reply[@]})
+function _arrays_to_regex_words() {
+    local opts="${*[3]}" descs="${*[4]}" args="${*[5]}" 
+    local -a regexwords 
+    local i=1 desc
+    while [[ "$i" -le "${(@P)#opts}" ]]; do
+	desc="${${${${${(@P)descs}[$i]//:/-}//\[/(}//]/)}//\'/}"
+	regexwords+="${${(@P)opts}[$i]}:$desc:${${(@P)args}[$i]}"
+	let i=i+1
+    done
+    _regex_words "$1" "$2" "${regexwords[@]}"
+    if [[ -n "${*[6]}" ]]; then
+	set -A "${*[6]}" "${reply[@]}"
+    fi
+}
+
+# This function can be used for substituting values in an indexed array (1st arg) according to rules defined in another
+# associative array (2nd arg)
+# Any elements of the indexed array that match a key of the associative array will be replaced with the corresponding value
+# of the associative array.
+# This can be used for replacing option argument names (extracted from command help info) with corresponding definitions
+# for _regex_words (also using _arrays_to_regex_words).
+function _replace_vals_in_array() {
+    local vals="$1" arg2="$2"
+    typeset -A repls
+    set -A repls "${(kvP@)arg2}"
+    local i=1 newval val repl
+    while [[ "$i" -le "${(P)#vals}" ]]; do
+	val="${${(@P)vals}[i]}"
+	repl="${repls[$val]}"
+	if [[ -n "$repl" ]]; then
+	   typeset -g "$vals""[$i]"="$repl"
+	fi
+	let i=i+1
+    done
+}
+
+# This function makes multiple substitutions in the input string and outputs the result.
+# It takes a single argument: the name of an associative array whose keys are the strings
+# to be replaced and whose values are the replacements.
+_multi_substitute () {
+    local instring="$(cat)"
+    local key val
+    typeset -A repls
+    set -A repls "${(kvP@)1}"
+    for key in "${(k@)repls}"
+    do
+	val="${repls[$key]}" 
+	instring="${instring//$key/$val}" 
+    done
+    print "$instring"
+}
+
+# This function creates an associative array from a pair of indexed arrays of keys and values.
+# It takes the following arguments:
+# 1) a name for the resulting associative array
+# 2) the name of an indexed array of keys
+# 3) the name of an indexed array of values (with order corresponding to the keys array)
+# If there are fewer keys than values then any excess values will be omitted from the results.
+# If there are more keys than values then the extra keys will not be assigned values
+function _create_assoc_array() {
+    typeset -g -A "$1"
+    local i=1 key val
+    local keys="$2" vals="$3"
+    while [[ "$i" -le "${(P@)#keys}" ]]; do
+	key="${${(P@)keys}[$i]}"
+	val="${${(P@)vals}[$i]}"
+	typeset -g "$1""[$key]"="$val"
+	let i=i+1
+    done
+}
+
+# This function tests whether its only argument is a shell option or not.
+function _is_option() {
+    [[ -n "$1" ]] \
+	&& ( (setopt | grep "^$1\$" >/dev/null) \
+		 || (unsetopt | grep "^$1\$" >/dev/null) )
+}
+
+# This function saves current shell option values to an associative array.
+# The first argument can be the name of a variable to save the option to,
+# or an option name.
+# All other arguments are names of options to save. If the first argument
+# is an option name then it save with the other option name arguments into
+# the SAVED_SHELL_OPTIONS variable instead.
+# The options can be restored using the _restore_options function.
+function _save_options() {
+    local savename
+    if _is_option "$1"; then
+	savename=SAVED_SHELL_OPTIONS
+    else
+	savename="$1"
+	shift
+    fi
+    local -a opts states 
+    opts=("$@")
+    local i=1
+    while [[ "$i" -le "${#opts}" ]]; do
+	if ( setopt | grep "^$opts[i]\$" > /dev/null ); then
+	    states[i]=on
+	elif ( unsetopt | grep "^$opts[i]\$" > /dev/null ); then
+	    states[i]=off
+	else
+	    echo "Invalid option $opts[i] !"
+	fi
+	let i=i+1
+    done
+    _create_assoc_array "$savename" opts states
+}
+
+# This function is used for restoring options previously saved with _save_options
+# The first argument can be the name of a variable containing the saved options,
+# or an option name. All other arguments are the names of options to restore.
+# If no option names are supplied then all saved options will be restored.
+# If the first argument is an option name, then it will be restored with the other
+# option name arguments from the SAVED_SHELL_OPTIONS variable instead.
+# If there are no arguments then all options in SAVED_SHELL_OPTIONS will be restored.
+function _restore_options () {
+    local savename
+    if _is_option "$1"; then
+	savename=SAVED_SHELL_OPTIONS
+    else
+	savename="$1"
+	shift
+    fi
+    typeset -A savedoptions
+    set -A savedoptions "${(kvP@)savename}"
+    local -a opts
+    opts=("$@")
+    local opt state 
+    for opt in "${(k@)savedoptions}"; do
+	if [[ "${#opts}" -eq 0 || "${opts[(r)$opt]}" == "$opt" ]]; then
+            state="${savedoptions[$opt]}" 
+            if [[ "$state" =~ "on" ]]; then
+		setopt "$opt"
+            elif [[ "$state" =~ "off" ]]; then
+		unsetopt "$opt"
+            fi
+	fi
+    done
+}
+
+# Local Variables:"
+# mode:sh"
+# End:"

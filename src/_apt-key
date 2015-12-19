@@ -1,0 +1,39 @@
+#compdef apt-key=gpg
+
+local -a args reply matchany keycomp keyfile advopts
+
+# matches any word
+matchany=(/$'[^\0]##\0'/)
+# key file completion
+keyfile=($matchany ':file:file:_files')
+# key completion
+function _apt_keys()
+{
+    local expl keys
+    local -a disp 
+    keys=$(apt-key list | grep 'pub' | colrm 1 12 | colrm 9)
+    _wanted keys expl 'apt keys' compadd "$@" "$disp[@]" - "${(f)keys}"
+}
+keycomp=(/$'[A-F0-9]##\0'/ ":key:key:_apt_keys")
+advopts=( \( $matchany ':option:option:{compset -n 2;_dispatch -command- gpg}' \) \# )
+#_dispatch $cmd:t $cmd $cmd:t -default- && ret=0
+args=$matchany
+_regex_words command "command" \
+     'add:add the key contained in file (use \"-\" for stdin):$keyfile' \
+     'del:remove a key:$keycomp' \
+     'export:output a key:$keycomp' \
+     'exportall:output all trusted keys.' \
+     'update:update keys using the keyring package.' \
+     'net-update:update keys using the network.' \
+     'list:list keys.' \
+     'finger:list fingerprints.' \
+     'adv:pass advanced options to gpg (download key).:$advopts'
+args+=("$reply[@]")
+
+_regex_arguments _apt-key "${args[@]}"
+
+_apt-key "$@"
+
+# Local Variables: 
+# mode:shell-script
+# End:

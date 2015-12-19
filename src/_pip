@@ -1,0 +1,191 @@
+#compdef pip
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for pip (http://pypi.python.org/pypi/pip).
+#
+#  Source: https://github.com/technolize/zsh-completion-funcs
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * technolize (https://github.com/technolize)
+#
+# ------------------------------------------------------------------------------
+
+
+local ret=1 state
+
+local -a common_ops
+common_ops=(
+  {-h,--help}"[show help]"
+  {-v,--verbose}"[give more output]"
+  {-V,--version}"[show version and exit]"
+  {-q,--quiet}"[give less output]"
+  "--log=[log file where a complete record will be kept]:file"
+  "--proxy=[specify a proxy in the form user:passwd@proxy.server:port]:proxy"
+  "--timeout=[set the socket timeout (default 15 seconds)]:second"
+  "--exists-action=[default action when a path already exists: (s)witch, (i)gnore, (w)ipe, (b)ackup]:action"
+  "--cert=[path to alternate CA bundle]:path"
+)
+
+_directories () {
+  _wanted directories expl directory _path_files -/ "$@" -
+}
+
+typeset -A opt_args
+_arguments \
+  ':subcommand:->subcommand' \
+  $common_ops \
+  '*::options:->options' && ret=0
+
+case $state in
+  subcommand)
+    local -a subcommands
+    subcommands=(
+      "install:install packages"
+      "uninstall:uninstall packages"
+      "freeze:put all currently installed packages"
+      "list:list installed packages"
+      "show:show information about installed packages"
+      "search:search pypi"
+      "wheel:build wheels from your requirements"
+      "zip:zip dividual packages"
+      "unzip:unzip undividual packages"
+      "bundle:create pybundle"
+      "help:show available commands"
+    )
+
+    _describe -t subcommands 'pip subcommand' subcommands && ret=0
+  ;;
+
+  options)
+    local -a args
+    args=(
+      $common_ops
+    )
+
+    local -a pi_ops
+    pi_ops=(
+      {-i,--index-url=}"[base URL of Python Package Index]:URL"
+      "--extra-index-url=[extra URLs of package indexes to use in addition to --index-url]:URL"
+      "--no-index[ignore package index (only looking at --find-links URLs instead)]"
+      {-f,--find-links=}"[URL to look for packages at]:URL"
+      {-M,--use-mirrors}"[use the PyPI mirrors as a fallback in case the main index is down]"
+      "--mirrors=[specific mirror URLs to query when --use-mirrors is used]:URL"
+      "--allow-external=[allow the installation of externally hosted files]:package"
+      "--allow-all-external[allow the installation of all externally hosted files]"
+      "--no-allow-external[disallow the installation of all externally hosted files]"
+      "--allow-insecure=[allow the installation of insecure and unverifiable files]:package"
+      "--no-allow-insecure[disallow the installation of insecure and unverifiable files]"
+    )
+
+    case $words[1] in
+      install | bundle)
+        args+=(
+          {-e,--editable=}"[install a package directly from a checkout]:VCS+REPOS_URL[@REV]#egg=PACKAGE"
+          {-r,--requirement=}"[install all the packages listed in the given requirements file]:filename:_files"
+          {-b,--build=}"[unpack packages into DIR]:directory:_directories"
+          {-t,--target=}"[install packages into DIR]:directory:_directories"
+          {-d,--download=}"[download packages into DIR instead of installing them]:directory:_directories"
+          "--download-cache=[cache downloaded packages in DIR]:directory:_directories"
+          "--src=[check out --editable packages into DIR]:directory:_directories"
+          {-U,--upgrade}"[upgrade all packages to the newest available version]"
+          "--force-reinstall[when upgrading, reinstall all packages even if they are already up-to-date]"
+          {-I,--ignore-installed}"[ignore the installed packages]"
+          "--no-deps[don't install package dependencies]"
+          "--no-install[download and unpack all packages, but don't actually install them]"
+          "--no-download[don't download any packages, just install the ones already downloaded]"
+          "--install-option=[extra arguments to be supplied to the setup.py install command]:options"
+          "--global-option=[Extra global options to be supplied to the setup.py call before the install command]:options"
+          "--user[install using the user scheme]"
+          "--egg[install as self contained egg file, like easy_install does]"
+          "--root=[Install everything relative to this alternate root directory]:directory:_directories"
+          "--use-wheel[find and prefer wheel archives when searching indexes and find-links locations]"
+          "--pre[include pre-release and development versions]"
+          "--no-clean[don't clean up build directories]"
+          $pi_ops
+        )
+      ;;
+
+      uninstall)
+        args+=(
+          {-r,--requirement=}"[install all the packages listed in the given requirements file]:filename:_files"
+          {-y,--yes}"[don't ask for confirmation of uninstall deletions]"
+        )
+      ;;
+
+      freeze)
+        args+=(
+          {-r,--requirement=}"[install all the packages listed in the given requirements file]:filename:_files"
+          {-f,--find-links=}"[URL to look for packages at]:URL"
+          {-l,--local}"[If in a virtualenv that has global access, do not list globally-installed packages]"
+        )
+      ;;
+
+      list)
+        args+=(
+          {-o,--outdated}"[list outdated packages (excluding editables)]"
+          {-u,--uptodated}"[list uptodated packages (excluding editables)]"
+          {-e,--editable}"[list editable projects]"
+          {-l,--local}"[If in a virtualenv that has global access, do not list globally-installed packages]"
+          "--pre[include pre-release and development versions]"
+          $pi_ops
+        )
+      ;;
+
+      show)
+        args+=(
+          {-f,--files}"[show the full list of installed files for each package]"
+        )
+      ;;
+
+      search)
+        args+=(
+          "--index[base URL of Python Package Index]:URL"
+        )
+      ;;
+
+      wheel)
+        args+=(
+          {-w,--wheel-dir=}"[build wheels into DIR, where the default is '<cwd>/wheelhouse']:directory:_directories"
+          "--use-wheel[find and prefer wheel archives when searching indexes and find-links locations]"
+          "--build-option=[extra arguments to be supplied to 'setup.py bdist_wheel']:options"
+          {-r,--requirement=}"[install all the packages listed in the given requirements file]:filename:_files"
+          "--download-cache=[cache downloaded packages in DIR]:directory:_directories"
+          "--no-deps[don't install package dependencies]"
+          {-b,--build=}"[directory to unpack packages into and build in]:directory:_directories"
+          "--global-option=[extra global options to be supplied to the setup.py call before the 'bdist_wheel' command]:options"
+          "--pre[include pre-release and development versions]"
+          "--no-clean[don't clean up build directories]"
+          $pi_ops
+        )
+      ;;
+
+      unzip | zip)
+        args+=(
+          "--unzip[unzip a package]"
+          "--no-pyc[do not include .pyc files in zip files]"
+          {-l,--list}"[list the packages available, and their zip status]"
+          "--sort-files[with --list, sort packages according to how many files they contain]"
+          "--path=[restrict operation to the given paths]:paths"
+          {-n,--simulate}"[do not actually perform the zip/unzip operation]"
+        )
+      ;;
+    esac
+
+    _arguments $args && ret=0
+  ;;
+esac
+
+return ret
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et

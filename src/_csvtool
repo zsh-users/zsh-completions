@@ -1,0 +1,15 @@
+#compdef csvtool
+
+# zsh completion for csvtool
+
+_arguments -s -w \
+  '-t[Input separator char (use -t TAB for tab separated input)]:char:{_guard "*" "separator char or \"TAB\""}' \
+  '-u[Output separator char (use -u TAB for tab separated output)]:char:{_guard "*" "separator char or \"TAB\""}' \
+  '-o[Write output to file (instead of stdout)]:filenames:_files' \
+  '-z[Number columns from 0 instead of 1]' \
+  '(--help)-help[Display help]' \
+  "1:Commands:((col\:'Return one or more columns from the CSV file' namedcol\:'Return one or more named columns (assuming first row contains column headings)' width\:'Print maximum width of CSV file (number of columns in widest row)' height\:'Print number of rows in the CSV file' setcolumns\:'Set the number of columns' setrows\:'Take the first N rows (add padding if necessary)' head\:'Take the first N rows (no padding is added)' drop\:'Drop the first N rows' cat\:'Concatenate input files vertically (rowwise)' paste\:'Concatenate input files horizontally (columnwise)' pastecol\:'replace columns of 1st file with those of 2nd file' join\:'merge multiple CSV files together' square\:'make all rows have the same length' trim\:'trim the empty cells at the top/left/right/bottom of the CSV file'sub\:'take a square subset of the CSV file' replace\:'replace rows in 1st file with matching rows in 2nd file' transpose\:'transpose lines and columns of the CSV file' call\:'call external command/function on each row of CSV file'))"
+
+# Local Variables: 
+# mode:shell-script
+# End: 

@@ -1,0 +1,89 @@
+#compdef gsettings-info
+
+_gsettings_info() {
+  _arguments : \
+    '--schemadir[A directory to search for additional schemas]:additional schema:_path_files -/' \
+    ':gsettings_info command:_gsettings_info_commands' \
+    '*: :_gsettings_info_rest_args'
+}
+
+(( $+functions[_gsettings_info_commands] )) || _gsettings_info_commands() {
+  local -a command_list
+  command_list=(
+    'help:show the help'
+    'summary:get the summary of keys'
+    'desc:get the description of keys'
+    'default:get the default value of keys'
+    'show:show the information of keys'
+  )
+  _describe -t commands 'gsettings commands' command_list
+}
+
+(( $+functions[_gsettings_info_rest_args] )) || _gsettings_info_rest_args() {
+  local CMD_IDX=2
+  local SCHEMA_IDX=3
+  local KEY_IDX=4
+  local offset=0
+  local opt_schemadir schemadir schema
+
+  if [[ $#words -ge 4 && "${(Q)words[2]}" == --schemadir ]]; then
+    opt_schemadir=--schemadir
+    schemadir="${(Q)words[3]}"
+    offset=2
+  fi
+  case "${(Q)words[CMD_IDX+offset]}" in
+    help)
+      _gsettings_info_help_targets
+      ;;
+    summary|desc|default|show)
+      case $((CURRENT-offset)) in
+        $SCHEMA_IDX)
+          _gsettings_info_schemas "$opt_schemadir" "$schemadir"
+          ;;
+        $KEY_IDX)
+          schema="${(Q)words[SCHEMA_IDX+offset]}"
+          _gsettings_info_keys "$opt_schemadir" "$schemadir" "$schema"
+          ;;
+      esac
+      ;;
+  esac
+}
+
+(( $+functions[_gsettings_info_help_targets] )) ||
+_gsettings_info_help_targets() {
+  local -a target_list
+  target_list=(
+    'help:show the help'
+    'summary:get the summary of keys'
+    'desc:get the description of keys'
+    'default:get the default value of keys'
+    'show:show the information of keys'
+  )
+  _describe -t help-target 'help targets' target_list
+}
+
+(( $+functions[_gsettings_info_schemas] )) || _gsettings_info_schemas() {
+  local -a schema_list
+  schema_list=(
+    ${(@f)"$(gsettings $1 $2 list-schemas 2>/dev/null)"}
+    ${(@f)"$(gsettings $1 $2 list-relocatable-schemas 2>/dev/null)"}
+  )
+  if [[ $#schema_list == 0 ]]; then
+    schema_list=(
+      ${(@f)"$(gsettings list-schemas 2>/dev/null)"}
+      ${(@f)"$(gsettings list-relocatable-schemas 2>/dev/null)"}
+    )
+  fi
+  _describe -t schemas 'schemas' schema_list -V
+}
+
+(( $+functions[_gsettings_info_keys] )) || _gsettings_info_keys() {
+  local -a key_list
+  key_list=(${(@f)"$(gsettings $1 $2 list-keys $3 2>/dev/null)"})
+  if [[ $#key_list == 0 ]]; then
+    key_list=(${(@f)"$(gsettings list-keys $3 2>/dev/null)"})
+  fi
+  _describe -t keys 'keys' key_list -V
+}
+
+_gsettings_info
