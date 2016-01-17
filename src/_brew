@@ -54,6 +54,7 @@ _brew_cask() {
     "install:installs the given Cask"
     "list:with no args, lists installed Casks; given installed Casks, lists staged files"
     "search:searches all known Casks"
+    "style:checks Cask style using RuboCop"
     "uninstall:uninstalls the given Cask"
     "update:a synonym for 'brew update'"
     "zap:zaps all files associated with the given Cask"
