@@ -337,7 +337,7 @@ _go() {
                   if (( CURRENT == 2 )); then
                     _arguments \
                       '-func=[output coverage profile information for each function]:string' \
-                      '-html=[generate HTML representation of coverage profile]:string' \
+                      '-html=[generate HTML representation of coverage profile]:file:_files' \
                       '-mode=[coverage mode]:mode:(set count atomic)'
                     return
                   fi
