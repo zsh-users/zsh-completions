@@ -1,0 +1,133 @@
+#compdef git-subtree
+#description Merge subtrees together and split repository into subtrees
+------------------------------------------------------------------------------
+# Copyright (c) 2011 Github zsh-users - http://github.com/zsh-users
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of the zsh-users nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL ZSH-USERS BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for git-subtree (http://git.kernel.org/cgit/git/git.git/plain/contrib/subtree/git-subtree.txt).
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+# * Jordan J Klassen <forivall@gmail.com> (http://forivall.com)
+#
+# ------------------------------------------------------------------------------
+
+
+(( $+functions[__git_any_repositories_or_references] )) ||
+__git_any_repositories_or_references () {
+  _alternative \
+    'repositories::__git_any_repositories' \
+    'references::__git_references'
+}
+
+_git-subtree () {
+  local curcontext=$curcontext state state_descr line ret=1
+  declare -A opt_args
+
+  # TODO: -P should only complete paths inside the current repository.
+  _arguments -C -A 'THIS_IS_A_HACK' \
+    '(-q --quiet)'{-q,--quiet}'[suppress progress output]' \
+    '(-P --prefix)'{-P,--prefix=}'[the path to the subtree in the repository to manipulate]: :_directories' \
+    '-d[show debug messages]' \
+    ': :->command' \
+    '*:: :->option-or-argument' && ret=0
+
+  case $state in
+    (command)
+      declare -a commands
+
+      commands=(
+        add:'create the subtree by importing its contents from <commit> / <repository>@<ref>'
+        merge:'merge recent changes from <commit> into the subtree'
+        pull:'fetch <repository>@<ref> and merge recent changes into the subtree'
+        push:'does a split and `git push` to <repository>@<ref>'
+        split:'extract a new synthetic project history from a subtree')
+
+      _describe -t commands command commands && ret=0
+      ;;
+    (option-or-argument)
+      curcontext=${curcontext%:*}-$line[1]:
+
+      case $line[1] in
+        (add)
+          _arguments \
+            '(-q --quiet)'{-q,--quiet}'[suppress progress output]' \
+            '(-m --message)'{-m,--message}'[use the given message as the commit message for the merge commit]' \
+            '(-P --prefix)'{-P,--prefix=}'[the path to the subtree in the repository to manipulate]: :_directories' \
+            '--squash[import only a single commit from the subproject]' \
+            ': :__git_any_repositories_or_references' \
+            ':: :__git_ref_specs' && ret=0
+          ;;
+        (merge)
+          _arguments -S \
+            '(-q --quiet)'{-q,--quiet}'[suppress progress output]' \
+            '(-P --prefix)'{-P,--prefix=}'[the path to the subtree in the repository to manipulate]: :_directories' \
+            '(-m --message)'{-m,--message}'[use the given message as the commit message for the merge commit]' \
+            '--squash[import only a single commit from the subproject]' \
+            ': :__git_references' && ret=0
+          ;;
+        (pull)
+          _arguments -S \
+            '(-q --quiet)'{-q,--quiet}'[suppress progress output]' \
+            '(-P --prefix)'{-P,--prefix=}'[the path to the subtree in the repository to manipulate]: :_directories' \
+            '(-m --message)'{-m,--message}'[use the given message as the commit message for the merge commit]' \
+            '--squash[import only a single commit from the subproject]' \
+            ': :__git_any_repositories' \
+            ':: :__git_ref_specs' && ret=0
+          ;;
+        (push)
+          _arguments -S \
+            '(-q --quiet)'{-q,--quiet}'[suppress progress output]' \
+            '(-P --prefix)'{-P,--prefix=}'[the path to the subtree in the repository to manipulate]: :_directories' \
+            '(-m --message)'{-m,--message}'[use the given message as the commit message for the merge commit]' \
+            ': :__git_any_repositories' \
+            ':: :__git_ref_specs' && ret=0
+          ;;
+        (split)
+          _arguments -S \
+            '(-q --quiet)'{-q,--quiet}'[suppress progress output]' \
+            '(-P --prefix)'{-P,--prefix=}'[the path to the subtree in the repository to manipulate]: :_directories' \
+            '(-b --branch)'{-b,--branch=}'[create a new branch]' \
+            '--onto=[try connecting new tree to an existing one]: :__git_ref_specs' \
+            '(-m --message)'{-m,--message}'[use the given message as the commit message for the merge commit]' \
+            '--ignore-joins[ignore prior --rejoin commits]' \
+            '--onto=[try connecting new tree to an existing one]: :__git_ref_specs' \
+            '--rejoin[use the given message as the commit message for the merge commit]' \
+            '*: :__git_references' && ret=0
+          ;;
+        (*)
+          _nothing
+          ;;
+      esac
+      ;;
+  esac
+
+  return ret
+}
