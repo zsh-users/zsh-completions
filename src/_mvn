@@ -430,6 +430,7 @@ _mvn_common_property_names() {
     'skipTests:skip tests execution'
     'maven.test.skip:skip tests compilation and execution'
     'gpg.passphrase:gpg passphrase'
+    'tycho.mode:enable maven mode for Tycho projects to disable p2 resolution'
   )
   _describe -t 'common-property-names' 'common property name' properties $@
 }
@@ -473,6 +474,7 @@ _mvn_property_values() {
     ((#i)*(createChecksum|generatePom|maven.test.skip)*) _wanted booleans expl 'boolean' _mvn_booleans && ret=0;;
     ((#i)*user*) _wanted users expl 'user' _users && ret=0;; # TODO Use _alternative and add repository usernames from settings + projects
     ((#i)*plugin*) _wanted plugin expl 'plugin' _mvn_plugins && ret=0;;
+    ((#i)*tycho.mode*) _wanted tychomodes expl 'tychomode' _mvn_tycho_modes && ret=0;;
     (*) _default && ret=0;;
   esac
   return ret
@@ -545,6 +547,14 @@ _mvn_booleans() {
   _describe -t booleans 'boolean' booleans
 }
 
+
+(( $+functions[_mvn_tycho_modes] )) ||
+_mvn_tycho_modes() {
+  local tychomodes; tychomodes=(
+    'maven:maven mode, Tycho will not do any p2 dependency resolution'
+  )
+  _describe -t tychomodes 'boolean' tychomodes
+}
 
 # ------------------------------------------------------------------------------
 # Helper functions
