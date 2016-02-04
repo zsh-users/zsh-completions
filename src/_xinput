@@ -93,8 +93,11 @@ _xinput(){
 		--set-prop 
 	)
 
-	local context state line expl
+	local context state line
 	local -A opt_args
+	# Used with "-O expl" for unsorted.
+	local -a expl
+	expl=(-Vx)
 
 	_arguments '*:: :->subcmds' && return 0
 
@@ -103,92 +106,101 @@ _xinput(){
 		return
 	fi
 
-	_xinput_devices_id=($(xinput list --id-only))
-	for i in $(xinput list --id-only)
-		do
-		    _xinput_devices_name[$i]="$(xinput list --name-only $i)"
-		done
-	_xinput_devices=( $_xinput_devices_id $_xinput_devices_name )
+	typeset -a xinput_devices_id xinput_devices xinput_devices_name
+	local i name
+	for i in ${(on)$(xinput list --id-only)}; do
+		# Removing prefixes, e.g. from "∼ 7" (floating slave).
+		i=${i##[^[:digit:]]#}
+		[[ -n "$i" ]] || continue
+		xinput_devices_id+=($i)
+		name="$(xinput list --name-only $i)"
+		xinput_devices_name+=($name)
+		xinput_devices+=($i\:$name)
+	done
+	xinput_devices+=($xinput_devices_name)
 
 	# xinput arguments handler
 	case "$words[1]" in
 		--get-feedbacks|--set-ptr-feedback|--get-button-map|--query-state|--list-props|--watch-props|get-feedbacks|set-ptr-feedback|get-button-map|query-state|list-props|watch-props|--enable|enable|--map-to-output|map-to-output|--disable|disable)
-			_arguments \
-				':list option:($_xinput_devices)'
+			_arguments -O expl \
+				':list option:(($xinput_devices))'
 		;;
 		--list|list)
-		      _arguments \
-				':list option:($_xinput_devices --short --long --name-only --id-only)' \
-				':list option:(--short --long --name-only --id-only)'
+			_arguments -O expl \
+				'--short' \
+				'--long' \
+				'--name-only' \
+				'--id-only' \
+				':list option:(($xinput_devices))' \
 		;;
 		--set-integer-feedback|set-integer-feedback)
-			_arguments \
-				':list option:($_xinput_devices)' \
+			_arguments -O expl \
+				':list option:(($xinput_devices))' \
 				':list option:( feedback )' \
-				':list option:( $_xinput_devices_id )'
+				':list option:( $xinput_devices_id )'
 		;;
 		--set-button-map|set-button-map)
-			_arguments \
-				':list option:($_xinput_devices)' #map button 1 [map button 2 [...]]
+			_arguments -O expl \
+				':list option:(($xinput_devices))' #map button 1 [map button 2 [...]]
 		;;
 		--set-pointer|set-pointer)
-			_arguments \
-				':list option:($_xinput_devices)' # [x index y index]
+			_arguments -O expl \
+				':list option:(($xinput_devices))' # [x index y index]
 		;;
 		--set-mode|set-mode)
-			_arguments \
-				':list option:($_xinput_devices)' \
+			_arguments -O expl \
+				':list option:(($xinput_devices))' \
 				':list option:(ABSOLUTE RELATIVE)'
 		;;
 		--test|test)
-			_arguments \
-				':list option:(-proximity $_xinput_devices )' \
-				':list option:($_xinput_devices)'
+			_arguments -O expl \
+				':list option:(-proximity ($xinput_devices ))' \
+				':list option:(($xinput_devices))'
 		;; 
 		--reattach|reattach)
-			_arguments \
-				':list option:($_xinput_devices)' \
+			_arguments -O expl \
+				':list option:(($xinput_devices))' \
 				':list option:(master slave)'
 		;; 
 		--float|float)
-			_arguments \
-				':list option:($_xinput_devices_id)'
+			_arguments -O expl \
+				':list option:(($xinput_devices))'
 		;; 
 		--test-xi2|test-xi2)
-			_arguments \
-				':list option:($_xinput_devices --root)' \
-				':list option:($_xinput_devices)'
+			_arguments -O expl \
+				':list option:(($xinput_devices --root))' \
+				':list option:(($xinput_devices))'
 		;;
 		--delete-prop|delete-prop)
-			_arguments \
-				':list option:($_xinput_devices)' #property
+			_arguments -O expl \
+				':list option:(($xinput_devices))' #property
 		;;
 		--create-master|create-master)
-			_arguments \
-				':list option:($_xinput_devices_id)' # [sendCore (dflt:1)] [enable (dflt:1)]
+			_arguments -O expl \
+				':list option:(($xinput_devices))' # [sendCore (dflt:1)] [enable (dflt:1)]
 		;; 
 		--remove-master|remove-master)
-			_arguments \
-				':list option:($_xinput_devices_id)' # [Floating|AttachToMaster (dflt:Floating)] [returnPointer] [returnKeyboard]
+			_arguments -O expl \
+				':list option:($xinput_devices_id)' # [Floating|AttachToMaster (dflt:Floating)] [returnPointer] [returnKeyboard]
 		;; 
 		# --set-cp|set-cp); window device;; 
 		--set-prop|set-prop)
-			_arguments \
-				':list option:($_xinput_devices)' \
+			_arguments -O expl \
+				':list option:(($xinput_devices))' \
 				':list option:(--type={atom,float,int} --format={8,16,32})' \
 				':list option:(--type={atom,float,int} --format={8,16,32})' # property val [val ...]
 		;;
 		--set-int-prop|set-int-prop)
-			_arguments \
-				':list option:($_xinput_devices)' # property format (8, 16, 32) val [val ...]
+			_arguments -O expl \
+				':list option:(($xinput_devices))' # property format (8, 16, 32) val [val ...]
 		;;
 		--set-float-prop|set-float-prop)
-			_arguments \
-				':list option:($_xinput_devices)' # property val [val ...]
+			_arguments -O expl \
+				':list option:(($xinput_devices))' # property val [val ...]
 		;; 
 		--set-atom-prop|set-atom-prop)
-			_arguments \
-				':list option:($_xinput_devices)' # property val [val ...]
+			_arguments -O expl \
+				':list option:(($xinput_devices))' # property val [val ...]
 		;;
 	esac
 }
