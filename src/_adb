@@ -71,7 +71,7 @@ _adb() {
         ;;
         (push)
           _arguments \
-            '1:local directory:_files -/' \
+            '1:files:_files' \
             '2: :_adb_remote_files -/' \
           && ret=0
         ;;
@@ -83,7 +83,7 @@ _adb() {
         ;;
         (sideload)
           _arguments \
-            '1:local directory:_files -/' \
+            '1:archive:_files -g "*.zip(-.)"' \
           && ret=0
         ;;
         (sync)
@@ -199,6 +199,7 @@ _adb_device_cmds() {
   local commands; commands=(
     'push:copy file/dir to device'
     'pull:copy file/dir from device'
+    'sideload:push an update using sideload'
     'sync:copy host->device only if changed'
     'shell:run remote shell interactively or command'
     'emu:run emulator console command'
