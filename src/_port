@@ -221,6 +221,13 @@ _port_select() {
   fi
 }
 
+stat -f%m . > /dev/null 2>&1
+if [ "$?" = 0 ]; then
+  stat_cmd=(stat -f%Z)
+else
+  stat_cmd=(stat --format=%Z)
+fi
+
 _port_caching_policy() {
   local reg_time comp_time check_file
   case "${1##*/}" in
@@ -231,8 +238,8 @@ _port_caching_policy() {
       check_file=${$(port dir MacPorts)%/*/*}/PortIndex
       ;;
   esac
-  reg_time=$(stat -c '%Z' $check_file)
-  comp_time=$(stat -c '%Z' $1)
+  reg_time=$($stat_cmd $check_file)
+  comp_time=$($stat_cmd $1)
   return $(( reg_time < comp_time ))
 }
 
