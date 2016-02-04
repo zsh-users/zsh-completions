@@ -1,0 +1,82 @@
+#compdef setcap
+# ------------------------------------------------------------------------------
+# Description
+# ------------------------------------------------------------------------------
+#  Completion script for libcap's setcap:
+#  - https://people.redhat.com/sgrubb/libcap-ng/
+#
+# ZSH provides the `zsh/cap` module that does not work on most modern systems,
+# in lieu of this I have written this zsh-completion modules.
+#
+# Written by
+#  - Zephyr Pellerin (https://github.com/zv)
+# ------------------------------------------------------------------------------
+
+local curcontext=$curcontext state line expl ret=1
+local -a args privs operators
+
+args=( '*:file:->files'
+       '1:capability:->capability'
+       '-v[verify]' '-q[quiet]' )
+
+_arguments -C -s "$args[@]" && ret=0
+
+operators=("e:effective" "i:inheritable" "p:permitted")
+
+case "$state" in
+    capability)
+        if compset -P '*?[=+-]'; then
+            _describe -t operators "operator" operators && ret=0
+        else
+            _values -s , capability \
+                    'cap_audit_control[Enable and disable kernel auditing]' \
+                    'cap_audit_read[Allow reading the audit log]' \
+                    'cap_audit_write[Write records to kernel auditing log.]' \
+                    'cap_block_suspend[Employ features that can block system suspend]' \
+                    'cap_chown[Make arbitrary changes to file UIDs and GIDs]' \
+                    'cap_dac_override[Bypass file read, write, and execute permission checks.]' \
+                    'cap_dac_read_search[Bypass file read permission checks]' \
+                    'cap_fowner[Bypass filesystem UID checks, set extended attrs.]' \
+                    "cap_fsetid[Don't clear set-user-ID and set-group-ID permission bits when a file is modified]" \
+                    'cap_ipc_lock[Lock memory]' \
+                    'cap_ipc_owner[Bypass checks on SySV IPC object operations.]' \
+                    'cap_kill[Bypass permission checks for sending signals]' \
+                    'cap_lease[Establish leases on arbitrary files]' \
+                    'cap_linux_immutable[Set immutability or append only]' \
+                    'cap_mac_admin[Override Mandatory Access Control]' \
+                    'cap_mac_override[Allow MAC configuration or state changes.]' \
+                    'cap_mknod[Create special files using mknod(2)]' \
+                    'cap_net_admin[Perform various network-related operations]' \
+                    'cap_net_bind_service[Bind a socket to a privileged ports.]' \
+                    'cap_net_broadcast[Make socket broadcasts and listen to multicast.]' \
+                    'cap_net_raw[Use raw sockets.]' \
+                    'cap_setgid[Manipulate process GIDs.]' \
+                    'cap_setfcap[Set file capabilities.]' \
+                    "cap_setpcap[Grant or remove any capability in the caller's permitted capability set to or from any other process.]" \
+                    'cap_setuid[Manipulate or forge process UIDs]' \
+                    'cap_sys_admin[Perform numerous administrative tasks.]' \
+                    'cap_sys_boot[Reboot]' \
+                    'cap_sys_chroot[Use chroot]' \
+                    'cap_sys_module[Load kernel module.]' \
+                    'cap_sys_nice[Nice or renice processes.]' \
+                    'cap_sys_pacct[Use acct(2).]' \
+                    'cap_sys_ptrace[Inspect processes with ptrace or use process_vm_writev.]' \
+                    'cap_sys_rawio[Numerous device IO functions, including performing raw IO and access x86 MSRs]' \
+                    'cap_sys_resource[Set numerous resource limits]' \
+                    'cap_sys_time[Set system clock]' \
+                    'cap_sys_tty_config[Use vhangup(2)]' \
+                    'cap_syslog[Perform privileged syslog(2) operations.]' \
+                    'cap_wake_alarm[Trigger something that will wake up the system]' && ret=0
+        fi ;;
+    files) _files && ret=0 ;;
+esac
+
+return ret
+
+# Local variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# sh-indent-comment: t
+# indent-tabs-mode: nil
+# End:
+# ex: sw=2 ts=2 et filetype=sh
