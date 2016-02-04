@@ -48,6 +48,7 @@ case $state in
 				_values 'commands' 'install' 'update' 'package' 'exec' 'config' 'check' 'list' 'show' 'console' 'open' 'viz' 'init' 'gem' 'help' 'platform' 'outdated' && ret=0
 				;;
 			install)
+				_policies=('HighSecurity' 'MediumSecurity' 'LowSecurity' 'AlmostNoSecurity' 'NoSecurity')
 				_arguments \
 					'(--no-color)--no-color[disable colorization in output]' \
 					'(--local)--local[do not attempt to connect to rubygems.org]' \
@@ -58,7 +59,18 @@ case $state in
 					'(--frozen)--frozen[do not allow the Gemfile.lock to be updated after this install]' \
 					'(--path)--path=-[specify a different path than the system default]:path:_files' \
 					'(--binstubs)--binstubs=-[generate bin stubs for bundled gems to ./bin]:directory:_files' \
-					'(--without)--without=-[exclude gems that are part of the specified named group]:groups'
+					'(--without)--without=-[exclude gems that are part of the specified named group]:groups' \
+					'(--with)--with=-[include gems that are part of the specified named group]:groups' \
+					'(--clean)--clean[remove any gems not present in the current Gemfile]' \
+					'(--full-index)--full-index[download and cache the index file of all gems]' \
+					'(--jobs)--jobs=-[install gems parallely]:number' \
+					'(--force)--force[force download every gem]' \
+					'(--no-cache)--no-cache[do not update the cache in vendor/cache with newly installed gems]' \
+					'(--no-prune)--no-prune[do not remove stale gem from cache after installation]' \
+					'(--retry)--retry=-[number of times to retry failed network or git requests]:number' \
+					'(--sheband)--shebang=-[specify ruby executable to execute scripts]:ruby' \
+					'(--standalone)--standalone=-[create standalone bundles]:groups' \
+					"(--trust-policy)--trust-policy=-[apply the Rubygems security policy]:arg:($_policies)"
 				ret=0
 				;;
 			exec)
