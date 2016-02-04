@@ -238,6 +238,8 @@ _android_cmds() {
     'update:update a virtual device, project, SDK or adb'
     'move:move a virtual device'
     'delete:delete a virtual device'
+    'avd:displays the AVD Manager window'
+    'sdk:displays the SDK Manager window'
     'display:display manager windows'
   )
   _describe -t commands 'command' commands "$@"
