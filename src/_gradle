@@ -40,6 +40,10 @@
 #
 # ------------------------------------------------------------------------------
 
+# Wrapper Support 
+if [[ $service == "gradlew" && -x "./gradlew" ]] ; then
+    service="./$service"
+fi
 
 _gradle() {
   typeset -A opt_args
