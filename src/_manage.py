@@ -193,19 +193,25 @@ _managepy-commands() {
     'inspectdb:Introspects the database tables in the given database and outputs a Django model module.'
     'loaddata:Installs the named fixture(s) in the database.'
     'makemessages:Runs over the entire source tree of the current directory and pulls out all strings marked for translation.'
+    'makemigrations:Creates new migrations based on the changes detected to your models.'
+    'migrate:Synchronizes the database state with the current set of models and migrations.'
     'reset:Executes ``sqlreset`` for the given app(s) in the current database.'
     'runfcgi:Run this project as a fastcgi (or some other protocol supported by flup) application,'
     'runserver:Starts a lightweight Web server for development.'
     'shell:Runs a Python interactive interpreter.'
+    'showmigrations:Shows all migrations in a project.'
     'sql:Prints the CREATE TABLE SQL statements for the given app name(s).'
     'sqlall:Prints the CREATE TABLE, custom SQL and CREATE INDEX SQL statements for the given model module name(s).'
     'sqlclear:Prints the DROP TABLE SQL statements for the given app name(s).'
     'sqlcustom:Prints the custom table modifying SQL statements for the given app name(s).'
+    'sqldropindexes:Prints the DROP INDEX SQL statements for the given app name(s).'
     'sqlflush:Returns a list of the SQL statements required to return all tables in the database to the state they were in just after they were installed.'
     'sqlindexes:Prints the CREATE INDEX SQL statements for the given model module name(s).'
+    'sqlmigrate:Prints the SQL for the named migration.'
     "sqlinitialdata:RENAMED: see 'sqlcustom'"
     'sqlreset:Prints the DROP TABLE SQL, then the CREATE TABLE SQL, for the given app name(s).'
     'sqlsequencereset:Prints the SQL statements for resetting sequences for the given app name(s).'
+    'squashmigrations:Squashes the migrations for app_label up to and including migration_name down into fewer migrations.'
     "startapp:Creates a Django app directory structure for the given app name in this project's directory."
     "startproject:Creates a Django project directory structure for the given project name in the current directory or the given destination."
     "syncdb:Create the database tables for all apps in INSTALLED_APPS whose tables haven't already been created."
