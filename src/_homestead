@@ -1,4 +1,4 @@
-#compdef console
+#compdef homestead
 # ------------------------------------------------------------------------------
 # Copyright (c) 2011 Github zsh-users - http://github.com/zsh-users
 # All rights reserved.
@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for symfony console (https://github.com/symfony/Console).
+#  Completion script for homestead (http://laravel.com/docs/homestead).
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -38,17 +38,16 @@
 #
 # ------------------------------------------------------------------------------
 
-_find_console () {
-     echo "php $(find . -maxdepth 2 -mindepth 1 -name 'console' -type f | head -n 1)"
+
+_homestead_get_command_list () {
+    homestead --no-ansi | sed "1,/Available commands/d" | awk '/ [a-z]+/ { print $1 }'
 }
 
-_console_get_command_list () {
-    `_find_console` --no-ansi | sed "1,/Available commands/d" | awk '/ [a-z]+/ { print $1 }'
+_homestead () {
+    if [ -f homestead ]; then
+        compadd `_homestead_get_command_list`
+    fi
 }
 
-_console () {
-    compadd `_console_get_command_list`
-}
-
-compdef _console php console
-compdef _console console
+compdef _homestead php homestead
+compdef _homestead homestead

@@ -1,4 +1,4 @@
-#compdef console
+#compdef envoy
 # ------------------------------------------------------------------------------
 # Copyright (c) 2011 Github zsh-users - http://github.com/zsh-users
 # All rights reserved.
@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for symfony console (https://github.com/symfony/Console).
+#  Completion script for envoy (https://github.com/laravel/envoy).
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -38,17 +38,30 @@
 #
 # ------------------------------------------------------------------------------
 
-_find_console () {
-     echo "php $(find . -maxdepth 2 -mindepth 1 -name 'console' -type f | head -n 1)"
+
+_envoy_get_command_list () {
+    envoy --no-ansi | sed "1,/Available commands/d" | awk '/^  [a-z]+/ { print $1 }'
 }
 
-_console_get_command_list () {
-    `_find_console` --no-ansi | sed "1,/Available commands/d" | awk '/ [a-z]+/ { print $1 }'
+_envoy_get_option_list () {
+    envoy --no-ansi | sed "1,/Options/d" | awk '/^  --[a-z]+/ { print $1 }'
 }
 
-_console () {
-    compadd `_console_get_command_list`
+_envoy_get_help_list () {
+    envoy help $1 --no-ansi | sed "1,/Options/d" | awk '/^  --[a-z]+/ { print $1 }'
 }
 
-compdef _console php console
-compdef _console console
+_envoy_get_task_list () {
+    if [ $1 = 'run' ] && [ -f Envoy.blade.php ]; then
+        perl -nE "say $& if /(task|macro)\('\K[^']+/g" Envoy.blade.php
+    fi
+}
+
+_envoy () {
+    _arguments : \
+        `_envoy_get_option_list` \
+        ":command:compadd `_envoy_get_command_list`" \
+        ":task:compadd `_envoy_get_task_list $words[$CURRENT-1]`"
+}
+
+compdef _envoy envoy
