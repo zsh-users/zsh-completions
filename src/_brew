@@ -64,7 +64,6 @@ _brew_outdated_formulae() {
 _brew_cask() {
   local -a _1st_arguments
   _1st_arguments=(
-    "alfred:displays note about new built-in alfred support"
     "audit:verifies installability of Casks"
     "cat:dump raw source of the given Cask to the standard output"
     "cleanup:cleans up cached downloads and tracker symlinks"
