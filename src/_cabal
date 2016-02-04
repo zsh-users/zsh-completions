@@ -68,40 +68,48 @@ _cabal_command ()
 {
   local -a _cabal_cmds
   _cabal_cmds=(
-    'install:installs a list of packages'
     'update:updates list of known packages'
-    'list:list packages matching a search string'
+    'install:installs a list of packages'
+
+    'help:help about commands'
     'info:display detailed information about a particular package'
-    'fetch:downloads packages for later installation'
-    'freeze:freeze dependencies'
+    'list:list packages matching a search string'
+    'fetch:download packages for later installation'
+    "user-config:display and update the user's global cabal configuration"
+
     "get:get a package's source code"
+    'init:interactively create a .cabal file'
+
+    'configure:prepare to build the package'
+    'build:compile all/specific components'
+    'clean:clean up after a build'
+
+    'run:build and run an executable'
+    'repl:open an interpreter session for the given component'
+    'test:run all/specific tests in the test suite'
+    'bench:run all/specific benchmarks'
+
     'check:check the package for common mistakes'
     'sdist:generate a source distribution file (.tar.gz)'
-    'upload:uploads source packages to Hackage'
+    'upload:upload source packages to Hackage'
     'report:upload build reports to a remote server'
-    'run:runs the compiled executable'
-    'init:interactively create a .cabal file'
-    'configure:prepare to build the package'
-    'build:compile all targets or specific targets'
-    'repl:open an interpreter session for the given target'
-    'sandbox:create/modify/delete a sandbox'
+
+    'freeze:freeze dependencies'
     'haddock:generate Haddock HTML documentation'
-    'exec:run a command with the cabal environment'
-    'copy:copy the files into the install locations'
-    'clean:clean up after a build'
     'hscolour:generate HsColour colourised code, in HTML format'
+    'copy:copy the files into the install locations'
     'register:register this package with the compiler'
-    'test:run the test suite, if any (configure with UserHooks)'
-    'bench:run the benchmark, if any (configure with UserHooks)'
-    'help:help about commands'
+
+    'sandbox:create/modify/delete a sandbox'
+    'exec:give a command access to the sandbox package repository'
   )
 
   local -a _cabal_programs
   _cabal_programs=()
 
-  programs=(alex ar c2hs cpphs ffihugs gcc ghc ghc-pkg greencard haddock
-    happy hmake hpc hsc2hs hscolour hugs jhc ld lhc lhc-pkg nhc98 pkg-config
-    ranlib strip tar uhc)
+  programs=(alex ar c2hs cpphs gcc ghc ghc-pkg ghcjs ghcjs-pkg greencard haddock happy
+    haskell-suite haskell-suite-pkg hmake hpc hsc2hs hscolour jhc ld lhc lhc-pkg
+    pkg-config strip tar uhc)
 
   for program in $programs; do
     _cabal_programs+=(
@@ -143,8 +151,8 @@ _cabal_build ()
     {-h,--help}'[show help]' \
     {-v-,--verbose=}'[control verbosity]:level:(0 1 2 3)' \
     '--builddir=[the directory where Cabal puts generated build files]:directory:_files -/' \
-    $_cabal_programs \
     {-j,--jobs=}'[run NUM jobs simultaneously]' \
+    $_cabal_programs \
     "--only[don't reinstall add-source dependencies (sandbox-only)]"
 }
 
@@ -159,7 +167,7 @@ _cabal_clean ()
     {-h,--help}'[show help]' \
     {-v-,--verbose=}'[control verbosity]:level:(0 1 2 3)' \
     '--builddir=[the directory where Cabal puts generated build files]:directory:_files -/' \
-    {-s,--save-configure}'[do not remove the configuration file]'
+    {-s,--save-configure}'[do not remove the configuration file during cleaning; saves need to reconfigure]'
 }
 
 _cabal_configure ()
@@ -172,10 +180,9 @@ _cabal_configure ()
     {-v-,--verbose=}'[control verbosity]:level:(0 1 2 3)' \
     '--builddir=[the directory where Cabal puts generated build files]:directory:_files -/' \
     {-g,--ghc}'[compile with GHC]' \
-    '--nhc98[compile with NHC]' \
+    '--ghcjs[compile with GHCJS]' \
     '--jhc[compile with JHC]' \
     '--lhc[compile with LHC]' \
-    '--hugs[compile with Hugs]' \
     '--uhc[compile with UHC]' \
     '--haskell-suite[compile with a haskell-suite compiler]' \
     {-w,--with-compiler=}'[give the path to a particular compiler]:file:_files' \
@@ -191,7 +198,6 @@ _cabal_configure ()
     '--htmldir=[installation directory for HTML]:directory:_files -/' \
     '--haddockdir=[installation directory for haddock interfaces]:directory:_files -/' \
     '--sysconfdir=[installation directory for configuration files]:directory:_files -/' \
-    {-b,--scratchdir=}'[directory to receive the built package]:directory:_files -/' \
     '--program-prefix=[prefix to be applied to installed executables]' \
     '--program-suffix=[suffix to be applied to installed executables]' \
     '--enable-library-vanilla[enable Vanilla libraries]' \
@@ -202,16 +208,20 @@ _cabal_configure ()
     '--disable-shared[disable Shared library]' \
     '--enable-executable-dynamic[enable Executable dynamic linking]' \
     '--disable-executable-dynamic[disable Executable dynamic linking]' \
-    '--enable-executable-profiling[enable Executable profiling]' \
-    '--disable-executable-profiling[disable Executable profiling]' \
+    '--enable-profiling[enable Executable profiling]' \
+    '--disable-profiling[disable Executable profiling]' \
     {-O-,--enable-optimization=}'[build with optimization]:level:(0 1 2)' \
     '--disable-optimization[build without optimization]' \
+    '--enable-debug-info=[emit debug info]:n:(0 1 2)' \
+    "--disable-debug-info[don't emit debug info]" \
     '--enable-library-for-ghci[enable compile library for use with GHCi]' \
     '--disable-library-for-ghci[disable compile library for use with GHCi]' \
     '--enable-split-objs[enable split library into smaller objects]' \
     '--disable-split-objs[disable split library into smaller objects]' \
     '--enable-executable-stripping[enable strip executables upon installation]' \
     '--disable-executable-stripping[disable strip executables upon installation]' \
+    '--enable-library-stripping[enable strip libraries upon installation]' \
+    '--disable-library-stripping[disable strip libraries upon installation]' \
     '--configure-option=[extra option for configure]' \
     '--user[enable doing a per-user installation]' \
     '--global[disable doing a per-user installation]' \
@@ -220,12 +230,15 @@ _cabal_configure ()
     '--extra-include-dirs=[a list of directories to search for header files]:directory:_files -/' \
     '--extra-lib-dirs=[a list of directories to search for externallibraries]:directory:_files -/' \
     '--extra-prog-path=[A list of directories to search for required programs]:directory:_files -/' \
-    '--enable-tests[enable dependency checking and compilation for test suites listed in the package description file]' \
-    '--disable-tests[disable dependency checking and compilation for test suites listed in the package description file]' \
-    '--enable-library-coverage[enable build library and test suites with, Haskell Program Coverage enabled. (GHC only)]' \
-    '--disable-library-coverage[disable build library and test suites with, Haskell Program Coverage enabled. (GHC only)]' \
-    '--enable-benchmarks[enable dependency checking and compilation, for benchmarks listed in the package]' \
-    '--disable-benchmarks[disable dependency checking and compilation, for benchmarks listed in the package]' \
+    '--instantiate-with=[A mapping of signature names to concrete module instantiations]' \
+    '--enable-tests[enable dependency checking and compilation for test suites]' \
+    '--disable-tests[disable dependency checking and compilation for test suites]' \
+    '--enable-coverage[enable build library and test suites with, Haskell Program Coverage enabled (GHC only)]' \
+    '--disable-coverage[disable build library and test suites with, Haskell Program Coverage enabled (GHC only)]' \
+    '--enable-benchmarks[enable dependency checking and compilation, for benchmarks]' \
+    '--disable-benchmarks[disable dependency checking and compilation, for benchmarks]' \
+    '--enable-relocatable[enable building a package that is relocatable (GHC only)]' \
+    '--disable-relocatable[disable build a package that is relocatable (GHC only)]' \
     $_cabal_programs \
     '--cabal-lib-version=[select which version of the Cabal lib to use]' \
     '--constraint=[a list of additional constraints on the dependencies]' \
@@ -270,6 +283,7 @@ _cabal_fetch ()
     '--max-backjumps=[maximum number of backjumps allowed while solving dependencies]' \
     '--reorder-goals[try to reorder goals according to certain heuristics]' \
     '--shadow-installed-packages[if multiple package instances of the same version are installed, treat all but one as shadowed]' \
+    '--strong-flags[do not defer flag choices]' \
     '*:package:_cabal_list_packages'
 }
 
@@ -279,10 +293,15 @@ _cabal_freeze ()
     {-h,--help}'[show help]' \
     {-v-,--verbose=}'[control verbosity]:level:(0 1 2 3)' \
     '--dry-run[do not freeze anything, only print what would be frozen]' \
+    '--enable-tests[enable freezing of the dependencies of any tests suites in the package description file]' \
+    '--disable-tests[disable freezing of the dependencies of any tests suites in the package description file.]' \
+    '--enable-benchmarks[enable freezing of the dependencies of any benchmarks suites in the package]' \
+    '--disable-benchmarks[disable freezing of the dependencies of any benchmarks suites in the package]' \
     '--solver=[select dependency solver to use]:solver:(topdown modular choose)]' \
     '--max-backjumps=[maximum number of backjumps allowed while solving dependencies]' \
     '--reorder-goals[try to reorder goals according to certain heuristics]' \
-    '--shadow-installed-packages[if multiple package instances of the same version are installed, treat all but one as shadowed]'
+    '--shadow-installed-packages[if multiple package instances of the same version are installed, treat all but one as shadowed]' \
+    '--strong-flags[do not defer flag choices]'
 }
 
 _cabal_get ()
@@ -292,7 +311,7 @@ _cabal_get ()
     {-v-,--verbose=}'[control verbosity]:level:(0 1 2 3)' \
     {-d-,--destdir=}'[where to unpack the packages]:directory:_files -/' \
     {-s,--source-repository=}"[copy the package's source repository]" \
-    '--pristine[unpack the original pristine tarball, rather than updating the .cabal file with the latest revision from the package archive.]' \
+    '--pristine[unpack the original pristine tarball, rather than updating the .cabal file with the latest revision from the package archive]' \
     '*:package:_cabal_list_packages'
 }
 
@@ -325,8 +344,8 @@ _cabal_haddock ()
 _cabal_help ()
 {
   local -a cmds
-  cmds=(install update list info fetch freeze get check sdist upload report run init
-    configure build repl sandbox haddock exec copy clean hscolour register test bench help)
+  cmds=(update install help info list fetch user-config get init configure build clean run
+    repl test bench check sdist upload report freeze haddock hscolour copy register sandbox exec)
   _arguments \
     {-h,--help}'[Show help]' \
     '*::command:( $cmds )'
@@ -375,10 +394,9 @@ _cabal_install ()
     {-v-,--verbose=}'[control verbosity]:level:(0 1 2 3)' \
     '--builddir=[the directory where Cabal puts generated build files]:directory:_files -/' \
     {-g,--ghc}'[compile with GHC]' \
-    '--nhc98[compile with NHC]' \
+    '--ghcjs[compile with GHCJS]' \
     '--jhc[compile with JHC]' \
     '--lhc[compile with LHC]' \
-    '--hugs[compile with Hugs]' \
     '--uhc[compile with UHC]' \
     '--haskell-suite[compile with a haskell-suite compiler]' \
     {-w,--with-compiler=}'[give the path to a particular compiler]:file:_files' \
@@ -394,7 +412,6 @@ _cabal_install ()
     '--htmldir=[installation directory for HTML]:directory:_files -/' \
     '--haddockdir=[installation directory for haddock interfaces]:directory:_files -/' \
     '--sysconfdir=[installation directory for configuration files]:directory:_files -/' \
-    {-b,--scratchdir=}'[directory to receive the built package]:directory:_files -/' \
     '--program-prefix=[prefix to be applied to installed executables]' \
     '--program-suffix=[suffix to be applied to installed executables]' \
     '--enable-library-vanilla[enable Vanilla libraries]' \
@@ -405,16 +422,20 @@ _cabal_install ()
     '--disable-shared[disable Shared library]' \
     '--enable-executable-dynamic[enable Executable dynamic linking]' \
     '--disable-executable-dynamic[disable Executable dynamic linking]' \
-    '--enable-executable-profiling[enable Executable profiling]' \
-    '--disable-executable-profiling[disable Executable profiling]' \
+    '--enable-profiling[enable Executable profiling]' \
+    '--disable-profiling[disable Executable profiling]' \
     {-O-,--enable-optimization=}'[build with optimization]:level:(0 1 2)' \
     '--disable-optimization[build without optimization]' \
+    '--enable-debug-info=[emit debug info]:n:(0 1 2)' \
+    "--disable-debug-info[don't emit debug info]" \
     '--enable-library-for-ghci[enable compile library for use with GHCi]' \
     '--disable-library-for-ghci[disable compile library for use with GHCi]' \
     '--enable-split-objs[enable split library into smaller objects]' \
     '--disable-split-objs[disable split library into smaller objects]' \
     '--enable-executable-stripping[enable strip executables upon installation]' \
     '--disable-executable-stripping[disable strip executables upon installation]' \
+    '--enable-library-stripping[enable strip libraries upon installation]' \
+    '--disable-library-stripping[disable strip libraries upon installation]' \
     '--configure-option=[extra option for configure]' \
     '--user[enable doing a per-user installation]' \
     '--global[disable doing a per-user installation]' \
@@ -423,12 +444,15 @@ _cabal_install ()
     '--extra-include-dirs=[a list of directories to search for header files]:directory:_files -/' \
     '--extra-lib-dirs=[a list of directories to search for external libraries]:directory:_files -/' \
     '--extra-prog-path=[a list of directories to search for required programs]:directory:_files -/' \
-    '--enable-tests[enable dependency checking and compilation for test suites listed in the package description file]' \
-    '--disable-tests[disable dependency checking and compilation for test suites listed in the package description file]' \
-    '--enable-library-coverage[enable build library and test suites with, Haskell Program Coverage enabled. (GHC only)]' \
-    '--disable-library-coverage[disable build library and test suites with, Haskell Program Coverage enabled. (GHC only)]' \
-    '--enable-benchmarks[enable dependency checking and compilation, for benchmarks listed in the package]' \
-    '--disable-benchmarks[disable dependency checking and compilation, for benchmarks listed in the package]' \
+    '--instantiate-with=[A mapping of signature names to concrete module instantiations]' \
+    '--enable-tests[enable dependency checking and compilation for test suites]' \
+    '--disable-tests[disable dependency checking and compilation for test suites]' \
+    '--enable-coverage[enable build library and test suites with, Haskell Program Coverage enabled. (GHC only)]' \
+    '--disable-coverage[disable build library and test suites with, Haskell Program Coverage enabled. (GHC only)]' \
+    '--enable-benchmarks[enable dependency checking and compilation, for benchmarks]' \
+    '--disable-benchmarks[disable dependency checking and compilation, for benchmarks]' \
+    '--enable-relocatable[enable building a package that is relocatable (GHC only)]' \
+    '--disable-relocatable[disable build a package that is relocatable (GHC only)]' \
     $_cabal_programs \
     '--cabal-lib-version=[select which version of the Cabal lib to use]' \
     '--constraint=[a list of additional constraints on the dependencies]' \
@@ -442,6 +466,7 @@ _cabal_install ()
     '--max-backjumps=[maximum number of backjumps allowed while solving dependencies]' \
     '--reorder-goals[try to reorder goals according to certain heuristics]' \
     '--shadow-installed-packages[if multiple package instances of the same version are installed, treat all but one as shadowed]' \
+    '--strong-flags[do not defer flag choices]' \
     '--reinstall[always install]' \
     '--avoid-reinstalls[do not select versions that would destructively overwrite installed packages]' \
     '--force-reinstalls[reinstall packages even if they will most likely break other installed packages]' \
@@ -452,6 +477,7 @@ _cabal_install ()
     '--build-summary=[save build summaries to file]:file:_files' \
     '--build-log=[log all builds to file]:file:_files' \
     '--remote-build-reporting=[generate build reports to send to a remote]:level:(none anonymous detailed)' \
+    '--remote-planning-failure[generate build reports when the dependency solver fails]' \
     '--one-shot[do not record the packages in the world file]' \
     '--run-tests[run package test suites during installation]' \
     {-j,--jobs=}'[run NUM jobs simultaneously]' \
@@ -515,7 +541,8 @@ _cabal_register ()
     "--global[register in the system-wide package database]" \
     '--inplace[register in build location]' \
     '--gen-script[generate a script to register later]' \
-    '--gen-pkg-config=[generate package registration file]'
+    '--gen-pkg-config=[generate package registration file]' \
+    '--print-ipid[print the installed package ID calculated for this package]'
 }
 
 _cabal_repl ()
@@ -524,7 +551,8 @@ _cabal_repl ()
     {-h,--help}'[show help]' \
     {-v-,--verbose=}'[control verbosity]:level:(0 1 2 3)' \
     '--builddir=[the directory where Cabal puts generated build files]:directory:_files -/' \
-    $_cabal_programs
+    $_cabal_programs \
+    "--only[don't reinstall add-source dependencies (sandbox-only)]"
 }
 
 _cabal_report ()
@@ -554,14 +582,15 @@ _cabal_sandbox ()
     {-v-,--verbose=}'[control verbosity]:level:(0 1 2 3)' \
     '--sandbox=[Sandbox location]:sandbox:_files -/'
 
-  if (( CURRENT == 2 )); then
+  if (( $#WORDS == 2 )); then
     local -a _cabal_sandbox_cmds
     _cabal_sandbox_cmds=(
       'init:initialize the sandbox'
-      'delete:delete the sandbox'
-      'add-source:add sources path to sandbox'
+      'delete:remove the sandbox deleting all the packages installed inside'
+      'add-source:make one or more local package available in the sandbox'
+      'delete-source:remove an add-source dependency'
+      'list-sources:list add-source dependencies'
       'hc-pkg:call sandbox related haskell compiler package database'
-      'list-sources:list added sources paths'
     )
     _describe -t sandbox-commands 'sandbox-command' _cabal_sandbox_cmds || compadd "$@"
   else
@@ -573,6 +602,13 @@ _cabal_sandbox ()
           '--snapshot[take a snapshot instead of creating a link]' \
           '--sandbox=[Sandbox location]:sandbox:_files -/' \
           '*:sources:_files -/'
+        ;;
+      delete-source)
+        _arguments \
+          '*:sources:_files -/'
+        ;;
+      init | delete | list-sources | hc-pkg)
+        _message 'no more arguments'
         ;;
       *)
         _message "unknown cabal sandbox command: $WORDS[3]"
@@ -642,6 +678,31 @@ _cabal_get_available_packages ()
   then
     _cabal_available_packages=( $(cabal list --simple-output | cut -d' ' -f1 | uniq) )
     _store_cache CABAL_AVAILABLE_PACKAGES _cabal_available_packages
+  fi
+}
+
+_cabal_user-config ()
+{
+  _arguments \
+    {-h,--help}'[show help]' \
+    {-v-,--verbose=}'[control verbosity]:level:(0 1 2 3)'
+
+  if (( $#WORDS == 2 )); then
+    local -a _cabal_user_config_cmds
+    _cabal_user_config_cmds=(
+      "diff:show a pseudo-diff of the user's ~/.cabal/config file and the default configuration"
+      'update:applies the pseudo-diff to the default configuration and write the result to ~/.cabal/config'
+    )
+    _describe -t user-config-commands 'user-config-command' _cabal_user_config_cmds || compadd "$@"
+  else
+    case $WORDS[3] in
+      diff | update)
+        _message 'no more arguments'
+        ;;
+      *)
+        _message "unknown cabal user-config command: $WORDS[3]"
+        ;;
+    esac
   fi
 }
 
