@@ -150,7 +150,7 @@ _openssl_ciphers() {
     '-ssl2[SSL2 mode]' \
     '-ssl3[SSL3 mode]' \
     '-tls1[TLS1 mode]' \
-    ':cipherlist:_ciphers'
+    ':cipher suite:_list_ciphers'
 }
 
 
@@ -1083,7 +1083,7 @@ _openssl_s_client() {
     '(-ssl2)-no_ssl2[turn off SSLv2]' \
     '-bugs[switch on all SSL implementation bug workarounds]' \
     "-serverpref[use server's cipher preferences (only SSLv2)]" \
-    '-cipher[preferred cipher to use]:cipherlist:_ciphers' \
+    '-cipher[preferred cipher to use]:cipher suite:_list_ciphers' \
     "-starttls[use the STARTTLS command before starting TLS for those protocols that support it]:protocol:(smtp pop3 imap ftp xmpp)" \
     '-engine[use the specified engine, possibly a hardware device]:engine:_engines' \
     '-rand[files to use for random number input]:file:_rand_files' \
@@ -1132,7 +1132,7 @@ _openssl_s_server() {
     "-CApath[PEM format directory of CA's]:file:_files -/" \
     "-CAfile[PEM format file of CA's]:file:_files" \
     "-nocert[don't use any certificates (Anon-DH)]" \
-    '-cipher[preferred cipher to use]:cipherlist:_ciphers' \
+    '-cipher[preferred cipher to use]:cipher suite:_list_ciphers' \
     "-serverpref[use server's cipher preferences]" \
     '-quiet[no server output]' \
     '-no_tmp_rsa[do not generate a tmp RSA key]' \
@@ -1202,7 +1202,7 @@ _openssl_s_time() {
     '-key[RSA file to use, PEM format assumed, key is in cert file]:file:_files' \
     "-CApath[PEM format directory of CA's]:file:_files -/" \
     "-CAfile[PEM format file of CA's]:file:_files" \
-    '-cipher[preferred cipher to use]:cipherlist:_ciphers'
+    '-cipher[preferred cipher to use]:cipher suite:_list_ciphers'
 }
 
 
@@ -1538,6 +1538,82 @@ _engines() {
   local engines
   engines=(${${${(@f)"$(_call_program engines openssl engine)"}%)*}#\(})
   _values 'engines' ${engines}
+}
+
+
+_list_ciphers() {
+  # openssl ciphers
+  local ciphers
+  # add cipher suites
+  ciphers=(${(@s/:/)"$(_call_program ciphers openssl ciphers)"})
+  # add static cipher strings
+  ciphers=(${ciphers} \
+    'DEFAULT[the default cipher list]' \
+    'COMPLEMENTOFDEFAULT[the ciphers included in ALL but not enabled by default]' \
+    'ALL[all cipher suites except the eNULL ciphers]' \
+    'COMPLEMENTOFALL[the cipher suites not enabled by ALL]' \
+    'HIGH["high" encryption cipher suites]' \
+    'MEDIUM["medium" encryption cipher suites]' \
+    'LOW["low" encryption cipher suites]' \
+    {EXP,EXPORT}'[export encryption algorithms]' \
+    'EXPORT40[40 bit export encryption algorithms]' \
+    'EXPORT56[56 bit export encryption algorithms]' \
+    {eNULL,NULL}'[ciphers offering no encryption]' \
+    'aNULL[ciphers offering no authentication]' \
+    {kRSA,RSA}'[cipher suites rusing RSA key exchange]' \
+    'kDHr[cipher suites using DH key agreement signed by CAs with RSA keys]' \
+    'kDHd[cipher suites using DH key agreement signed by CAs with DSS keys]' \
+    'kDH[cipher suites using DH key agreement]' \
+    {kDHE,kEDH}'[cipher suites using ephemeral DH key agreement, including anonymous cipher suites]' \
+    {DHE,EDH}'[cipher suites using authenticated ephemeral DH key agreement]' \
+    'ADH[anonymous DH cipher suites, not including anonymous ECDH ciphers]' \
+    'DH[cipher suites using DH, including anonymous DH, ephemeral DH and fixed DH]' \
+    'kECDHr[cipher suites using fixed ECDH key agreement signed by CAs with RSA keys]' \
+    'kECDHe[cipher suites using fixed ECDH key agreement signed by CAs with ECDSA keys]' \
+    'kECDH[cipher suites using fixed ECDH key agreement]' \
+    {kECDHE,kEECDH}'[cipher suites using ephemeral ECDH key agreement, including anonymous cipher suites]' \
+    {ECDHE,kEECDH}'[cipher suites using authenticated ephemeral ECDH key agreement]' \
+    'AECDH[anonymous Elliptic Curve Diffie Hellman cipher suites]' \
+    'ECDH[cipher suites using ECDH key exchange, including anonymous, ephemeral and fixed ECDH]' \
+    'aRSA[cipher suites using RSA authentication]' \
+    {aDSS,DSS}'[cipher suites using DSS authentication]' \
+    'aDH[cipher suites effectively using DH authentication]' \
+    'aECDH[cipher suites effectively using ECDH authentication]' \
+    {aECDSA,ECDSA}'[cipher suites using ECDSA authentication]' \
+    'TLSv1.2[TLSv1.2 cipher suites]' \
+    'TLSv1[TLSv1.0 cipher suites]' \
+    'SSLv3[SSLv3.0 cipher suites]' \
+    'SSLv2[SSLv2.0 cipher suites]' \
+    'AES128[cipher suites using 128 bit AES]' \
+    'AES256[cipher suites using 256 bit AES]' \
+    'AES[cipher suites using AES]' \
+    'AESGCM[AES in Galois Counter Mode (GCM)]' \
+    'CAMELLIA128[cipher suites using 128 bit CAMELLIA]' \
+    'CAMELLIA256[cipher suites using 256 bit CAMELLIA]' \
+    'CAMELLIA[cipher suites using CAMELLIA]' \
+    '3DES[cipher suites using triple DES]' \
+    'DES[cipher suites using DES (not triple DES)]' \
+    'RC4[cipher suites using RC4]' \
+    'RC2[cipher suites using RC2]' \
+    'IDEA[cipher suites using IDEA]' \
+    'SEED[cipher suites using SEED]' \
+    'MD5[cipher suites using MD5]' \
+    {SHA1,SHA}'[cipher suites using SHA1]' \
+    'SHA256[cipher suites using SHA256]' \
+    'SHA384[cipher suites using SHA284]' \
+    'aGOST[cipher suites using GOST R 34.10 for authenticaction]' \
+    'aGOST01[cipher suites using GOST R 34.10-2001 authentication]' \
+    'aGOST94[cipher suites using GOST R 34.10-94 authentication]' \
+    'kGOST[cipher suites, using VKO 34.10 key exchange]' \
+    'GOST94[cipher suites, using HMAC based on GOST R 34.11-94]' \
+    'GOST89MAC[cipher suites using GOST 28147-89 MAC instead of HMAC]' \
+    'PSK[cipher suites using pre-shared keys (PSK)]' \
+    'SUITEB128[suite B mode operation using 128 or 192 bit level of security]' \
+    'SUITEB128ONLY[suite B mode operation using 128 bit level of security]' \
+    'SUITEB192[suite B mode operation using 192 bit level of security]' \
+    )
+  # FIXME: support !, + and - before each cipher suite
+  _values -s : 'cipher suite' ${ciphers}
 }
 
 
