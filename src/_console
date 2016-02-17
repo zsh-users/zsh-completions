@@ -35,6 +35,7 @@
 # -------
 #
 #  * loranger (https://github.com/loranger)
+#  * Yohan Tambè (https://github.com/Cronos87)
 #
 # ------------------------------------------------------------------------------
 
@@ -43,11 +44,20 @@ _find_console () {
 }
 
 _console_get_command_list () {
-    `_find_console` --no-ansi | sed "1,/Available commands/d" | awk '/ [a-z]+/ { print $1 }'
+    IFS=" "
+    `_find_console` --no-ansi | \
+        sed "1,/Available commands/d" | \
+        awk '/ [a-z]+/ { print $0 }' | \
+        sed -E 's/^[ ]+//g' | \
+        sed -E 's/[:]+/\\:/g' | \
+        sed -E 's/[ ]{2,}/\:/g'
 }
 
 _console () {
-    compadd `_console_get_command_list`
+    local -a commands
+    IFS=$'\n'
+    commands=(`_console_get_command_list`)
+    _describe 'commands' commands
 }
 
 compdef _console php console
