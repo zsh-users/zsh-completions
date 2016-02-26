@@ -181,6 +181,7 @@ _cmake_define_common_property_names() {
     'CMAKE_TOOLCHAIN_FILE:Absolute or relative path to a cmake script which sets up toolchain related variables'
     'CMAKE_COLOR_MAKEFILE:Enables/disables color output when using the Makefile generator'
     'CMAKE_INSTALL_PREFIX:Install directory used by install'
+    'CMAKE_EXPORT_COMPILE_COMMANDS:Enable/disable output of compilation database during generation'
   )
 
   _describe -t 'common-property-names' 'common property name' properties $@
@@ -198,6 +199,7 @@ _cmake_define_property_values() {
     (CMAKE_TOOLCHAIN_FILE) _wanted toolchain-files expl 'file' _cmake_toolchain_files && ret=0;;
     (CMAKE_COLOR_MAKEFILE) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
     (CMAKE_INSTALL_PREFIX) _files -/ && ret=0;;
+    (CMAKE_EXPORT_COMPILE_COMMANDS) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
     (CMAKE_*_COMPILER)     _wanted compilers expl 'compiler' _cmake_compilers && ret=0;;
     (CMAKE_*_FLAGS(|_?*))  _message -e compiler-flags 'compiler flags' && ret=0;;
     (*)                    _files && ret=0;;
