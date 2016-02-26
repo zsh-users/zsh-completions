@@ -1,0 +1,163 @@
+#compdef multirust
+# ------------------------------------------------------------------------------
+# Copyright (C) 2016 by Hideo Hattori <hhatto.jp@gmail.com>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for multirust (https://github.com/brson/multirust).
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Hideo Hattori (https://github.com/hhatto)
+#
+# ------------------------------------------------------------------------------
+
+_multirust() {
+  typeset -A opt_args
+  local context state line
+
+  _arguments -s -S \
+    "--verbose[run verbosely]" \
+    "--version[print version info]" \
+    "*::multirust commands:_multirust_command"
+}
+
+(( $+functions[_multirust_command] )) ||
+_multirust_command() {
+  local cmd ret=1
+
+  (( $+multirust_cmds )) || _multirust_cmds=(
+    "default:Set the default toolchain" \
+    "override:Set the toolchain override for the current directory tree" \
+    "update:Install or update a given toolchain" \
+    "show-override:Show information about the current override" \
+    "show-default:Show information about the current default" \
+    "list-overrides:List all overrides" \
+    "list-toolchains:List all installed toolchains" \
+    "remove-override:Remove an override, for current directory unless specified" \
+    "remove-toolchain:Uninstall a toolchain" \
+    "run:Run a command in an environment configured for a toolchain" \
+    "delete-data:Delete all user metadata, including installed toolchains" \
+    "upgrade-data:Upgrade the ~/.multirust directory from previous versions" \
+    "doc:Open the documentation for the currently active toolchain" \
+    "which:Report location of the currently active Rust tool." \
+    "help:Show help for this command or subcommands" \
+    )
+
+  if (( CURRENT == 1 )); then
+    _describe -t commands 'multirust subcommand' _multirust_cmds || compadd "$@" - ${(s.:.)${(j.:.)_multirust_syns}}
+  else
+    local curcontext="$curcontext"
+
+    cmd="${${_multirust_cmds[(r)$words[1]:*]%%:*}:-${(k)_multirust_syns[(r)(*:|)$words[1](:*|)]}}"
+    if (( $#cmd )); then
+      curcontext="${curcontext%:*:*}:multirust-${cmd}:"
+      _call_function ret _multirust_$cmd || _message 'no more arguments'
+    else
+      _message "unknown multirust command: $words[1]"
+      fi
+    return ret
+  fi
+}
+
+(( $+functions[_multirust_default] )) ||
+_multirust_default() {
+  _arguments -s \
+    "--copy-local[install by copying a local toolchain]:PATH:_gnu_generic::" \
+    "--link-local[install by linking a local toolchain]:PATH:_gnu_generic::" \
+    "--installer[allows arbitrary builds of rust to be installed from a custom-built installer]:PATH:_gnu_generic::" \
+    "*::multirust commands:_multirust"
+}
+
+(( $+functions[_multirust_override] )) ||
+_multirust_override() {
+  _multirust_default
+}
+
+(( $+functions[_multirust_update] )) ||
+_multirust_update() {
+  _multirust_default
+}
+
+__overrides() {
+  declare -a overrides
+  overrides=($(multirust list-overrides|awk -F";" '{print $1":"$2}'))
+  _describe 'override' overrides
+}
+
+__toolchains() {
+  declare -a toolchains
+  toolchains=($(multirust list-toolchains))
+  _describe "toolchain" toolchains
+}
+
+__subcommands() {
+  declare -a cmds
+  cmds=($(multirust|grep "#    "|awk '{print $2}'))
+  _describe "command" cmds
+}
+
+(( $+functions[_multirust_remove-override] )) ||
+_multirust_remove-override() {
+  __overrides
+}
+
+(( $+functions[_multirust_remove-toolchain] )) ||
+_multirust_remove-toolchain() {
+  __toolchains
+}
+
+(( $+functions[_multirust_run] )) ||
+_multirust_run() {
+  __toolchains
+}
+
+(( $+functions[_multirust_delete-data] )) ||
+_multirust_delete-data() {
+  _arguments -s \
+    "-y[Disable prompt]" \
+    "*::multirust commands:_multirust"
+}
+
+(( $+functions[_multirust_doc] )) ||
+_multirust_doc() {
+  _arguments -s \
+    "--all[open the documentation overview page, which gives access to all the installed documentation]:" \
+    "*::multirust commands:_multirust"
+}
+
+(( $+functions[_multirust_help] )) ||
+_multirust_help() {
+  __subcommands
+}
+
+_multirust "$@"
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
