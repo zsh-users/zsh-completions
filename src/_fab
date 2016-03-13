@@ -57,6 +57,7 @@ _arguments -w -S -C \
   "(-f+ --fabfile=)"{-f+,--fabfile=}"[Python module file to import]: :_files -g *.py" \
   '(-c+ --config=-)'{-c+,--config=-}'[specify location of config file to use]: :_files' \
   '(-s+ --shell=-)'{-s+,--shell=-}'[specify a new shell, defaults to ''/bin/bash -l -c'']: :' \
+  '(--ssh-config-path=)--ssh-config-path=[ssh config path]: :_files' \                                                                                                                                                                    
   '(--hide=-)--hide=-[comma-separated list of output levels to hide]: :->levels' \
   '(--show=-)--show=-[comma-separated list of output levels to show]: :->levels' \
   '*::: :->subcmds' && return 0
