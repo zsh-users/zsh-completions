@@ -1,0 +1,274 @@
+#compdef rkt
+# ------------------------------------------------------------------------------
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of the zsh-users nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL ZSH-USERS BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for rkt (https://coreos.com/rkt/).
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Massimiliano Torromeo <massimiliano.torromeo@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+typeset -A opt_args
+autoload -U regexp-replace
+
+_rkt() {
+  _arguments \
+    '--debug[print out more debug information to stderr]' \
+    '--dir=[rkt data directory]:data directory:_files -/' \
+    '--insecure-options=[comma-separated list of security features to disable]:option:{_values -s , none image tls ondisk http all}' \
+    '--local-config=[local configuration directory]:configuration directory:_files -/' \
+    '--system-config=[system configuration directory]:configuration directory:_files -/' \
+    '--trust-keys-from-https[automatically trust gpg keys fetched from https]' \
+    '--user-config=[user configuration directory]:configuration directory:_files -/' \
+    '--help' \
+    '1: :_rkt_cmds' \
+    '*:: :->rkt_cmd_args'
+
+  case $state in
+    rkt_cmd_args)
+      case $words[1] in
+        help)
+          _arguments \
+            '1: :_rkt_cmds' \
+            '*:: :->rkt_help_args' \
+            ;;
+
+        api-service)
+          _arguments \
+            '--listen=[address to listen for client API requests]:address' \
+            ;;
+
+        cat-manifest)
+          _arguments \
+            '--pretty-print[apply indent to format the output]' \
+            ;;
+
+        enter)
+          _arguments \
+            '--app=:appname' \
+            ;;
+
+        fetch)
+          _arguments \
+            '--full[print the full image hash after fetching]' \
+            '--no-store[fetch images ignoring the local store]' \
+            '--signature=[local signature file to use in validating the preceding image]:signature:_files' \
+            '--store-only[use only available images in the store]' \
+            ;;
+
+        gc)
+          _arguments \
+            '--grace-period=[duration to wait before discarding inactive pods from garbage]:duration' \
+            '--expire-prepared=[duration to wait before expiring prepared pods]:duration' \
+            ;;
+
+        image)
+          _arguments \
+            '1: :_rkt_image_cmds' \
+            '*:: :->rkt_image_args'
+            ;;
+
+        list)
+          _arguments \
+            '--full[use long output format]' \
+            '--no-legend[suppress a legend with the list]' \
+            ;;
+
+        metadata-service)
+          _arguments \
+            '--listen-port=[listen port]:port' \
+            ;;
+
+        prepare)
+          # TODO: autocomplete stage1 images
+          _arguments \
+            '--exec=[override the exec command for the preceding image]:command' \
+            '--inherit-env[inherit all environment variables not set by apps]' \
+            '--mount=[mount point binding a volume to a path within an app]:mount point' \
+            '--no-overlay[disable overlay filesystem]' \
+            '--no-store[fetch images ignoring the local store]' \
+            '--pod-manifest=[the path to the pod manifest]:manifest:_files' \
+            '--port=[ports to expose on the host]:NAME\:HOSTPORT' \
+            '--private-users[run within user namespaces]' \
+            '--quiet[suppress superfluous output on stdout, print only the UUID on success]' \
+            '--set-env=[an environment variable to set for apps]:NAME=VALUE' \
+            '--signature=[local signature file to use in validating the preceding image]:signature:_files' \
+            '--stage1-from-dir=[a filename of an image in stage1 images directory to use as stage1]:image' \
+            '--stage1-hash=[a hash of an image to use as stage1]:image hash' \
+            '--stage1-name=[a name of an image to use as stage1]:image name' \
+            '--stage1-path=[a path to an image to use as stage1]:image path:_files' \
+            '--stage1-url=[a URL to an image to use as stage1]:image url' \
+            '--store-only[use only available images in the store]' \
+            '--volume=[volumes to make available in the pod]:volume' \
+            ;;
+
+        rm)
+          _arguments \
+            '--uuid-file=[read pod UUID from file instead of argument]:uuid file:_files' \
+            ;;
+
+        run)
+          _arguments \
+            '--cpu=[cpu limit for the preceding image]:cpu limit' \
+            '--dns=[name servers to write in /etc/resolv.conf]:name servers' \
+            '--dns-opt=[DNS options to write in /etc/resolv.conf]:dns options' \
+            '--dns-search=[DNS search domains to write in /etc/resolv.conf]:search domains' \
+            '--exec=[override the exec command for the preceding image]:command' \
+            "--hostname=[pod's hostname]:hostname" \
+            '--inherit-env[inherit all environment variables not set by apps]' \
+            '--interactive[run pod interactively]' \
+            '--mds-register[register pod with metadata service]' \
+            '--memory=[memory limit for the preceding image]:memory limit' \
+            "--net=[configure the pod's networking]:networks" \
+            '--no-overlay[disable overlay filesystem]' \
+            '--no-store[fetch images ignoring the local store]' \
+            '--pod-manifest=[the path to the pod manifest]:manifest:_files' \
+            '--port=[ports to expose on the host]:NAME\:HOSTPORT' \
+            '--private-users[run within user namespaces]' \
+            '--set-env=[an environment variable to set for apps]:NAME=VALUE' \
+            '--signature=[local signature file to use in validating the preceding image]:signature:_files' \
+            '--stage1-from-dir=[a filename of an image in stage1 images directory to use as stage1]:image' \
+            '--stage1-hash=[a hash of an image to use as stage1]:image hash' \
+            '--stage1-name=[a name of an image to use as stage1]:image name' \
+            '--stage1-path=[a path to an image to use as stage1]:image path:_files' \
+            '--stage1-url=[a URL to an image to use as stage1]:image url' \
+            '--store-only[use only available images in the store]' \
+            '--uuid-file-save=[write out pod UUID to specified file]:uuid file:_files' \
+            '--volume=[volumes to make available in the pod]:volume' \
+            ;;
+
+        run-prepared)
+          _arguments \
+            '--dns=[name servers to write in /etc/resolv.conf]:name servers' \
+            '--dns-opt=[DNS options to write in /etc/resolv.conf]:dns options' \
+            '--dns-search=[DNS search domains to write in /etc/resolv.conf]:search domains' \
+            "--hostname=[pod's hostname]:hostname" \
+            '--interactive[run pod interactively]' \
+            '--mds-register[register pod with metadata service]' \
+            "--net=[configure the pod's networking]:networks" \
+            ;;
+
+        status)
+          _arguments \
+            '--wait[toggle waiting for the pod to exit]' \
+            ;;
+
+        trust)
+          _arguments \
+            '--insecure-allow-http[allow HTTP use for key discovery and/or retrieval]' \
+            '--prefix=[prefix to limit trust to]:prefix' \
+            '--root[add root key from filesystem without a prefix]' \
+            '--skip-fingerprint-review[accept key without fingerprint confirmation]' \
+            ;;
+      esac
+      ;;
+  esac
+
+  case $state in
+    rkt_help_args)
+      case $words[1] in
+        image)
+          _arguments \
+            '1: :_rkt_image_cmds'
+            ;;
+      esac
+      ;;
+
+    rkt_image_args)
+      case $words[1] in
+        cat-manifest)
+          _arguments \
+            '--pretty-print[apply indent to format the output]' \
+            ;;
+
+        gc)
+          _arguments \
+            '--grace-period=[duration to wait before discarding inactive pods from garbage]:duration' \
+            ;;
+
+        list)
+          _arguments \
+            '--fields=[comma-separated list of fields to display]:fields:{_values -s , id name importtime lastused size latest}' \
+            '--full[use long output format]' \
+            '--no-legend[suppress a legend with the list]' \
+            ;;
+
+        rm)
+          _arguments \
+            ':image' \
+            ;;
+      esac
+      ;;
+  esac
+}
+
+_rkt_cmds() {
+  local -a commands
+  commands=(
+    'api-service:Run API service'
+    'cat-manifest:Inspect and print the pod manifest'
+    'enter:Enter the namespaces of an app within a rkt pod'
+    'fetch:Fetch image(s) and store them in the local store'
+    'gc:Garbage collect rkt pods no longer in use'
+    'image:Operate on image(s) in the local store'
+    'list:List pods'
+    'metadata-service:Run metadata service'
+    'prepare:Prepare to run image(s) in a pod in rkt'
+    'rm:Remove all files and resources associated with an exited pod'
+    'run:Run image(s) in a pod in rkt'
+    'run-prepared:Run a prepared application pod in rkt'
+    'status:Check the status of a rkt pod'
+    'trust:Trust a key for image verification'
+    'version:Print the version and exit'
+    'help:Help about any command'
+  )
+  _describe 'command' commands
+}
+
+_rkt_image_cmds() {
+  local -a commands
+  commands=(
+    'cat-manifest:Inspect and print the image manifest'
+    'gc:Garbage collect local store'
+    'list:List images in the local store'
+    'rm:Remove image(s) with the given ID(s) or name(s) from the local store'
+  )
+  _describe 'command' commands
+}
+
+_rkt "$@"
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
