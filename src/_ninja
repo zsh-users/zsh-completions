@@ -1,0 +1,41 @@
+#compdef ninja
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for ninja v1.6.0 (https://ninja-build.org)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Morten Kristensen (https://github.com/netromdk)
+#
+# ------------------------------------------------------------------------------
+
+typeset -A opt_args
+local context state line ret=1
+
+_arguments \
+  '(- 1 *)'{-h,--help}'[print options help]' \
+  '(- 1 *)--version[print ninja version]' \
+  '(-C)-C[change to DIR before doing anything else]' \
+  '(-f)-f[specify input build file (default=build.ninja)]' \
+  '(-j)-j[run N jobs in parallel (default derived from CPUs available)]' \
+  '(-k)-k[keep going until N jobs fail (default=1)]' \
+  '(-n)-n[dry run (dont run commands but act like they succeeded)]' \
+  '(-v)-v[show all command lines while building]' \
+  '(-d)-d[enable debugging (use "-d list" to list modes)]' \
+  '(-t)-t[run a subtool (use "-t list" to list subtools)]' \
+  '(-w)-w[adjust warnings (use "-w list" to list warnings)]' \
+  && ret=0
+
+return ret
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
