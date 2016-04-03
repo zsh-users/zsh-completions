@@ -28,13 +28,14 @@
 # Description
 # -----------
 #
-#  Completion script for ansible-playbook v1.8.4 (http://ansible.org)
+#  Completion script for ansible-playbook v2.0.0.2 (http://ansible.org)
 #
 # ------------------------------------------------------------------------------
 # Authors
 # -------
 #
 #  * Romain Bossart (https://github.com/bosr)
+#  * Adam Stevko (https://github.com/xen0l)
 #
 # ------------------------------------------------------------------------------
 #
@@ -126,10 +127,14 @@ _ansible-playbook ()
 
   _arguments -C -W \
     "1:playbook yml file:_files -g '*.yml'"\
-    "(-k --ask-pass)"{-k,--ask-pass}"[ask for SSH password]"\
-    '--ask-su-pass[ask for su password]'\
-    "(-K --ask-sudo-pass)"{-K,--ask-sudo-pass}"[ask for sudo password]"\
+    '--ask-become-pass[ask for privilege escalation password]'\
+    "(-k --ask-pass)"{-k,--ask-pass}"[ask for connection password]"\
+    '--ask-su-pass[ask for su password (deprecated, use become)]'\
+    "(-K --ask-sudo-pass)"{-K,--ask-sudo-pass}"[ask for sudo password (deprecated, use become)]"\
     '--ask-vault-pass[ask for vault password]'\
+    "(-b --become)"{-b,--become}"[run operations with become (nopasswd implied)]"\
+    '--become-method[privilege escalation method to use (default=sudo)]:method:(sudo su pbrun pfexec runas doas)'\
+    '--become-user[run operations as this user (default=root)]:user:(USER)'\
     "(-C --check)"{-C,--check}"[don't make any changes]"\
     "(-c --connection)"{-c,--connection}"[CONNECTION connection type to use (default=smart)]:connection type:(smart ssh local chroot)"\
     "(-D --diff)"{-D,--diff}"[when changing (small files and templates, show the diff in those. Works great with --check)]"\
@@ -141,15 +146,23 @@ _ansible-playbook ()
     "(-i --inventory-file)"{-i,--inventory-file}"[INVENTORY specify inventory host file]:inventory file:_files"\
     "(-l --limit)"{-l,--limit}"[SUBSET further limit selected hosts to an additional pattern]:subset pattern:->pattern"\
     '--list-hosts[outputs a list of matching hosts. Does not execute anything else]'\
+    '--list-tags[list all available tags]'\
+    '--list-tasks[list all tasks that would be executed]'\
     "(-M --module-path)"{-M,--module-path}"[MODULE_PATH specify path to module library (default=None)]:module path:_files -/"\
-    "--private-key[PRIVATE_KEY_FILE use this file to authenticate the connection]:private key file:_files"\
+    '--new-vault-password-file[new vault password file for rekey]:new vault password file:_files'\
+    '--output[output file name for encrypt or decrypt; use - for stdout]:output file:_files'\
+    '--private-key[PRIVATE_KEY_FILE use this file to authenticate the connection]:private key file:_files'\
+    '--scp-extra-args[specify extra arguments to pass to scp only]'\
+    '--sftp-extra-args[specify extra arguments to pass to sftp only]'\
     "--skip-tags[SKIP_TAGS only run plays and tasks whose tags do not match these values]:skip tags:(SKIP_TAGS)"\
+    '--ssh-common-args[specify common arguments to pass to sftp/scp/ssh]'\
+    '--ssh-extra-args[specify extra arguments to pass to ssh only]'\
     "--start-at-task[START_AT start the playbook at the task matching this name]:name:(TASK_NAME)"\
     '--step[one-step-at-a-time: confirm each task before running]'\
-    "(-S --su)"{-S,--su}"[run operations with su]"\
-    "(-R --su-user)"{-R,--su-user}"[SU_USER run operations with su as this user (default=root)]:su user:(root)"\
-    "(-s --sudo)"{-s,--sudo}"[run operations with sudo (nopasswd)]"\
-    "(-U --sudo-user)"{-U,--sudo-user}"[SUDO_USER desired sudo user (default=root)]:su user:(root)"\
+    "(-S --su)"{-S,--su}"[run operations with su (deprecated, use become)]"\
+    "(-R --su-user)"{-R,--su-user}"[SU_USER run operations with su as this user (default=root) (deprecated, use become)]:su user:(root)"\
+    "(-s --sudo)"{-s,--sudo}"[run operations with sudo (nopasswd) (deprecated, use become)]"\
+    "(-U --sudo-user)"{-U,--sudo-user}"[SUDO_USER desired sudo user (default=root) (deprecated, use become)]:su user:(root)"\
     '--syntax-check[perform a syntax check on the playbook, but do not execute it]'\
     "(-t --tags)"{-t,--tags}"[TAGS only run plays and tasks gagged with these values]:task tags:(TAGS)"\
     "(-T --timeout)"{-T,--timeout}"[TIMEOUT override the SSH timeout (s) (default=10)]:ssh timeout:(10)"\
