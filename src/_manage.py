@@ -1,10 +1,40 @@
 #compdef manage.py django-manage django-admin.py django-admin
+# vim:ft=zsh sw=2:
 #
 # Completion script for Django's manage.py (https://www.djangoproject.com).
 #
+# NOTE: Django provides simple autocompletion, through e.g.:
+#
+#   DJANGO_AUTO_COMPLETE=1 COMP_WORDS="manage.py runserver" COMP_CWORD=2 ./manage.py
+#
+# TODO: rename to _django, move to zsh
 
 # Store $word[1] as manage_cmd to be used for callbacks.
-manage_cmd=${words[1]}
+# TODO: rename (__django_cmd?)
+_managepy_cmd=$commands[${words[1]}]
+if [[ -z $_managepy_cmd ]]; then
+  _managepy_cmd=${words[1]}
+fi
+
+# Get completions through Django's completion system.
+# Used as a fallback only, because it's slow.
+_managepy_get_django_completion() {
+  local -a cmd
+  local ret
+  django_completion=($(_call_program django-completions \
+    env PYTHONWARNINGS="ignore::DeprecationWarning" \
+    DJANGO_AUTO_COMPLETE=1 COMP_WORDS=\"$_managepy_cmd $1\" \
+    COMP_CWORD=$2 $_managepy_cmd))
+  # ret=$?
+  # XXX: Django exits with 1 always for completions!
+  # (fixed in Django 1.10, https://code.djangoproject.com/ticket/25420).
+  ret=0
+  if [[ $#django_completion == 0 ]]; then
+    zle -M "There was an error querying Django (using $_managepy_cmd)!"
+    ret=1
+  fi
+  return $ret
+}
 
 typeset -ga nul_args
 nul_args=(
@@ -333,7 +363,34 @@ _managepy-validate() {
     $nul_args && ret=0
 }
 
-_managepy-commands() {
+
+__django_caching_policy()
+{
+  local ret  # 0 means that the cache needs to be rebuilt.
+
+  # Get python interpreter from manage.py script.
+  local python
+  python=$(head $_managepy_cmd | head -n1 | cut -b3-)  #!/usr/bin/env python
+
+  # Check that it refers to "python", it might be "#!/usr/bin/env bash" with
+  # pyenv.
+  if ! [[ $python == *python* ]]; then
+    python=python
+  fi
+
+  # Compare cache file's timestamp to the most recently modified sys.path entry.
+  # This gets changed/touched when installing/removing packages.
+  local newest_sys_path=$($=python -c '
+import sys
+from os.path import exists, getmtime
+print(sorted(sys.path, key=lambda x: exists(x) and getmtime(x))[-1])')
+  [[ $newest_sys_path -nt $1 ]]
+  ret=$?
+  return $ret
+}
+
+
+_managepy_commands() {
   local -a commands
 
   commands=(
@@ -383,6 +440,43 @@ _managepy-commands() {
   fi
 
   _describe -t commands 'manage.py command' commands && ret=0
+
+  # Query Django's completion for the full list of commands, using a cache.
+  local cache_policy
+  zstyle -s ":completion:${curcontext}:" cache-policy cache_policy
+  if [[ -z "$cache_policy" ]]; then
+    zstyle ":completion:${curcontext}:" cache-policy __django_caching_policy
+  fi
+
+  # Use cache name based on current script; there are usually different apps
+  # installed per project.
+  local cachename=django_subcommands${_managepy_cmd:a}
+
+  typeset -a django_completion
+  if ( [[ ${(P)+cachename} -eq 0 ]] || _cache_invalid $cachename ) \
+      && ! _retrieve_cache $cachename; then
+    zle -M "Querying Django subcommands..."
+    local ret_djcomp
+    if _managepy_get_django_completion "" $((CURRENT-1)); then
+      # Remove any commands we have already.
+      local i idx val _django_subcommands
+      if [[ -n $django_completion ]]; then
+        for i in {1..$#django_completion}; do
+          val=${django_completion[$i]}
+          idx=${commands[(I)$val*]}
+          if [[ $idx == 0 ]]; then
+            _django_subcommands+=($val)
+          fi
+        done
+      fi
+      _store_cache $cachename _django_subcommands
+    fi
+  fi
+
+  if (( $#_django_subcommands )); then
+    _describe -t commands-from-django 'manage.py command (from Django)' \
+      _django_subcommands && ret=0
+  fi
 }
 
 _applist() {
@@ -402,12 +496,16 @@ _manage.py() {
   local curcontext=$curcontext ret=1
 
   if ((CURRENT == 2)); then
-    _managepy-commands
+    _managepy_commands
   else
     shift words
     (( CURRENT -- ))
     curcontext="${curcontext%:*:*}:managepy-$words[1]:"
-    _call_function ret _managepy-$words[1]
+    if ! _call_function ret _managepy-$words[1]; then
+      _managepy_get_django_completion "$words[1,$CURRENT]" $((CURRENT))
+      _describe -t arguments-from-django 'manage.py subcommand arguments (from Django)' \
+        django_completion && ret=0
+    fi
   fi
 }
 
