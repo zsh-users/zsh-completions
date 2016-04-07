@@ -27,15 +27,15 @@ local -a _docker_machine_cmds
 
 _docker_machine_cmds=(
    'active:Get or set the active machine' \
-   'create:Create a machine' \
    'config:Print the connection config for machine' \
+   'create:Create a machine' \
+   'env:Display the commands to set up the environment for the Docker client' \
    'inspect:Inspect information about a machine' \
    'ip:Get the IP address of a machine' \
    'kill:Kill a machine' \
    'ls:List machines' \
    'restart:Restart a machine' \
    'rm:Remove a machine' \
-   'env:Display the commands to set up the environment for the Docker client' \
    'ssh:Log into or run a command on a machine with SSH' \
    'start:Start a machine' \
    'stop:Stop a machine' \
@@ -52,15 +52,15 @@ __active() {
 __help() {
   _values 'Get help for subcommand' \
     'active' \
-    'create' \
     'config' \
+    'create' \
+    'env' \
     'inspect' \
     'ip' \
     'kill' \
     'ls' \
     'restart' \
     'rm' \
-    'env' \
     'ssh' \
     'start' \
     'stop' \
@@ -261,10 +261,12 @@ local -a _command_args
 case "$words[1]" in
   active)
     __active ;;
-  create)
-    __create ;;
   config)
     __config ;;
+  create)
+    __create ;;
+  env)
+    __env ;;
   inspect)
     __inspect ;;
   ip)
@@ -277,8 +279,6 @@ case "$words[1]" in
     __restart ;;
   rm)
     __rm ;;
-  env)
-    __env ;;
   ssh)
     __ssh ;;
   start)
