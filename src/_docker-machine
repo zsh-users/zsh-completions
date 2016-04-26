@@ -27,20 +27,25 @@ local -a _docker_machine_cmds
 
 _docker_machine_cmds=(
    'active:Get or set the active machine' \
-   'create:Create a machine' \
    'config:Print the connection config for machine' \
+   'create:Create a machine' \
+   'env:Display the commands to set up the environment for the Docker client' \
    'inspect:Inspect information about a machine' \
    'ip:Get the IP address of a machine' \
    'kill:Kill a machine' \
    'ls:List machines' \
+   'provision:Re-provision existing machines' \
+   'regenerate-certs:Regenerate TLS Certificates for a machine' \
    'restart:Restart a machine' \
    'rm:Remove a machine' \
-   'env:Display the commands to set up the environment for the Docker client' \
    'ssh:Log into or run a command on a machine with SSH' \
+   'scp:Copy files between machines' \
    'start:Start a machine' \
+   'status:Get the status of a machine' \
    'stop:Stop a machine' \
    'upgrade:Upgrade a machine to the latest version of Docker' \
    'url:Get the URL of a machine' \
+   'version:Show the Docker Machine version or a machine docker version' \
    'help:Shows a list of commands or help for one command'
 )
 
@@ -52,20 +57,25 @@ __active() {
 __help() {
   _values 'Get help for subcommand' \
     'active' \
-    'create' \
     'config' \
+    'create' \
+    'env' \
     'inspect' \
     'ip' \
     'kill' \
     'ls' \
+    'provision' \
+    'regenerate-certs' \
     'restart' \
     'rm' \
-    'env' \
     'ssh' \
+    'scp' \
     'start' \
+    'status' \
     'stop' \
     'upgrade' \
     'url' \
+    'version' \
     'help'
 }
 
@@ -212,11 +222,32 @@ __ls() {
     '--quiet[Enable quiet mode]'
 }
 
+__provision() {
+  __machines
+}
+
+__regenerate-certs() {
+  _arguments \
+    '--force[Force rebuild and do not prompt]'
+  __machines
+}
+
 __restart() {
   __machines
 }
 
+__scp() {
+  # This can certainly be improved, but it's a start
+ _arguments \
+    '--recursive[Copy files recursively (required to copy directories)]'
+ __machines
+}
+
 __start() {
+  __machines
+}
+
+__status() {
   __machines
 }
 
@@ -237,6 +268,10 @@ __upgrade() {
 }
 
 __url() {
+  __machines
+}
+
+__version() {
   __machines
 }
 
@@ -261,10 +296,12 @@ local -a _command_args
 case "$words[1]" in
   active)
     __active ;;
-  create)
-    __create ;;
   config)
     __config ;;
+  create)
+    __create ;;
+  env)
+    __env ;;
   inspect)
     __inspect ;;
   ip)
@@ -273,16 +310,22 @@ case "$words[1]" in
     __kill ;;
   ls)
     __ls ;;
+  provision)
+    __provision ;;
+  regenerate-certs)
+    __regenerate-certs ;;
   restart)
     __restart ;;
   rm)
     __rm ;;
-  env)
-    __env ;;
   ssh)
     __ssh ;;
+  scp)
+    __scp ;;
   start)
     __start ;;
+  status)
+    __status ;;
   stop)
     __stop ;;
   upgrade)
