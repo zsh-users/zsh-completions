@@ -35,17 +35,27 @@
 # -------
 #
 #  * loranger (https://github.com/loranger)
+#  * Yohan Tambè (https://github.com/Cronos87)
 #
 # ------------------------------------------------------------------------------
 
 
 _artisan_get_command_list () {
-    php artisan --no-ansi | sed "1,/Available commands/d" | awk '/ [a-z]+/ { print $1 }'
+    IFS=" "
+    php artisan --no-ansi | \
+        sed "1,/Available commands/d" | \
+        awk '/ [a-z]+/ { print $1 }' | \
+        sed -E 's/^[ ]+//g' | \
+        sed -E 's/[:]+/\\:/g' | \
+        sed -E 's/[ ]{2,}/\:/g'
 }
 
 _artisan () {
     if [ -f artisan ]; then
-        compadd `_artisan_get_command_list`
+        local -a commands
+        IFS=$'\n'
+        commands=(`_artisan_get_command_list`)
+        _describe 'commands' commands
     fi
 }
 
