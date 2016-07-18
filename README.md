@@ -25,7 +25,7 @@ Usage
 
 #### Using frameworks
 
-* If you're using [antigen](https://github.com/zsh-users/antigen), just add `antigen bundle zsh-users/zsh-completions src` to your .zshrc where you're loading your other zsh plugins.
+* If you're using [antigen](https://github.com/zsh-users/antigen), just add `antigen bundle zsh-users/zsh-completions` to your .zshrc where you're loading your other zsh plugins.
 
 
 #### Manual installation
