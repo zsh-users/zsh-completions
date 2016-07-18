@@ -50,10 +50,10 @@ If you use [oh-my-zsh][] then just clone the repository inside your oh-my-zsh re
 git clone https://github.com/zsh-users/zsh-completions ~/.oh-my-zsh/custom/plugins/zsh-completions
 ```
 
-and enable it in your `.zshrc`:
+and enable it in your `.zshrc` by adding it to your plugin list and reloading the completion:
 
 ```zsh
-plugins+=(zsh-completions)
+plugins=(… zsh-completions)
 autoload -U compinit && compinit
 ```
 
