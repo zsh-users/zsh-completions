@@ -5,6 +5,21 @@
 local arguments
 
 
+local LSBLK_COLS_ALL=(
+    NAME KNAME MAJ:MIN FSTYPE MOUNTPOINT
+    LABEL UUID PARTTYPE PARTLABEL PARTUUID PARTFLAGS
+    RA RO RM
+    MODEL SIZE STATE OWNER GROUP MODE
+    ALIGNMENT MIN-IO OPT-IO PHY-SEC LOG-SEC
+    ROTA SCHED RQ-SIZE TYPE DISC-ALN
+    DISC-GRAN DISC-MAX DISC-ZERO WSAME WWN
+    RAND PKNAME HCTL TRAN REV VENDOR)
+
+_lsblk_columns() {
+    compadd $@ $LSBLK_COLS_ALL
+}
+
+
 arguments=(
     '(-a --all)'{-a,--all}'[print all devices]'
     '(-b --bytes)'{-b,--bytes}'[print size in bytes rather than in human readable format]'
@@ -18,7 +33,7 @@ arguments=(
     '(-l --list)'{-l,--list}'[use list format output]'
     '(-m --perms)'{-m,--perms}'[output info about permissions]'
     '(-n --noheadings)'{-n,--noheadings}'[dont print headings]'
-    '(-o --output)'{-o,--output}'[specify output columns]'
+    '(-o --output)'{-o,--output}'=[specify output columns]:Output columns:_sequence _lsblk_columns'
     '(-O --output-all)'{-O,--output-all}'[output all columns]'
     '(-p --paths)'{-p,--paths}'[print complete device path]'
     '(-P --pairs)'{-P,--pairs}'[use key="value" output format]'
@@ -26,7 +41,7 @@ arguments=(
     '(-s --inverse)'{-s,--inverse}'[inverse dependencies]'
     '(-S --scsi)'{-S,--scsi}'[output info about SCSI devices]'
     '(-t --topology)'{-t,--topology}'[output info about topology]'
-    '(-x --sort)'{-x,--sort}'[sort output by specified column]'
+    '(-x --sort)'{-x,--sort}'=[sort output by specified column]:Sort column:_lsblk_columns'
     '(-h --help)'{-h,--help}'[display this help and exit]'
     '(-V --version)'{-V,--version}'[output version information and exit]'
     '*:filename:_files'
