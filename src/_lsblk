@@ -1,0 +1,34 @@
+#compdef lsblk
+
+# zsh completions for 'lsblk'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+    {-a,--all}'[print all devices]'
+    {-b,--bytes}'[print SIZE in bytes rather than in human readable format]'
+    {-d,--nodeps}'[dont print slaves or holders]'
+    {-D,--discard}'[print discard capabilities]'
+    {-e,--exclude}'[exclude devices by major number (default: RAM disks)]'
+    {-f,--fs}'[output info about filesystems]'
+    {-i,--ascii}'[use ascii characters only]'
+    {-I,--include}'[show only devices with specified major numbers]'
+    {-J,--json}'[use JSON output format]'
+    {-l,--list}'[use list format output]'
+    {-m,--perms}'[output info about permissions]'
+    {-n,--noheadings}'[dont print headings]'
+    {-o,--output}'[output columns]'
+    {-O,--output-all}'[output all columns]'
+    {-p,--paths}'[print complete device path]'
+    {-P,--pairs}'[use key="value" output format]'
+    {-r,--raw}'[use raw output format]'
+    {-s,--inverse}'[inverse dependencies]'
+    {-S,--scsi}'[output info about SCSI devices]'
+    {-t,--topology}'[output info about topology]'
+    {-x,--sort}'[sort output by <column>]'
+    {-h,--help}'[display this help and exit]'
+    {-V,--version}'[output version information and exit]'
+    '*:filename:_files'
+)
+
+_arguments -s $arguments
