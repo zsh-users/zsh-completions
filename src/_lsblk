@@ -6,7 +6,7 @@ local arguments
 
 arguments=(
     {-a,--all}'[print all devices]'
-    {-b,--bytes}'[print SIZE in bytes rather than in human readable format]'
+    {-b,--bytes}'[print size in bytes rather than in human readable format]'
     {-d,--nodeps}'[dont print slaves or holders]'
     {-D,--discard}'[print discard capabilities]'
     {-e,--exclude}'[exclude devices by major number (default: RAM disks)]'
@@ -17,7 +17,7 @@ arguments=(
     {-l,--list}'[use list format output]'
     {-m,--perms}'[output info about permissions]'
     {-n,--noheadings}'[dont print headings]'
-    {-o,--output}'[output columns]'
+    {-o,--output}'[specify output columns]'
     {-O,--output-all}'[output all columns]'
     {-p,--paths}'[print complete device path]'
     {-P,--pairs}'[use key="value" output format]'
@@ -25,7 +25,7 @@ arguments=(
     {-s,--inverse}'[inverse dependencies]'
     {-S,--scsi}'[output info about SCSI devices]'
     {-t,--topology}'[output info about topology]'
-    {-x,--sort}'[sort output by <column>]'
+    {-x,--sort}'[sort output by specified column]'
     {-h,--help}'[display this help and exit]'
     {-V,--version}'[output version information and exit]'
     '*:filename:_files'
