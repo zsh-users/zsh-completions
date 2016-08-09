@@ -1,11 +1,8 @@
 #compdef lsblk
 
-# zsh completions for 'lsblk'
-# automatically generated with http://github.com/RobSis/zsh-completion-generator
 local arguments
 
-
-local LSBLK_COLS_ALL=(
+local lsblk_cols_all=(
     NAME KNAME MAJ:MIN FSTYPE MOUNTPOINT
     LABEL UUID PARTTYPE PARTLABEL PARTUUID PARTFLAGS
     RA RO RM
@@ -16,9 +13,8 @@ local LSBLK_COLS_ALL=(
     RAND PKNAME HCTL TRAN REV VENDOR)
 
 _lsblk_columns() {
-    compadd $@ $LSBLK_COLS_ALL
+    compadd $@ $lsblk_cols_all
 }
-
 
 arguments=(
     '(-a --all)'{-a,--all}'[print all devices]'
@@ -44,7 +40,7 @@ arguments=(
     '(-x --sort)'{-x,--sort}'=[sort output by specified column]:Sort column:_lsblk_columns'
     '(-h --help)'{-h,--help}'[display this help and exit]'
     '(-V --version)'{-V,--version}'[output version information and exit]'
-    '*:filename:_files'
+    '*:device:_path_files -g "*(N-%) *(N-/)"'
 )
 
 _arguments -s $arguments
