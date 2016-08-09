@@ -16,15 +16,23 @@ _lsblk_columns() {
     compadd $@ $lsblk_cols_all
 }
 
+_lsblk_major_number() {
+    # /sys/dev/block/ contains MAJOR:MINOR symlinks. eg. 7:0
+    local device_paths=(/sys/dev/block/*(N))
+    local major_numbers=(${${device_paths##*/}%%:*})
+    # major_numbers might have duplicates but compadd handles that
+    compadd $@ $major_numbers
+}
+
 arguments=(
     '(-a --all)'{-a,--all}'[print all devices]'
     '(-b --bytes)'{-b,--bytes}'[print size in bytes rather than in human readable format]'
     '(-d --nodeps)'{-d,--nodeps}'[dont print slaves or holders]'
     '(-D --discard)'{-D,--discard}'[print discard capabilities]'
-    '(-e --exclude)'{-e,--exclude}'[exclude devices by major number (default: RAM disks)]'
+    '(-e --exclude)'{-e,--exclude}'[exclude devices by major number (default: RAM disks)]:major number:_sequence _lsblk_major_number'
     '(-f --fs)'{-f,--fs}'[output info about filesystems]'
     '(-i --ascii)'{-i,--ascii}'[use ascii characters only]'
-    '(-I --include)'{-I,--include}'[show only devices with specified major numbers]'
+    '(-I --include)'{-I,--include}'=[show only devices with specified major numbers]:major number:_sequence _lsblk_major_number'
     '(-J --json)'{-J,--json}'[use JSON output format]'
     '(-l --list)'{-l,--list}'[use list format output]'
     '(-m --perms)'{-m,--perms}'[output info about permissions]'
