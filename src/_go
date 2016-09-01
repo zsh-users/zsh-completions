@@ -441,7 +441,7 @@ _go() {
                     '-web[visualize graph through web browser]' \
                     '-weblist=[output annotated source in HTML]:p' \
                     '-output=[generate output on file f (stdout by default)]:f' \
-                    '-functions[report at function level [default]]' \
+                    '-functions[report at function level (default)]' \
                     '-files[report at source file level]' \
                     '-lines[report at source line level]' \
                     '-addresses[report at address level]' \
