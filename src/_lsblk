@@ -1,0 +1,97 @@
+#compdef lsblk
+# ------------------------------------------------------------------------------
+# Copyright (c) 2016 Github zsh-users - http://github.com/zsh-users
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of the zsh-users nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL ZSH-USERS BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for lsblk (from util-linux 2.27.1->)
+#    (https://git.kernel.org/cgit/utils/util-linux/util-linux.git/)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Ole Jørgen Brønner <olejorgenb@yahoo.no>
+#
+# ------------------------------------------------------------------------------
+#
+# Note: lsblk has upstream bash completions, which has served as a guide
+# Note: Credit to https://github.com/RobSis/zsh-completion-generator which was
+#       used to generate an initial skeleton
+
+local arguments
+
+local lsblk_cols_all=(
+    NAME KNAME MAJ:MIN FSTYPE MOUNTPOINT
+    LABEL UUID PARTTYPE PARTLABEL PARTUUID PARTFLAGS
+    RA RO RM
+    MODEL SIZE STATE OWNER GROUP MODE
+    ALIGNMENT MIN-IO OPT-IO PHY-SEC LOG-SEC
+    ROTA SCHED RQ-SIZE TYPE DISC-ALN
+    DISC-GRAN DISC-MAX DISC-ZERO WSAME WWN
+    RAND PKNAME HCTL TRAN REV VENDOR)
+
+_lsblk_columns() {
+    compadd $@ $lsblk_cols_all
+}
+
+_lsblk_major_number() {
+    # /sys/dev/block/ contains MAJOR:MINOR symlinks. eg. 7:0
+    local device_paths=(/sys/dev/block/*(N))
+    local major_numbers=(${${device_paths##*/}%%:*})
+    # major_numbers might have duplicates but compadd handles that
+    compadd $@ $major_numbers
+}
+
+arguments=(
+    '(-a --all)'{-a,--all}'[print all devices]'
+    '(-b --bytes)'{-b,--bytes}'[print size in bytes rather than in human readable format]'
+    '(-d --nodeps)'{-d,--nodeps}'[dont print slaves or holders]'
+    '(-D --discard)'{-D,--discard}'[print discard capabilities]'
+    '(-e --exclude)'{-e,--exclude}'[exclude devices by major number]:major number:_sequence _lsblk_major_number'
+    '(-f --fs)'{-f,--fs}'[output info about filesystems]'
+    '(-i --ascii)'{-i,--ascii}'[use ascii characters only]'
+    '(-I --include)'{-I,--include}'=[show only devices with specified major numbers]:major number:_sequence _lsblk_major_number'
+    '(-J --json)'{-J,--json}'[use JSON output format]'
+    '(-l --list)'{-l,--list}'[use list format output]'
+    '(-m --perms)'{-m,--perms}'[output info about permissions]'
+    '(-n --noheadings)'{-n,--noheadings}'[dont print headings]'
+    '(-o --output)'{-o,--output}'=[specify output columns]:output column:_sequence _lsblk_columns'
+    '(-O --output-all)'{-O,--output-all}'[output all columns]'
+    '(-p --paths)'{-p,--paths}'[print complete device path]'
+    '(-P --pairs)'{-P,--pairs}'[use key="value" output format]'
+    '(-r --raw)'{-r,--raw}'[use raw output format]'
+    '(-s --inverse)'{-s,--inverse}'[inverse dependencies]'
+    '(-S --scsi)'{-S,--scsi}'[output info about SCSI devices]'
+    '(-t --topology)'{-t,--topology}'[output info about topology]'
+    '(-x --sort)'{-x,--sort}'=[sort output by specified column]:sort column:_lsblk_columns'
+    '(-h --help)'{-h,--help}'[display this help and exit]'
+    '(-V --version)'{-V,--version}'[output version information and exit]'
+    '*:device:_path_files -g "*(N-%) *(N-/)"'
+)
+
+_arguments -s $arguments
