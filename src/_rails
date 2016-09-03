@@ -79,6 +79,7 @@ __rails_commands() {
           profiler'[Get profile information from a piece of code]'
           plugin'[Install a plugin]'
           {runner,r}'[Run a piece of code in the application environment]'
+          {test,t}'[Run tests]'
         )
       else
         commands=(
@@ -592,6 +593,24 @@ _rails_runner() {
 
 _rails_r() {
   _rails_runner
+}
+
+_rails_test() {
+  local context state line curcontext="$curcontext"
+
+  _arguments -C \
+    ': :->path'
+
+  case "$state" in
+    path)
+      _alternative \
+        'files:filename:_files -g "*.rb"'
+      ;;
+  esac
+}
+
+_rails_t() {
+  _rails_test
 }
 
 _rails "$@"
