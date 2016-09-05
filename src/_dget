@@ -18,18 +18,19 @@ _dget() {
     local -A opt_args
 
     _arguments -A "-*" \
-        '(-h --help)'{-h,--help}'[Show help message]' \
-        '(-V --version)'{-v,--version}'[Print license, copyright, and version information and exit]' \
-        '(-q --quiet)'{-q,--quiet}'[Suppress wget/curl output]' \
-        '(-d --download-only --build)'{-d,--download-only}'[Do not extract downloaded source]' \
-        '(-x --extract)'{-x,--extract}'[Unpack downloaded source]' \
-        '(-u --allow-unauthenticated)'{-u,--allow-unauthenticated}'[Make no attempt to verify source package signature]' \
-        '(-d --download-only --build)--build[Build package with dpkg-buildpackage after download]' \
-        '--path[Check this directory in addition to the apt archive]:DIR:_files -/' \
-        '(--insecure)--insecure[Do not check SSL certificates when downloading]' \
-        '(--no-cache)--no-cache[Disable server-side HTTP cache]' \
+        '(--no-conf -h --help)'{-h,--help}'[Show help message]' \
+        '(--no-conf -V --version)'{-v,--version}'[Print license, copyright, and version information and exit]' \
+        '(--no-conf -b --backup)'{-b,--backup}'[Move files that would be overwritten to ./backup]' \
+        '(--no-conf -q --quiet)'{-q,--quiet}'[Suppress wget/curl output]' \
+        '(--no-conf -x --extract -d --download-only --build)'{-d,--download-only}'[Do not extract downloaded source]' \
+        '(--no-conf -x --extract -d --download-only --build)'{-x,--extract}'[Unpack downloaded source]' \
+        '(--no-conf -x --extract -d --download-only --build)--build[Build package with dpkg-buildpackage after download]' \
+        '(--no-conf -u --allow-unauthenticated)'{-u,--allow-unauthenticated}'[Make no attempt to verify source package signature]' \
+        '(--no-conf)--path[Check this directory in addition to the apt archive]:DIR:_files -/' \
+        '(--no-conf --insecure)--insecure[Do not check SSL certificates when downloading]' \
+        '(--no-conf --no-cache)--no-cache[Disable server-side HTTP cache]' \
         "(--no-conf)--no-conf[Don't read devscripts config files]" \
-        '1:dsc url:_urls'
+        '(-)*:debian package urls:_urls'
 }
 
 _dget "$@"
