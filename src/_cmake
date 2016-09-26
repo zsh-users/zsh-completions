@@ -98,7 +98,7 @@ _cmake_targets() {
   local -a targets
   if [ -f $1/Makefile ]
   then
-    # make help doesn't work for Makefiles in general, but for cmake generated makefiles
+    # `make help` doesn't work for Makefiles in general, but for cmake generated makefiles it does.
     i=1
     for target in $(make help | \grep -e "\.\.\." | sed "s/\.\.\. //" | sed "s/ (the default.*//") ; do
       targets[$i]=$target
@@ -106,6 +106,7 @@ _cmake_targets() {
     done
   elif [ -f $1/build.ninja ]
   then
+    # `ninja help` doesn't seem to be the list of targets we're interested in
     i=1
     for target in $(ninja -C $1 -t targets all 2&>/dev/null | awk -F: '{print $1}') ; do
       targets[$i]="$target"
@@ -158,14 +159,19 @@ _cmake_on_build() {
       - build_cmds \
       "$cmake_suggest_build[@]" && return 0
   elif [ $difference -eq 1 ] ; then
+    # directly after --build comes the build directory
     _alternative ':current directory:(.)' 'directory::_directories' && return 0
   elif [[ $words[(($CURRENT - 1))] == --target ]] ; then
+    # after --build <dir> --target, suggest targets
     _cmake_targets $words[(($buildat + 1))] && return 0
   elif [[ $words[(($CURRENT - 1))] == --config ]] ; then
+    # after --build <dir> --config, no idea
     return 0
   elif [ "$outofbuild" = true ] ; then
+    # after --build <dir> --<not a --build option>, suggest other cmake_build_options (like -Wno-dev)
     _arguments "$cmake_build_options[@]" && return 0
   else
+    # after --build <dir>, suggest other cmake_build_options (like -Wno-dev) or --build options (like --clean-first)
     _arguments "$build_extras[@]" "$cmake_build_options[@]" && return 0
   fi
 }
@@ -401,24 +407,25 @@ local cmake_suggest_build;cmake_suggest_build=(
     '--build[build]'
 )
 
-#_alternative 'foobar::_cmake_on_build'
-if [ $CURRENT -eq 2 ] ; then
-  _arguments -C -s \
-    - help \
+_cmake() {
+  if [ $CURRENT -eq 2 ] ; then
+    _arguments -C -s \
+      - help \
       "$cmake_help_actions[@]" \
-    - command \
+      - command \
       "$cmake_command_actions[@]" \
-    - build_opts \
+      - build_opts \
       "$cmake_build_options[@]" \
-    - build_cmds \
+      - build_cmds \
       "$cmake_suggest_build[@]" && return 0
-  #  - build_cmds \
-  #    "$cmake_build_commands[@]"
-  #_alternative -C -s 'helps::_cmake_help' '::_cmake_on_build' 'command mode::_cmake_command' && return 0
-elif [[ $words[2] = --help* ]] ; then
-  _cmake_help
-elif [[ $words[2] != -E ]] ; then
-  _cmake_on_build
-else
-  _cmake_command
-fi
+  elif [[ $words[2] = --help* ]] ; then
+    # some help messages continue after the --help*
+    _cmake_help
+  elif [[ $words[2] != -E ]] ; then
+    _cmake_on_build
+  else
+    _cmake_command
+  fi
+}
+
+_cmake "$@"
