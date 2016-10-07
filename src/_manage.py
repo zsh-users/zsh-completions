@@ -454,7 +454,7 @@ _managepy_commands() {
 
   typeset -a django_completion
   if ( [[ ${(P)+cachename} -eq 0 ]] || _cache_invalid $cachename ) \
-      && ! _retrieve_cache $cachename; then
+      || ! _retrieve_cache $cachename; then
     zle -M "Querying Django subcommands..."
     local ret_djcomp
     if _managepy_get_django_completion "" $((CURRENT-1)); then
