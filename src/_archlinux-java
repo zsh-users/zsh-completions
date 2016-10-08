@@ -41,10 +41,10 @@
 
 _archlinux-java_command_arguments() {
 case $words[1] in
-    (set)
-        local java_versions=("${(@f)$(archlinux-java status | tail -n +2 | tr -s ' ' | cut -d ' ' -f2)}")
-        _describe -t output 'Downloads to delete' java_versions
-        ;;
+  (set)
+    local java_versions=("${(@f)$(archlinux-java status | tail -n +2 | tr -s ' ' | cut -d ' ' -f2)}")
+    _describe -t output 'Downloads to delete' java_versions
+    ;;
 esac
 
 }
@@ -62,18 +62,25 @@ commands=(
 )
 
 _arguments -C \
-    '1:cmd:->cmds' \
-    '*:: :->args' \
+  '1:cmd:->cmds' \
+  '*:: :->args' \
 
-    case "$state" in
-        (cmds)
-            _describe -t commands 'commands' commands
-            ;;
-        (*)
-            _archlinux-java_command_arguments
-            ;;
-    esac
+  case "$state" in
+    (cmds)
+      _describe -t commands 'commands' commands
+      ;;
+    (*)
+      _archlinux-java_command_arguments
+      ;;
+  esac
 }
 
 _archlinux-java
 
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
