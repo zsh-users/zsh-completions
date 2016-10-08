@@ -40,30 +40,37 @@
 
 _afew() {
 
-    _arguments -C \
-        '(- 1 *)'-h"[Show help and exit]" \
-        "(-c -l -t -u -U -m)"-w"[Continuously monitor the mailbox for new messages matching the given query]" \
-        "(-c -l -w -u -U -m)"-t"[Run the tag filters]" \
-        "(-c -t -w -u -U -m)"-l"[Train category with the messages matching query]" \
-        "(-c -l -t -w -m)"-u"[Update the categories (requires no query)]" \
-        "(-c -l -t -w -m)"-U"[Update the reference category (takes quite some time) (requires no query)]" \
-        "(-l -t -w -u -U -m)"-c"[Classify each message matching the iven query]" \
-        "(-l -t -w -u -U -m)"-m"[Move mail files between maildir folders]" \
-        "(-n)"-a"[Operate on all email]" \
-        "(-a)"-n"[Operate on all new email]" \
-        -C"[Path to notmuch configuration file]:files:_files" \
-        -e"[Flter classes to use]:filters" \
-        -d"[Dont change the DB]" \
-        -R"[Size of the reference set (default: 1000)]:size:" \
-        -T"[Do not use emails older than DAYS days (default: 30)]:days:" \
-        -v"[Be more verbose]" \
-        '*:Query:' \
+  _arguments -C \
+    '(- 1 *)'-h"[Show help and exit]" \
+    "(-c -l -t -u -U -m)"-w"[Continuously monitor the mailbox for new messages matching the given query]" \
+    "(-c -l -w -u -U -m)"-t"[Run the tag filters]" \
+    "(-c -t -w -u -U -m)"-l"[Train category with the messages matching query]" \
+    "(-c -l -t -w -m)"-u"[Update the categories (requires no query)]" \
+    "(-c -l -t -w -m)"-U"[Update the reference category (takes quite some time) (requires no query)]" \
+    "(-l -t -w -u -U -m)"-c"[Classify each message matching the iven query]" \
+    "(-l -t -w -u -U -m)"-m"[Move mail files between maildir folders]" \
+    "(-n)"-a"[Operate on all email]" \
+    "(-a)"-n"[Operate on all new email]" \
+    -C"[Path to notmuch configuration file]:files:_files" \
+    -e"[Flter classes to use]:filters" \
+    -d"[Dont change the DB]" \
+    -R"[Size of the reference set (default: 1000)]:size:" \
+    -T"[Do not use emails older than DAYS days (default: 30)]:days:" \
+    -v"[Be more verbose]" \
+    '*:Query:' \
 
-        case "$state" in
-            (*)
-                ;;
-        esac
-    }
+    case "$state" in
+      (*)
+        ;;
+    esac
+  }
 
- _afew
+  _afew
 
+  # Local Variables:
+  # mode: Shell-Script
+  # sh-indentation: 2
+  # indent-tabs-mode: nil
+  # sh-basic-offset: 2
+  # End:
+  # vim: ft=zsh sw=2 ts=2 et
