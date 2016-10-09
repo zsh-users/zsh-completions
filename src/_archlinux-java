@@ -40,30 +40,29 @@
 
 
 _archlinux-java_command_arguments() {
-case $words[1] in
-  (set)
-    local java_versions=("${(@f)$(archlinux-java status | tail -n +2 | tr -s ' ' | cut -d ' ' -f2)}")
-    _describe -t output 'Downloads to delete' java_versions
+  case $words[1] in
+    (set)
+      local java_versions=("${(@f)$(archlinux-java status | tail -n +2 | tr -s ' ' | cut -d ' ' -f2)}")
+      _describe -t output 'Downloads to delete' java_versions
     ;;
-esac
-
+  esac
 }
 
 _archlinux-java() {
-local -a commands
+  local -a commands
 
-commands=(
-"status:List installed Java environments and enabled one"
-"get:Return the short name of the Java environment set as default"
-"set:Force <JAVA_ENV> as default"
-"unset:Unset current default Java environment"
-"fix:Fix an invalid/broken default Java environment configuration"
-"help:Show help"
-)
+  commands=(
+    "status:List installed Java environments and enabled one"
+    "get:Return the short name of the Java environment set as default"
+    "set:Force <JAVA_ENV> as default"
+    "unset:Unset current default Java environment"
+    "fix:Fix an invalid/broken default Java environment configuration"
+    "help:Show help"
+  )
 
-_arguments -C \
-  '1:cmd:->cmds' \
-  '*:: :->args' \
+  _arguments -C \
+    '1:cmd:->cmds' \
+    '*:: :->args' \
 
   case "$state" in
     (cmds)
