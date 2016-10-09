@@ -1,4 +1,4 @@
-#compdef trash-put
+#compdef trash-put trash
 # ------------------------------------------------------------------------------
 # Copyright (c) 2016 Github zsh-users - http://github.com/zsh-users
 # All rights reserved.
