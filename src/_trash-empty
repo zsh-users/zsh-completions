@@ -41,11 +41,10 @@
 
 _trash-empty() {
 
-
-_arguments -C \
-  '--version[Show programs version number and exit]' \
-  {-h,--help}'[Show help message and exit]' \
-  '*: :' \
+  _arguments -C \
+    '--version[Show programs version number and exit]' \
+    {-h,--help}'[Show help message and exit]' \
+    '*: :' \
 
 }
 

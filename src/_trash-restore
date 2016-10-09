@@ -41,10 +41,9 @@
 
 _trash-restore() {
 
-
-_arguments -C \
-  '--version[Show programs version number and exit]' \
-  '*: :' \
+  _arguments -C \
+    '--version[Show programs version number and exit]' \
+    '*: :' \
 
 }
 
