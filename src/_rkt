@@ -70,9 +70,20 @@ _rkt() {
             '--pretty-print[apply indent to format the output]' \
             ;;
 
+        config)
+          _arguments \
+            '--pretty-print[apply indent to format the output]' \
+            ;;
+
         enter)
           _arguments \
             '--app=:appname' \
+            ;;
+
+        export)
+          _arguments \
+            '--app=:appname' \
+            '--overwrite[overwrite output ACI]' \
             ;;
 
         fetch)
@@ -234,7 +245,9 @@ _rkt_cmds() {
   commands=(
     'api-service:Run API service'
     'cat-manifest:Inspect and print the pod manifest'
+    'config:Print configuration for each stage in JSON format'
     'enter:Enter the namespaces of an app within a rkt pod'
+    'export:Export an app from an exited pod to an ACI file'
     'fetch:Fetch image(s) and store them in the local store'
     'gc:Garbage collect rkt pods no longer in use'
     'image:Operate on image(s) in the local store'
