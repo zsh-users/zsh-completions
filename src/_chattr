@@ -60,12 +60,12 @@ _arguments -C \
    "(+i)-i[Unmark as immutable]" \
    "(-j)+j[Enable ext3 journaling]" \
    "(+j)-j[Disable ext3 journaling]" \
-   "(-s)+s[Enable secure deletion - zeroe all blocks on delete]" \
-   "(+s)-s[Disable secure deletion - do not zeroe all blocks on delete]" \
+   "(-s)+s[Enable secure deletion - zero all blocks on delete]" \
+   "(+s)-s[Disable secure deletion - do not zero all blocks on delete]" \
    "(-S)+S[Enable synchronous updates]" \
    "(+S)-S[Disable synchronous updates]" \
-   "(-T)+T[Set top of hiearchy - direct subdirectories are allocated independetly]" \
-   "(+T)-T[Unset top of hiearchy]" \
+   "(-T)+T[Set top of hierarchy - direct subdirectories are allocated independently]" \
+   "(+T)-T[Unset top of hierarchy]" \
    "(-t)+t[Disable tail merging]" \
    "(+t)-t[Enable tail merging]" \
    "(-u)+u[Mark as undeletable - enable undeletion]" \
