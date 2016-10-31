@@ -302,6 +302,7 @@ _cmake_define_lang_property_names() {
 (( $+functions[_cmake_define_common_property_names] )) ||
 _cmake_define_common_property_names() {
   local properties; properties=(
+    'CMAKE_MODULE_PATH:Search path for cmake modules'
     'CMAKE_BUILD_TYPE:Specifies the build type for make based generators'
     'CMAKE_TOOLCHAIN_FILE:Absolute or relative path to a cmake script which sets up toolchain related variables'
     'CMAKE_COLOR_MAKEFILE:Enables/disables color output when using the Makefile generator'
