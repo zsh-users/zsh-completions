@@ -42,7 +42,8 @@ local context state state_descr line
 local -A opt_args
 local -i ret=1
 
-local common_options=(
+local -a common_options
+common_options=(
   '(-a --text)'{-a,--text}'[search binary files as if they were text]'
   '(-c, --count)'{-c,--count}'[only show count of line matches for each file]'
   '--color=-[whether to use coloring in match]::when:( always never auto )'
@@ -61,7 +62,8 @@ local common_options=(
   '(-w --word-regexp)'{-w,--word-regexp}'[only show matches surrounded by word boundaries]'
 )
 
-local less_common_options=(
+local -a less_common_options
+less_common_options=(
   '(-A -C --after-context --context)'{-A,--after-context=}'[specify number of lines to show after each match]:number of lines'
   '(-B -C --before-context --context)'{-B,--before-context=}'[specify number of lines to show before each match]:number of lines'
   '(-A -B -C --after-context --before-context --context)'{-C,--context=}'[specify number of lines to show before and after each match]:number of lines'
@@ -92,7 +94,8 @@ local less_common_options=(
   '(-p --heading --no-heading --pretty)--vimgrep[show results with every match on its own line, including line numbers and column numbers]'
 )
 
-local file_type_management_options=(
+local -a file_type_management_options
+file_type_management_options=(
   '--type-list[show all supported file types and their associated globs]'
   '*--type-add=[add a new glob for a particular file type]:type'
   '*--type-clear=[clear the file type globs previously defined for specified type]: :->type'
