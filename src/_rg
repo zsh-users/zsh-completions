@@ -111,7 +111,8 @@ _arguments -S -s : \
 
 case "$state" in
   type)
-    local -U types=( ${${(f)"$(_call_program types rg --type-list)"}%%:*} )
+    local -U types
+    types=( ${${(f)"$(_call_program types rg --type-list)"}%%:*} )
 
     _describe -t types "type" types && ret=0
     ;;
