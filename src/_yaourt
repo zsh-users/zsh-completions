@@ -65,7 +65,7 @@ _yaourt_action_query() {
             _arguments -s : \
                 "$_yaourt_opts_common[@]" \
                 "$_yaourt_opts_query_modifiers[@]" \
-                '*:package file:_files -g "*.pkg.tar.*"'
+                '*:package file:_files -g "*.pkg.tar*"'
             ;;
         query_group)
             _arguments -s : \
@@ -273,7 +273,7 @@ _yaourt() {
     _yaourt_opts_pkgfile=(
         '-d[Skip dependency checks]'
         '-f[Overwrite conflicting files]'
-        '*:package file:_files -g "*.pkg.tar.*(.)"'
+        '*:package file:_files -g "*.pkg.tar*(.)"'
     )
 
     # options for passing to _arguments: subactions for --query command
@@ -357,11 +357,11 @@ _yaourt() {
                 "$_yaourt_opts_query_modifiers[@]" \
                 '*:package file:_files'
             ;;
-        -Q*p*) # file *.pkg.tar.*
+        -Q*p*) # file *.pkg.tar*
             _arguments -s : \
                 "$_yaourt_opts_common[@]" \
                 "$_yaourt_opts_query_modifiers[@]" \
-                '*:package file:_files -g "*.pkg.tar.*"'
+                '*:package file:_files -g "*.pkg.tar*"'
             ;;
         -Q*)  _yaourt_action_query    ;;
         -R*)  _yaourt_action_remove   ;;
