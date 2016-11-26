@@ -1,0 +1,106 @@
+#compdef scl
+# ------------------------------------------------------------------------------
+# Copyright (c) 2016 Github zsh-users - http://github.com/zsh-users
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of the zsh-users nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL ZSH-USERS BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for Software Collections (https://www.softwarecollections.org).
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Julien Nicoulaud <julien.nicoulaud@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+_scl() {
+  local context curcontext="$curcontext" state line
+  typeset -A opt_args
+
+  local ret=1
+
+  _arguments -C \
+    '1: :_scl_cmds' \
+    "(- : *)"{-h,--help}'[display help information]' \
+    "(- : *)"{-l,--list}'[list installed Software Collections or packages that belong to them]:installed collection:_scl_installed_collections' \
+    '*::arg:->args' \
+  && ret=0
+
+  case $state in
+    (args)
+      curcontext="${curcontext%:*:*}:scl-cmd-$words[1]:"
+      case $line[1] in
+        (register)
+          _arguments '1:Software Collection path:_files -/' && ret=0
+        ;;
+        (deregister)
+          _arguments -C \
+			'1:: :_scl_installed_collections' \
+			'--force[force suppression of the collection]' \
+		 && ret=0
+        ;;
+        (enable)
+          _arguments -C \
+			'1:: :_scl_installed_collections' \
+			'2:command: _command_names -e' \
+		 && ret=0
+        ;;
+        *)
+          _call_function ret _scl_cmd_$words[1] && ret=0
+          (( ret )) && _message 'no more arguments'
+        ;;
+      esac
+    ;;
+  esac
+}
+
+(( $+functions[_scl_cmds] )) ||
+_scl_cmds() {
+  local commands; commands=(
+    'register:register a Software Collection'
+    'deregister:deregister a Software Collection'
+    'enable:enable a Software Collection'
+  )
+  _describe -t commands 'scl command' commands "$@"
+}
+
+(( $+functions[_scl_installed_collections] )) ||
+_scl_installed_collections() {
+  local installed_collections; installed_collections=($(_call_program installed_collections $service --list))
+  _describe -t collections 'Software Collection' installed_collections "$@"
+}
+
+_scl "$@"
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
