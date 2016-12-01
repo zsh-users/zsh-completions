@@ -72,7 +72,7 @@ _ag_add_file_types() {
 _ag_add_version_opts() {
   local ag_version=$(_ag_version)
 
-  if [[ $ag_version > 0.22 ]]; then
+  if [[ $ag_version > 0.21 ]]; then
     _ag_add_file_types
     AG_OPTS+=(
       '(- 1 *)--list-file-types[list supported filetypes to search]'
