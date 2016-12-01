@@ -72,7 +72,7 @@ _ag_add_file_types() {
 _ag_add_version_opts() {
   local ag_version=$(_ag_version)
 
-  if [[ ag_version > 0.22 ]]; then
+  if [[ $ag_version > 0.22 ]]; then
     _ag_add_file_types
     AG_OPTS+=(
       '(- 1 *)--list-file-types[list supported filetypes to search]'
@@ -81,19 +81,19 @@ _ag_add_version_opts() {
   fi
     
 
-  if [[ ag_version > 0.22 ]]; then
+  if [[ $ag_version > 0.22 ]]; then
     AG_OPTS+=(
       '(-z --search-zip)'{-z,--search-zip}'[search contents of compressed files]'
     )
   fi
 
-  if [[ ag_version <= 0.24 ]]; then
+  if [[ $ag_version <= 0.24 ]]; then
     AG_OPTS+=(
       '(-s --case-sensitive)'{-s,--case-sensitive}'[match case sensitively]'
       '(--noheading --heading)'{--noheading,--heading}'[print file names above matching contents]'
     )
   fi
-  if [[ ag_version > 0.24 ]]; then
+  if [[ $ag_version > 0.24 ]]; then
     AG_OPTS+=(
       '(-s --case-sensitive)'{-s,--case-sensitive}'[Match case sensitively. Default on.]'
       '(-H --noheading --heading)'{-H,--noheading,--heading}'[print file names above matching contents]'
@@ -101,18 +101,18 @@ _ag_add_version_opts() {
     )
   fi
 
-  if [[ ag_version > 0.26 ]]; then
+  if [[ $ag_version > 0.26 ]]; then
     AG_OPTS+=(
       '(-0 --null --print0)'{-0,--null,--print0}'[separate the filenames with \\0, rather than \\n]'
     )
   fi
 
-  if [[ ag_version <= 0.27 ]]; then
+  if [[ $ag_version <= 0.27 ]]; then
     AG_OPTS+=(
       '--depth[Search up to NUM directories deep. Default is 25.]:number'
     )
   fi
-  if [[ ag_version > 0.27 ]]; then
+  if [[ $ag_version > 0.27 ]]; then
     AG_OPTS+=(
       '(-c --count)'{-c,--count}'[only print the number of matches in each file]'
       '--depth[Search up to NUM directories deep, -1 for unlimited. Default is 25.]:number'
@@ -120,12 +120,12 @@ _ag_add_version_opts() {
     )
   fi
 
-  if [[ ag_version <= 0.28 ]]; then
+  if [[ $ag_version <= 0.28 ]]; then
     AG_OPTS+=(
       '(--no-numbers)--no-numbers[don´t show line numbers]'
     )
   fi
-  if [[ ag_version > 0.28 ]]; then
+  if [[ $ag_version > 0.28 ]]; then
     AG_OPTS+=(
       '(--nofilename --filename)'{--nofilename,--filename}'[Print file names. Default on, except when searching a single file.]'
       '(--nonumbers --numbers)'{--nonumbers,--numbers}'[Print line numbers. Default is to omit line numbers when searching streams]'
