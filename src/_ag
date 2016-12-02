@@ -40,14 +40,13 @@
 # -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
 # vim: ft=zsh sw=2 ts=2 et
 # ------------------------------------------------------------------------------
-
 _ag_version() {
   local version
   version=( $($words[1] --version) )
-  version=${${(z)${version[1]}}[2]}
-  echo $version
+  version=${version[@]:2:1}
+  version=( "${(@s/./)version}" )
+  echo "${version[2]}"
 }
-
 
 # Dynamically build the file type completion
 # Modifies the global $AG_OPTS array
@@ -70,30 +69,29 @@ _ag_add_file_types() {
 # Add version appropriate options above base
 # Modifies the global $AG_OPTS array
 _ag_add_version_opts() {
-  local ag_version=$(_ag_version)
+  local minor=$(_ag_version)
 
-  if [[ $ag_version > 0.21 ]]; then
+  if [[ $minor -gt 21 ]];then
     _ag_add_file_types
     AG_OPTS+=(
       '(- 1 *)--list-file-types[list supported filetypes to search]'
       '--silent[suppress all log messages, including errors]'
     )
   fi
-    
 
-  if [[ $ag_version > 0.22 ]]; then
+  if [[ $minor -gt 22 ]];then
     AG_OPTS+=(
       '(-z --search-zip)'{-z,--search-zip}'[search contents of compressed files]'
     )
   fi
 
-  if [[ $ag_version <= 0.24 ]]; then
+  if [[ $minor -le 24 ]];then
     AG_OPTS+=(
       '(-s --case-sensitive)'{-s,--case-sensitive}'[match case sensitively]'
       '(--noheading --heading)'{--noheading,--heading}'[print file names above matching contents]'
     )
   fi
-  if [[ $ag_version > 0.24 ]]; then
+  if [[ $minor -gt 24 ]];then
     AG_OPTS+=(
       '(-s --case-sensitive)'{-s,--case-sensitive}'[Match case sensitively. Default on.]'
       '(-H --noheading --heading)'{-H,--noheading,--heading}'[print file names above matching contents]'
@@ -101,18 +99,18 @@ _ag_add_version_opts() {
     )
   fi
 
-  if [[ $ag_version > 0.26 ]]; then
+  if [[ $minor -gt 26 ]];then
     AG_OPTS+=(
       '(-0 --null --print0)'{-0,--null,--print0}'[separate the filenames with \\0, rather than \\n]'
     )
   fi
 
-  if [[ $ag_version <= 0.27 ]]; then
+  if [[ $minor -le 27 ]];then
     AG_OPTS+=(
       '--depth[Search up to NUM directories deep. Default is 25.]:number'
     )
   fi
-  if [[ $ag_version > 0.27 ]]; then
+  if [[ $minor -gt 27 ]];then
     AG_OPTS+=(
       '(-c --count)'{-c,--count}'[only print the number of matches in each file]'
       '--depth[Search up to NUM directories deep, -1 for unlimited. Default is 25.]:number'
@@ -120,12 +118,12 @@ _ag_add_version_opts() {
     )
   fi
 
-  if [[ $ag_version <= 0.28 ]]; then
+  if [[ $minor -le 28 ]];then
     AG_OPTS+=(
       '(--no-numbers)--no-numbers[don´t show line numbers]'
     )
   fi
-  if [[ $ag_version > 0.28 ]]; then
+  if [[ $minor -gt 28 ]];then
     AG_OPTS+=(
       '(--nofilename --filename)'{--nofilename,--filename}'[Print file names. Default on, except when searching a single file.]'
       '(--nonumbers --numbers)'{--nonumbers,--numbers}'[Print line numbers. Default is to omit line numbers when searching streams]'
