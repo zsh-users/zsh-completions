@@ -36,6 +36,7 @@
 #
 #  * Akira Maeda <https://github.com/glidenote>
 #  * Valodim <https://github.com/Valodim>
+#  * Claus Klingberg <https://github.com/cjk>
 #
 # ------------------------------------------------------------------------------
 # -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
@@ -72,16 +73,18 @@ _httpie_params () {
         compset -P '(#b)([^:@=]#)'
         local name=$match[1]
 
-        if compset -P ':'; then
-            _message "$name header content"
+        if compset -P '='; then
+            _message "$name data field value"
         elif compset -P '@'; then
+            _files
+        elif compset -P ':=@'; then
             _files
         elif compset -P ':='; then
             _message "$name raw json data"
         elif compset -P '=='; then
             _message "$name url parameter value"
-        elif compset -P '='; then
-            _message "$name data field value"
+        elif compset -P ':'; then
+            _message "$name header content"
         else
             typeset -a ops
             ops=(
@@ -90,6 +93,7 @@ _httpie_params () {
                 '==:request parameter'
                 '@:data file field'
                 '\:=:raw json field'
+                '\:=@:raw json field file path'
             )
             _describe -t httpparams "parameter types" ops -Q -S ''
         fi
