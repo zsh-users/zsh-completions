@@ -177,7 +177,7 @@ _go() {
           _arguments \
             ${build_flags[@]} \
             '-exec[invoke the binary using xprog]:xporg' \
-            '*:file:_path_files -g "*.go"'
+            '*:file:_files -g "*.go(-.)"'
             ;;
 
         test)
@@ -330,7 +330,7 @@ _go() {
                     '-wb[enable write barrier (default 1)]' \
                     '-x[debug lexer]' \
                     '-y[debug declarations in canned imports (with -d)]' \
-                    '*:file:_path_files -g "*.go"'
+                    '*:file:_files -g "*.go(-.)"'
                   ;;
 
                 cover)
@@ -345,7 +345,7 @@ _go() {
                   _arguments \
                     '-o[file for output]:file' \
                     '-var=[name of coverage variable to generate]:var' \
-                    '*:file:_path_files -g "*.go"'
+                    '*:file:_files -g "*.go(-.)"'
                   ;;
 
                 doc)
