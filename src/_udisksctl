@@ -39,7 +39,15 @@
 #
 # [1] https://lists.freedesktop.org/archives/devkit-devel/2014-February/001554.html
 #
-
+# ------------------------------------------------------------------------------
+# Notes
+# -----
+#
+# udisksctl actually provide built-in support for completion: It accepts an
+# special command 'complete' that returns completeions. That is what drives the
+# upstream bash completion. In the future one might condsider rewriting using
+# that. (but not sure how straight forward it would be to provide descriptions?)
+#
 
 _paths() {
     local -a _path_list
