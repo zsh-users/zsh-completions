@@ -23,6 +23,7 @@
 # -------
 #
 #  * Damir Jelić <poljarinho at gmail.com> [1]
+#  * Ole Jørgen Brønner <olejorgenb at yahoo.no> (minor additions)
 #
 # [1] https://lists.freedesktop.org/archives/devkit-devel/2014-February/001554.html
 #
@@ -72,6 +73,7 @@ _udisksctl() {
                 'lock: Lock an encrypted device'
                 'loop-setup: Set-up a loop device'
                 'loop-delete: Delete a loop device'
+                'power-off: Safely power off a drive'
                 'smart-simulate: Set SMART data for a drive'
             )
             _describe -t commands 'udisksctl commands' commands
@@ -118,6 +120,12 @@ _udisksctl() {
                     _arguments \
                         {-p,--object-path}'[Object for loop device to delete]:object path:_paths' \
                         {-b,--block-device}'[Loop device to delete]:block device:_paths' \
+                        '(--no-user-interaction)--no-user-interaction[Do not authenticate the user if needed]' \
+                ;;
+                power-off)
+                    _arguments \
+                        {-p,--object-path}'[Object path for ATA device]:object path:_paths' \
+                        {-b,--block-device}'[Device file for ATA devic]:block device:_paths' \
                         '(--no-user-interaction)--no-user-interaction[Do not authenticate the user if needed]' \
                 ;;
                 smart-simulate)
