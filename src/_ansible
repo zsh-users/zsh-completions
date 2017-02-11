@@ -62,6 +62,7 @@ __host_file_location () {
   [[ "$OSTYPE" == darwin* ]] && FALLBACK="/usr/local/etc/ansible/hosts"
   [[ "$OSTYPE" == linux* ]] && FALLBACK="/etc/ansible/hosts"
   HOST_FILE=${ANSIBLE_HOSTS:=${FALLBACK}}
+  [[ -f ${HOST_FILE} ]] || HOST_FILE="$PWD/ansible/inventory/hosts"
   [[ -f ${HOST_FILE} ]] || HOST_FILE=/dev/null
 
   echo ${HOST_FILE}
