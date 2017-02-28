@@ -17,8 +17,9 @@ See [issues](https://github.com/zsh-users/zsh-completions/issues) for details on
 
 | System  | Package |
 | ------------- | ------------- |
-| Debian based distributions (Debian/Ubuntu/Linux Mint...) | Packager needed, please get in touch !  |
-| Fedora/RHEL/CentOS | copr: [nicoulaj/zsh-completions](https://copr.fedorainfracloud.org/coprs/nicoulaj/zsh-completions) |
+| Debian / Ubuntu | [zsh-completions OBS repository](https://software.opensuse.org/download.html?project=shells%3Azsh-users%3Azsh-completions&package=zsh-completions) |
+| Fedora / CentOS / RHEL / Scientific Linux | [zsh-completions OBS repository](https://software.opensuse.org/download.html?project=shells%3Azsh-users%3Azsh-completions&package=zsh-completions) |
+| OpenSUSE / SLE | [zsh-completions OBS repository](https://software.opensuse.org/download.html?project=shells%3Azsh-users%3Azsh-completions&package=zsh-completions) |
 | Arch Linux | [zsh-completions](https://www.archlinux.org/packages/zsh-completions), [zsh-completions-git](https://aur.archlinux.org/packages/zsh-completions-git) |
 | Gentoo | [app-shells/zsh-completions](http://packages.gentoo.org/package/app-shells/zsh-completions)  |
 | NixOS | [zsh-completions](https://github.com/NixOS/nixpkgs/blob/master/pkgs/shells/zsh-completions/default.nix) |
