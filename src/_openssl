@@ -27,8 +27,6 @@
 # ------------------------------------------------------------------------------
 
 # openssl command [ command_opts ] [ command_args ]
-# pseudo commands:
-# openssl [ list-standard-commands | list-message-digest-commands | list-cipher-commands | list-cipher-algorithms | list-message-digest-algorithms | list-public-key-algorithms]
 
 _openssl() {
   local openssl_commands cmd cmds
@@ -37,15 +35,7 @@ _openssl() {
     return
   elif [[ "$CURRENT" -eq 2 ]]; then
     # first parameter, the command
-    openssl_commands=(${(f)"$(openssl list-standard-commands; \
-                              openssl list-message-digest-commands; \
-                              openssl list-cipher-commands)"} \
-                              list-standard-commands \
-                              list-message-digest-commands \
-                              list-cipher-commands \
-                              list-cipher-algorithms \
-                              list-message-digest-algorithms \
-                              list-public-key-algorithms)
+    openssl_commands=(${(z)${${(f)"$(openssl help 2>&1)"}:#([A-Z]|openssl:Error:)*}})
     _describe 'openssl commands' openssl_commands
   else
     # $CURRENT -gt 2
@@ -66,12 +56,12 @@ _openssl() {
       shift words
       (( CURRENT-- ))
       _openssl_${cmd}
-    elif [[ "${${(@f)"$(openssl list-cipher-commands)"}[(r)$cmd]}" == "${cmd}" ]]; then
+    elif [[ ${${=${"$(openssl help 2>&1)"/*Cipher commands[^)]#)/}}[(re)$cmd]} == "$cmd" ]]; then
       # $cmd is a cipher command, which is practically an alias to enc
       shift words
       (( CURRENT-- ))
       _openssl_enc
-    elif [[ "${${(@f)"$(openssl list-message-digest-commands)"}[(r)$cmd]}" == "${cmd}" ]]; then
+    elif [[ ${${=${${"$(openssl help 2>&1)"%%Cipher commands*}/*Message Digest commands[^)]#)/}}[(re)$cmd]} == "$cmd" ]]; then
       # $cmd is a message digest command, which is practically an alias to dgst
       shift words
       (( CURRENT-- ))
