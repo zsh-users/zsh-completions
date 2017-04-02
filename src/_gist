@@ -75,21 +75,23 @@ _user_gists_cache_policy() {
 user_gists() {
   local update_policy ret=1
   zstyle -s ":completion:${curcontext}:" cache-policy update_policy
-  [[ -z "$update_policy" ]] && zstyle ":completion:${curcontext}:" cache-policy _user_gists_cache_policy
+  if [[ -z "$update_policy" ]]; then
+    zstyle ":completion:${curcontext}:" cache-policy _user_gists_cache_policy
+  fi
 
-  # Stores the gists of the logged in user in the format ID[Description]
+  # stores the gists of the logged in user in the format ID[Description]
   _list=()
   _cached_gists="user_gists"
 
-  # Retrieve/Write gists from/to cache
+  # retrieve/Write gists from/to cache
   if _cache_invalid $_cached_gists  || ! _retrieve_cache $_cached_gists; then
     _gists=$(gist -l)
 
     if [ $? -eq 0 ]; then
       _store_cache $_cached_gists _gists
     else
-      # Some error occurred, the user is probably not logged in
-      # Set _gists to an empty string so that no completion is attempted
+      # some error occurred, the user is probably not logged in
+      # set _gists to an empty string so that no completion is attempted
       _gists=""
     fi
   else
@@ -100,7 +102,7 @@ user_gists() {
     echo "$_gists" | while read -r line; do
       # Splitting the gist -l output
       url="$(echo "$line" | cut -d " " -f 1 | cut -d "/" -f 4)"
-      # Gists w/o descriptions can have only one column in the output, those 
+      # gists w/o descriptions can have only one column in the output, those 
       # have their description set to an empty string
       description="$(echo "$line" | awk '{if(NF > 1){$1=""; print $0}}')"
 
