@@ -62,7 +62,7 @@ _arguments -C \
   '(-P --paste)'{-P,--paste}'[Paste from the clipboard to gist]' \
   '(-h --help)'{-h,--help}'[print options help]' \
   '(-v --version)'{-v,--version}'[print version]' \
-  '(-r --read)'{-r,--read}'[Test]:user gists:user_gists' \
+  '(-r --read)'{-r,--read}'[Read a gist and print out the contents]:user gists:user_gists' \
   '*: :_files' && ret=0
 
 _user_gists_cache_policy() {
