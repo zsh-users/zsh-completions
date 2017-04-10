@@ -1,0 +1,271 @@
+#compdef electrum
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for electrum 2.4.4 (https://electrum.org)
+#  Last updated: 2015-10-17
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * stereolink (https://github.com/stereolink)
+#
+# ------------------------------------------------------------------------------
+
+local ret=1 state
+
+local -a global_opts
+global_opts=(
+  {-h,--help}"[show usage information and exit]"
+  {-v,--verbose}"[show debugging information]"
+  {-P,--portable}"[use local 'electrum_data' directory]"
+  {-w,--wallet}"[wallet path]:wallet_path"
+  {-o,--offline}"[run offline]"
+)
+
+typeset -A opt_args
+_arguments \
+  ':subcommand:->subcommand' \
+  $global_opts \
+  '*::options:->options' && ret=0
+
+case $state in
+  subcommand)
+    local -a subcommands
+    subcommands=(
+      "gui:run GUI (default)"
+      "daemon:run daemon"
+      "addrequest:create a payment request"
+      "broadcast:broadcast a transaction to the network"
+      "check_seed:check that a seed was generated with given entropy:seed"
+      "clearrequests:remove all payment requests"
+      "commands:list of commands"
+      "create:create a new wallet"
+      "createmultisig:create a multisig address"
+      "createrawtx:create a transaction from json inputs"
+      "decrypt:decrypt a message encrypted with a public key"
+      "deseed:remove seed from wallet"
+      "deserialize:deserialize a serialized transaction"
+      "encrypt:encrypt a message with a public key"
+      "freeze:freeze address:addr"
+      "getaddressbalance:return the balance of any address"
+      "getaddresshistory:return the transaction history of any address"
+      "getaddressunspent:return the UTXO list of any address"
+      "getalias:retrieve alias"
+      "getbalance:return the balance of your wallet"
+      "getconfig:return a configuration variable"
+      "getmasterprivate:get master private key"
+      "getmerkle:get Merkle branch of a transaction included in a block"
+      "getmpk:get master public key"
+      "getprivatekeys:get private keys of addresses"
+      "getproof:get Merkle branch of an address in the UTXO set"
+      "getpubkeys:return the public keys for a wallet address"
+      "getrequest:return a payment request"
+      "getseed:get seed phrase"
+      "getservers:return the list of available servers"
+      "gettransaction:retrieve a transaction"
+      "getutxoaddress:get the address of a UTXO"
+      "help:show global or [command] usage information:command"
+      "history:wallet history"
+      "importprivkey:import a private key"
+      "ismine:check if address is in wallet"
+      "listaddresses:list wallet addresses"
+      "listcontacts:show your list of contacts"
+      "listrequests:list the payment requests you made"
+      "listunspent:list unspent outputs"
+      "make_seed:create a seed"
+      "password:change wallet password"
+      "payto:create a transaction"
+      "paytomany:create a multi-output transaction"
+      "restore:restore a wallet from seed"
+      "rmrequest:remove a payment request"
+      "searchcontacts:search through contacts, return matching entries"
+      "setconfig:set a configuration variable"
+      "setlabel:assign a label to an item"
+      "signmessage:sign a message with a key"
+      "signrequest:sign payment request with an OpenAlias"
+      "signtransaction:sign a transaction"
+      "sweep:sweep private keys"
+      "unfreeze:unfreeze address"
+      "validateaddress:check that an address is valid"
+      "verifymessage:verify a signature"
+      "version:return the version of electrum"
+    )
+
+    _describe -t subcommands 'electrum subcommand' subcommands && ret=0
+  ;;
+
+  options)
+    local -a args
+    args=(
+      $global_opts
+    )
+
+    local -a server
+    server=(
+      {-1,--oneserver}"[connect to one server only]"
+      {-s,--server}"[set server host:port:protocol, where protocol is t (tcp) or s (ssl)]:server"
+      {-p,--proxy}"[set proxy \[type:\]host\[:port\], where type is socks4, socks5, or http]:proxy"
+    )
+
+    local -a entropy
+    entropy=(
+      "--entropy[custom entropy]:entropy"
+    )
+
+    local -a password
+    password=(
+      {-W,--password}"[password]:password"
+    )
+
+    local -a unsigned
+    unsigned=(
+      {-u,--unsigned}"[do not sign transaction]"
+    )
+
+    local -a deserialized
+    deserialized=(
+      {-d,--deserialized}"[return deserialized transaction]"
+    )
+
+    local -a tx_fee
+    tx_fee=(
+      {-f,--fee}"[transaction fee (in BTC)]:tx_fee"
+    )
+
+    local -a nocheck
+    nocheck=(
+      "--nocheck[do not verify aliases]"
+    )
+    
+    case $words[1] in
+      help)
+        args=()
+        compadd "$@" gui daemon addrequest broadcast check_seed clearrequests commands create \
+                createmultisig createrawtx decrypt deseed deserialize dumpprivkeys encrypt \
+                freeze getaddressbalance getaddresshistory getaddressunspent getalias getbalance \
+                getconfig getmasterprivate getmerkle getmpk getprivatekeys getproof getpubkeys \
+                getrequest getseed getservers gettransaction getutxoaddress history importprivkey \
+                ismine listaddresses listcontacts listrequests listunspent make_seed password \
+                payto paytomany restore rmrequest searchcontacts setconfig setlabel signmessage \
+                signrequest signtransaction sweep unfreeze validateaddress verifymessage version
+      ;;
+
+      gui)
+        args+=(
+          {-g,--gui}"[select graphical user interface]:gui:( qt lite gtk text stdio jsonrpc )"
+          "-m[hide GUI on startup]"
+          {-L,--lang}"[default language used in GUI]:language"
+          $server
+        )
+      ;;
+      
+      daemon)
+        args+=(
+          $server
+        )
+      ;;
+
+      addrequest)
+        args+=(
+          {-m,--memo}"[description of the request]:memo"
+          "--expiration[expiration time in seconds]:expiration"
+          "--force[create new address beyond gap limit, if nore more address is available]"    
+        )
+      ;;
+
+      check_seed)
+        args+=(
+          $entropy
+          {-L,--lang}"[default language for wordlist]:language"
+        )
+      ;;
+
+      createrawtx)
+        args+=(
+          $password
+          $unsigned
+        )
+      ;;
+
+      getbalance)
+        args+=(
+          "--account[account]:account"
+        )
+      ;;
+      
+      (decrypt|getmasterprivate|getprivatekeys|getseed|importprivkey|password|signmessage|signrequest)
+        args+=(
+          $password
+        )
+      ;;
+      
+      gettransaction)
+        args+=(
+          $deserialized
+        )
+      ;;
+      
+      listaddresses)
+        args+=(
+          "--receiving[show only receiving addresses]"
+          "--change[show only change addresses]"
+          {-l,--labels}"[show the labels of listed addresses]"
+          "--frozen[show only frozen addresses]"
+          "--unused[show only unused addresses]"
+          "--funded[show only funded addresses]"
+          {-b,--balance}"[show the balances of listed addresses]"
+        )
+      ;;
+      
+      listrequests)
+        args+=(
+          "--pending[show only pending requests]"
+          "--expired[show only expired requests]"
+          "--paid[show only paid requests]"
+        )
+      ;;
+
+      make_seed)
+        args+=(
+          "--nbits[nuber of bits of entropy]:nbits"
+          $entropy
+          {-L,--lang}"[default language for wordlist]:language"
+        )
+      ;;
+
+      (payto|paytomany)
+        args+=(
+          $password
+          $tx_fee
+          {-F,--from}"[source address]:from_addr"
+          {-c,--change}"[change address]:change_addr"
+          $nocheck
+          $unsigned
+          $deserialized
+          "--broadcast[broadcast the transaction to the Bitcoin network]"
+        )
+      ;;
+
+      signtransaction)
+        args+=(
+          $password
+          "--privkey[private key, set to '?' to get a prompt]:privkey"
+        )
+      ;;
+
+      sweep)
+        args+=(
+          $tx_fee
+          $nocheck
+        )
+      ;;
+      
+     esac
+    _arguments $args && ret=0
+  ;;
+esac
+          
+return ret
