@@ -1,0 +1,24 @@
+#compdef gulp
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for Gulp (http://gulpjs.com/).
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Yohan Tambè (https://github.com/cronos87)
+#
+# ------------------------------------------------------------------------------
+
+_gulp_get_command_list () {
+    cat gulpfile.js | grep "gulp.task" | grep -o "'[a-z:]*'" | sed "s/\'//g"
+}
+
+_gulp () {
+    compadd `_gulp_get_command_list`
+}
+
+compdef _gulp gulp
