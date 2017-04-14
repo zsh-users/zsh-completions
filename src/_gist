@@ -1,6 +1,6 @@
 #compdef gist
 # ------------------------------------------------------------------------------
-# Copyright (c) 2015 Github zsh-users - http://github.com/zsh-users
+# Copyright (c) 2017 Github zsh-users - http://github.com/zsh-users
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -35,6 +35,7 @@
 # -------
 #
 #  * Akira Maeda <https://github.com/glidenote>
+#  * Patrick Ziegler <https://github.com/patrick96>
 #
 # ------------------------------------------------------------------------------
 # -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
@@ -61,6 +62,58 @@ _arguments -C \
   '(-P --paste)'{-P,--paste}'[Paste from the clipboard to gist]' \
   '(-h --help)'{-h,--help}'[print options help]' \
   '(-v --version)'{-v,--version}'[print version]' \
+  '(-r --read)'{-r,--read}'[Read a gist and print out the contents]:user gists:user_gists' \
   '*: :_files' && ret=0
+
+_user_gists_cache_policy() {
+  # rebuild if cache is more than a day old
+  local -a oldp
+  oldp=( "$1"(mh+1) )
+  (( $#oldp ))
+}
+
+user_gists() {
+  local update_policy ret=1
+  zstyle -s ":completion:${curcontext}:" cache-policy update_policy
+  if [[ -z "$update_policy" ]]; then
+    zstyle ":completion:${curcontext}:" cache-policy _user_gists_cache_policy
+  fi
+
+  # stores the gists of the logged in user in the format ID[Description]
+  _list=()
+  _cached_gists="user_gists"
+
+  # retrieve/Write gists from/to cache
+  if _cache_invalid $_cached_gists  || ! _retrieve_cache $_cached_gists; then
+    _gists=$(gist -l)
+
+    if [ $? -eq 0 ]; then
+      _store_cache $_cached_gists _gists
+    else
+      # some error occurred, the user is probably not logged in
+      # set _gists to an empty string so that no completion is attempted
+      _gists=""
+    fi
+  else
+    _retrieve_cache $_cached_gists
+  fi
+
+  if [ -n "$_gists" ]; then
+    echo "$_gists" | while read -r line; do
+      # Splitting the gist -l output
+      url="$(echo "$line" | cut -d " " -f 1 | cut -d "/" -f 4)"
+      # gists w/o descriptions can have only one column in the output, those 
+      # have their description set to an empty string
+      description="$(echo "$line" | awk '{if(NF > 1){$1=""; print $0}}')"
+
+      _list+=( "${url}[${description}]" )
+    done
+
+    _values "gists" $_list
+    ret=0
+  fi
+
+  return ret
+}
 
 return ret
