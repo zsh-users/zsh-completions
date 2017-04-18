@@ -1,0 +1,55 @@
+#compdef mr
+
+# completion for myrepos : http://myrepos.branchable.com/
+
+local state 
+typeset -A opt_args
+
+_arguments -s -w \
+    "1:Command:((bootstrap\:'Download a .mrconfig file from a URL and use it to checkout repositories into the specified directory.' \
+    checkout\:'Check out any repositories that are not already checked out.' \
+    ci\:'Commit changes to each repository.' \
+    co\:'Check out any repositories that are not already checked out.' \
+    commit\:'Commit changes to each repository.' \
+    config\:'Add, modify, remove, or print a value from a mrconfig file.' \
+    diff\:'Show a diff of uncommitted changes.' \
+    help\:'Display this help.' \
+    list\:'List the repositories that mr will act on.' \
+    log\:'Show the commit log.' \
+    ls\:'List the repositories that mr will act on.' \
+    offline\:'Advise mr that it is in offline mode.' \
+    online\:'Advise mr that it is in online mode again.' \
+    push\:'Push committed local changes to the remote repository.' \
+    record\:'Record changes to the local repository, but do not push them to the remote repository.' \
+    register\:'Register an existing repository in a mrconfig file.' \
+    remember\:'Remember a command, to be run later when mr re-enters online mode.' \
+    run\:'Run a specified command in each repository.' \
+    update\:'Update each repository from its configured remote repository.'))" \
+    '-d[Specify the topmost directory that mr should work in.]:directory:_dirs' \
+    '--directory[Specify the topmost directory that mr should work in.]:directory:_dirs' \
+    '-c[Use the specified mrconfig file.]:file:_files' \
+    '--config[Use the specified mrconfig file.]:file:_files' \
+    '-f[Force mr to act on repositories that would normally be skipped due to their configuration.]' \
+    '--force[Force mr to act on repositories that would normally be skipped due to their configuration.]' \
+    '-v[Be verbose.]' \
+    '--verbose[Be verbose.]' \
+    '-q[Be quiet (suppresses usual output)]' \
+    '--quiet[Be quiet (suppresses usual output)]' \
+    '-k[Accept untrusted SSL certificates when bootstrapping.]' \
+    '--insecure[Accept untrusted SSL certificates when bootstrapping.]' \
+    '-s[Expand the statistics line to include info about failed & skipped repositories.]' \
+    '--stats[Expand the statistics line to include info about failed & skipped repositories.]' \
+    '-i[Interactive mode.]' \
+    '--interactive[Interactive mode.]' \
+    '-n[Specify recursion depth (none if no number is specified)]::number:_guard "[0-9]#" "recursion depth (blank for no recursion)"' \
+    '--no-recurse[Specify recursion depth (none if no number is specified)]::number:_guard "[0-9]#" "recursion depth (blank for no recursion)"' \
+    '-j[Run the specified number of jobs in parallel (unlimited if no number is specified)]::number:_guard "[0-9]#" "number of parallel jobs (blank for unlimited)"' \
+    '--jobs[Run the specified number of jobs in parallel (unlimited if no number is specified)]::number:_guard "[0-9]#" "number of parallel jobs (blank for unlimited)"' \
+    '-t[Trust all mrconfig files (use with caution).]' \
+    '--trust-all[Trust all mrconfig files (use with caution).]'
+
+# Local Variables: 
+# mode:shell-script
+# End:             
+
+

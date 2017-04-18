@@ -1,0 +1,20 @@
+#compdef autorandr
+
+local -a profiles
+
+profiles=$(ls ~/.autorandr)
+
+# Example of call to _arguments function with one option and one argument
+_arguments : {-h,--help}'[show help]' \
+             {-c,--change}'[reload current setup]' \
+             '--fingerprint[fingerprint your current hardware setup]' \
+             '--force[force (re)loading of a profile]' \
+             '--config[dump your current xrandr setup]' \
+             {-s,--save}'[save your current setup to profile]:profile:{compadd -X "Profile" ${(f)profiles}}' \
+             {-l,--load}'[load profile]:profile:{compadd -X "Profile" ${(f)profiles}}' \
+             {-d,--default}'[set the default profile]:profile:{compadd -X "Profile" ${(f)profiles}}'
+
+
+# Local Variables: 
+# mode:shell-script
+# End:             
