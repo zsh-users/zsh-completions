@@ -1,0 +1,467 @@
+#compdef t
+# ------------------------------------------------------------------------------
+# Copyright (c) 2011-2013 Erik Michaels-Ober
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+# LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+# OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+# WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+# Completion script for t (http://sferik.github.com/t/).
+#
+# Source: https://github.com/sferik/t/blob/master/etc/t-completion.zsh
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+# * Erik Michaels-Ober (https://github.com/sferik)
+# * Wynn Netherland (https://github.com/pengwynn)
+#
+# ------------------------------------------------------------------------------
+
+_t (){
+  local -a t_general_options
+
+  t_general_options=("(-H --host)"{-H,--host=}"[Twitter API server]:URL:_urls"
+    "(-N --no-color)"{-N,--no-color}"[Disable colorization in output]"
+    "(-U --no-ssl)"{-U,--no-ssl}"[Disable SSL]"
+    "(-P --profile)"{-P,--profile=}"[Path to RC file]:file:_files"
+    $nul_arg
+  )
+
+
+  if (( CURRENT > 2 )); then
+    (( CURRENT-- ))
+    shift words
+    _call_function 1 _t_${words[1]}
+  else
+    _values "t command" \
+      "accounts[List accounts]" \
+      "authorize[Allows an application to request user authorization]" \
+      "block[Block users.]" \
+      "direct_messages[Returns the 20 most recent Direct Messages sent to you.]" \
+      "direct_messages_sent[Returns the 20 most recent Direct Messages you\'ve sent.]" \
+      "groupies[Returns the list of people who follow you but you don\'t follow back.]" \
+      "dm[Sends that person a Direct Message.]" \
+      "does_contain[Find out whether a list contains a user.]" \
+      "does_follow[Find out whether one user follows another.]" \
+      "favorite[Marks Tweets as favorites.]" \
+      "favorites[Returns the 20 most recent Tweets you favorited.]" \
+      "follow[Allows you to start following users.]" \
+      "followings[Returns a list of the people you follow on Twitter.]" \
+      "followers[Returns a list of the people who follow you on Twitter.]" \
+      "friends[Returns the list of people who you follow and follow you back.]" \
+      "leaders[Returns the list of people who you follow but don\'t follow you back.]" \
+      "lists[Returns the lists created by a user.]" \
+      "matrix[Unfortunately, no one can be told what the Matrix is. You have to see it for yourself.]" \
+      "mentions[Returns the 20 most recent Tweets mentioning you.]" \
+      "open[Opens that user\'s profile in a web browser.]" \
+      "reply[Post your Tweet as a reply directed at another person.]" \
+      "report_spam[Report users for spam.]" \
+      "retweet[Sends Tweets to your followers.]" \
+      "retweets[Returns the 20 most recent Retweets by a user.]" \
+      "ruler[Prints a 140-character ruler]" \
+      "status[Retrieves detailed information about a Tweet.]" \
+      "timeline[Returns the 20 most recent Tweets posted by a user.]" \
+      "trends[Returns the top 10 trending topics.]" \
+      "trend_locations[Returns the locations for which Twitter has trending topic information.]" \
+      "unfollow[Allows you to stop following users.]" \
+      "update[Post a Tweet.]" \
+      "users[Returns a list of users you specify.]" \
+      "version[Show version.]" \
+      "whois[Retrieves profile information for the user.]" \
+      "delete[Delete Tweets, Direct Messages, etc.]" \
+      "list[Do various things with lists.]" \
+      "search[Search through Tweets.]" \
+      "set[Change various account settings.]" \
+      "stream[Commands for streaming Tweets.]" \
+
+  fi
+}
+
+_t_accounts() {
+  _arguments \
+    $t_general_options && ret=0
+}
+
+_t_authorize() {
+  _arguments \
+    "(-d --display-url)"{-d,--display-url}"[Display the authorization URL instead of attempting to open it.]" \
+    $t_general_options && ret=0
+}
+
+_t_block() {
+  _arguments \
+    "(-i --id)"{-i,--id}"[Specify input as Twitter user IDs instead of screen names.]" \
+    $t_general_options && ret=0
+}
+
+_t_direct_messages() {
+  _arguments \
+    "(-c --csv)"{-c,--csv}"[Output in CSV format.]" \
+    "(-l --long)"{-l,--long}"[Output in long format.]" \
+    "(-n --number)"{-n,--number}"[Limit the number of results.]" \
+    "(-r --reverse)"{-r,--reverse}"[Reverse the order of the sort.]" \
+    $t_general_options && ret=0
+}
+
+_t_direct_messages_sent() {
+  _arguments \
+    "(-c --csv)"{-c,--csv}"[Output in CSV format.]" \
+    "(-l --long)"{-l,--long}"[Output in long format.]" \
+    "(-n --number)"{-n,--number}"[Limit the number of results.]" \
+    "(-r --reverse)"{-r,--reverse}"[Reverse the order of the sort.]" \
+    $t_general_options && ret=0
+}
+
+_t_groupies() {
+  _arguments \
+    "(-c --csv)"{-c,--csv}"[Output in CSV format.]" \
+    "(-i --id)"{-i,--id}"[Specify user via ID instead of screen name.]" \
+    "(-l --long)"{-l,--long}"[Output in long format.]" \
+    "(-r --reverse)"{-r,--reverse}"[Reverse the order of the sort.]" \
+    "(-s --sort)"{-s,--sort}"[Specify the order of the results.]" \
+    "(-u --unsorted)"{-u,--unsorted}"[Output is not sorted.]" \
+    $t_general_options && ret=0
+}
+
+_t_dm() {
+  _arguments \
+    "(-i --id)"{-i,--id}"[Specify user via ID instead of screen name.]" \
+    $t_general_options && ret=0
+}
+
+_t_does_contain() {
+  _arguments \
+    "(-i --id)"{-i,--id}"[Specify user via ID instead of screen name.]" \
+    $t_general_options && ret=0
+}
+
+_t_does_follow() {
+  _arguments \
+    "(-i --id)"{-i,--id}"[Specify user via ID instead of screen name.]" \
+    $t_general_options && ret=0
+}
+
+_t_favorite() {
+  _arguments \
+    $t_general_options && ret=0
+}
+
+_t_favorites() {
+  _arguments \
+    "(-c --csv)"{-c,--csv}"[Output in CSV format.]" \
+    "(-i --id)"{-i,--id}"[Specify user via ID instead of screen name.]" \
+    "(-l --long)"{-l,--long}"[Output in long format.]" \
+    "(-n --number)"{-n,--number}"[Limit the number of results.]" \
+    "(-r --reverse)"{-r,--reverse}"[Reverse the order of the sort.]" \
+    $t_general_options && ret=0
+}
+
+_t_follow() {
+  _arguments \
+    "(-i --id)"{-i,--id}"[Specify input as Twitter user IDs instead of screen names.]" \
+    $t_general_options && ret=0
+}
+
+_t_followings() {
+  _arguments \
+    "(-c --csv)"{-c,--csv}"[Output in CSV format.]" \
+    "(-i --id)"{-i,--id}"[Specify user via ID instead of screen name.]" \
+    "(-l --long)"{-l,--long}"[Output in long format.]" \
+    "(-r --reverse)"{-r,--reverse}"[Reverse the order of the sort.]" \
+    "(-s --sort)"{-s,--sort}"[Specify the order of the results.]" \
+    "(-u --unsorted)"{-u,--unsorted}"[Output is not sorted.]" \
+    $t_general_options && ret=0
+}
+
+_t_followers() {
+  _arguments \
+    "(-c --csv)"{-c,--csv}"[Output in CSV format.]" \
+    "(-i --id)"{-i,--id}"[Specify user via ID instead of screen name.]" \
+    "(-l --long)"{-l,--long}"[Output in long format.]" \
+    "(-r --reverse)"{-r,--reverse}"[Reverse the order of the sort.]" \
+    "(-s --sort)"{-s,--sort}"[Specify the order of the results.]" \
+    "(-u --unsorted)"{-u,--unsorted}"[Output is not sorted.]" \
+    $t_general_options && ret=0
+}
+
+_t_friends() {
+  _arguments \
+    "(-c --csv)"{-c,--csv}"[Output in CSV format.]" \
+    "(-i --id)"{-i,--id}"[Specify user via ID instead of screen name.]" \
+    "(-l --long)"{-l,--long}"[Output in long format.]" \
+    "(-r --reverse)"{-r,--reverse}"[Reverse the order of the sort.]" \
+    "(-s --sort)"{-s,--sort}"[Specify the order of the results.]" \
+    "(-u --unsorted)"{-u,--unsorted}"[Output is not sorted.]" \
+    $t_general_options && ret=0
+}
+
+_t_leaders() {
+  _arguments \
+    "(-c --csv)"{-c,--csv}"[Output in CSV format.]" \
+    "(-i --id)"{-i,--id}"[Specify user via ID instead of screen name.]" \
+    "(-l --long)"{-l,--long}"[Output in long format.]" \
+    "(-r --reverse)"{-r,--reverse}"[Reverse the order of the sort.]" \
+    "(-s --sort)"{-s,--sort}"[Specify the order of the results.]" \
+    "(-u --unsorted)"{-u,--unsorted}"[Output is not sorted.]" \
+    $t_general_options && ret=0
+}
+
+_t_lists() {
+  _arguments \
+    "(-c --csv)"{-c,--csv}"[Output in CSV format.]" \
+    "(-i --id)"{-i,--id}"[Specify user via ID instead of screen name.]" \
+    "(-l --long)"{-l,--long}"[Output in long format.]" \
+    "(-r --reverse)"{-r,--reverse}"[Reverse the order of the sort.]" \
+    "(-s --sort)"{-s,--sort}"[Specify the order of the results.]" \
+    "(-u --unsorted)"{-u,--unsorted}"[Output is not sorted.]" \
+    $t_general_options && ret=0
+}
+
+_t_matrix() {
+  _arguments \
+    $t_general_options && ret=0
+}
+
+_t_mentions() {
+  _arguments \
+    "(-c --csv)"{-c,--csv}"[Output in CSV format.]" \
+    "(-l --long)"{-l,--long}"[Output in long format.]" \
+    "(-n --number)"{-n,--number}"[Limit the number of results.]" \
+    "(-r --reverse)"{-r,--reverse}"[Reverse the order of the sort.]" \
+    $t_general_options && ret=0
+}
+
+_t_open() {
+  _arguments \
+    "(-d --display-url)"{-d,--display-url}"[Display the requested URL instead of attempting to open it.]" \
+    "(-i --id)"{-i,--id}"[Specify user via ID instead of screen name.]" \
+    "(-s --status)"{-s,--status}"[Specify input as a Twitter status ID instead of a screen name.]" \
+    $t_general_options && ret=0
+}
+
+_t_reply() {
+  _arguments \
+    "(-a --all)"{-a,--all}"[Reply to all users mentioned in the Tweet.]" \
+    "(-l --location)"{-l,--location}"[]" \
+    $t_general_options && ret=0
+}
+
+_t_report_spam() {
+  _arguments \
+    "(-i --id)"{-i,--id}"[Specify input as Twitter user IDs instead of screen names.]" \
+    $t_general_options && ret=0
+}
+
+_t_retweet() {
+  _arguments \
+    $t_general_options && ret=0
+}
+
+_t_retweets() {
+  _arguments \
+    "(-c --csv)"{-c,--csv}"[Output in CSV format.]" \
+    "(-i --id)"{-i,--id}"[Specify user via ID instead of screen name.]" \
+    "(-l --long)"{-l,--long}"[Output in long format.]" \
+    "(-n --number)"{-n,--number}"[Limit the number of results.]" \
+    "(-r --reverse)"{-r,--reverse}"[Reverse the order of the sort.]" \
+    $t_general_options && ret=0
+}
+
+_t_ruler() {
+  _arguments \
+    "(-i --indent)"{-i,--indent}"[The number of space to print before the ruler.]" \
+    $t_general_options && ret=0
+}
+
+_t_status() {
+  _arguments \
+    "(-c --csv)"{-c,--csv}"[Output in CSV format.]" \
+    "(-l --long)"{-l,--long}"[Output in long format.]" \
+    $t_general_options && ret=0
+}
+
+_t_timeline() {
+  _arguments \
+    "(-c --csv)"{-c,--csv}"[Output in CSV format.]" \
+    "(-e --exclude)"{-e,--exclude}"[Exclude certain types of Tweets from the results.]" \
+    "(-i --id)"{-i,--id}"[Specify user via ID instead of screen name.]" \
+    "(-l --long)"{-l,--long}"[Output in long format.]" \
+    "(-n --number)"{-n,--number}"[Limit the number of results.]" \
+    "(-r --reverse)"{-r,--reverse}"[Reverse the order of the sort.]" \
+    "(-s --since_id)"{-s,--since_id}"[Returns only the results with an ID greater than the specified ID.]" \
+    $t_general_options && ret=0
+}
+
+_t_trends() {
+  _arguments \
+    "(-x --exclude-hashtags)"{-x,--exclude-hashtags}"[Remove all hashtags from the trends list.]" \
+    $t_general_options && ret=0
+}
+
+_t_trend_locations() {
+  _arguments \
+    "(-c --csv)"{-c,--csv}"[Output in CSV format.]" \
+    "(-l --long)"{-l,--long}"[Output in long format.]" \
+    "(-r --reverse)"{-r,--reverse}"[Reverse the order of the sort.]" \
+    "(-s --sort)"{-s,--sort}"[Specify the order of the results.]" \
+    "(-u --unsorted)"{-u,--unsorted}"[Output is not sorted.]" \
+    $t_general_options && ret=0
+}
+
+_t_unfollow() {
+  _arguments \
+    "(-i --id)"{-i,--id}"[Specify input as Twitter user IDs instead of screen names.]" \
+    $t_general_options && ret=0
+}
+
+_t_update() {
+  _arguments \
+    "(-l --location)"{-l,--location}"[]" \
+    "(-f --file)"{-f,--file}"[The path to an image to attach to your tweet.]" \
+    $t_general_options && ret=0
+}
+
+_t_users() {
+  _arguments \
+    "(-c --csv)"{-c,--csv}"[Output in CSV format.]" \
+    "(-i --id)"{-i,--id}"[Specify input as Twitter user IDs instead of screen names.]" \
+    "(-l --long)"{-l,--long}"[Output in long format.]" \
+    "(-r --reverse)"{-r,--reverse}"[Reverse the order of the sort.]" \
+    "(-s --sort)"{-s,--sort}"[Specify the order of the results.]" \
+    "(-u --unsorted)"{-u,--unsorted}"[Output is not sorted.]" \
+    $t_general_options && ret=0
+}
+
+_t_version() {
+  _arguments \
+    $t_general_options && ret=0
+}
+
+_t_whois() {
+  _arguments \
+    "(-c --csv)"{-c,--csv}"[Output in CSV format.]" \
+    "(-i --id)"{-i,--id}"[Specify user via ID instead of screen name.]" \
+    "(-l --long)"{-l,--long}"[Output in long format.]" \
+    $t_general_options && ret=0
+}
+
+
+__t_delete_arguments() {
+  _args=(block
+    dm
+    favorite
+    list
+    status
+    help
+  )
+  compadd "$@" -k _args
+}
+
+__t_list_arguments() {
+  _args=(add
+    create
+    information
+    members
+    remove
+    timeline
+    help
+  )
+  compadd "$@" -k _args
+}
+
+__t_search_arguments() {
+  _args=(all
+    favorites
+    list
+    mentions
+    retweets
+    timeline
+    users
+    help
+  )
+  compadd "$@" -k _args
+}
+
+__t_set_arguments() {
+  _args=(active
+    bio
+    language
+    location
+    name
+    profile_background_image
+    profile_image
+    url
+    help
+  )
+  compadd "$@" -k _args
+}
+
+__t_stream_arguments() {
+  _args=(all
+    matrix
+    search
+    timeline
+    users
+    help
+  )
+  compadd "$@" -k _args
+}
+
+
+_t_delete() {
+  _arguments \
+    ":argument:__t_delete_arguments" \
+    $t_general_options && ret=0
+}
+
+_t_list() {
+  _arguments \
+    ":argument:__t_list_arguments" \
+    $t_general_options && ret=0
+}
+
+_t_search() {
+  _arguments \
+    ":argument:__t_search_arguments" \
+    $t_general_options && ret=0
+}
+
+_t_set() {
+  _arguments \
+    ":argument:__t_set_arguments" \
+    $t_general_options && ret=0
+}
+
+_t_stream() {
+  _arguments \
+    ":argument:__t_stream_arguments" \
+    $t_general_options && ret=0
+}
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
