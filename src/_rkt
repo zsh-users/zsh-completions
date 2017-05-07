@@ -68,6 +68,8 @@ _rkt() {
         cat-manifest)
           _arguments \
             '--pretty-print[apply indent to format the output]' \
+            '--uuid-file=[read pod UUID from file instead of argument]:uuid file:_files' \
+            '1:POD:_rkt_pods' \
             ;;
 
         config)
@@ -78,12 +80,15 @@ _rkt() {
         enter)
           _arguments \
             '--app=:appname' \
+            '1:POD:_rkt_pods' \
             ;;
 
         export)
           _arguments \
             '--app=:appname' \
             '--overwrite[overwrite output ACI]' \
+            '1:POD:_rkt_pods' \
+            '2:OUTPUT_ACI_FILE:_files' \
             ;;
 
         fetch)
@@ -138,11 +143,13 @@ _rkt() {
             '--stage1-url=[a URL to an image to use as stage1]:image url' \
             '--store-only[use only available images in the store]' \
             '--volume=[volumes to make available in the pod]:volume' \
+            '1:IMAGE:_rkt_images' \
             ;;
 
         rm)
           _arguments \
             '--uuid-file=[read pod UUID from file instead of argument]:uuid file:_files' \
+            '1:POD:_rkt_pods' \
             ;;
 
         run)
@@ -173,6 +180,7 @@ _rkt() {
             '--store-only[use only available images in the store]' \
             '--uuid-file-save=[write out pod UUID to specified file]:uuid file:_files' \
             '--volume=[volumes to make available in the pod]:volume' \
+            '1:IMAGE:_rkt_images' \
             ;;
 
         run-prepared)
@@ -184,11 +192,13 @@ _rkt() {
             '--interactive[run pod interactively]' \
             '--mds-register[register pod with metadata service]' \
             "--net=[configure the pod's networking]:networks" \
+            '1:POD:_rkt_pods' \
             ;;
 
         status)
           _arguments \
             '--wait[toggle waiting for the pod to exit]' \
+            '1:POD:_rkt_pods' \
             ;;
 
         trust)
@@ -217,6 +227,7 @@ _rkt() {
         cat-manifest)
           _arguments \
             '--pretty-print[apply indent to format the output]' \
+            '1:IMAGE:_rkt_images' \
             ;;
 
         gc)
@@ -233,7 +244,7 @@ _rkt() {
 
         rm)
           _arguments \
-            ':image' \
+            '*:IMAGE:_rkt_images' \
             ;;
       esac
       ;;
@@ -274,6 +285,19 @@ _rkt_image_cmds() {
     'rm:Remove image(s) with the given ID(s) or name(s) from the local store'
   )
   _describe 'command' commands
+}
+
+_rkt_images() {
+  local -a images
+  images=($(rkt image list --fields id,name --no-legend | sed 's/\t/\n/;s/:/\\:/g' | sort | uniq))
+  _describe 'IMAGE' images
+}
+
+_rkt_pods() {
+  local -a pods
+  IFS=$'\n'
+  pods=($(rkt list --full --no-legend | sed 's/:/\\:/g;s/\t/:/;s/\t/    /g'))
+  _describe 'POD' pods
 }
 
 _rkt "$@"
