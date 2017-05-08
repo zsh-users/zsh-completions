@@ -1,0 +1,16 @@
+#compdef tmuxp
+
+if (( CURRENT == 2 )); then
+    _alternative 'act:actions:((\
+                convert\:"Convert a tmuxp config between JSON and YAML."\ \
+                freeze\:"Snapshot a session into a config." \
+                import\:"Import a teamocil/tmuxinator config." \
+                load\:"Load tmuxp workspaces." \))'
+    return
+else
+    case "$words[2]" in
+        (load)
+            _alternative 'user:user sessions:_files -W ~/.tmuxp -g \*.\(yaml\|json\)\(:r\)'
+        ;;
+    esac
+fi
