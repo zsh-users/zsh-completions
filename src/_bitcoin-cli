@@ -1,0 +1,136 @@
+#compdef bitcoin-cli
+# ------------------------------------------------------------------------------
+# Copyright (c) 2017 Github zsh-users - http://github.com/zsh-users
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of the zsh-users nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL ZSH-USERS BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for bitcoin-cli (https://bitcoin.org).
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Ian Ker-Seymer (https://github.com/ianks)
+#
+# ------------------------------------------------------------------------------
+
+_bitcoin-cli() {
+  local context state line curcontext="$curcontext"
+
+  _arguments -C \
+    -?'[This help message]' \
+    -conf='[Specify configuration file (default: bitcoin.conf)]:PATH:_files' \
+    -datadir='[Specify data directory]:PATH:_directories' \
+    -testnet'[Use the test chain]' \
+    -regtest'[Enter  regression test mode, which uses a special chain in which blocks can be solved instantly. This is intended for regression testing tools and app development.]' \
+    -named'[Pass named instead of positional arguments (default: false)]' \
+    -stdin'[Read  extra arguments from standard input, one per line until EOF/Ctrl-D (recommended for sensitive information such as passphrases)]' \
+    -rpcport='[Connect to JSON-RPC on <port> (default: 8332 or testnet: 18332)]: :_guard "[[\:digit\:]]#" "PORT"' \
+    -rpcwait'[Wait for RPC server to start]' \
+    -rpcuser='[Username for JSON-RPC connections]:RPCUSER:()' \
+    -rpcpassword='[Password for JSON-RPC connections]:RPCPASSWORD:()' \
+    -rpcconnect='[Send commands to node running on <ip> (default: 127.0.0.1)]:RPCCONNECT:_hosts' \
+    -rpcclienttimeout='[Timeout during HTTP requests (default: 900)]: :_guard "[[\:digit\:]]#" "RPCCLIENTTIMEOUT"' \
+    ':subcommand:->subcommand' && ret=0
+
+  case $state in
+    subcommand)
+    subcommands=(
+      'getbestblockhash'
+      'getblock'
+      'getblockchaininfo'
+      'getblockcount'
+      'getblockhash'
+      'getblockheader'
+      'getchaintips'
+      'getdifficulty'
+      'getmempoolancestors'
+      'getmempooldescendants'
+      'getmempoolentry'
+      'getmempoolinfo'
+      'getrawmempool'
+      'gettxout'
+      'gettxoutproof'
+      'gettxoutsetinfo'
+      'preciousblock'
+      'pruneblockchain'
+      'verifychain'
+      'verifytxoutproof'
+      'getinfo'
+      'getmemoryinfo'
+      'help'
+      'stop'
+      'generate'
+      'generatetoaddress'
+      'getblocktemplate'
+      'getmininginfo'
+      'getnetworkhashps'
+      'prioritisetransaction'
+      'submitblock'
+      'addnode'
+      'clearbanned'
+      'disconnectnode'
+      'getaddednodeinfo'
+      'getconnectioncount'
+      'getnettotals'
+      'getnetworkinfo'
+      'getpeerinfo'
+      'listbanned'
+      'ping'
+      'setban'
+      'setnetworkactive'
+      'createrawtransaction'
+      'decoderawtransaction'
+      'decodescript'
+      'getrawtransaction'
+      'sendrawtransaction'
+      'signrawtransaction'
+      'createmultisig'
+      'estimatefee'
+      'estimatepriority'
+      'estimatesmartfee'
+      'estimatesmartpriority'
+      'signmessagewithprivkey'
+      'validateaddress'
+      'verifymessage'
+    )
+
+    _describe -t subcommands 'bitcoin-cli subcommands' subcommands && ret=0
+  esac
+
+  return ret
+}
+
+_bitcoin-cli "$@"
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
