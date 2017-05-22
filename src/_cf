@@ -140,6 +140,15 @@ __cf_plugins() {
         _describe 'PLUGIN' cont_cmd
 }
 
+# Output a selectable list of targets (requires cf-targets plugin)
+__cf_targets() {
+    declare -a cont_cmd
+    cont_cmd=($(cf targets | awk '{print $1}'))
+    if [[  'X$cont_cmd' != 'X' ]]
+        _describe 'TARGET' cont_cmd
+}
+
+
 # --------------------------
 # ----- end Helper functions
 # --------------------------
@@ -153,8 +162,8 @@ __login() {
     '-a=[API endpoint (e.g. https://api.example.com)]:api endpoint:' \
     '-u=[Username]:username:' \
     '-p=[Password]:password:' \
-    '-o=[Organization]:organization name:' \
-    '-s=[Space]:space name:' \
+    '-o=[Organization]:organization name:__cf_orgs' \
+    '-s=[Space]:space name:__cf_spaces' \
     '--sso[Use a one-time password to login]' \
     '--skip-ssl-validation[Skip SSL validation]'
 }
@@ -197,8 +206,8 @@ __app() {
 
 __push() {
   _arguments \
-    '1:application name:' \
-    '-b=[Custom buildpack by name (e.g. my-buildpack) or GIT URL or GIT BRANCH URL]' \
+    '1:application name:__cf_apps' \
+    '-b=[Custom buildpack by name (e.g. my-buildpack) or GIT URL or GIT BRANCH URL]:buildpack name:__cf_buildpacks' \
     '-c=[Startup command, set to null to reset to default start command]:startup command:' \
     '-d=[Domain (e.g. example.com)]:domain (e.g. example.com):__cf_domains' \
     '-f=[Path to manifest]:file:_files:' \
@@ -669,6 +678,23 @@ __uninstall-plugin() {
     '1:plugin name:__cf_plugins'
 }
 
+__save-target() {
+  _arguments \
+    '1:target-name:' \
+    '-f[Force save even if current target is already saved under another name]'
+}
+
+__set-target() {
+  _arguments \
+    '1:target-name:__cf_targets' \
+    '-f[Force target change even if current target is unsaved]'
+}
+
+__delete-target() {
+  _arguments \
+    '1:target-name:__cf_targets'
+}
+
 # ------------------
 # ----- end Commands
 # ------------------
@@ -766,6 +792,10 @@ _1st_arguments=(
   "plugins":"list all available plugin commands"
   "install-plugin":"Install the plugin defined in command argument"
   "uninstall-plugin":"Uninstall the plugin defined in command argument"
+  "targets":"List all saved targets (requires cf-targets plugin)"
+  "save-target":"Save the current target under a given name (requires cf-targets plugin)"
+  "set-target":"Restore a previously saved target (requires cf-targets plugin)"
+  "delete-target":"Delete a saved target (requires cf-targets plugin)" 
 )
 
 # -----------------------
@@ -955,4 +985,10 @@ case "$words[1]" in
     __install-plugin ;;
   uninstall-plugin)
     __uninstall-plugin ;;
+  save-target)
+    __save-target ;;
+  set-target)
+    __set-target ;;
+  delete-target)
+    __delete-target ;;
 esac
