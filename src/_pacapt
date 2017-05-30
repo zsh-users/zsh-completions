@@ -1,0 +1,68 @@
+#compdef pacapt
+
+local zsh_pacapt_path="$(cd "$(dirname "$0")" && pwd)"
+
+_pacapt_action() {
+	_arguments -s : \
+		"$_pacapt_opts_commands[@]"
+}
+
+# ----- APT
+if which apt > /dev/null; then
+	zsh_pacapt_init=true
+
+	_pacapt_available_packages() {
+		_values 'Available packages' $(pacapt -Ss "." | awk '{print $1}') 
+	}
+	
+	_pacapt_installed_packages() {
+		_values 'Installed packages' $(pacapt -Q | awk '{print $2}') 
+	}
+	
+# ----- YUM
+elif which yum > /dev/null; then
+	zsh_pacapt_init=true
+	
+	_pacapt_yum_list() {
+		_values "$1 packages" $(yum list $1 | grep '\.' | grep -i '^[^ ]' | awk '{print $1}')
+	}
+	
+	_pacapt_available_packages() {
+		_pacapt_yum_list available
+	}
+	
+	_pacapt_installed_packages() {
+		_pacapt_yum_list installed
+	}
+# ----- BREW
+elif which brew > /dev/null; then
+	zsh_pacapt_init=true
+	
+	_pacapt_available_packages() {
+		_values 'Installed packages' $(brew search)
+	}
+	
+	_pacapt_installed_packages() {
+		_values 'Installed packages' $(brew list)
+	}
+fi
+
+_pacapt_zsh_comp() {
+	case $words[2] in
+		-Qi) _pacapt_available_packages	;;
+		-Qo) _files	;;
+		-Qp) _files	;;
+		-S) _pacapt_available_packages ;;
+		-R) _pacapt_installed_packages ;;
+		
+		-  )  _gnu_generic ;;
+		*  )  return 1 ;;
+	esac
+}
+
+if "$zsh_pacapt_init" = true; then
+	compdef _pacapt_zsh_comp pacapt
+else
+	compdef _gnu_generic pacapt
+fi
+
