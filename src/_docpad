@@ -55,13 +55,13 @@ _1st_arguments=(
 )
 
 _arguments -C \
-  '(-h,--help)'{-h,--help}'[output usage information]'\
-  '(-V,--version)'{-V,--version}'[output the version number]'\
-  '(-o,--out)'{-o,--out}'[where to output the rendered directory or files]:path:_files'\
-  '(-c,--config)'{-c,--config}'[a custom configuration file to load in]:path:_files'\
-  '(-e,--env)'{-e,--env}'[the environment name to use for this instance, multiple names can be separated with a comma]'\
-  '(-d,--debug)'{-d,--debug}'+[the level of debug messages you would like to display, if specified defaults to 7, otherwise 6]:number'\
-  '(-f,--force)'{-f,--force}'[force a re-install of all modules]'\
+  '(-h --help)'{-h,--help}'[output usage information]'\
+  '(-V --version)'{-V,--version}'[output the version number]'\
+  '(-o --out)'{-o,--out}'[where to output the rendered directory or files]:path:_files'\
+  '(-c --config)'{-c,--config}'[a custom configuration file to load in]:path:_files'\
+  '(-e --env)'{-e,--env}'[the environment name to use for this instance, multiple names can be separated with a comma]'\
+  '(-d --debug)'{-d,--debug}'+[the level of debug messages you would like to display, if specified defaults to 7, otherwise 6]:number'\
+  '(-f --force)'{-f,--force}'[force a re-install of all modules]'\
   '1: :->cmds'\
   '*: :_files'&& ret=0
 

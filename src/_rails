@@ -401,8 +401,8 @@ _rails_generate_scaffold_controller() {
 
   _arguments \
     $model_generators_options \
-    '(-e,--template-engine)'{-e,--template-engine=}'[Template engine to be invoked]:template engine' \
-    '(-t,--test-framework)'{-t,--test-framework=}'[Test framework to be invoked]:test framework' \
+    '(-e --template-engine)'{-e,--template-engine=}'[Template engine to be invoked]:template engine' \
+    '(-t --test-framework)'{-t,--test-framework=}'[Test framework to be invoked]:test framework' \
       --helper'[Indicates when to generate helper]: :__rails_boolean' \
     ': :_guard "^-*" "name"'
 }
@@ -471,16 +471,16 @@ _rails_new() {
   _arguments -C \
     $rails_options \
     $runtime_options \
-    '(-r,--ruby)'{-r,--ruby=}'[Path to the Ruby binary of your choice]:path' \
-    '(-b,--builder)'{-b,--builder=}'[Path to a application builder (can be a filesystem path or URL)]: :->path_or_url' \
-    '(-m,--template)'{-m,--template=}'[Path to an application template (can be a filesystem path or URL)]: :->path_or_url' \
+    '(-r --ruby)'{-r,--ruby=}'[Path to the Ruby binary of your choice]:path' \
+    '(-b --builder)'{-b,--builder=}'[Path to a application builder (can be a filesystem path or URL)]: :->path_or_url' \
+    '(-m --template)'{-m,--template=}'[Path to an application template (can be a filesystem path or URL)]: :->path_or_url' \
     --skip-gemfile"[Don't create a Gemfile]" \
     --skip-bundle"[Don't run bundle install]" \
-    '(-G,--skip-git)'{-G,--skip-git}'[Skip Git ignores and keeps]' \
-    '(-O,--skip-active-record)'{-O,--skip-active-record}'[Skip Active Record files]' \
-    '(-S,--skip-sprockets)'{-S,--skip-sprockets}'[Skip Sprockets files]' \
-    '(-d,--database)'{-d,--database=}'[Preconfigure for selected database]:database:(mysql oracle postgresql sqlite3 frontbase ibm_db sqlserver jdbcmysql jdbcsqlite3 jdbcpostgresql jdbc)' \
-    '(-j,--javascript)'{-j,--javascript=}'[Preconfigure for selected JavaScript library]:javascript' \
+    '(-G --skip-git)'{-G,--skip-git}'[Skip Git ignores and keeps]' \
+    '(-O --skip-active-record)'{-O,--skip-active-record}'[Skip Active Record files]' \
+    '(-S --skip-sprockets)'{-S,--skip-sprockets}'[Skip Sprockets files]' \
+    '(-d --database)'{-d,--database=}'[Preconfigure for selected database]:database:(mysql oracle postgresql sqlite3 frontbase ibm_db sqlserver jdbcmysql jdbcsqlite3 jdbcpostgresql jdbc)' \
+    '(-j --javascript)'{-j,--javascript=}'[Preconfigure for selected JavaScript library]:javascript' \
     '(-J --skip-javascript)'{-J,--skip-javascript}'[Skip JavaScript files]' \
     --dev'[Setup the application with Gemfile pointing to your Rails checkout]' \
     --edge'[Setup the application with Gemfile pointing to Rails repository]' \
