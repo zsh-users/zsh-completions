@@ -1,4 +1,4 @@
-#compdef bitcoin-cli
+#compdef zcash-cli
 # ------------------------------------------------------------------------------
 # Copyright (c) 2017 Github zsh-users - http://github.com/zsh-users
 # All rights reserved.
@@ -28,33 +28,31 @@
 # Description
 # -----------
 #
-#  Completion script for bitcoin-cli (https://bitcoin.org).
+#  Completion script for zcash-cli (https://z.cash).
 #
 # ------------------------------------------------------------------------------
 # Authors
 # -------
 #
-#  * Ian Ker-Seymer (https://github.com/ianks)
+#  * Jordy van Wolferen (https://github.com/jvwdev)
 #
 # ------------------------------------------------------------------------------
 
-_bitcoin-cli() {
+_zcash-cli() {
   local context state line curcontext="$curcontext"
 
   _arguments -C \
     -?'[This help message]' \
-    -conf='[Specify configuration file (default: bitcoin.conf)]:PATH:_files' \
+    -conf='[Specify configuration file (default: zcash.conf)]:PATH:_files' \
     -datadir='[Specify data directory]:PATH:_directories' \
-    -testnet'[Use the test chain]' \
-    -regtest'[Enter  regression test mode, which uses a special chain in which blocks can be solved instantly. This is intended for regression testing tools and app development.]' \
-    -named'[Pass named instead of positional arguments (default: false)]' \
-    -stdin'[Read  extra arguments from standard input, one per line until EOF/Ctrl-D (recommended for sensitive information such as passphrases)]' \
-    -rpcport='[Connect to JSON-RPC on <port> (default: 8332 or testnet: 18332)]: :_guard "[[\:digit\:]]#" "PORT"' \
+    -testnet'[Use the test network]' \
+    -regtest'[Enter regression test mode, which uses a special chain in which blocks can be solved instantly. This is intended for regression testing tools and app development.]' \
+    -rpcconnect='[Send commands to node running on <ip> (default: 127.0.0.1)]:RPCCONNECT:_hosts' \
+    -rpcport='[Connect to JSON-RPC on <port> (default: 8232 or testnet: 18232)]: :_guard "[[\:digit\:]]#" "PORT"' \
     -rpcwait'[Wait for RPC server to start]' \
     -rpcuser='[Username for JSON-RPC connections]:RPCUSER:()' \
     -rpcpassword='[Password for JSON-RPC connections]:RPCPASSWORD:()' \
-    -rpcconnect='[Send commands to node running on <ip> (default: 127.0.0.1)]:RPCCONNECT:_hosts' \
-    -rpcclienttimeout='[Timeout during HTTP requests (default: 900)]: :_guard "[[\:digit\:]]#" "RPCCLIENTTIMEOUT"' \
+    -rpcclienttimeout='[Timeout in seconds during HTTP requests, or 0 for no timeout. (default: 900)]: :_guard "[[\:digit\:]]#" "RPCCLIENTTIMEOUT"' \
     ':subcommand:->subcommand' && ret=0
 
   case $state in
@@ -68,27 +66,25 @@ _bitcoin-cli() {
       'getblockheader'
       'getchaintips'
       'getdifficulty'
-      'getmempoolancestors'
-      'getmempooldescendants'
-      'getmempoolentry'
       'getmempoolinfo'
       'getrawmempool'
       'gettxout'
       'gettxoutproof'
       'gettxoutsetinfo'
-      'preciousblock'
-      'pruneblockchain'
       'verifychain'
       'verifytxoutproof'
       'getinfo'
-      'getmemoryinfo'
       'help'
       'stop'
       'generate'
-      'generatetoaddress'
+      'getgenerate'
+      'setgenerate'
+      'getblocksubsidy'
       'getblocktemplate'
+      'getlocalsolps'
       'getmininginfo'
       'getnetworkhashps'
+      'getnetworksolps'
       'prioritisetransaction'
       'submitblock'
       'addnode'
@@ -102,7 +98,6 @@ _bitcoin-cli() {
       'listbanned'
       'ping'
       'setban'
-      'setnetworkactive'
       'createrawtransaction'
       'decoderawtransaction'
       'decodescript'
@@ -113,18 +108,14 @@ _bitcoin-cli() {
       'createmultisig'
       'estimatefee'
       'estimatepriority'
-      'estimatesmartfee'
-      'estimatesmartpriority'
-      'signmessagewithprivkey'
       'validateaddress'
       'verifymessage'
-      'abandontransaction'
+      'z_validateaddress'
       'addmultisigaddress'
-      'addwitnessaddress'
       'backupwallet'
-      'bumpfee'
       'dumpprivkey'
       'dumpwallet'
+      'encryptwallet'
       'getaccount'
       'getaccountaddress'
       'getaddressesbyaccount'
@@ -137,10 +128,7 @@ _bitcoin-cli() {
       'getunconfirmedbalance'
       'getwalletinfo'
       'importaddress'
-      'importmulti'
       'importprivkey'
-      'importprunedfunds'
-      'importpubkey'
       'importwallet'
       'keypoolrefill'
       'listaccounts'
@@ -153,25 +141,39 @@ _bitcoin-cli() {
       'listunspent'
       'lockunspent'
       'move'
-      'removeprunedfunds'
       'sendfrom'
       'sendmany'
       'sendtoaddress'
       'setaccount'
       'settxfee'
       'signmessage'
-      'walletlock'
-      'walletpassphrase'
-      'walletpassphrasechange'
+      'z_exportkey'
+      'z_exportwallet'
+      'z_getbalance'
+      'z_getnewaddress'
+      'z_getoperationresult'
+      'z_getoperationstatus'
+      'z_gettotalbalance'
+      'z_importkey'
+      'z_importwallet'
+      'z_listaddresses'
+      'z_listoperationids'
+      'z_listreceivedbyaddress'
+      'z_sendmany'
+      'zcbenchmark'
+      'zcrawjoinsplit'
+      'zcrawkeygen'
+      'zcrawreceive'
+      'zcsamplejoinsplit'
     )
 
-    _describe -t subcommands 'bitcoin-cli subcommands' subcommands && ret=0
+    _describe -t subcommands 'zcash-cli subcommands' subcommands && ret=0
   esac
 
   return ret
 }
 
-_bitcoin-cli "$@"
+_zcash-cli "$@"
 
 # Local Variables:
 # mode: Shell-Script
