@@ -42,12 +42,8 @@
 # ------------------------------------------------------------------------------
 
 _kak_sessions() {
-  session_ids=""
-  for session_id in $(kak -l); do
-    session_ids="${session_ids} '${session_id}'"
-  done
-
-  eval "_values ${session_ids}"
+  session_ids=($(_call_program session_ids kak -l))
+  _values "${session_ids[@]}"
 }
 
 _kak() {
@@ -56,8 +52,7 @@ _kak() {
         '-l[list existing sessions]:session_id:_kak_sessions' \
         '-clear[clear dead sessions]' \
         '-ro[readonly mode]' \
-        '-help[display a help message and quit]' \
-        '--help[display a help message and quit]' \
+        '(-help --help)'{-help,--help}'[display a help message and quit]' \
         '-d[run as a headless session (requires -s)]' \
         '-q[in filter mode, be quiet about errors applying keys]' \
         '-c[connect to given session]:session_id:_kak_sessions' \
