@@ -46,8 +46,8 @@ typeset -A opt_args
 local curcontext=$curcontext
 
 _arguments -C \
-  "1:command:(($(ibus help|sed -ne 's/^  \(\S\+\) \+\(.*\)/"\1\\:\2"/p')))" \
-  '*: :->args' \
+  ":command:(($(ibus help|sed -ne 's/^  \(\S\+\) \+\(.*\)/"\1\\:\2"/p')))" \
+  '*:: :->args' \
   && return
 
 case $state in
@@ -55,21 +55,19 @@ case $state in
     case $line[1] in
       engine)
         _arguments \
-          "2:engine:(($(ibus list-engine|sed -ne 's/:/\\\\:/g' -e 's/^  \(\S\+\) - \(.*\)$/"\1:\2"/p')))" \
+          ":engine:(($(ibus list-engine|sed -ne 's/:/\\\\:/g' -e 's/^  \(\S\+\) - \(.*\)$/"\1:\2"/p')))" \
           && return
         ;;
       read-cache)
         _arguments \
           '--system[show the content of the system registry cache]' \
           '--file=[custom registry cache to show]:registry cache:_files' \
-          '*: : ' \
           && return
         ;;
       write-cache)
         _arguments \
           '--system[save the system registry cache]' \
           '--file=[custom registry cache to save]:registry cache:_files' \
-          '*: : ' \
           && return
         ;;
       emoji)
@@ -77,7 +75,6 @@ case $state in
           '--font=[emoji font]:emoji font: ' \
           '--lang=[language of emoji annotations]:language:_language_codes ISO-639-1' \
           '--partial-match[match annotations with a partial string]' \
-          '*: : ' \
           && return
         ;;
     esac
