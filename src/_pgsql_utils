@@ -231,6 +231,7 @@ _pg_dump () {
         {-D,--{attribute,column}-inserts}'[use INSERT (cols) not COPY]' \
         {-f+,--file=}':output file:_files' \
         {-F+,--format=}':output format:_values "format" "p[plain text]" "t[tar]" "c[custom]"' \
+        {-j,--jobs=}'[use this many parallel jobs to dump]' \
         {-i,--ignore-version}'[ignore version mismatch]' \
         {-n+,--schema=}':schema to dump:_pgsql_schemas' \
         {-N+,--exclude-schema=}':schema to NOT dump:_pgsql_schemas' \
@@ -248,13 +249,23 @@ _pg_dump () {
         {-Z+,--compress=}':compression level:_values "level" 9 8 7 6 5 4 3 2 1 0' \
         ':PostgreSQL database:_pgsql_databases' \
         --section=':dump named section:_values "section" pre-data data post-data' \
+        --binary-upgrade'[for use by upgrade utilities only]' \
+        --column-inserts'[dump data as INSERT commands with column names]' \
         --disable-dollar-quoting'[disable dollar quoting, use SQL standard quoting]' \
         --disable-triggers'[disable triggers during data-only restore]' \
+        --enable-row-security'[enable row security (dump only content user has access to)]' \
+        --exclude-table-data='[do NOT dump data for the named table(s)]' \
+        --if-exists'[use IF EXISTS when dropping objects]' \
+        --inserts'[dump data as INSERT commands, rather than COPY]' \
+        --lock-wait-timeout='[fail after waiting TIMEOUT for a table lock]' \
         --no-security-labels'[do not dump security label assignments]' \
+        --no-synchronized-snapshots'[do not use synchronized snapshots in parallel jobs]' \
         --no-tablespaces'[do not dump tablespace assignments]' \
         --no-unlogged-table-data'[do not dump unlogged table data]' \
         --quote-all-identifiers'[quote all identifiers, even if not key words]' \
         --serializable-deferrable'[wait until the dump can run without anomalies]' \
+        --snapshot='[use given snapshot for the dump]' \
+        --strict-names'[require table and/or schema include patterns to match at least one entity each]' \
         --use-set-session-authorization'[use SET SESSION AUTHORIZATION commands instead of ALTER OWNER]'
 }
 
