@@ -426,6 +426,8 @@ _initdb () {
 
     _arguments -C -s \
         {--auth=,-A+}':default authentication method for local connections:_values "auth methods" $_pgsql_auth_methods[@]' \
+        --auth-host=':default authentication method for local TCP/IP connections:_values "auth methods" $_pgsql_auth_methods[@]' \
+        --auth-local=':default authentication method for local-socket connections:_values "auth methods" $_pgsql_auth_methods[@]' \
         {-D+,--pgdata=}':location for this database cluster:_files' \
         {-E+,--encoding=}':set default encoding for new databases:' \
         --locale=':set default locale for new databases:' \
@@ -443,8 +445,11 @@ _initdb () {
         {-X+,--xlogdir=}':location for the transaction log directory:_files' \
         {-d,--debug}'[generate lots of debugging output]' \
         -L+':where to find the input files:_files' \
+        {-k,--data-checksums}':use data page checksums:' \
         {-n,--noclean}'[do not clean up after errors]' \
+        {-N,--nosync}':do not wait for changes to be written safely to disk:' \
         {-s,--show}'[show internal settings]' \
+        {-S,--sync-only}'[only sync data directory]' \
         ':location for this database cluster:_files'
 }
 
