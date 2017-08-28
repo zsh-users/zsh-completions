@@ -392,6 +392,7 @@ _createuser () {
         {-d,--createdb}'[role can create new databases]' \
         {-D,--no-createdb}'[role cannot create databases]' \
         {-E,--encrypted}'[encrypt stored password]' \
+        {-g,--role=}'[new role will be a member of this role]' \
         {-i,--inherit}'[role inherits privileges of roles it is a member of (default)]' \
         {-I,--no-inherit}'[role does not inherit privileges]' \
         {-l,--login}'[role can login (default)]' \
@@ -401,7 +402,10 @@ _createuser () {
         {-r,--createrole}'[role can create new roles]' \
         {-R,--no-createrole}'[role cannot create roles]' \
         {-s,--superuser}'[role will be superuser]' \
-        {-S,--no-superuser}'[role will not be superuser]'
+        {-S,--no-superuser}'[role will not be superuser]' \
+        {--interactive}'[prompt for missing role name and attributes rather than using defaults]' \
+        {--replication}'[role can initiate replication]' \
+        {--no-replication}'[role cannot initiate replication]' \
 }
 
 _dropuser () {
