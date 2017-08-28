@@ -416,7 +416,7 @@ _dropuser () {
         "$_pgsql_common_opts[@]" \
         {-e,--echo}'[display SQL queries]' \
         {-q,--quiet}'[non verbose mode]' \
-        {-i,--interactive}'[confirm before drop]' \
+        {-i,--interactive}'[prompt before deleting anything, and prompt for role name if not specified]' \
         ':PostgreSQL user:_pgsql_users'
 }
 
