@@ -462,6 +462,7 @@ _pgsql_utils () {
         {-p+,--port=}':database port number:_pgsql_ports'
         {-U+,--username=}':connect as user:_pgsql_users'
         {-W,--password}'[prompt for password]'
+        --role='[do SET ROLE before restore]'
     )
 
     _pgsql_auth_methods=(
