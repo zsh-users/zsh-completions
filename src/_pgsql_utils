@@ -189,8 +189,11 @@ _psql () {
         {-A,--no-align}'[unaligned output mode]' \
         {-c+,--command=}':execute SQL command:' \
         {-d+,--dbname=}':database to connect to:_pgsql_databases' \
+        {-b,--echo-errors}'[echo failed commands]' \
         {-e,--echo-queries}'[display queries submitted]' \
         {-E,--echo-hidden}'[display hidden queries]' \
+        {-L,--log-file=}'[send session log to file]' \
+        {-n,--no-readline}'[disable enhanced command line editing (readline)]' \
         {-f+,--file=}':SQL file to read:_files' \
         {-F+,--field-separator=}':field separator char:' \
         {-H,--html}'[HTML output]' \
@@ -206,6 +209,8 @@ _psql () {
         -u'[prompt for username/password]' \
         {-v+,--set=,--variable=}':set SQL variable:' \
         {-x,--expanded}'[one column per line]' \
+        {-z,--field-separator-zero}'[set field separator for unaligned output to zero byte]' \
+        {-0,--record-separator-zero}'[set record separator for unaligned output to zero byte]' \
         {-X,--no-psqlrc}'[dont read ~/.psqlrc]' \
         ':PostgreSQL database:_pgsql_databases' \
         ':PostgreSQL user:_pgsql_users'
