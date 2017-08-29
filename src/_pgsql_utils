@@ -189,8 +189,11 @@ _psql () {
         {-A,--no-align}'[unaligned output mode]' \
         {-c+,--command=}':execute SQL command:' \
         {-d+,--dbname=}':database to connect to:_pgsql_databases' \
+        {-b,--echo-errors}'[echo failed commands]' \
         {-e,--echo-queries}'[display queries submitted]' \
         {-E,--echo-hidden}'[display hidden queries]' \
+        {-L,--log-file=}'[send session log to file]' \
+        {-n,--no-readline}'[disable enhanced command line editing (readline)]' \
         {-f+,--file=}':SQL file to read:_files' \
         {-F+,--field-separator=}':field separator char:' \
         {-H,--html}'[HTML output]' \
@@ -206,6 +209,8 @@ _psql () {
         -u'[prompt for username/password]' \
         {-v+,--set=,--variable=}':set SQL variable:' \
         {-x,--expanded}'[one column per line]' \
+        {-z,--field-separator-zero}'[set field separator for unaligned output to zero byte]' \
+        {-0,--record-separator-zero}'[set record separator for unaligned output to zero byte]' \
         {-X,--no-psqlrc}'[dont read ~/.psqlrc]' \
         ':PostgreSQL database:_pgsql_databases' \
         ':PostgreSQL user:_pgsql_users'
@@ -226,6 +231,7 @@ _pg_dump () {
         {-D,--{attribute,column}-inserts}'[use INSERT (cols) not COPY]' \
         {-f+,--file=}':output file:_files' \
         {-F+,--format=}':output format:_values "format" "p[plain text]" "t[tar]" "c[custom]"' \
+        {-j,--jobs=}'[use this many parallel jobs to dump]' \
         {-i,--ignore-version}'[ignore version mismatch]' \
         {-n+,--schema=}':schema to dump:_pgsql_schemas' \
         {-N+,--exclude-schema=}':schema to NOT dump:_pgsql_schemas' \
@@ -243,13 +249,23 @@ _pg_dump () {
         {-Z+,--compress=}':compression level:_values "level" 9 8 7 6 5 4 3 2 1 0' \
         ':PostgreSQL database:_pgsql_databases' \
         --section=':dump named section:_values "section" pre-data data post-data' \
+        --binary-upgrade'[for use by upgrade utilities only]' \
+        --column-inserts'[dump data as INSERT commands with column names]' \
         --disable-dollar-quoting'[disable dollar quoting, use SQL standard quoting]' \
         --disable-triggers'[disable triggers during data-only restore]' \
+        --enable-row-security'[enable row security (dump only content user has access to)]' \
+        --exclude-table-data='[do NOT dump data for the named table(s)]' \
+        --if-exists'[use IF EXISTS when dropping objects]' \
+        --inserts'[dump data as INSERT commands, rather than COPY]' \
+        --lock-wait-timeout='[fail after waiting TIMEOUT for a table lock]' \
         --no-security-labels'[do not dump security label assignments]' \
+        --no-synchronized-snapshots'[do not use synchronized snapshots in parallel jobs]' \
         --no-tablespaces'[do not dump tablespace assignments]' \
         --no-unlogged-table-data'[do not dump unlogged table data]' \
         --quote-all-identifiers'[quote all identifiers, even if not key words]' \
         --serializable-deferrable'[wait until the dump can run without anomalies]' \
+        --snapshot='[use given snapshot for the dump]' \
+        --strict-names'[require table and/or schema include patterns to match at least one entity each]' \
         --use-set-session-authorization'[use SET SESSION AUTHORIZATION commands instead of ALTER OWNER]'
 }
 
@@ -376,6 +392,7 @@ _createuser () {
         {-d,--createdb}'[role can create new databases]' \
         {-D,--no-createdb}'[role cannot create databases]' \
         {-E,--encrypted}'[encrypt stored password]' \
+        {-g,--role=}'[new role will be a member of this role]' \
         {-i,--inherit}'[role inherits privileges of roles it is a member of (default)]' \
         {-I,--no-inherit}'[role does not inherit privileges]' \
         {-l,--login}'[role can login (default)]' \
@@ -385,7 +402,10 @@ _createuser () {
         {-r,--createrole}'[role can create new roles]' \
         {-R,--no-createrole}'[role cannot create roles]' \
         {-s,--superuser}'[role will be superuser]' \
-        {-S,--no-superuser}'[role will not be superuser]'
+        {-S,--no-superuser}'[role will not be superuser]' \
+        {--interactive}'[prompt for missing role name and attributes rather than using defaults]' \
+        {--replication}'[role can initiate replication]' \
+        {--no-replication}'[role cannot initiate replication]' \
 }
 
 _dropuser () {
@@ -396,7 +416,7 @@ _dropuser () {
         "$_pgsql_common_opts[@]" \
         {-e,--echo}'[display SQL queries]' \
         {-q,--quiet}'[non verbose mode]' \
-        {-i,--interactive}'[confirm before drop]' \
+        {-i,--interactive}'[prompt before deleting anything, and prompt for role name if not specified]' \
         ':PostgreSQL user:_pgsql_users'
 }
 
@@ -406,6 +426,8 @@ _initdb () {
 
     _arguments -C -s \
         {--auth=,-A+}':default authentication method for local connections:_values "auth methods" $_pgsql_auth_methods[@]' \
+        --auth-host=':default authentication method for local TCP/IP connections:_values "auth methods" $_pgsql_auth_methods[@]' \
+        --auth-local=':default authentication method for local-socket connections:_values "auth methods" $_pgsql_auth_methods[@]' \
         {-D+,--pgdata=}':location for this database cluster:_files' \
         {-E+,--encoding=}':set default encoding for new databases:' \
         --locale=':set default locale for new databases:' \
@@ -423,8 +445,11 @@ _initdb () {
         {-X+,--xlogdir=}':location for the transaction log directory:_files' \
         {-d,--debug}'[generate lots of debugging output]' \
         -L+':where to find the input files:_files' \
+        {-k,--data-checksums}':use data page checksums:' \
         {-n,--noclean}'[do not clean up after errors]' \
+        {-N,--nosync}':do not wait for changes to be written safely to disk:' \
         {-s,--show}'[show internal settings]' \
+        {-S,--sync-only}'[only sync data directory]' \
         ':location for this database cluster:_files'
 }
 
@@ -437,6 +462,7 @@ _pgsql_utils () {
         {-p+,--port=}':database port number:_pgsql_ports'
         {-U+,--username=}':connect as user:_pgsql_users'
         {-W,--password}'[prompt for password]'
+        --role='[do SET ROLE before restore]'
     )
 
     _pgsql_auth_methods=(
