@@ -219,7 +219,7 @@ _chef_users_remote() {
 
 # The chef_x_local functions use the knife config to find the paths of relevant objects x to be uploaded to the server
 _chef_cookbooks_local() {
- (for i in $( grep cookbook_path $HOME/.chef/knife.rb | awk 'BEGIN {FS = "[" }; {print $2}' | sed 's/\,//g' | sed "s/'//g" | sed 's/\(.*\)]/\1/' ); do ls $i; done)
+ (for i in $( grep cookbook_path $HOME/.chef/knife.rb | awk 'BEGIN {FS = "[" }; {print $2}' | sed 's/\,//g' | sed "s/'//g" | sed 's/\(.*\)]/\1/'  | cut -d '"' -f2 ); do ls $i; done)
 }
 
 # This function extracts the available cookbook versions on the chef server
