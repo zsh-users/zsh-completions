@@ -82,7 +82,7 @@ _yarn_commands_scripts() {
 
 _yarn_scripts() {
   local -a scripts
-  scripts=($(yarn run --json 2>/dev/null | sed -E '/Commands available|possibleCommands/!d;s/.*Commands available from binary scripts: ([^"]+)".*/\1/;s/.*"items":\[([^]]+).*/\1/;s/[" ]//g' | tr , '\n'))
+  scripts=($(yarn run --json 2>/dev/null | sed -E '/possibleCommands/!d;s/.*Commands available from binary scripts: ([^"]+)".*/\1/; s/.*"hints":\{([^}]+).*/\1/; s/:/\\:/g' | tr , "\n" | perl -pe 's/^"(.*?)"\\:".*$/$1/g'))
   _describe 'script' scripts
 }
 
