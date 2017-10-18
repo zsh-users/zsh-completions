@@ -47,8 +47,8 @@ _tmuxp() {
   _arguments -C \
     ":command:->command" \
     "*::options:->options" \
-    "--log_level:Log level:(DEBUG INFO WARNING ERROR CRITICAL)" \
-    "--help:Show help"
+    "--log_level:log level:(DEBUG INFO WARNING ERROR CRITICAL)" \
+    "--help[display usage information]"
 
     case $state in
       (command)
@@ -71,7 +71,7 @@ _tmuxp() {
             ;;
           (freeze)
             _arguments -C \
-              '1:: :{_wanted tmux-sessions exp "session name" compadd $(tmux ls -F "#{session_name}")}'
+              '1::session name:compadd $(command tmux ls -F "#{session_name}")'
             ;;
           (convert)
             _arguments -C \
@@ -98,14 +98,9 @@ __tmuxp_load() {
   case $state in
     (sessions)
       local s
-      _wanted user-sessions expl 'User sessions' compadd \
-        $(
-          for file in ~/.tmuxp/*.(json|yml|yaml)
-          do
-            s=${file:t:r}
-            [[ -z "${line[(r)$s]}" ]] && echo $s
-          done)
-          _wanted sessions expl 'Other sessions' compadd $(for file in ./*.(json|yaml|yml); do echo $file; done)
+      _alternative \
+        'sessions-user:user session:compadd -F line - ~/.tmuxp/*.(json|yml|yaml)(:r:t)' \
+        'sessions-other:session in current directory:_path_files -g "**/*.(json|yaml|yml)(-.)"'
       ;;
   esac
 }
