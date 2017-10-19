@@ -70,8 +70,9 @@ _tmuxp() {
             __tmuxp_import
             ;;
           (freeze)
+            local sessions="$(__tmux_sessions)"
             _arguments -C \
-              '1::session name:compadd $(command tmux ls -F "#{session_name}" 2>/dev/null)'
+              "1::session name:compadd $sessions"
             ;;
           (convert)
             _arguments -C \
@@ -120,6 +121,12 @@ __tmuxp_import() {
       fi
       ;;
   esac
+}
+
+__tmux_sessions () {
+  local tmux_sessions
+  tmux_sessions=($(_call_program tmux_sessions 'tmux ls -F "#{session_name}"'))
+  echo $tmux_sessions
 }
 
 _tmuxp "$@"
