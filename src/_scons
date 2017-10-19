@@ -1,0 +1,72 @@
+#compdef scons
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for SCons 2.5.1 (http://scons.org/)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Oliver Kiddle <okiddle@yahoo.co.uk>
+#
+# ------------------------------------------------------------------------------
+
+_arguments -s -S \
+  '(-c --clean --remove)-'{c,-clean,-remove}'[remove specified targets and dependencies]' \
+  '(-C --directory)-'{C,-directory=}'[change to specified directory first]:directory:_directories' \
+  '--cache-debug=[print CacheDir debug info to file]:file:_files' \
+  '(--cache-disable --no-cache)--'{cache-disable,no-cache}"[don't retrieve built targets from cache]" \
+  '(--cache-force --cache-populate)--'{cache-force,cache-populate}'[copy already-built targets into cache]' \
+  "--cache-readonly[don't update CacheDir with built targets]" \
+  '--cache-show[print build actions for files from cache]' \
+  '--config=[set Configure mode]:mode:(auto force cache)' \
+  '(-u --up --search-up -U)-D[search up for SConstruct; build default targets]' \
+  '--debug=[print debugging information]:type:(
+      count duplicate explain findlibs includes memoizer memory objects pdb prepare presub stacktrace time)' \
+  '--diskcheck=[enable specific on-disk checks]:check:(all none match rcs sccs)' \
+  '--duplicate=[set preferred file duplication methods]:file duplication methods:(
+      hard-soft-copy soft-hard-copy hard-copy soft-copy copy)' \
+  '(-f --file --makefile --sconstruct)-'{f,-file=,-makefile=,-sconstruct=}'[specify SConstruct file]:file:_files' \
+  '(-)-'{h,-help}'[display defined usage information]' \
+  '(-)-'{H,-help-options}'[display usage information]' \
+  '(-i -ignore-errors)-'{i,-ignore-errors}'[ignore errors from build actions]' \
+  \*{-I,--include-dir=}'[add directory to search Python modules]:directories:_directories' \
+  '(--implicit-deps-changed --implicit-deps-unchanged)--implicit-cache[cache scanned dependencies]' \
+  '(--implicit-cache --implicit-deps-changed)--implicit-deps-changed[rescan dependencies]' \
+  '(--implicit-cache --implicit-deps-unchanged)--implicit-deps-unchanged[ignore changes to scanned dependencies]' \
+  '--interactive[start interactive mode]' \
+  '(-j --jobs)-'{j,jobs=}'[specify no of jobs to run in parallel]' \
+  '(-k --keep-going)-'{k,-keep-going}'[continue after an error]' \
+  '--max-drift=[set the maximum clock drift]:drift (seconds)' \
+  '--md5-chunksize=[set chunksize for MD5 signature computation]:size (kB)' \
+  '(-n --just-print --dry-run --recon)-'{n,-just-print,-dry-run,-recon}"[print commands but don't run them]" \
+  "--no-site-dir[don't use the usual site_scons directory]" \
+  '--profile=[profile scons]:output file:_files' \
+  '(-q --question)-'{q,question}'[query whether up-to-date]' \
+  '-Q[suppress progress messages]' \
+  '--random[build dependencies in random order]' \
+  '(-s --silent --quiet)-'{s,-silent,-quiet}"[don't print commands]" \
+  '--site-dir=[specify site_scons directory]:directory:_directories' \
+  '--stack-size[set stacksize of threads]:size (kB)' \
+  '--taskmastertrace=[trace node evaluation to file]:file' \
+  '--tree=[print dependency tree]:format:(all derived prune status)' \
+  '(-u --up --search-up -D -U)-'{u,-up,-search-up}'[search up for SConstruct; build current directory]' \
+  '(-u --up --search-up -D)-U[search up for SConstruct; build Default targets]' \
+  '(-)-'{v,-version}'[print version information]' \
+  \*{--warn=,--warning=}'[enable or disable warnings]:type:(
+      all cache-write-error corrupt-sconsign dependency deprecated
+      deprecated-copy deprecated-source-signatures deprecated-target-signatures
+      duplicate-environment fortran-cxx-mix link misleading-keywords
+      missing-sconscript no-md5-module no-metaclass-support no-object-count
+      no-parallel-support python-version reserved-variable stack-size no-all
+      no-cache-write-error no-corrupt-sconsign no-dependency no-deprecated
+      no-deprecated-copy no-deprecated-source-signatures
+      no-deprecated-target-signatures no-duplicate-environment
+      no-fortran-cxx-mix no-link no-misleading-keywords no-missing-sconscript
+      no-no-md5-module no-no-metaclass-support no-no-object-count
+      no-no-parallel-support no-python-version no-reserved-variable
+      no-stack-size)' \
+  \*{-Y,--repository}'[search specified repository for files]:repository:_files' \
+  '*:target:_default' # Doesn't seem to be a simple way to get a list of targets
