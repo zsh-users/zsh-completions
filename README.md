@@ -23,6 +23,7 @@ See [issues](https://github.com/zsh-users/zsh-completions/issues) for details on
 | Arch Linux | [zsh-completions](https://www.archlinux.org/packages/zsh-completions), [zsh-completions-git](https://aur.archlinux.org/packages/zsh-completions-git) |
 | Gentoo | [app-shells/zsh-completions](http://packages.gentoo.org/package/app-shells/zsh-completions)  |
 | NixOS | [zsh-completions](https://github.com/NixOS/nixpkgs/blob/master/pkgs/shells/zsh-completions/default.nix) |
+| Void Linux | [zsh-completions](https://github.com/voidlinux/void-packages/tree/master/srcpkgs/zsh-completions) |
 | Mac OS | [homebrew](https://github.com/Homebrew/homebrew-core/blob/master/Formula/zsh-completions.rb)  |
 
 ### Using zsh frameworks
