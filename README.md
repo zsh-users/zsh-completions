@@ -1,4 +1,4 @@
-zsh-completions ![GitHub release](https://img.shields.io/github/release/zsh-users/zsh-completions.svg) ![GitHub contributors](https://img.shields.io/github/contributors/zsh-users/zsh-completions.svg) ![IRC](https://img.shields.io/badge/IRC-%23zsh--completions-yellow.svg)
+zsh-completions ![GitHub release](https://img.shields.io/github/release/zsh-users/zsh-completions.svg) ![GitHub contributors](https://img.shields.io/github/contributors/zsh-users/zsh-completions.svg) [![IRC](https://img.shields.io/badge/IRC-%23zsh--completions-yellow.svg)](irc://irc.freenode.net/#zsh-completions)
 =============
 
 **Additional completion definitions for [Zsh](http://www.zsh.org).**
