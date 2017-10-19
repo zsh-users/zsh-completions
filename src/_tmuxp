@@ -71,7 +71,7 @@ _tmuxp() {
             ;;
           (freeze)
             _arguments -C \
-              '1::session name:compadd $(command tmux ls -F "#{session_name}")'
+              '1::session name:compadd $(command tmux ls -F "#{session_name}" 2>/dev/null)'
             ;;
           (convert)
             _arguments -C \
