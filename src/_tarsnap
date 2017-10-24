@@ -33,24 +33,32 @@
 #
 # ------------------------------------------------------------------------------
 
-_tarsnap() {
-    local -a commands
-    commands=(
-        '--fsck:Perform some integrity checks on the archives stored.'
-        '--fsck-prune:Run as "--fsck", but if corrupt archives are detected, prune the broken data.'
-        '--list-archives:Print the names of archives stored.'
-        '--nuke:Delete all of the archives stored.'
-        '--print-stats:Print global statistics concerning the archives stored.'
-        '-c:Create an archive containing the specified items and name.'
-        '-d:Delete the specified archive.'
-        '-r:Read the specified archive, convert it to a tar stream, and write it to stdout.'
-        '-t:List archive contents to stdout.'
-        '-x:Extract to disk from the archive.'
-    )
-    
-    if (( CURRENT == 2 )); then
-        _describe -t commands 'commands' commands
-    fi        
-    
-    return 0
-}
+_arguments \
+  '(- 1 *)--help[prints tarsnap help]' \
+  '(- 1 *)--version[prints tarsnap version number]' \
+  '(- 1 *)--verify-config[checks configuration files for syntactic errors]' \
+  '--fsck[performs integrity checks on the stored archives]' \
+  '--fsck-prune[performs integrity checks and prunes broken data]' \
+  '--list-archives[prints names of stored archives]' \
+  '--nuke[deletes all stored archives]' \
+  '--print-stats[prints archive statistics]' \
+  '--recover[recovers partial archive]' \
+  '-c[creates archive]' \
+  '-d[deletes specified archive]' \
+  '-r[prints content of specified archive]' \
+  '-t[lists archive content]' \
+  '-x[extracts specified archive]' \
+  '--lowmem[reduces memory usage by not caching small files]' \
+  '--quiet[silences some warnings]' \
+  '--keyfile[specifies keyfile]:keyfile:->file' \
+  '--cachedir[specifies cache directory]:cachedir:->directory' \
+  '-f[specifies archive name]:archivename:->file'
+
+case "$state" in
+  file)
+    _files
+    ;;
+  directory)
+    _path_files -/
+    ;;
+esac
