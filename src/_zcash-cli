@@ -38,25 +38,24 @@
 #
 # ------------------------------------------------------------------------------
 
-_zcash-cli() {
-  local context state line curcontext="$curcontext"
+local state line curcontext="$curcontext" ret=1
 
-  _arguments -C \
-    -?'[This help message]' \
-    -conf='[Specify configuration file (default: zcash.conf)]:PATH:_files' \
-    -datadir='[Specify data directory]:PATH:_directories' \
-    -testnet'[Use the test network]' \
-    -regtest'[Enter regression test mode, which uses a special chain in which blocks can be solved instantly. This is intended for regression testing tools and app development.]' \
-    -rpcconnect='[Send commands to node running on <ip> (default: 127.0.0.1)]:RPCCONNECT:_hosts' \
-    -rpcport='[Connect to JSON-RPC on <port> (default: 8232 or testnet: 18232)]: :_guard "[[\:digit\:]]#" "PORT"' \
-    -rpcwait'[Wait for RPC server to start]' \
-    -rpcuser='[Username for JSON-RPC connections]:RPCUSER:()' \
-    -rpcpassword='[Password for JSON-RPC connections]:RPCPASSWORD:()' \
-    -rpcclienttimeout='[Timeout in seconds during HTTP requests, or 0 for no timeout. (default: 900)]: :_guard "[[\:digit\:]]#" "RPCCLIENTTIMEOUT"' \
-    ':subcommand:->subcommand' && ret=0
+_arguments -C \
+  '-?[display usage information]' \
+  -conf='[specify configuration file]:file [zcash.conf]:_files' \
+  -datadir='[specify data directory]:directory:_directories' \
+  -testnet'[use the test network]' \
+  -regtest'[enter regression test mode, which uses a special chain in which blocks can be solved instantly. This is intended for regression testing tools and app development.]' \
+  -rpcconnect='[send commands to node running on specified ip]:rpcconnect [127.0.0.1]:_hosts' \
+  -rpcport='[connect to JSON-RPC on specified port]: :_guard "[[\:digit\:]]#" "port [8232 or testnet\: 18232]"' \
+  -rpcwait'[wait for RPC server to start]' \
+  -rpcuser='[username for JSON-RPC connections]:rpcuser' \
+  -rpcpassword='[password for JSON-RPC connections]:rpcpassword' \
+  -rpcclienttimeout='[specify timeout during HTTP requests, or 0 for no timeout]: :_guard "[[\:digit\:]]#" "timeout (seconds) [900]"' \
+  ':subcommand:->subcommand' && ret=0
 
-  case $state in
-    subcommand)
+case $state in
+  subcommand)
     subcommands=(
       'getbestblockhash'
       'getblock'
@@ -167,13 +166,11 @@ _zcash-cli() {
       'zcsamplejoinsplit'
     )
 
-    _describe -t subcommands 'zcash-cli subcommands' subcommands && ret=0
-  esac
+    _describe -t subcommands 'zcash-cli subcommand' subcommands && ret=0
+  ;;
+esac
 
-  return ret
-}
-
-_zcash-cli "$@"
+return ret
 
 # Local Variables:
 # mode: Shell-Script

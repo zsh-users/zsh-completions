@@ -39,22 +39,17 @@
 # ------------------------------------------------------------------------------
 
 
-_subl() {
-  integer ret=1
-  local I="-h --help -v --version"
-  local -a args
-  args+=(
-    "(- *)"{-h,--help}'[Show help and exit]'
-    "(- *)"{-v,--version}'[Show version and exit]'
-    "($I)--project[Load the given project]:project:"
-    "($I)--command[Run the given command]:command:"
-    "($I -n --new-window)"{-n,--new-window}'[Open a new window]'
-    "($I -a --add)"{-a,--add}'[Add folders to the current window]'
-    "($I -w --wait)"{-w,--wait}'[Wait for the files to be closed before returning]'
-    "($I -b --background)"{-b,--background}'[Do not activate the application]'
-  )
-  _arguments $args[@] '*:file:_files' && ret=0
-  return ret
-}
+local I="-h --help -v --version"
+local -a args
+args+=(
+  "(- *)"{-h,--help}'[display usage information]'
+  "(- *)"{-v,--version}'[display version information]'
+  "($I)--project[load the given project]:project"
+  "($I)--command[run the given command]:command"
+  "($I -n --new-window)"{-n,--new-window}'[open a new window]'
+  "($I -a --add)"{-a,--add}'[add folders to the current window]'
+  "($I -w --wait)"{-w,--wait}'[wait for the files to be closed before returning]'
+  "($I -b --background)"{-b,--background}"[don't activate the application]"
+)
+_arguments "$args[@]" '*:file:_files'
 
-_subl

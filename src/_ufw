@@ -41,7 +41,7 @@
 
 _ufw_logging() {
 
-    local main additional second
+    local params additional second
     second=$words[2]
 
     if [ ! -z $second ]; then
@@ -60,8 +60,8 @@ _ufw_logging() {
       "full"
     )
 
-    _describe -t params 'On/Off' params
-    _describe -t additional 'Level' additional
+    _describe -t params 'on/off' params
+    _describe -t additional 'level' additional
 }
 
 
@@ -85,35 +85,34 @@ _ufw_delete() {
 }
 
 _ufw() {
-    local -a commands
+    local curcontext="$curcontext" ret=1
+    local -a state line commands
 
     commands=(
-      "enable:Enables the firewall"
-      "disable:Disables the firewall"
-      "default:Set default policy"
-      "logging:Set logging to LEVEL"
-      "allow:Add allow rule"
-      "deny:Add deny rule"
-      "reject:Add reject rule"
-      "limit:Add limit rule"
-      "delete:Delete RULE"
-      "insert:Insert RULE at NUM"
-      "route:Add route RULE"
-      "reload:Reload firewall"
-      "reset:Reset firewall"
-      "status:Show firewall status"
-      "show:Show firewall report"
-      "version:Display version information"
+      "enable:enable the firewall"
+      "disable:disable the firewall"
+      "default:set default policy"
+      "logging:set logging level"
+      "allow:add allow rule"
+      "deny:add deny rule"
+      "reject:add reject rule"
+      "limit:add limit rule"
+      "delete:delete rule"
+      "insert:insert rule at position"
+      "route:add route rule"
+      "reload:reload firewall"
+      "reset:reset firewall"
+      "status:show firewall status"
+      "show:show firewall report"
+      "version:display version information"
     )
 
-
-
     _arguments -C -s -S -n \
-        '(- 1 *)'--version"[Show program\'s version number and exit]: :->full" \
-        '(- 1 *)'{-h,--help}'[Show help message and exit]: :->full' \
-        '(- 1 *)'--dry-run"[Don\'t modify anything, just show the changes]: :->cmds" \
+        '(- 1 *)'--version"[display version information]: :->full" \
+        '(- 1 *)'{-h,--help}'[display usage information]: :->full' \
+        '(- 1 *)'--dry-run"[don't modify anything, just show the changes]: :->cmds" \
         '1:cmd:->cmds' \
-        '*:: :->args' \
+        '*:: :->args' && ret=0
 
     case "$state" in
       (cmds)
@@ -124,19 +123,21 @@ _ufw() {
          cmd=$words[1]
          case "$cmd" in
              (logging)
-                 _ufw_logging
+                 _ufw_logging && ret=0
              ;;
              (delete)
-                 _ufw_delete
+                 _ufw_delete && ret=0
              ;;
              (*)
-                 return
+                 _default && ret=0
              ;;
          esac
       ;;
       (*)
       ;;
     esac
+
+    return ret
 }
 
 _ufw

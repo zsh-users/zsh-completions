@@ -38,30 +38,24 @@
 #
 # ------------------------------------------------------------------------------
 
-_afew() {
-
-  _arguments -C \
-    '(- 1 *)'-h"[Show help and exit]" \
-    "(-c --classify -l --learn= -t --tag -u --update -U --update-reference -m --move-mails)"{-w,--watch}"[Continuously monitor the mailbox for new messages matching the given query]" \
-    "(-c --classify -l --learn= -u --update -U --update-reference -m --move-mails -w --watch)"{-t,--tag}"[Run the tag filters]" \
-    "(-c --classify -t --tag -u --update -U --update-reference -m --move-mails -w --watch)"{-l,--learn=}"[Train category with the messages matching query]" \
-    "(-c --classify -l --learn= -t --tag -U --update-reference -m --move-mails -w --watch)"{-u,--update}"[Update the categories (requires no query)]" \
-    "(-c --classify -l --learn= -t --tag -u --update -m --move-mails -w --watch)"{-U,--update-reference}"[Update the reference category (takes quite some time) (requires no query)]" \
-    "(-l --learn= -t --tag -u --update -U --update-reference -m --move-mails -w --watch)"{-c,--classify}"[Classify each message matching the iven query]" \
-    "(-c --classify -l --learn= -t --tag -u --update -U --update-reference -w --watch)"{-m,--move-mails}"[Move mail files between maildir folders]" \
-    "(-n --all)"{-a,--all}"[Operate on all email]" \
-    "(-a --new)"{-n,--new}"[Operate on all new email]" \
-    {-C,--notmuch-config=}"[Path to notmuch configuration file]:files:_files" \
-    {-e,--enable-filters=}"[Flter classes to use]:filters" \
-    {-d,--dry-run}"[Dont change the DB]" \
-    {-R,--reference-set-size=}"[Size of the reference set (default: 1000)]:size:" \
-    {-T,--reference-set-timeframe-days=}"[Do not use emails older than DAYS days (default: 30)]:days:" \
-    {--verbose,-v}"[Be more verbose]" \
-    '*:Query:' \
-
-}
-
-_afew
+_arguments \
+  '(- 1 *)-h[display usage information]' \
+  "(-c --classify -l --learn= -t --tag -u --update -U --update-reference -m --move-mails)"{-w,--watch}"[continuously monitor the mailbox for new messages matching the given query]" \
+  "(-c --classify -l --learn= -u --update -U --update-reference -m --move-mails -w --watch)"{-t,--tag}"[run the tag filters]" \
+  "(-c --classify -t --tag -u --update -U --update-reference -m --move-mails -w --watch)"{-l,--learn=}"[train category with the messages matching query]" \
+  "(-c --classify -l --learn= -t --tag -U --update-reference -m --move-mails -w --watch)"{-u,--update}"[update the categories (requires no query)]" \
+  "(-c --classify -l --learn= -t --tag -u --update -m --move-mails -w --watch)"{-U,--update-reference}"[update the reference category (takes quite some time) (requires no query)]" \
+  "(-l --learn= -t --tag -u --update -U --update-reference -m --move-mails -w --watch)"{-c,--classify}"[classify each message matching the iven query]" \
+  "(-c --classify -l --learn= -t --tag -u --update -U --update-reference -w --watch)"{-m,--move-mails}"[move mail files between maildir folders]" \
+  "(-n --all)"{-a,--all}"[operate on all email]" \
+  "(-a --new)"{-n,--new}"[operate on all new email]" \
+  {-C,--notmuch-config=}"[specify path to notmuch configuration file]:files:_files" \
+  {-e,--enable-filters=}"[specify filter classes to use]:filter" \
+  {-d,--dry-run}"[don't change the DB]" \
+  {-R,--reference-set-size=}"[specify size of the reference set]:size [1000]" \
+  {-T,--reference-set-timeframe-days=}"[don't use emails older than specified age]:age (days) [30]" \
+  {--verbose,-v}"[be more verbose]" \
+  '*: :_guard "^-*" query'
 
 # Local Variables:
 # mode: Shell-Script

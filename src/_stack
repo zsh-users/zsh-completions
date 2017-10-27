@@ -40,54 +40,56 @@
 
 _stack () {
     _arguments \
-        --version'[Show version]' \
-        --help'[Show this help text]' \
-        '--docker*''[Run "stack --docker-help" for details]' \
-        --verbosity'[Verbosity: silent, error, warn, info, debug]' \
-        {-v,--verbose}'[Enable verbose mode: verbosity level "debug"]' \
-        --system-ghc'[Enable using the system installed GHC (on the PATH) if available and a matching version]' \
-        --no-system-ghc'[Disable using the system installed GHC (on the PATH) if available and a matching version]' \
-        --install-ghc'[Enable downloading and installing GHC if necessary (can be done manually with stack setup)]' \
-        --no-install-ghc'[Disable downloading and installing GHC if necessary (can be done manually with stack setup)]' \
-        --arch'[System architecture, e.g. i386, x86_64]' \
-        --os'[Operating system, e.g. linux, windows]' \
-        {-j,--jobs}'[Number of concurrent jobs to run]' \
-        --extra-include-dirs'[Extra directories to check for C header files]' \
-        --extra-lib-dirs'[Extra directories to check for libraries]' \
-        --skip-ghc-check'[Enable skipping the GHC version and architecture check]' \
-        --no-skip-ghc-check'[Disable skipping the GHC version and architecture check]' \
-        --skip-msys'[Enable skipping the local MSYS installation (Windows only)]' \
-        --no-skip-msys'[Disable skipping the local MSYS installation (Windows only)]' \
-        --resolver'[Override resolver in project file]' \
-        --no-terminal'[Override terminal detection in the case of running in a false terminal]' \
-        --stack-yaml'[Override project stack.yaml file (overrides any STACK_YAML environment variable)]' \
+        --version'[display version information]' \
+        --help'[display usage information]' \
+        '--docker*''[run "stack --docker-help" for details]' \
+        --verbosity'[verbosity: silent, error, warn, info, debug]' \
+        {-v,--verbose}'[enable verbose mode: verbosity level "debug"]' \
+        --system-ghc'[enable using the system installed GHC (on the PATH) if available and a matching version]' \
+        --no-system-ghc'[disable using the system installed GHC (on the PATH) if available and a matching version]' \
+        --install-ghc'[enable downloading and installing GHC if necessary (can be done manually with stack setup)]' \
+        --no-install-ghc'[disable downloading and installing GHC if necessary (can be done manually with stack setup)]' \
+        --arch'[system architecture, e.g. i386, x86_64]' \
+        --os'[operating system, e.g. linux, windows]' \
+        {-j,--jobs}'[number of concurrent jobs to run]' \
+        --extra-include-dirs'[extra directories to check for C header files]' \
+        --extra-lib-dirs'[extra directories to check for libraries]' \
+        --skip-ghc-check'[enable skipping the GHC version and architecture check]' \
+        --no-skip-ghc-check'[disable skipping the GHC version and architecture check]' \
+        --skip-msys'[enable skipping the local MSYS installation (Windows only)]' \
+        --no-skip-msys'[disable skipping the local MSYS installation (Windows only)]' \
+        --resolver'[override resolver in project file]' \
+        --no-terminal'[override terminal detection in the case of running in a false terminal]' \
+        --stack-yaml'[override project stack.yaml file (overrides any STACK_YAML environment variable)]' \
         '*: :__stack_modes'
 }
 
 __stack_modes () {
     _values \
         'subcommand' \
-        'build[Build the project(s) in this directory/configuration]' \
-        'install[Build executables and install to a user path]' \
-        'test[Build and test the project(s) in this directory/configuration]' \
-        'bench[Build and benchmark the project(s) in this directory/configuration]' \
-        'haddock[Generate haddocks for the project(s) in this directory/configuration]' \
-        'new[Create a brand new project]' \
-        'init[Initialize a stack project based on one or more cabal packages]' \
-        'solver[Use a dependency solver to try and determine missing extra-deps]' \
-        'setup[Get the appropriate ghc for your project]' \
-        'path[Print out handy path information]' \
-        'unpack[Unpack one or more packages locally]' \
-        'update[Update the package index]' \
-        'upgrade[Upgrade to the latest stack (experimental)]' \
-        'upload[Upload a package to Hackage]' \
-        'dot[Visualize your projects dependency graph using Graphviz dot]' \
-        'exec[Execute a command]' \
-        'ghc[Run ghc]' \
-        'ghci[Run ghci in the context of project(s)]' \
-        'ide[Run ide-backend-client with the correct arguments]' \
-        'runghc[Run runghc]' \
-        'clean[Clean the local packages]' \
-        'docker[Subcommands specific to Docker use]'
+        'build[build the project(s) in this directory/configuration]' \
+        'install[build executables and install to a user path]' \
+        'test[build and test the project(s) in this directory/configuration]' \
+        'bench[build and benchmark the project(s) in this directory/configuration]' \
+        'haddock[generate haddocks for the project(s) in this directory/configuration]' \
+        'new[create a brand new project]' \
+        'init[initialize a stack project based on one or more cabal packages]' \
+        'solver[use a dependency solver to try and determine missing extra-deps]' \
+        'setup[get the appropriate ghc for your project]' \
+        'path[print out handy path information]' \
+        'unpack[unpack one or more packages locally]' \
+        'update[update the package index]' \
+        'upgrade[upgrade to the latest stack (experimental)]' \
+        'upload[upload a package to Hackage]' \
+        'dot[visualize your projects dependency graph using Graphviz dot]' \
+        'exec[execute a command]' \
+        'ghc[run ghc]' \
+        'ghci[run ghci in the context of project(s)]' \
+        'ide[run ide-backend-client with the correct arguments]' \
+        'runghc[run runghc]' \
+        'clean[clean the local packages]' \
+        'docker[subcommands specific to Docker use]'
 
 }
+
+_stack "$@"

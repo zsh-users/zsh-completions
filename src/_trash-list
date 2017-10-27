@@ -39,16 +39,10 @@
 # ------------------------------------------------------------------------------
 
 
-_trash-list() {
-
-  _arguments -C \
-    '--version[Show programs version number and exit]' \
-    {-h,--help}'[Show help message and exit]' \
-    '*: :' \
-
-}
-
-_trash-list
+_arguments \
+  '--version[show programs version number and exit]' \
+  {-h,--help}'[show help message and exit]' \
+  '*: :'
 
 # Local Variables:
 # mode: Shell-Script
