@@ -1,0 +1,63 @@
+#compdef mosh
+
+# mosh zsh completion
+# Based on https://github.com/dadrc/zsh-cfg/blob/master/completions/_mosh
+# and https://github.com/mobile-shell/mosh/issues/139#issuecomment-183660432
+
+_mosh () {
+  local curcontext="$curcontext" state line expl common tmp cmds suf ret=1
+  typeset -A opt_args
+  _arguments \
+        '--client=[mosh client on local machine]:client helper:_files' \
+        '--server=[mosh server on remote machine]:server helper:_command_names -e' \
+        '--predict=adaptive[local echo for slower links]' \
+        '(-a)--predict=always[use local echo even on fast links]' \
+        '(-n)--predict=never[ever use local echo]' \
+        '--predict=experimental[aggressively echo even when incorrect]' \
+        '(-4)--family=inet[use IPv4 only]' \
+        '(-6)--family=inet6[use IPv6 only]' \
+        {-p,--port=}'[server-side UDP port or range]:port:_ports' \
+        '--bind-server=[ask the server to reply from an IP address]:bindserver:(ssh any IP)' \
+        '--ssh=[ssh command to run when setting up session]:ssh helper:_command_names -e' \
+        '--no-init[do not send terminal initialization string]' \
+        ':remote host name:_ssh_hosts' \
+        ':remote command:_command_names -e'
+}
+
+_ssh_hosts () {
+  local -a config_hosts
+  local config
+  integer ind
+
+  # If users-hosts matches, we shouldn't complete anything else.
+  if [[ "$IPREFIX" == *@ ]]; then
+    _combination -s '[:@]' my-accounts users-hosts "users=${IPREFIX/@}" hosts "$@" && return
+  else
+    _combination -s '[:@]' my-accounts users-hosts \
+      ${opt_args[-l]:+"users=${opt_args[-l]:q}"} hosts "$@" && return
+  fi
+  if (( ind = ${words[(I)-F]} )); then
+    config=${~words[ind+1]}
+  else
+    config="$HOME/.ssh/config"
+  fi
+  if [[ -r $config ]]; then
+    local IFS=$'\t ' key hosts host
+    while read key hosts; do
+      if [[ "$key" == (#i)host ]]; then
+         for host in ${(z)hosts}; do
+            case $host in
+            (*[*?]*) ;;
+            (*) config_hosts+=("$host") ;;
+            esac
+         done
+      fi
+    done < "$config"
+    if (( ${#config_hosts} )); then
+      _wanted hosts expl 'remote host name' \
+        compadd -M 'm:{a-zA-Z}={A-Za-z} r:|.=* r:|=*' "$@" $config_hosts
+    fi
+  fi
+}
+
+_mosh "$@"
