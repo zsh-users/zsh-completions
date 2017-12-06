@@ -48,6 +48,7 @@ _rspec() {
     '*'{-O,--options}'[Specify the path to a custom options file]:PATH:_files' \
     --order'[Run examples by the specified order type]: :->order' \
     --seed'[Equivalent of --order rand:SEED]: :_guard "[[\:digit\:]]#" "SEED"' \
+    --only-failures'[Filter to just the examples that failed the last time they ran]' \
     --fail-fast'[Abort the run on first failure]' \
     --no-fail-fast'[Do not abort the run on first failure]' \
     --failure-exit-code'[Override the exit code used when there are failing specs]: :_guard "[[\:digit\:]]#" "CODE"' \
