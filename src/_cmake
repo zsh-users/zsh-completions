@@ -291,6 +291,9 @@ _cmake_define_lang_property_names() {
     "CMAKE_${cmake_lang}_FLAGS_RELEASE:${cmake_lang_desc} compiler flags for all Relase build"
     "CMAKE_${cmake_lang}_FLAGS_MINSIZREL:${cmake_lang_desc} compiler flags for all MinSizRel build"
     "CMAKE_${cmake_lang}_FLAGS_RELWITHDEBINFO:${cmake_lang_desc} compiler flags for all RelWithDebInfo build"
+    "CMAKE_${cmake_lang}_STANDARD:${cmake_lang_desc} language standard"
+    "CMAKE_${cmake_lang}_STANDARD_REQUIRED:${cmake_lang_desc} language standard is required"
+    "CMAKE_${cmake_lang}_EXTENSIONS:${cmake_lang_desc} enable compiler specific extensions"
   )
 
   _describe -t "${cmake_lang//:/-}-property-names" "${cmake_lang_desc} property name" properties $@[0,-3] && return 0
@@ -322,12 +325,16 @@ _cmake_define_property_values() {
   setopt localoptions extendedglob
   case $@[-1] in
     (CMAKE_BUILD_TYPE)     _wanted build-types expl 'build type' _cmake_build_types && ret=0;;
+    (CMAKE_CXX_STANDARD) _wanted cxx-standards expl 'cxx standard' _cmake_cxx_standars && ret=0;;
+    (CMAKE_C_STANDARD) _wanted c-standards expl 'c standard' _cmake_c_standars && ret=0;;
     (CMAKE_TOOLCHAIN_FILE) _wanted toolchain-files expl 'file' _cmake_toolchain_files && ret=0;;
     (CMAKE_COLOR_MAKEFILE) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
     (CMAKE_INSTALL_PREFIX) _files -/ && ret=0;;
     (CMAKE_EXPORT_COMPILE_COMMANDS) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
     (CMAKE_*_COMPILER)     _wanted compilers expl 'compiler' _cmake_compilers && ret=0;;
     (CMAKE_*_FLAGS(|_?*))  _message -e compiler-flags 'compiler flags' && ret=0;;
+    (CMAKE_*_STANDARD_REQUIRED) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
+    (CMAKE_*_EXTENSIONS) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
     (*)                    _files && ret=0;;
   esac
 
@@ -346,6 +353,33 @@ _cmake_build_types() {
     'MinSizeRel'
   )
   _values 'build type' ${build_types[@]}
+}
+
+# -------------------
+# _cmake_c_standars
+# -------------------
+(( $+functions[_cmake_c_standars] )) ||
+_cmake_c_standars() {
+  local c_standards; c_standards=(
+  '90'
+  '99'
+  '11'
+  )
+  _values 'c standard' ${c_standards[@]}
+}
+
+# -------------------
+# _cmake_cxx_standars
+# -------------------
+(( $+functions[_cmake_cxx_standars] )) ||
+_cmake_cxx_standars() {
+  local cxx_standards; cxx_standards=(
+  '98'
+  '11'
+  '14'
+  '17'
+  )
+  _values 'cxx standard' ${cxx_standards[@]}
 }
 
 # -----------------
