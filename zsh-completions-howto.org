@@ -440,6 +440,6 @@ you can add another empty option (i.e. \:) to the ACTION like this ':TAG:DESCRIP
 Note this only applies to utility functions that use ACTIONs in their specification arguments (_arguments, _regex_arguments, etc.)
 
 * Other resources
-[[http://wikimatze.de/writing-zsh-completion-for-padrino.html][Here]] is a nicely formatted short tutorial showing basic usage of the _arguments function, 
+[[https://wikimatze.de/writing-zsh-completion-for-padrino/][Here]] is a nicely formatted short tutorial showing basic usage of the _arguments function, 
 and [[http://www.linux-mag.com/id/1106/][here]] is a slightly more advanced tutorial using the _arguments function.
 [[http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-System][Here]] is the zshcompsys man page.
