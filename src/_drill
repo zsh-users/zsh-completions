@@ -1,0 +1,106 @@
+#compdef drill
+
+_dns_types() {
+  local expl
+  _description dns-types expl 'DNS type'
+  compadd "$@" "$expl[@]" -M 'm:{a-z}={A-Z}' \
+      ANY A AAAA AFSDB APL AXFR CAA CDNSKEY CDS CERT CNAME DHCID DLV DNAME \
+      DNSKEY DS HIP HINFO IPSECKEY IXFR KEY KX LOC MX NAPTR NS NSEC NSEC3 \
+      NSEC3PARAM OPT PTR RRSIG RP SIG SOA SPF SRV SSHFP TA TKEY TLSA TSIG TXT
+}
+
+local curcontext="$curcontext" state line expl
+local -a alts args
+[[ -prefix + ]] && args=(
+  '*+'{no,}'tcp[use TCP instead of UDP for queries]'
+  '*+'{no,}'ignore[ignore truncation in UDP responses]'
+  '*+domain=[set search list to single domain]:domain:_hosts'
+  '*+dscp=[set DSCP code point for query]:code point (0..63)'
+  '*+'{no,}'search[use search list defined in resolv.conf]'
+  '*+'{no,}'showsearch[show intermediate results in domain search]'
+  '*+split[split hex/base64 fields into chunks]:width (characters) [56]'
+  '*+'{no,}'aaonly[set aa flag in the query]'
+  '*+'{no,}'additional[print additional section of a reply]'
+  '*+'{no,}'adflag[set the AD (authentic data) bit in the query]'
+  '*+'{no,}'badcookie[retry BADCOOKIE responses]'
+  '*+'{no,}'cdflag[set the CD (checking disabled) bit in the query]'
+  '*+'{no,}'class[display the CLASS whening printing the record]'
+  '*+'{no,}'cookie[add a COOKIE option to the request]'
+  '*+'{no,}'crypto[display cryptographic fields in DNSSEC records]'
+  '*+edns=[specify EDNS version for query]:version (0-255)'
+  '*+noedns[clear EDNS version to be sent]'
+  '*+ednsflags=[set EDNS flags bits]:flags'
+  '*+'{no,}'ednsnegotiation[set EDNS version negotiation]'
+  '*+ednsopt=[specify EDNS option]:code point'
+  '*+noedns[clear EDNS options to be sent]'
+  '*+'{no,}'expire[send an EDNS Expire option]'
+  '*+'{no,}'header-only[send query without a question section]'
+  '*+'{no,}'idnout[set conversion of IDN puny code on output]'
+  '*+'{no,}'keepopen[keep TCP socket open between queries]'
+  '*+'{no,}'mapped[allow mapped IPv4 over IPv6 to be used]'
+  '*+'{no,}'recurse[set the RD (recursion desired) bit in the query]'
+  '*+'{no,}'nssearch[search all authoritative nameservers]'
+  '*+opcode[set DNS message opcode of the request]:opcode [QUERY]:(QUERY IQUERY STATUS NOTIFY UPDATE)'
+  '*+noopcode[clear DNS message opcode]'
+  '*+'{no,}'trace[trace delegation down from root]'
+  '*+'{no,}'cmd[print initial comment in output]'
+  '*+'{no,}'short[print terse output]'
+  '*+'{no,}'identify[print IP and port of responder]'
+  '*+'{no,}'comments[print comment lines in output]'
+  '*+'{no,}'stats[print statistics]'
+  '*+'{no,}'qr[print query as it was sent]'
+  '*+'{no,}'question[print question section of a query]'
+  '*+'{no,}'answer[print answer section of a reply]'
+  '*+'{no,}'authority[print authority section of a reply]'
+  '*+'{no,}'all[set all print/display flags]'
+  '*+'{no,}'subnet[send EDNS client subnet option]:addr/prefix-length'
+  '*+timeout=[set query timeout]:timeout (seconds) [5]'
+  '*+tries=[specify number of UDP query attempts]:tries'
+  '*+retry=[specify number of UDP query retries]:retries'
+  '*+'{no,}'rrcomments[set display of per-record comments]'
+  '*+ndots=[specify number of dots to be considered absolute]:dots'
+  '*+bufsize=[specify UDP buffer size]:size (bytes)'
+  '*+'{no,}'multiline[verbose multi-line output]'
+  '*+'{no,}'onesoa[AXFR prints only one soa record]'
+  '*+'{no,}"fail[don't try next server on SERVFAIL]"
+  '*+'{no,}'besteffort[try to parse even malformed messages]'
+  '*+'{no,}'dnssec[request DNSSEC records]'
+  '*+'{no,}'sigchase[chase DNSSEC signature chains]'
+  '*+trusted-key=[specify file conrtaing trusted kets]:file:_files'
+  '*+'{no,}'topdown[do DNSSEC validation in top down mode]'
+  '*+'{no,}'nsid[include EDNS name server ID request in query]'
+  '*+'{no,}'ttlid[display the TTL whening printing the record]'
+  '*+'{no,}'ttlunits[display the TTL in human-readable units]'
+  '*+'{no,}'unknownformat[print RDATA in RFC 3597 "unknown" format]'
+  '*+'{no,}'zflag[set Z flag in query]'
+)
+_arguments -s -C $args \
+  '(- *)-h[display help information]' \
+  '(- *)-v[display version information]' \
+  '*-c+[specify class]:class:compadd -M "m:{a-z}={A-Z}" - IN CS CH HS' \
+  '*-b+[specify source IP]:IP' \
+  '*-f+[batch mode, read arguments from file]:file:_files' \
+  '*-m[enable memory usage debugging]' \
+  '*-p+[specify port number]:port:_ports' \
+  '*-4[use IPv4 only]' \
+  '*-6[use IPv6 only]' \
+  '*-t+[specify type]:type:_dns_types' \
+  '*-q+[specify host name to query]:host:_hosts' \
+  '*-x+[reverse lookup]:IP address' \
+  '*-k+[specify TSIG key file]:file:_files' \
+  '*-y+[specify TSIG key]:hmac\:name\:key' \
+  '*: :->args' && ret=0
+
+if [[ -n $state ]]; then
+  if compset -P @; then
+    _wanted hosts expl 'DNS server' _hosts && ret=0;
+  else
+    case $#line in
+      <3->) alts+=( 'classes:query class:compadd -M "m:{a-z}={A-Z}" - IN CS CH HS' ) ;&
+      2) alts+=( 'types:query type:_dns_types' ) ;;
+    esac
+    _alternative 'hosts:host:_hosts' $alts && ret=0
+  fi
+fi
+
+return ret
