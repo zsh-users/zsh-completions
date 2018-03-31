@@ -157,7 +157,7 @@ _port() {
     '-F[Read and process the file of commands specified by the argument.]' \
     '-p[Despite any errors encountered, proceed to process multiple ports and commands.]' \
     '-y[Perform a dry run.]' \
-    '-t[Enable trace mode debug facilities on platforms that support it (Mac OS X).]' \
+    '-t[Enable trace mode debug facilities on platforms that support it (macOS).]' \
     "1:Port actions:(($actions))" \
     '::Per-action arguments:_port_dispatch' \
     && return 0
