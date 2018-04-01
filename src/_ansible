@@ -40,7 +40,7 @@
 # ------------------------------------------------------------------------------
 #
 # Needs either ANSIBLE_HOSTS or /etc/ansible/hosts on linux
-# (or /usr/local/etc/ansible/hosts on OSX)
+# (or /usr/local/etc/ansible/hosts on macOS)
 #
 # Note 1: the following gist (https://gist.github.com/15ed54a438a36d67fd99.git)
 # has some files to help improve the hostfile shell parsing
@@ -416,8 +416,8 @@ _modules=(
 'os_user:Manage OpenStack Identity Users'
 'os_user_group:Associate OpenStack Identity users and groups'
 'os_volume:Create/Delete Cinder Volumes'
-'osx_defaults:osx_defaults allows users to read, write, and delete Mac OS X user defaults from Ansible'
-'osx_say:Makes an OSX computer to speak.'
+'osx_defaults:osx_defaults allows users to read, write, and delete macOS user defaults from Ansible'
+'osx_say:Makes a macOS computer speak.'
 'ovirt:oVirt/RHEV platform management'
 'package:Generic OS package manager'
 'pacman:Manage packages with *pacman*'

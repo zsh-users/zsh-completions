@@ -92,15 +92,15 @@ _ghc_compiler ()
         '-c[Stop after generating object files]' \
         '-eventlog[Enable runtime event tracing]' \
         '-debug[Use the debugging runtime]' \
-        "-dylib-install-name[On Darwin/OS X only, set the install name]" \
+        "-dylib-install-name[On Darwin/macOS only, set the install name]" \
         '-dynamic[Use dynamic Haskell libraries]' \
         '-dynamic-too[Build dynamic object files as well as static object files during compilation]' \
         '-dynosuf[Set the output suffix for dynamic object files]' \
         '-dynload[Select one of a number of modes for finding shared libraries at runtime]' \
         '--mk-dll[DLL-creation mode (Windows only)]' \
-        '-framework-path[On Darwin/OS X/iOS only, add dir to the list of directories searched for frameworks]' \
+        '-framework-path[On Darwin/macOS/iOS only, add dir to the list of directories searched for frameworks]' \
         '-shared[Generate a shared library (as opposed to an executable)]' \
-        '-staticlib[On Darwin/OS X/iOS only, generate a standalone static library (as opposed to an executable)]' \
+        '-staticlib[On Darwin/macOS/iOS only, generate a standalone static library (as opposed to an executable)]' \
         '-e[Evaluate expression]' \
         '-hide-all-packages[Hide all packages by default]' \
         '-hpcdir[Directory to deposit .mix files during compilation (default is .hpc)]' \

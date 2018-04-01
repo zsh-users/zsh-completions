@@ -40,7 +40,7 @@
 # ------------------------------------------------------------------------------
 #
 # Needs either ANSIBLE_HOSTS or /etc/ansible/hosts on linux
-# (or /usr/local/etc/ansible/hosts on OSX)
+# (or /usr/local/etc/ansible/hosts on macOS)
 #
 # Note 1: the following gist (https://gist.github.com/15ed54a438a36d67fd99.git)
 # has some files to help improve the hostfile shell parsing
