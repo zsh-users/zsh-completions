@@ -1,0 +1,55 @@
+#compdef code
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for Visual Studio Code 1.21 (https://code.visualstudio.com/).
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Klas Mellbourn <klas@mellbourn.net>
+#
+# ------------------------------------------------------------------------------
+
+local arguments
+
+__code_locales() {
+  local -a locales
+  locales=($(locale -a | sed -e 's/\..*$//'))
+  _describe 'locale' locales
+}
+
+arguments=(
+  {-d,--diff}'[compare two files with each other]:file to compare:_files:file to compare with:_files'
+  {-a,--add}'[add folder(s) to the last active window]:folder:_directories'
+  {-g,--goto}'[open a file at the path on the specified]'
+  {-n,--new-window}'[force to open a new window]'
+  {-r,--reuse-window}'[force to open a file or folder in the last active window]'
+  {-w,--wait}'[wait for the files to be closed before]'
+  '--locale[the locale to use (e.g. en-US or zh-TW)]:locale:__code_locales'
+  '--user-data-dir[specifies the directory that user data is in]:directory:_directories'
+  {-v,--version}'[print version]'
+  {-h,--help}'[print usage]'
+  '--extensions-dir[set the root path for extensions]:root path:_directories'
+  '--list-extensions[list the installed extensions]'
+  '--show-versions[show versions of installed extensions, when using --list-extension]'
+  '--install-extension[installs an extension]:id or path:_files -g "*.vsix"'
+  '--uninstall-extension[uninstalls an extension]:id or path:_files -g "*.vsix"'
+  '--enable-proposed-api[enables proposed api features for an extension]:extension id:'
+  '--verbose[print verbose output (implies --wait)]'
+  '--log[log level to use. Default is info]:level:(critical error warn info debug trace off)'
+  {-s,--status}'[print process usage and diagnostics information]'
+  {-p,--performance}'[start with the "Developer: Startup Performance" command enabled]'
+  '--prof-startup[run CPU profiler during startup]'
+  '--disable-extensions[disable all installed extensions]'
+  '--inspect-extensions[allow debugging and profiling of extensions]'
+  '--inspect-brk-extensions[allow debugging and profiling of extensions with the extension host being paused after start]'
+  '--disable-gpu[disable GPU hardware acceleration]'
+  '--upload-logs[uploads logs from current session to a secure endpoint]'
+  '--max-memory[max memory size for a window]:size (in Mbytes):'
+  '*:filename:_files'
+)
+
+_arguments $arguments
