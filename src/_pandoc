@@ -1,0 +1,214 @@
+#compdef pandoc
+
+IFS=$'\n'
+# Input formats
+local -a input_formats
+input_formats=($(pandoc --list-input-formats))
+# Output formats
+local -a output_formats
+output_formats=($(pandoc --list-output-formats))
+# All formats
+local -a all_formats
+all_formats=(${output_formats} ${input_formats})
+all_formats=($(sort -u <<<"${all_formats[*]}"))
+
+### TODO: Enable choosing supported extensions with pandoc --list-extensions=$format
+_pandoc_input_format() {
+	_describe "select input format" input_formats
+}
+_pandoc_output_format() {
+	_describe "select output format" output_formats
+}
+###
+### TODO: make _pandoc_pdf_engine_opts accept options of the specified or default pdf-engine
+_pandoc_pdf_engine(){
+	_alternative \
+		'engines:engine:{_values "engine" pdflatex lualatex xelatex wkhtmltopdf weasyprint prince context pdfroff}' \
+		'engine_files:engine:_files'
+}
+_pandoc_pdf_engine_opts(){
+	_message "Options"
+}
+###
+### TODO: make options --filter, --lua-filter, --highlighting-style, --templates, -- accept files from *specified or default* data-dir
+local data_dir=$(pandoc --version | sed --quiet 's/Default user data directory: \(.*\)/\1/p')
+_pandoc_data_dir(){
+	data_dir=""
+	_files -/
+}
+local _pandoc_template_find_args
+_pandoc_template(){
+	if [[ ! -z $data_dir ]]; then
+		if [[ -z $_pandoc_template_find_args ]]; then
+			_pandoc_template_find_args="-name '*.'${output_formats[1]}"
+			for ((i = 2; i < ${#output_formats[@]}; i++ )); do
+				_pandoc_template_find_args=$_pandoc_template_find_args" -or -name '*.'${output_formats[$i]}"
+			done
+		fi
+		_values 'templates from default data-dir' ${$(eval find -L $data_dir/templates ${_pandoc_template_find_args} 2>/dev/null | sed -e 's/.*\///' -e 's/\.[^.]*$//')}
+	else
+		_message -e "Can't complete templates since the data-dir was set with --data-dir"
+	fi
+}
+###
+
+_pandoc_formats() {
+	_describe "format" all_formats
+}
+_pandoc_reference_location(){
+	local -a policies
+	policies=(
+		'block:place references at the end of the current (top-level) block'
+		'section:place references at the end of the current (top-level) section'
+		'document:place references at the end of the document'
+	)
+	_describe 'location' policies
+}
+_pandoc_top_level_division(){
+	_values 'top level division' default section chapter part
+}
+_pandoc_header_levels(){
+	_values -s , "number" 1 2 3 4 5 6
+}
+_pandoc_header_level(){
+	_values "number" 1 2 3 4 5 6
+}
+_pandoc_email_obfusication(){
+	local -a policies
+	policies=(
+		'none:(default) leaves mailto: links as they are'
+		'javascript:obfuscates them using JavaScript'
+		'references:obfuscates them by printing their letters as decimal or hexadecimal character references'
+	)
+	_describe 'obfusication' policies
+}
+_pandoc_highlight_style(){
+	_alternative \
+		'styles:style:{_values "syntax builting style" ${$(pandoc --list-highlight-styles)}}' \
+		'style_files:style:{_files -g "*.theme"}'
+}
+_pandoc_wrap() {
+	local -a policies
+	policies=(
+		'auto:(default) wrap lines to the column width specified by --columns (default 72)'
+		"none:don't wrap lines at all"
+		'preserve:attempt to preserve the wrapping from the source document'
+	)
+	_describe 'policy' policies
+}
+_pandoc_eol() {
+	local -a policies
+	policies=(
+		'native:line endings appropriate to the OS on which pandoc is being run'
+		'crlf:windows'
+		'lf:macOS/Linux/UNIX'
+	)
+	_describe 'policy' policies
+}
+_pandoc_track_changes() {
+	local -a policies
+	policies=(
+		'accept:(default) inserts all insertions, and ignores all deletions'
+		'reject:inserts all deletions and ignores insertions'
+		'all:puts in insertions, deletions, and comments, wrapped in spans with insertion, deletion, comment-start, and comment-end classes, respectively'
+	)
+	_describe 'policy' policies
+}
+
+# TODO: make _files have approprite messages
+# TODO: make certain options be the last options
+# TODO: make options which take no argument not finish the completion
+# --base-header-level must be 1-5: https://github.com/jgm/pandoc/blob/34d8ffbcfc33b86766ff7229be4d8a0d1fbffb50/src/Text/Pandoc/App.hs#L867
+_arguments -C \
+	{-f,-r,--from=,--read=}'[Specify input format]:FORMAT:_pandoc_input_format' \
+	{-t,-w,--to=,--write=}'[Specify output format]:FORMAT:_pandoc_output_format' \
+	{-o,--output=}'[Write output to FILE instead of stdout]:FILE:_files' \
+	'--data-dir=[Specify the user data directory to search for pandoc data files]:DIR:_pandoc_data_dir' \
+	'--base-header-level=[Specify the base level for headers (defaults to 1)]:NUMBER:_pandoc_header_level' \
+	'--strip-empty-paragraphs[Deprecated. Use the +empty_paragraphs extension instead]: :' \
+	'--indented-code-classes=[Classes to use for indented code blocks]:CLASSES:{_message "Classes seperated with ,"}' \
+	'*--filter=[Specify an executable to be used as a filter transforming the pandoc AST after the input is parsed and before the output is written]:FILE:_files' \
+	'*--lua-filter=[Transform the document in a similar fashion as JSON filters (see --filter), but use pandoc'"'"'s build-in lua filtering system]:FILE:{_files -g "*.lua"}' \
+	{-p,--preserve-tabs}'[Preserve tabs instead of converting them to spaces]: :' \
+	'--tab-stop=[Specify the number of spaces per tab (default is 4)]:NUMBER:{_message -r "choose a number equals to or greater then 1"}' \
+	'--track-changes=[Specifies what to do with insertions, deletions, and comments produced by the MS Word "Track Changes" feature]: :_pandoc_track_changes' \
+	'--file-scope[Parse each file individually before combining for multifile documents]: :' \
+	'--extract-media=[Extract images and other media contained in or linked from the source document to the path DIR]:DIR:{_dir_list}' \
+	{-s,--standalone}'[Produce output with an appropriate header and footer]: :' \
+	'--template=[Use FILE as a custom template for the generated document. Implies --standalone]: :_pandoc_template' \
+	{\*-M,\*--metadata=}'[Set the metadata field KEY to the value VALUE]:KEY\:VALUE: ' \
+	{\*-V,\*--variable=}'[Set the variable KEY to the value VALUE]:KEY\:VALUE: ' \
+	{-D,--print-default-template=}'[Print the system default template for an output]:FORMAT:_pandoc_output_format' \
+	'--print-default-data-file=[Print a system default data file]:FILE: ' \
+	'--print-highlight-style=[Prints a JSON version of a highlighting style]:STYLE|FILE: ' \
+	'--dpi=[Specify the dpi (dots per inch) value for conversion from pixels to inch/centimeters and vice versa]:NUMBER: ' \
+	'--eol=[Manually specify line endings (crlf|lf|native)]: :_pandoc_eol' \
+	'--wrap=[Determine how text is wrapped in the output (the source code, not the rendered version)]: :_pandoc_wrap ' \
+	'--columns=[Specify length of lines in characters (default 72)]:NUMBER: ' \
+	'--strip-comments[Strip out HTML comments in the Markdown or Textile source]: : ' \
+	{--toc,--table-of-contents}'[Include an automatically generated table of contents]: : ' \
+	'--toc-depth=[Specify the number of section levels to include in the table of contents]:NUMBER:{_message -r "choose a number equals to or greater then 1"}' \
+	'--no-highlight[Disables syntax highlighting for code blocks and inlines]: : ' \
+	'--highlight-style=[Specifies the coloring style to be used in highlighted source code]:STYLE|FILE:_pandoc_highlight_style' \
+	'--syntax-definition=[Load a KDE XML syntax definition file]:FILE:{_files -g "*.xml"}' \
+	{\*-H,\*--include-in-header=}'[Include contents of FILE, verbatim, at the end of the header, implies --standalone]:FILE:_files' \
+	{\*-B,\*--include-before-body=}'[Include contents of FILE, verbatim, at the beginning of the document body, implies --standalone]:FILE:_files' \
+	{\*-A,\*--include-end-body=}'[Include contents of FILE, verbatim, at the end of the document body, implies --standalone]:FILE:_files' \
+	'--resource-path=[List of paths to search for images and other resources]:SEARCHPATH:_dir_list' \
+	'--request-header=[Set the request header NAME to the value VAL when making HTTP requests]:NAME\:VAL: ' \
+	'--self-contained[Produce a standalone HTML file with no external dependencies, using data: URIs to incorporate the contents of linked scripts, stylesheets, images, and videos. Implies --standalone]: : ' \
+	'--html-q-tags[Use <q> tags for quotes in HTML]: : ' \
+	'--ascii[Use only ASCII characters in output, supported only for HTML and DocBook output]: : ' \
+	'--reference-links[Use reference-style links, rather than inline links]: : ' \
+	'--reference-location=[Specify where footnotes (and references, if reference-links is set) are placed (block|section|document)]: :_pandoc_reference_location' \
+	'--atx-headers[Use ATX-style headers in Markdown and AsciiDoc output]: : ' \
+	'--top-level-division=[Treat top-level headers as the given division type in LaTeX, ConTeXt, DocBook, and TEI output]: :_pandoc_top_level_division' \
+	{-N,--number-sections}'[Number section headings in LaTeX, ConTeXt, HTML, or EPUB output]: : ' \
+	'--number-offset=[Offset for section headings in HTML output (ignored in other output formats)]: :_pandoc_header_levels' \
+	'--listings[Use the listings package for LaTeX code blocks]: : ' \
+	{-i,--incremental}'[Make list items in slide shows display incrementally (one by one)]: : ' \
+	'--slide-level=[Specifies that headers with the specified level create slides (for beamer, s5, slidy, slideous, dzslides)]: :_pandoc_header_levels' \
+	'--section-divs[Wrap sections in <section> tags (or <div> tags for html4)Use the section-divs package for LaTeX code blocks]: : ' \
+	'--email-obfusication=[Treat top-level headers as the given division type in LaTeX, ConTeXt, DocBook, and TEI output (none|javascript|references)]: :_pandoc_email_obfusication' \
+	'--default-image-extension=[Specify a default extension to use when image paths/URLs have no extension]:EXTENSION: ' \
+	'--id-prefix=[Specify a prefix to be added to all identifiers and internal links in HTML and DocBook output]:STRING: ' \
+	{-T,--title-prefix=}'[Specify STRING as a prefix at the beginning of the title that appears in the HTML header]:STRING: ' \
+	{\*-c,\*--css=}'[Link to a CSS style sheet]:URL: ' \
+	'--reference-doc=[Use the specified file as a style reference in producing a docx or ODT file]:FILE: ' \
+	'--epub-subdirectory=[Specify the subdirectory in the OCF container that is to hold the EPUB-specific contents]:DIRNAME:{_files -/}' \
+	'--epub-cover-image=[Use the specified image as the EPUB cover]:FILE:_files' \
+	'--epub-metadata=[Look in the specified XML file for metadata for the EPUB]:FILE:{_files -g "*.xml"}' \
+	'*--epub-embed-font=[Embed the specified font in the EPUB]:FILE:_files ' \
+	'--epub-chapter-level=[Specify the header level at which to split the EPUB into separate "chapter" files]:NUMBER:_pandoc_header_level' \
+	'--pdf-engine=[Use the specified engine when producing PDF output]:PROGRAM:_pandoc_pdf_engine' \
+	'*--pdf-engine-opt=[Use the given string as a command-line argument to the pdf-engine]:STRING: ' \
+	'*--bibliography=[Set the bibliography field in the document'"'"'s metadata to FILE]:FILE:{_files -g "*.{bib,bibtex,copac,json,yaml,enl,xml,wos,medline,mods,ris}"}' \
+	'--csl=[Set the csl field in the document'"'"'s metadata to FILE]:FILE:{_files -g "*.csl"}' \
+	'--citation-abbreviations=[Set the citation-abbreviations field in the document'"'"'s metadata to FILE]:FILE:_files' \
+	'--natbib[Use natbib for citations in LaTeX output]' \
+	'--biblatex[Use biblatex for citations in LaTeX output]' \
+	'--mathml[Convert TeX math to MathML (in epub3, docbook4, docbook5, jats, html4 and html5)]' \
+	'--webtex=[Convert TeX formulas to <img> tags that link to an external script that converts formulas to images]::URL: ' \
+	'--mathjax=[Use MathJax to display embedded TeX math in HTML output]::URL: ' \
+	'--katex=[Use KaTeX to display embedded TeX math in HTML output]::URL: ' \
+	{-m,--latexmathml=,--asciimathml=}'[Deprecated. Use the LaTeXMathML script to display embedded TeX math in HTML output]::URL: ' \
+	'--mimetex=[Deprecated. Render TeX math using the mimeTeX CGI script, which generates an image for each TeX formula]::URL: ' \
+	'--jsmath=[Deprecated. Use jsMath (the predecessor of MathJax) to display embedded TeX math in HTML output]::URL: ' \
+	'--gladtex[Deprecated. Enclose TeX math in <eq> tags in HTML output]: : ' \
+	'--abbreviations=[Specifies a custom abbreviations file]:FILE:_files ' \
+	'--trace[Enable tracing]' \
+	'--dump-args[Print information about command-line arguments to stdout, then exit]' \
+	'--ignore-args[Ignore command-line arguments (for use in wrapper scripts)]' \
+	'--verbose[Give verbose debugging output]' \
+	'--quiet[Suppress warning messages]' \
+	'--fail-if-warnings[Exit with error status if there are any warnings]' \
+	'--log=[Write log messages in machine-readable JSON format to FILE]:FILE:_file' \
+	'--bash-completion[Generate a bash completion script]' \
+	'--list-input-formats[List supported input formats, one per line]' \
+	'--list-output-formats[List supported output formats, one per line]' \
+	'--list-extensions=[List supported extensions, one per line, preceded by a + or - indicating whether it is enabled by default in FORMAT]:FORMAT:_pandoc_formats' \
+	'--list-highlight-languages[List supported languages for syntax highlighting, one per line]' \
+	'--list-highlight-styles[List supported styles for syntax highlighting, one per line]' \
+	{-v,--version}'[Print version]' \
+	{-h,--help}'[Print help]' \
+	'*:FILE:_files' && ret=0
