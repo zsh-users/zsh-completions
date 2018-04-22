@@ -115,9 +115,6 @@ _pandoc_track_changes() {
 	_describe 'policy' policies
 }
 
-# TODO: make _files have approprite messages
-# TODO: make certain options be the last options
-# TODO: make options which take no argument not finish the completion
 # --base-header-level must be 1-5: https://github.com/jgm/pandoc/blob/34d8ffbcfc33b86766ff7229be4d8a0d1fbffb50/src/Text/Pandoc/App.hs#L867
 _arguments -C \
 	{-f,-r,--from=,--read=}'[Specify input format]:FORMAT:_pandoc_input_format' \
@@ -138,9 +135,9 @@ _arguments -C \
 	'--template=[Use FILE as a custom template for the generated document. Implies --standalone]: :_pandoc_template' \
 	{\*-M,\*--metadata=}'[Set the metadata field KEY to the value VALUE]:KEY\:VALUE: ' \
 	{\*-V,\*--variable=}'[Set the variable KEY to the value VALUE]:KEY\:VALUE: ' \
-	{-D,--print-default-template=}'[Print the system default template for an output]:FORMAT:_pandoc_output_format' \
-	'--print-default-data-file=[Print a system default data file]:FILE: ' \
-	'--print-highlight-style=[Prints a JSON version of a highlighting style]:STYLE|FILE: ' \
+	'(- :)'{-D,--print-default-template=}'[Print the system default template for an output]:FORMAT:_pandoc_output_format' \
+	'(- :)--print-default-data-file=[Print a system default data file]:FILE: ' \
+	'(- :)--print-highlight-style=[Prints a JSON version of a highlighting style]:STYLE|FILE: ' \
 	'--dpi=[Specify the dpi (dots per inch) value for conversion from pixels to inch/centimeters and vice versa]:NUMBER: ' \
 	'--eol=[Manually specify line endings (crlf|lf|native)]: :_pandoc_eol' \
 	'--wrap=[Determine how text is wrapped in the output (the source code, not the rendered version)]: :_pandoc_wrap ' \
@@ -203,12 +200,12 @@ _arguments -C \
 	'--quiet[Suppress warning messages]' \
 	'--fail-if-warnings[Exit with error status if there are any warnings]' \
 	'--log=[Write log messages in machine-readable JSON format to FILE]:FILE:_file' \
-	'--bash-completion[Generate a bash completion script]' \
-	'--list-input-formats[List supported input formats, one per line]' \
-	'--list-output-formats[List supported output formats, one per line]' \
-	'--list-extensions=[List supported extensions, one per line, preceded by a + or - indicating whether it is enabled by default in FORMAT]:FORMAT:_pandoc_formats' \
-	'--list-highlight-languages[List supported languages for syntax highlighting, one per line]' \
-	'--list-highlight-styles[List supported styles for syntax highlighting, one per line]' \
-	{-v,--version}'[Print version]' \
-	{-h,--help}'[Print help]' \
+	'(- :)--bash-completion[Generate a bash completion script]' \
+	'(- :)--list-input-formats[List supported input formats, one per line]' \
+	'(- :)--list-output-formats[List supported output formats, one per line]' \
+	'(- :)--list-extensions=[List supported extensions, one per line, preceded by a + or - indicating whether it is enabled by default in FORMAT]:FORMAT:_pandoc_formats' \
+	'(- :)--list-highlight-languages[List supported languages for syntax highlighting, one per line]' \
+	'(- :)--list-highlight-styles[List supported styles for syntax highlighting, one per line]' \
+	'(- :)'{-v,--version}'[Print version]' \
+	'(- :)'{-h,--help}'[Print help]' \
 	'*:FILE:_files' && ret=0
