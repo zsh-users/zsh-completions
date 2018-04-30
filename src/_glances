@@ -40,24 +40,36 @@
 
 _glances() {
 
-	_arguments \
-		"-b[Display network rate in Byte per second]" \
-		"-B[Bind server to the given IP or host NAME]:host:_hosts" \
-		"-c[Connect to a Glances server]:host:_hosts" \
-		"-C[Path to the configuration file]:configuration path:_files -/" \
-		"-d[Disable disk I/O module]" \
-		"-e[Enable the sensors module (Linux-only)]" \
-		"-f[Set the output folder (HTML) or file (CSV)]:output path:_files -/" \
-		"-h[Display the syntax and exit]" \
-		"-m[Disable mount module]" \
-		"-n[Disable network module]" \
-		"-o[Define additional output (available: HTML or CSV)]:output type:(HTML CSV)" \
-		"-p[Define the client or server TCP port (default: 61209)]:port:_ports" \
-		"-P[Client/server password]:password:" \
-		"-s[Run Glances in server mode]" \
-		"-t[Set the refresh time in seconds (default: 3)]:seconds:" \
-		"-v[Display the version and exit]" \
-		"-z[Do not use the bold color attribute]" \
+    _arguments \
+        "-0[Divide task CPU usage by the total number of CPUs]" \
+        "-1[Start Glances in per CPU mode]" \
+        "-2[Disable left sidebar]" \
+        "-3[Disable quick look module]" \
+        "-4[Disable all but quick look and load]" \
+        "-5[Disable top menu]" \
+        "-6[Start Glances in mean GPU mode]" \
+        "-b[Display network rate in Byte per second]" \
+        "-B[Bind server to the given IP or host NAME]:host:_hosts" \
+        "-c[Connect to a Glances server]:host:_hosts" \
+        "-C[Path to the configuration file]:configuration path:_files -/" \
+        "-d[Enable debug mode]" \
+        "-h[Display the syntax and exit]" \
+        "-o[Define additional output (available: HTML or CSV)]:output type:(HTML CSV)" \
+        "-p[Define the client or server TCP port (default: 61209)]:port:_ports" \
+        "-q[Disable the curses interface]" \
+        "-s[Run Glances in server mode]" \
+        "-t[Set the refresh time in seconds (default: 3)]:seconds:" \
+        "-V[Display the version and exit]" \
+        "-w[Run Glances in web server mode]" \
+        "-z[Do not use the bold color attribute]" \
+        "--browser[Start the client browser]" \
+        "--disable-bg[Disable background colors in the terminal]" \
+        "--disable-bold[Disable bold mode in the terminal]" \
+        "--hide-kernel-threads[Hide kernel threads in process list]" \
+        "--password[Define a client/server password]" \
+        "--theme-white[Optimize display colors for white background]" \
+        "--tree[Display processes as tree]" \
+        "--username[Define a client/server username]" \
 }
 
 _glances "$@"
