@@ -42,7 +42,6 @@
 # submit itself to any jurisdiction.
 
 # TODO:
-# - suggest -Xiwyu more than just once
 # - prevent _iwyu_opts from running once the first clang option got passed
 
 _iwyu_opts() {
@@ -61,6 +60,6 @@ _iwyu_opts() {
              '--verbose=[the higher the level, the more output]:a number:'
 }
 
-_arguments "-Xiwyu[include-what-you-use options]:include-what-you-use options:_iwyu_opts"
+_arguments "*-Xiwyu[include-what-you-use options]:include-what-you-use options:_iwyu_opts"
 # gcc will also provide --version and --help. Not ideal.
 _gcc
