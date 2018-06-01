@@ -49,7 +49,7 @@ _iwyu_opts() {
              '--cwd=[specify the current working directory]:current working directory:_path_files -/' \
              '--howtodebug[print instructions on how to run iwyu under gdb]' \
              '--howtodebug=[print instructions on how to run iwyu under gdb if file matches argument]:file for debug run:_path_files' \
-             '--mapping_file=[iwyu mapping file]:iwyu mapping file:_path_files -g *.imp' \
+             '*'"--mapping_file=[iwyu mapping file]:iwyu mapping file:_path_files -g '*(/) *.imp'" \
              "--no_default_mappings[do not add iwyu's default mappings]" \
              '--pch_in_code[mark the first include in a translation unit as a precompiled header]' \
              '--prefix_header_includes=[what to do with command line includes]:command line include treatment:(add keep remove)' \
