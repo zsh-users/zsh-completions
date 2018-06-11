@@ -643,7 +643,7 @@ _ansible ()
   local curcontext="$curcontext" state line
   typeset -A opt_args
 
-  _arguments -C -W \
+  _arguments -s -C -W \
     '1:pattern:->pattern'\
     "(-a --args)"{-a,--args}"[ARGS module arguments]:arguments:(ARG)"\
     '--ask-become-pass[ask for privilege escalation password]'\
@@ -658,14 +658,14 @@ _ansible ()
     "(-C --check)"{-C,--check}"[don't make any changes]"\
     "(-c --connection)"{-c,--connection}"[CONNECTION connection type to use (default=smart)]:connection type:(smart ssh local chroot)"\
     "(-D --diff)"{-D,--diff}"[show differences when changing (small) files and templates]"\
-    "(-e --extra-vars)"{-e,--extra-vars}"[set additional variables as key=value or YAML/JSON]"\
+    "*"{-e,--extra-vars}"[set additional variables as key=value or YAML/JSON]"\
     "(-f --forks)"{-f,--forks}"[FORKS number of parallel processes to use (default=5)]:forks:(5)"\
     "(-h --help)"{-h,--help}"[help message]"\
-    "(-i --inventory-file)"{-i,--inventory-file}"[INVENTORY specify inventory host file]:inventory file:_files"\
+    "*"{-i,--inventory,--inventory-file}"[INVENTORY specify inventory host file]:inventory file:_files"\
     "(-l --limit)"{-l,--limit}"[SUBSET further limit selected hosts to an additional pattern]:subset pattern:->pattern"\
     '--list-hosts[outputs a list of matching hosts. Does not execute anything else]'\
     "(-m --module-name)"{-m,--module-name}"[MODULE_NAME module name (default=command)]:module name:->module"\
-    "(-M --module-path)"{-M,--module-path}"[MODULE_PATH specify path to module library (default=None)]:module path:_files -/"\
+    "*"{-M,--module-path}"[MODULE_PATH specify path to module library (default=None)]:module path:_files -/"\
     '--new-vault-password-file[new vault password file for rekey]:new vault password file:_files'\
     "(-o --one-line)"{-o,--one-line}"[condense output]"\
     '--output[output file name for encrypt or decrypt; use - for stdout]:output file:_files'\
@@ -683,8 +683,8 @@ _ansible ()
     "(-T --timeout)"{-T,--timeout}"[TIMEOUT override the SSH timeout (s) (default=10)]:ssh timeout:(10)"\
     "(-t --tree)"{-t,--tree}"[OUTPUT_DIRECTORY log output to this directory]:output directory:_files -/"\
     "(-u --user)"{-u,--user}"[REMOTE_USER connect as this user (default=${USER})]:connect as user:(${USER})"\
-    "--vault-password-file[VAULT_PASSWORD_FILE vault password file]:vault password file:_files"\
-    "(-v --verbose)"{-v,--verbose}"[verbose mode (-vvv for more, -vvvv to enable connection debugging)]"\
+    "*--vault-password-file[VAULT_PASSWORD_FILE vault password file]:vault password file:_files"\
+    "*"{-v,--verbose}"[verbose mode (-vvv for more, -vvvv to enable connection debugging)]"\
     "--version[show program's version number and exit]"\
 
   case $state in

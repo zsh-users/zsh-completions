@@ -126,8 +126,8 @@ _ansible-playbook ()
   local curcontext="$curcontext" state line
   typeset -A opt_args
 
-  _arguments -C -W \
-    "1:playbook yml file:_files -g '*.yml|*.yaml'"\
+  _arguments -s -C -W \
+    "*:playbook yml file:_files -g '*.yml|*.yaml'"\
     '--ask-become-pass[ask for privilege escalation password]'\
     "(-k --ask-pass)"{-k,--ask-pass}"[ask for connection password]"\
     '--ask-su-pass[ask for su password (deprecated, use become)]'\
@@ -139,23 +139,23 @@ _ansible-playbook ()
     "(-C --check)"{-C,--check}"[don't make any changes]"\
     "(-c --connection)"{-c,--connection}"[CONNECTION connection type to use (default=smart)]:connection type:(smart ssh local chroot)"\
     "(-D --diff)"{-D,--diff}"[when changing (small files and templates, show the diff in those. Works great with --check)]"\
-    "(-e --extra-vars)"{-e,--extra-vars}"[EXTRA_VARS set additional variables as key=value or YAML/JSON]:extra vars:(EXTRA_VARS)"\
+    "*"{-e,--extra-vars}"[EXTRA_VARS set additional variables as key=value or YAML/JSON]:extra vars:(EXTRA_VARS)"\
     '--flush-cache[clear the fact cache]'\
     '--force-handlers[run handlers even if a task fails]'\
     "(-f --forks)"{-f,--forks}"[FORKS number of parallel processes to use (default=5)]:forks:(5)"\
     "(-h --help)"{-h,--help}"[help message]"\
-    "(-i --inventory-file)"{-i,--inventory-file}"[INVENTORY specify inventory host file]:inventory file:_files"\
+    "*"{-i,--inventory,--inventory-file}"[INVENTORY specify inventory host file]:inventory file:_files"\
     "(-l --limit)"{-l,--limit}"[SUBSET further limit selected hosts to an additional pattern]:subset pattern:->pattern"\
     '--list-hosts[outputs a list of matching hosts. Does not execute anything else]'\
     '--list-tags[list all available tags]'\
     '--list-tasks[list all tasks that would be executed]'\
-    "(-M --module-path)"{-M,--module-path}"[MODULE_PATH specify path to module library (default=None)]:module path:_files -/"\
+    "*"{-M,--module-path}"[MODULE_PATH specify path to module library (default=None)]:module path:_files -/"\
     '--new-vault-password-file[new vault password file for rekey]:new vault password file:_files'\
     '--output[output file name for encrypt or decrypt; use - for stdout]:output file:_files'\
     '--private-key[PRIVATE_KEY_FILE use this file to authenticate the connection]:private key file:_files'\
     '--scp-extra-args[specify extra arguments to pass to scp only]'\
     '--sftp-extra-args[specify extra arguments to pass to sftp only]'\
-    "--skip-tags[SKIP_TAGS only run plays and tasks whose tags do not match these values]:skip tags:(SKIP_TAGS)"\
+    "*--skip-tags[SKIP_TAGS only run plays and tasks whose tags do not match these values]:skip tags:(SKIP_TAGS)"\
     '--ssh-common-args[specify common arguments to pass to sftp/scp/ssh]'\
     '--ssh-extra-args[specify extra arguments to pass to ssh only]'\
     "--start-at-task[START_AT start the playbook at the task matching this name]:name:(TASK_NAME)"\
@@ -165,11 +165,11 @@ _ansible-playbook ()
     "(-s --sudo)"{-s,--sudo}"[run operations with sudo (nopasswd) (deprecated, use become)]"\
     "(-U --sudo-user)"{-U,--sudo-user}"[SUDO_USER desired sudo user (default=root) (deprecated, use become)]:su user:(root)"\
     '--syntax-check[perform a syntax check on the playbook, but do not execute it]'\
-    "(-t --tags)"{-t,--tags}"[TAGS only run plays and tasks gagged with these values]:task tags:(TAGS)"\
+    "*"{-t,--tags}"[TAGS only run plays and tasks gagged with these values]:task tags:(TAGS)"\
     "(-T --timeout)"{-T,--timeout}"[TIMEOUT override the SSH timeout (s) (default=10)]:ssh timeout:(10)"\
     "(-u --user)"{-u,--user}"[REMOTE_USER connect as this user (default=${USER})]:connect as user:(${USER})"\
-    "--vault-password-file[VAULT_PASSWORD_FILE vault password file]:vault password file:_files"\
-    "(-v --verbose)"{-v,--verbose}"[verbose mode (-vvv for more, -vvvv to enable connection debugging)]"\
+    "*--vault-password-file[VAULT_PASSWORD_FILE vault password file]:vault password file:_files"\
+    "*"{-v,--verbose}"[verbose mode (-vvv for more, -vvvv to enable connection debugging)]"\
     "--version[show program's version number and exit]"\
 
   case $state in
