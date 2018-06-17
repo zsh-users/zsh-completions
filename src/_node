@@ -1,6 +1,6 @@
 #compdef node
 # ------------------------------------------------------------------------------
-# Copyright (c) 2011 Github zsh-users - http://github.com/zsh-users
+# Copyright (c) 2018 Github zsh-users - http://github.com/zsh-users
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Node.js v0.8.4 (http://nodejs.org)
+#  Completion script for Node.js v10.4.1 (https://nodejs.org)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -36,24 +36,64 @@
 #
 #  * Mario Fernandez (https://github.com/sirech)
 #  * Nicholas Penree (https://github.com/drudge)
+#  * Masafumi Koba (https://github.com/ybiquitous)
 #
 # ------------------------------------------------------------------------------
+
+_node_files() {
+  _files -g "*.(js|mjs)"
+}
 
 local curcontext="$curcontext" state line ret=1
 typeset -A opt_args
 
 _arguments -C \
-  '(- 1 *)--help[print options help]' \
-  '(- 1 *)'{-v,--version}'[print node version]' \
-  '(--no-deprecation)--no-deprecation[silence deprecation warnings]' \
-  '(--trace-deprecation)--trace-deprecation[show stack traces on deprecations]' \
+  '-[script read from stdin (default; interactive mode if a tty)]' \
+  '--[indicate the end of node options]' \
+  '--abort-on-uncaught-exception[aborting instead of exiting causes a core file to be generated for analysis]' \
+  '--experimental-modules[experimental ES Module support and caching modules]' \
+  '--experimental-repl-await[experimental await keyword support in REPL]' \
+  '--experimental-vm-modules[experimental ES Module support in vm module]' \
+  '--icu-data-dir=[set ICU data load path to dir (overrides NODE_ICU_DATA) note: linked-in ICU data is present]: :_directories' \
+  '--inspect-brk=-[activate inspector on host:port and break at start of user script]:[host\:]port' \
+  '--inspect-port=[set host:port for inspector]:[host\:]port' \
+  '--inspect=-[activate inspector on host:port (default: 127.0.0.1:9229)]:[host\:]port' \
+  '--napi-modules[load N-API modules (no-op - option kept for compatibility)]' \
+  '--no-deprecation[silence deprecation warnings]' \
+  '--no-force-async-hooks-checks[disable checks for async_hooks]' \
+  '--no-warnings[silence all process warnings]' \
+  '--openssl-config=[load OpenSSL configuration from the specified file (overrides OPENSSL_CONF)]:file:_files' \
+  '--pending-deprecation[emit pending deprecation warnings]' \
+  '--preserve-symlinks[preserve symbolic links when resolving]' \
+  '--preserve-symlinks-main[preserve symbolic links when resolving the main module]' \
+  '--prof[generate V8 profiler output]' \
+  '--prof-process[process V8 profiler output generated using --prof]' \
+  '--redirect-warnings=[write warnings to file instead of stderr]: :_files' \
+  '--throw-deprecation[throw an exception on deprecations]' \
+  '--tls-cipher-list=[use an alternative default TLS cipher list]:cipher list string' \
+  '--trace-deprecation[show stack traces on deprecations]' \
+  '--trace-event-categories[comma separated list of trace event categories to record]: :{_values -s , categories node node.async_hooks node.bootstrap node.perf node.perf.usertiming node.perf.timerify node.fs.sync node.vm.script v8}' \
+  '--trace-event-file-pattern[Template string specifying the filepath for the trace-events data, it supports ${rotation} and ${pid} log-rotation id. %2$u is the pid.]:template string' \
+  '--trace-events-enabled[track trace events]' \
+  '--trace-sync-io[show stack trace when use of sync IO is detected after the first tick]' \
+  '--trace-warnings[show stack traces on process warnings]' \
+  '--track-heap-objects[track heap object allocations for heap snapshots]' \
+  '--use-bundled-ca[use bundled CA store (default)]' \
+  "--use-openssl-ca[use OpenSSL's default CA store]" \
   '(- 1 *)--v8-options[print v8 command line options]' \
-  '(--max-stack-size)--max-stack-size=[set max v8 stack size (bytes)]' \
-  '(-e --eval)'{-e,--eval}'[evaluate script]:Inline Script' \
-  '(-i --interactive)'{-i,--interactive}'[always enter the REPL even if stdin does not appear to be a terminal]' \
-  '(-p --print)'{-p,--print}'[print result of --eval]' \
-  '(--vars)--vars[print various compiled-in variables]' \
-  '*:JS Script:_files -g "*.js"' && ret=0
+  "--v8-pool-size=[set v8's thread pool size]:number" \
+  '--zero-fill-buffers[automatically zero-fill all newly allocated Buffer and SlowBuffer instances]' \
+  {-c,--check}'[syntax check script without executing]' \
+  '(- 1 *)'{-e,--eval}'[evaluate script]:inline JavaScript' \
+  '(- 1 *)'{-h,--help}'[print node command line options]' \
+  {-i,--interactive}'[always enter the REPL even if stdin does not appear to be a terminal]' \
+  '(- 1 *)'{-p,--print}'[evaluate script and print result]:inline JavaScript' \
+  '*'{-r,--require}'[module to preload (option can be repeated)]: :_node_files' \
+  '(- 1 *)'{-v,--version}'[print Node.js version]' \
+  '*: :_node_files' && ret=0
+
+_values 'commands' \
+  'inspect[enable inspector for debugging]' && ret=0
 
 return ret
 
