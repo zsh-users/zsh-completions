@@ -1,4 +1,5 @@
-#compdef ccache
+#compdef ccache -P -value-,CCACHE_*,-default-
+
 # zsh completion script for ccache
 
 # Copyright 2018 CERN for the benefit of the LHCb Collaboration.
@@ -45,6 +46,129 @@
 _ccache_compilers() {
   _command_names -e
 }
+
+_ccache_booleans() {
+  _message 'There are no "false" values, unset variable to disable'
+  local description; description=${1:-boolean}
+  local booleans; booleans=(
+  'true'
+  'yes'
+  )
+  _describe -t booeans "$description" booleans
+}
+
+if [[ "$service" = -value-* ]]; then
+  case $service in
+    *CCACHE_*DIR*)
+      # CCACHE_BASEDIR: relative to which top level paths are hashed
+      # CCACHE_DIR: where the cache and config are kept
+      # CCACHE_TEMPDIR: where temporary files are kept
+      # all: a single path
+      _path_files -/
+      ;;
+    *CCACHE_NLEVELS*)
+      local -a one_eight
+      one_eight=(1 2 3 4 5 6 7 8)
+      _describe -t onetoeight "directory levels in the cache directory" one_eight
+      ;;
+    *CCACHE_CC*)
+      _ccache_compilers
+      ;;
+    *CCACHE_COMPILERCHECK*)
+      local -a compiler_check_values
+      compiler_check_values=(
+      'content: the actual compiler binary'
+      'mtime: mtime and size of the compiler'
+      'none: ignore compiler for hashing'
+      'string\:: any hard coded string (pre-computed version)'
+      '%compiler%\ -v:any compiler invocation output'
+      )
+      _describe -t compilerchecks "compiler information included in the hash" compiler_check_values
+      ;;
+    *CCACHE_*COMPRESS*)
+      _ccache_booleans "write compressed cache"
+      ;;
+    *CCACHE_COMPRESSLEVEL*)
+      local -a one_nine
+      one_nine=(1 2 3 4 5 6 7 8 9)
+      _describe -t onetonine "compression level (if using compression)" one_nine
+      ;;
+    *CCACHE_EXTENSION*)
+      # FIXME
+      ;;
+    *CCACHE_*DIRECT*)
+      _ccache_booleans "use direct mode"
+      ;;
+    *CCACHE_*DISABLE*)
+      _ccache_booleans "disable cache usage"
+      ;;
+    *CCACHE_EXTRAFILES*)
+      local sep=:
+      compset -P "*${sep}"
+      compset -S "${sep}*" || suf="$sep"
+
+      _files "" -r "${sep}"' /\t\t\-' "$@"
+      ;;
+    *CCACHE_*HARDLINK*)
+      _ccache_booleans "create hard links rather than copies"
+      ;;
+    *CCACHE_*HASHDIR*)
+      _ccache_booleans "include the cwd in the hash"
+      ;;
+    *CCACHE_IGNOREHEADERS*)
+      _dir_list
+      ;;
+    *CCACHE_*COMMENTS*)
+      _ccache_booleans "consider comments in hashing"
+      ;;
+    *CCACHE_LIMIT_MULTIPLE*)
+      _alternative ":clean up down to level (e.g. 0.8): "
+      ;;
+    *CCACHE_LOGFILE*)
+      _path_files -g "*(/) *.log"
+      ;;
+    *CCACHE_MAXFILES*)
+      _alternative ":maximum number of files in the cache (0= no limit): "
+      ;;
+    *CCACHE_MAXSIZE*)
+      ;;
+    *CCACHE_PATH*)
+      _alternative ':PATH for compiler lookup (instead of $PATH):_dir_list'
+      ;;
+    *CCACHE_PREFIX*)
+      # FIXME
+      ;;
+    *CCACHE_PREFIX_CPP*)
+      # FIXME
+      ;;
+    *CCACHE_*READONLY*)
+      _ccache_booleans "treat cache as read-only"
+      ;;
+    *CCACHE_*READONLY_DIRECT*)
+      _ccache_booleans "retrieve from read-only cache in direct mode"
+      ;;
+    *CCACHE_*RECACHE*)
+      _ccache_booleans "use cache in write-only mode"
+      ;;
+    *CCACHE_*CPP2*)
+      _ccache_booleans "pass originial rather than preprocessed source code to compiler"
+      ;;
+    *CCACHE_SLOPPINESS*)
+      # FIXME
+      ;;
+    *CCACHE_*STATS*)
+      _ccache_booleans "update statistics counters"
+      ;;
+    *CCACHE_UMASK*)
+      # FIXME
+      ;;
+    *CCACHE_*UNIFY*)
+      _ccache_booleans "normalise sources prior to processing"
+      ;;
+  esac
+
+  return
+fi
 
 if [[ $words[2] == -* ]]; then
   # if the first argument starts with -, we are in configure-ccache mode
