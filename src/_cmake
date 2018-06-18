@@ -1,6 +1,6 @@
 #compdef cmake
 # ------------------------------------------------------------------------------
-# Copyright (c) 2016 Github zsh-users - http://github.com/zsh-users
+# Copyright (c) 2017 Github zsh-users - http://github.com/zsh-users
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,7 @@
 # -------
 #
 #  * Scott M. Kroll <skroll@gmail.com> (initial version)
-#  * Paul Seyfert <pseyfert@mathphys.fsk.uni-heidelberg.de> (handling of --build)
+#  * Paul Seyfert <pseyfert.mathphys@gmail.com> (handling of --build)
 #
 # -------------------------------------------------------------------------
 # Notes
@@ -308,6 +308,8 @@ _cmake_define_common_property_names() {
     'CMAKE_COLOR_MAKEFILE:Enables/disables color output when using the Makefile generator'
     'CMAKE_INSTALL_PREFIX:Install directory used by install'
     'CMAKE_EXPORT_COMPILE_COMMANDS:Enable/disable output of compilation database during generation'
+    'CMAKE_RULE_MESSAGES:Specify whether to report a message for each make rule'
+    'CMAKE_VERBOSE_MAKEFILE:Enable verbose output from Makefile builds'
   )
 
   _describe -t 'common-property-names' 'common property name' properties $@
@@ -324,6 +326,8 @@ _cmake_define_property_values() {
     (CMAKE_BUILD_TYPE)     _wanted build-types expl 'build type' _cmake_build_types && ret=0;;
     (CMAKE_TOOLCHAIN_FILE) _wanted toolchain-files expl 'file' _cmake_toolchain_files && ret=0;;
     (CMAKE_COLOR_MAKEFILE) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
+    (CMAKE_RULE_MESSAGES)  _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
+    (CMAKE_VERBOSE_MAKEFILE) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
     (CMAKE_INSTALL_PREFIX) _files -/ && ret=0;;
     (CMAKE_EXPORT_COMPILE_COMMANDS) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
     (CMAKE_*_COMPILER)     _wanted compilers expl 'compiler' _cmake_compilers && ret=0;;
