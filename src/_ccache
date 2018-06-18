@@ -57,6 +57,33 @@ _ccache_booleans() {
   _describe -t booeans "$description" booleans
 }
 
+(( $+functions[_ccache_compressionlevels] )) ||
+_ccache_compressionlevels() {
+  local -a one_nine
+  one_nine=(1 2 3 4 5 6 7 8 9)
+  _describe -t onetonine "compression level (if using compression)" one_nine
+}
+
+(( $+functions[_ccache_compilerchecks] )) ||
+_ccache_compilerchecks() {
+  local -a compiler_check_values
+  compiler_check_values=(
+  'content: the actual compiler binary'
+  'mtime: mtime and size of the compiler'
+  'none: ignore compiler for hashing'
+  'string\:: any hard coded string (pre-computed version)'
+  '%compiler%\ -v:any compiler invocation output'
+  )
+  _describe -t compilerchecks "compiler information included in the hash" compiler_check_values
+}
+
+(( $+functions[_ccache_dirlevels] )) ||
+_ccache_dirlevels() {
+  local -a one_eight
+  one_eight=(1 2 3 4 5 6 7 8)
+  _describe -t onetoeight "directory levels in the cache directory" one_eight
+}
+
 if [[ "$service" = -value-* ]]; then
   case $service in
     *CCACHE_*DIR*)
@@ -67,31 +94,19 @@ if [[ "$service" = -value-* ]]; then
       _path_files -/
       ;;
     *CCACHE_NLEVELS*)
-      local -a one_eight
-      one_eight=(1 2 3 4 5 6 7 8)
-      _describe -t onetoeight "directory levels in the cache directory" one_eight
+      _ccache_dirlevels
       ;;
     *CCACHE_CC*)
       _ccache_compilers
       ;;
     *CCACHE_COMPILERCHECK*)
-      local -a compiler_check_values
-      compiler_check_values=(
-      'content: the actual compiler binary'
-      'mtime: mtime and size of the compiler'
-      'none: ignore compiler for hashing'
-      'string\:: any hard coded string (pre-computed version)'
-      '%compiler%\ -v:any compiler invocation output'
-      )
-      _describe -t compilerchecks "compiler information included in the hash" compiler_check_values
+      _ccache_compilerchecks
       ;;
     *CCACHE_*COMPRESS*)
       _ccache_booleans "write compressed cache"
       ;;
     *CCACHE_COMPRESSLEVEL*)
-      local -a one_nine
-      one_nine=(1 2 3 4 5 6 7 8 9)
-      _describe -t onetonine "compression level (if using compression)" one_nine
+      _ccache_compressionlevels
       ;;
     *CCACHE_EXTENSION*)
       # FIXME
@@ -170,15 +185,122 @@ if [[ "$service" = -value-* ]]; then
   return
 fi
 
-if [[ $words[2] == -* ]]; then
+__ccache_config_keys() {
+  local -a keys
+  keys=(
+  'compression'
+  'direct_mode'
+  'disable'
+  'hard_link'
+  'hash_dir'
+  'keep_comments_cpp'
+  'read_only'
+  'read_only_direct'
+  'recache'
+  'run_second_cpp'
+  'stats'
+  'unify' 
+  'base_dir'
+  'temporary_dir'
+  'cache_dir'
+  'compiler'
+  'cache_dir_levels'
+  'compiler_check'
+  'compression_level'
+  'cpp_extension'
+  'extra_files_to_hash'
+  'ignore_headers_in_manifest'
+  'limit_multiple'
+  'log_file'
+  'max_files'
+  'max_size'
+  'path'
+  'prefix_command'
+  'prefix_command_cpp'
+  'sloppiness'
+  'umask'
+  )
+  _describe -t configkeys "configuration keys" keys -S '='
+}
+
+if compset -P '--set-config=*='; then
+  case $IPREFIX in
+    *=compression= | *=direct_mode= | *=disable= | *=hard_link= | *=hash_dir= | *=keep_comments_cpp= | *=read_only= | *=read_only_direct= | *=recache= | *=run_second_cpp= | *=stats= | *=unify= )
+      local booleans; booleans=(
+      'true'
+      'false'
+      )
+      _describe -t booleans 'boolean' booleans
+      ;;
+    *=base_dir= | *=temporary_dir= | *=cache_dir=)
+      _path_files -/
+      ;;
+    *=compiler=)
+      _ccache_compilers
+      ;;
+    *=cache_dir_levels=)
+      _ccache_dirlevels
+      ;;
+    *=compiler_check=)
+      _ccache_compilerchecks
+      ;;
+    *=compression_level=)
+      _ccache_compressionlevels
+      ;;
+    *=cpp_extension=)
+      # FIXME
+      ;;
+    *=extra_files_to_hash=)
+      local sep=:
+      compset -P "*${sep}"
+      compset -S "${sep}*" || suf="$sep"
+
+      _files "" -r "${sep}"' /\t\t\-' "$@"
+      ;;
+    *=ignore_headers_in_manifest=)
+      _dir_list
+      ;;
+    *=limit_multiple=)
+      _alternative ":clean up down to level (e.g. 0.8): "
+      ;;
+    *=log_file=)
+      _path_files -g "*(/) *.log"
+      ;;
+    *=max_files=)
+      _alternative ":maximum number of files in the cache (0= no limit): "
+      ;;
+    *=max_size=)
+      # FIXME
+      ;;
+    *=path=)
+      _alternative ':PATH for compiler lookup (instead of $PATH):_dir_list'
+      ;;
+    *=prefix_command=)
+      # FIXME
+      ;;
+    *=prefix_command_cpp=)
+      # FIXME
+      ;;
+    *=sloppiness=)
+      # FIXME
+      ;;
+    *=umask=)
+      # FIXME
+      ;;
+  esac
+elif [[ $words[2] == -* ]]; then
   # if the first argument starts with -, we are in configure-ccache mode
-  # for this, _gnu_generic is okayish:
-  #  * ccache --set-config=key=value won't complete beyond the first =
-  #  * ccache --set-config=foo=bar --<TAB> won't suggest "set-config" another time
-  if [[ $words[$CURRENT] == -* ]]; then
-    # only call _gnu_generic without hyphen (files are not useful)
-    _gnu_generic
-  fi
+  _arguments \
+    '*'{-o,--set-config=}"[set configuration key]:keys:__ccache_config_keys" \
+    '(: -)'{-h,--help}'[show help message]' \
+    '(: -)'{-V,--version}'[print version and copyright information]' \
+    '(-z --zero-stats)'{-z,--zero-stats}'[zero statistics counters]' \
+    '(-c --cleanup)'{-c,--cleanup}'[delete old files and recalculate size counters]' \
+    '(-C --clear)'{-C,--clear}'[clear the cache completely (except configuration)]' \
+    '(-p --print-config)'{-p,--print-config}'[print current configuration options]' \
+    '(-s --show-stats)'{-s,--show-stats}'[show statistics summary]' \
+    '(-F --max-files=)'{-F,--max-files=}'[set maximum number of files in cache]:number of files in cache: ' \
+    '(-M --max-size=)'{-M,--max-size=}'[set maximum size of cache]:cache size: '
 elif [[ $CURRENT -eq 2 ]]; then
   _ccache_compilers
 else
