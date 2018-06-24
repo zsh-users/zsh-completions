@@ -1,0 +1,156 @@
+#compdef golemcli
+
+local -a _1st_arguments
+
+_1st_arguments=(
+'account:Account Manage account'
+'exit:Exit the interactive shell'
+'help:Display this help message'
+'debug:Debug RPC'
+'envs:Manage environments'
+'network:Manage network'
+'incomes:Display incomes'
+'payments:Display payments'
+'res:Manage resources'
+'settings:Manage settings'
+'tasks:Manage tasks'
+'subtasks:Manage subtasks'
+'terms:Show and accept terms of use'
+)
+
+local -a _2nd_arguments_account
+_2nd_arguments_account=(
+'info:Display account & financial info'
+'unlock:Unlock account, will prompt for your password'
+'withdraw:Withdraw GNT/ETH'
+)
+
+local -a _2nd_arguments_debug
+_2nd_arguments_debug=(
+'rpc:Debug RPC calls'
+)
+
+local -a _2nd_arguments_envs
+_2nd_arguments_envs=(
+'disable:Disable environment'
+'enable:Enable environment'
+'perf_mult:Gets accepted performance multiplier'
+'perf_mult_set:Sets accepted performance multiplier'
+'recount:Recount performance for an environment'
+'show:Show environments'
+)
+
+local -a _2nd_arguments_tasks
+_2nd_arguments_tasks=(
+'abort:Abort a task'
+'create:Create a task from file. Note: no client-side validation is performed yet. This will change in the future'
+'delete:Delete a task'
+'dump:Dump an existing task'
+'restart:Restart a task'
+'restart_subtasks:Restart given subtasks from a task'
+'show:Show task details'
+'stats:Show statistics for tasks'
+'subtasks:Show sub-tasks'
+'template:Dump a task template'
+'unsupport:Show statistics for unsupported tasks'
+)
+
+local -a _2nd_arguments_network
+_2nd_arguments_network=(
+'block:Block provider'
+'connect:Connect to a node'
+'dht:Show known nodes'
+'show:Show connected nodes'
+'status:Show client status'
+)
+
+local -a _2nd_arguments_res
+_2nd_arguments_res=(
+'clear:Clear provider / requestor resources'
+'show:Show information on used resources'
+)
+
+local -a _2nd_arguments_settings
+_2nd_arguments_settings=(
+'set:Change settings'
+'show:Show current settings'
+)
+
+local -a _2nd_arguments_subtasks
+_2nd_arguments_subtasks=(
+'restart:Restart a subtask'
+'show:Show subtask details'
+)
+
+local -a _2nd_arguments_terms
+_2nd_arguments_terms=(
+'accept:Accept terms of use'
+'show:Show terms of use'
+)
+
+local -a _3rd_arguments_settings_set
+_3rd_arguments_settings_set=(
+'node_name:non-empty string			Node name'
+'accept_tasks:int {0, 1}				Accept tasks'
+'max_resource_size:int > 0 [kB]				Maximal resource size'
+'getting_tasks_interval:int > 0 [s]				Interval between task requests'
+'getting_peers_interval:int > 0 [s]				Interval between peer requests'
+'task_session_timeout:int > 0 [s]				Task session timeout'
+'p2p_session_timeout:int > 0 [s]				P2P session timeout'
+'requesting_trust:float [-1., 1.]			Minimal requestor trust'
+'computing_trust:float [-1., 1.]			Minimal provider trust'
+'min_price:float >= 0				Min GNT/h price (provider)'
+'max_price:float >= 0				Max GNT/h price (requestor)'
+'use_ipv6:int {0, 1}				Use IPv6'
+'opt_peer_num:int > 0				Number of peers to keep'
+'send_pings:int {0, 1}				Send ping messages to peers'
+'pings_interval:int > 0				Interval between ping messages'
+'max_memory_size:16777216 > int >= 1048576 [kB]	Max memory size'
+'num_cores:8 >= int >= 1			Number of CPU cores to use'
+'enable_talkback:int {0, 1}				Enable error reporting with talkback service'
+)
+
+
+if (( CURRENT == 2 )); then
+  _describe -t commands "golemcli subcommand" _1st_arguments
+fi
+
+if (( CURRENT == 3 )); then
+	case "$words[2]" in
+		account)
+			_describe -t commands "golemcli subcommand" _2nd_arguments_account
+		;;
+		debug)
+			_describe -t commands "golemcli subcommand" _2nd_arguments_debug
+		;;
+		envs)
+			_describe -t commands "golemcli subcommand" _2nd_arguments_envs
+		;;
+		network)
+			_describe -t commands "golemcli subcommand" _2nd_arguments_network
+		;;
+		res)
+			_describe -t commands "golemcli subcommand" _2nd_arguments_res
+		;;
+		settings)
+			_describe -t commands "golemcli subcommand" _2nd_arguments_settings
+		;;
+		subtasks)
+			_describe -t commands "golemcli subcommand" _2nd_arguments_subtasks
+		;;
+		tasks)
+			_describe -t commands "golemcli subcommand" _2nd_arguments_tasks
+		;;
+		terms)
+			_describe -t commands "golemcli subcommand" _2nd_arguments_terms
+		;;
+	esac
+fi
+
+if (( CURRENT == 4 )); then
+	case "$words[2]" in
+		settings)
+			_describe -t commands "golemcli subcommand" _3rd_arguments_settings_set
+		;;
+	esac
+fi
