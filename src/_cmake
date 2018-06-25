@@ -78,9 +78,15 @@ local cmake_build_options;cmake_build_options=(
 
 # ------------------------
 # _cmake_generator_options
+#
+# arguments are $1: build working directory (top level Makefile or build.ninja file)
+#               $2: position of "--" in the command line
 # ------------------------
 (( $+functions[_cmake_generator_options] )) ||
 _cmake_generator_options() {
+  # pass only the part of the command line starting at "--" to the completion
+  shift (( $2 - 1 )) words
+  (( CURRENT = $CURRENT + 1 - $2 ))
   if [ -f $1/Makefile ]
   then
     $_comps[make]
@@ -116,6 +122,10 @@ _cmake_targets() {
   _describe 'build targets' targets
 }
 
+_cmake_suggest_builddirs() {
+  _alternative ':current directory:(.)' 'directory::_directories' && return 0
+}
+
 _cmake_on_build() {
   local build_extras;build_extras=(
     '--[Native build tool options]'
@@ -130,14 +140,14 @@ _cmake_on_build() {
     (( i++ ))
   done
   inbuild=false
-  nativemode=false
+  dashdashposition=-1
   for ((i = (($CURRENT - 1)); i > 1 ; i--)); do
     if [[ $words[$i] == --build ]] ; then
       inbuild=true
       buildat=$i
       (( difference = $CURRENT - $i ))
     elif [[ $words[$i] == -- ]] ; then
-      nativemode=true
+      dashdashposition=$i
     fi
   done
   # check if build mode has been left
@@ -149,18 +159,16 @@ _cmake_on_build() {
     if [[ $words[(($i - 1))] == --config ]] ; then continue ; fi
     outofbuild=true
   done
-  if [ "$nativemode" = true ] ; then
-    _cmake_generator_options $words[(($buildat + 1))] && return 0
+  if (( $dashdashposition > 0 )) ; then
+    _cmake_generator_options $words[(($buildat + 1))] $dashdashposition && return 0
   fi
-  if [ "$inbuild" = false ] ; then
+  if [[ "$inbuild" == false || "$difference" -eq 1 ]] ; then
+    # either there is no --build or completing the directory after --build
     _arguments -C -s \
       - build_opts \
       "$cmake_build_options[@]" \
       - build_cmds \
       "$cmake_suggest_build[@]" && return 0
-  elif [ $difference -eq 1 ] ; then
-    # directly after --build comes the build directory
-    _alternative ':current directory:(.)' 'directory::_directories' && return 0
   elif [[ $words[(($CURRENT - 1))] == --target ]] ; then
     # after --build <dir> --target, suggest targets
     _cmake_targets $words[(($buildat + 1))] && return 0
@@ -444,7 +452,7 @@ _cmake_command() {
 }
 
 local cmake_suggest_build;cmake_suggest_build=(
-    '--build[build]'
+    '--build[build]:build dir:_cmake_suggest_builddirs'
 )
 
 if [ $CURRENT -eq 2 ] ; then
