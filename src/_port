@@ -119,7 +119,7 @@ _port() {
   )
 
   pseudo_common=(all current active inactive actinact installed uninstalled outdated
-  obsolete requested unrequested leaves)
+  obsolete requested unrequested leaves rleaves)
 
   pseudo_advanced=('variants:' 'variant:' 'description:' 'depends:'
   'depends_lib:' 'depends_run:' 'depends_build:' 'depends_fetch:' 'depends_extract:'
@@ -127,6 +127,7 @@ _port() {
   'maintainers:' 'maintainer:' 'categories:' 'category:' 'version:' 'revision:' 'license:')
 
   select_options=(
+  '--summary:Display sumamry of selected options'
   '--list:List available versions for the group'
   '--set:Select the given version for the group'
   '--show:Show which version is currently selected for the group (default if none given)'
