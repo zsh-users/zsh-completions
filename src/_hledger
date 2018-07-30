@@ -17,7 +17,7 @@
 # -----------
 #
 #  Completion script for hleder 1.10 ( http://hledger.org/ )
-#  Last updated: 29.07.2018
+#  Last updated: 30.07.2018
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -44,7 +44,7 @@ args=(
   '(-f --file)'{-f,--file}'=[use a different input file]:input file:_files'
   '--rules-file=[CSV conversion rules file]:rules file:_files'
   '--alias=[display accounts named OLD as NEW]:alias specification'
-  '--anon=[anonymize accounts and payees'
+  '--anon=[anonymize accounts and payees]'
   '(-b --begin)'{-b,--begin}'=[include postings/txns on or after this date]:date'
   '(-e --end)'{-e,--end}'=[include postings/txns before this date]:date'
   '(-D --daily)'{-D,--daily}'[multiperiod/multicolumn report by day]'
@@ -60,7 +60,7 @@ args=(
   '(-E --empty)'{-E,--empty}'[show empty/zero things which are normally omitted]'
   '(-B --cost)'{-B,--cost}'[show amounts in their cost price'\''s commodity]'
   '(-V --value)'{-V,--value}'[converts reported amounts to the current market value]'
-  '(-I --ignore-assertions'{-I,--ignore-assertions}'[ignore any failing balance assertions]'
+  '(-I --ignore-assertions)'{-I,--ignore-assertions}'[ignore any failing balance assertions]'
   '--forecast=[apply periodic transaction rules to generate future transactions]'
 )
 
