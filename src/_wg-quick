@@ -1,0 +1,27 @@
+#compdef wg-quick
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for wg-quick (a script for easy managemant of wireguard
+#  VPN tunnels) (https://www.wireguard.com/)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Nicolas Lenz <nicolas@eisfunke.com>
+#
+# ------------------------------------------------------------------------------
+
+# Take all configuration files (ending with .conf) from /etc/wireguard,
+# remove the .conf-parts to get the inferface names
+local interfaces=$(ls /etc/wireguard | \
+  sed -e "/.conf$/!d" -e "s/.conf$//" 2>/dev/null)
+
+# The possible modes
+local modes=('up\:"bring a wireguard interface up"'\
+  'down\:"tear down and remove a wireguard interface"'\
+  'save\:"save configuration of a running wireguard interface"')
+
+_arguments "1:mode:((${modes}))" "2:inferface:(${interfaces})"
