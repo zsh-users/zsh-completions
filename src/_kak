@@ -43,7 +43,7 @@
 
 _kak_sessions() {
   session_ids=($(_call_program session_ids kak -l))
-  _values "${session_ids[@]}"
+  _values 'kak sessions' "${session_ids[@]}"
 }
 
 _kak() {
