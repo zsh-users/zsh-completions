@@ -10,7 +10,6 @@ zsh-completions ![GitHub release](https://img.shields.io/github/release/zsh-user
 
 See [issues](https://github.com/zsh-users/zsh-completions/issues) for details on each completion definition.
 
-
 ## Usage
 
 ### Using packages
@@ -57,20 +56,6 @@ Add `antigen bundle zsh-users/zsh-completions` to your `~/.zshrc`.
 
         rm -f ~/.zcompdump; compinit
 
-### Contributing
-
-Contributions are welcome, just make sure you follow the guidelines:
-
- * Completions are not accepted when already available in zsh.
- * Completions are not accepted when already available in their original project.
- * Please do not just copy/paste someone else completion, ask before.
- * Completions only partially implemented are not accepted.
- * Please add a header containing authors, status and origin of the script and license header if you do not wish to use the Zsh license (example [here](src/_ack)).
- * Please try to follow [Zsh completion style guide](https://github.com/zsh-users/zsh/blob/master/Etc/completion-style-guide).
- * Please send one separate pull request per file.
- * Send a pull request or ask for committer access.
-
-
 ## License
-Completions use the Zsh license, unless explicitely mentionned in the file header.
+Completions use the Zsh license, unless explicitly mentioned in the file header.
 See [LICENSE](https://github.com/zsh-users/zsh-completions/blob/master/LICENSE) for more information.
