@@ -48,7 +48,9 @@ _rspec() {
     '*'{-O,--options}'[Specify the path to a custom options file]:PATH:_files' \
     --order'[Run examples by the specified order type]: :->order' \
     --seed'[Equivalent of --order rand:SEED]: :_guard "[[\:digit\:]]#" "SEED"' \
+    --bisect'[Repeatedly runs the suite in order to isolate the failures to the smallest reproducible case]' \
     --only-failures'[Filter to just the examples that failed the last time they ran]' \
+    '(-n --next-failure)'{-n,--next-failure}'[Apply `--only-failures` and abort after one failure (equivalent to `--only-failures --fail-fast --order defined`)]' \
     --fail-fast'[Abort the run on first failure]' \
     --no-fail-fast'[Do not abort the run on first failure]' \
     --failure-exit-code'[Override the exit code used when there are failing specs]: :_guard "[[\:digit\:]]#" "CODE"' \
@@ -59,8 +61,10 @@ _rspec() {
     '(-o --out)'{-o,--out}'[Write output to a file instead of $stdout]:FILE:_files' \
     --deprecation-out'[Write deprecation warnings to a file instead of $stderr]:FILE:_files' \
     '(-b --backtrace)'{-b,--backtrace}'[Enable full backtrace]' \
-    '(-c --color)'{-c,--color}'[Enable color in the output]' \
+    --force-color'[Force the output to be in color, even if the output is not a TTY]' \
+    --no-color'[Force the output to not be in color, even if the output is a TTY]' \
     '(-p --profile)'{-p,--profile}'[Enable profiling of examples and list the slowest examples (default: 10)]: :_guard "[[\:digit\:]]#" "COUNT"' \
+    --no-profile'[Disable profiling of examples]' \
     '(-w --warnings)'{-w,--warnings}'[Enable ruby warnings]' \
     '(-P --pattern)'{-P,--pattern}'[Load files matching pattern (default: "spec/**/*_spec.rb")]:PATTERN:' \
     --exclude-pattern'[Load files except those matching pattern]:PATTERN:' \
