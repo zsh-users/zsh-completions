@@ -1,0 +1,442 @@
+#compdef flutter
+# ------------------------------------------------------------------------------
+#MIT License
+#
+#Copyright (c) 2018 Nickolay Simonov
+#
+#Permission is hereby granted, free of charge, to any person obtaining a copy
+#of this software and associated documentation files (the "Software"), to deal
+#in the Software without restriction, including without limitation the rights
+#to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+#copies of the Software, and to permit persons to whom the Software is
+#furnished to do so, subject to the following conditions:
+#
+#The above copyright notice and this permission notice shall be included in all
+#copies or substantial portions of the Software.
+#
+#THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+#AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+#OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+#SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for the Flutter.io sdk's cli tool (https://flutter.io)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Nikolai Simonov (https://github.com/NiKoTron) <nickolay.simonov@gmail.com>
+#
+# ------------------------------------------------------------------------------
+_flutter() {
+
+typeset -A opt_args
+local context state line
+
+local curcontext="$curcontext"
+
+local ret=1
+
+_arguments -C -A "-*" \
+'(-h --help)'{-h,--help}'[Print this usage information.]' \
+'(-v --verbose)'{-v,--verbose}'[Noisy logging, including all shell commands executed.]' \
+'--quiet[Reduce the amount of output from some commands.]' \
+'(-d --device-id)'{-d,--device-id}'[Target device id or name (prefixes allowed).]' \
+'--version[Reports the version of this tool.]' \
+'--color[Whether to use terminal colors.]' \
+'--no-color[Whether to use terminal colors.]' \
+'--suppress-analytics[Suppress analytics reporting when this command runs.]' \
+'--bug-report[Captures a bug report file to submit to the Flutter team (contains local paths, device identifiers, and log snippets).]' \
+'--packages[Path to your ".packages" file. (required, since the current directory does not contain a ".packages" file)]' \
+'--flutter-root[The root directory of the Flutter repository (uses $FLUTTER_ROOT if set).]' \
+'1: :_root_commands' \
+'*::arg:->args' \
+&& ret=0
+  
+  case "$state" in
+    (args)
+      case $words[1] in
+        (help)
+            _arguments -C \
+            '1: :_root_commands' \
+          && ret=0
+        ;;
+        (analyze)
+            _arguments -C \
+            '(-h --help)'{-h,--help}'[Print this usage information.]' \
+            '--flutter-repo[Include all the examples and tests from the Flutter repository.]' \
+            '--no-flutter-repo[Include all the examples and tests from the Flutter repository.]' \
+            '--current-package[Include the lib/main.dart file from the current directory, if any. (defaults to on)]' \
+            '--no-current-package[Include the lib/main.dart file from the current directory, if any. (defaults to on)]' \
+            '--watch[Run analysis continuously, watching the filesystem for changes.]' \
+            '--preview-dart-2[Preview Dart 2.0 functionality. (defaults to on)]' \
+            '--no-preview-dart-2[Preview Dart 2.0 functionality. (defaults to on)]' \
+            '--write=[Also output the results to a file. This is useful with --watch if you want a file to always contain the latest results.]: :_files -/' \
+            '--pub[Whether to run "flutter packages get" before executing this command. (defaults to on)]' \
+            '--no-pub[Whether to run "flutter packages get" before executing this command. (defaults to on)]' \
+            '--congratulate[When analyzing the flutter repository, show output even when there are no errors, warnings, hints, or lints. (defaults to on)]' \
+            '--no-congratulate[When analyzing the flutter repository, show output even when there are no errors, warnings, hints, or lints. (defaults to on)]' \
+            '--preamble[When analyzing the flutter repository, display the number of files that will be analyzed. (defaults to on)]' \
+            '--no-preamble[When analyzing the flutter repository, display the number of files that will be analyzed. (defaults to on)]' \
+          && ret=0
+        ;;
+        (build)
+            _arguments -C \
+            '1: :_build_entities' \
+            '(-h --help)'{-h,--help}'[Print this usage information.]' \
+          && ret=0
+        ;;
+        (channel)
+            _arguments -C \
+            '(-h --help)'{-h,--help}'[Print this usage information.]' \
+          && ret=0
+        ;;
+        (clean)
+            _arguments -C \
+            '(-h --help)'{-h,--help}'[Print this usage information.]' \
+          && ret=0
+        ;;
+        (config)
+            _arguments -C \
+            '(-h --help)'{-h,--help}'[Print this usage information.]' \
+            '--analytics[Enable or disable reporting anonymously tool usage statistics and crash reports.]' \
+            '--no-analytics[Enable or disable reporting anonymously tool usage statistics and crash reports.]' \
+            '--clear-ios-signing-cert[Clear the saved development certificate choice used to sign apps for iOS device deployment.]' \
+            '--gradle-dir[The gradle install directory.]' \
+            '--android-sdk[The Android SDK directory.]' \
+            '--android-studio-dir[The Android Studio install directory.]' \
+          && ret=0
+        ;;
+        
+        (create)
+            _arguments -C \
+            '(-h --help)'{-h,--help}'[Print this usage information.]' \
+            '--pub[Whether to run "flutter packages get" after the project has been created. (defaults to on)]' \
+            '--no-pub[Whether to run "flutter packages get" after the project has been created. (defaults to on)]' \
+            '--offline[When "flutter packages get" is run by the create command, this indicates whether to run it in offline mode or not. In offline mode, it will need to have all dependencies already available in the pub cache to succeed.]' \
+            '--no-offline[When "flutter packages get" is run by the create command, this indicates whether to run it in offline mode or not. In offline mode, it will need to have all dependencies already available in the pub cache to succeed.]' \
+            "--with-driver-test[Also add a fl:_root_commandsutter_driver dependency and generate a sample 'flutter drive' test.]" \
+            "--no-with-driver-test[Also add a flutter_driver dependency and generate a sample 'flutter drive' test.]" \
+            '(-t= --template=)'{-t=,--template=}'[Specify the type of project to create.]: :_project_templates' \
+            "--description[The description to use for your new Flutter project. This string ends up in the pubspec.yaml file. (defaults to 'A new Flutter project.')]" \
+            "--org[The organization responsible for your new Flutter project, in reverse domain name notation. This string is used in Java package names and as prefix in the iOS bundle identifier. (defaults to 'com.example')]" \
+            '(-i= --ios-language)'{-i=,--ios-language}'[iOS project language]: :_ios_languages' \
+            '(-a= --android-language)'{-a=,--android-language}'[Android project language]: :_droid_languages' \
+          && ret=0
+        ;;
+        
+        (daemon)
+            _arguments -C \
+            '(-h --help)'{-h,--help}'[Print this usage information.]' \
+          && ret=0
+        ;;
+        (devices)
+            _arguments -C \
+            '(-h --help)'{-h,--help}'[Print this usage information.]' \
+          && ret=0
+        ;;
+        (doctor)
+            _arguments -C \
+            '(-h --help)'{-h,--help}'[Print this usage information.]' \
+            "--android-licenses[Run the Android SDK manager tool to accept the SDK's licenses.]" \
+          && ret=0
+        ;;
+        (drive)
+            _arguments -C \
+            '(-h --help)'{-h,--help}'[Print this usage information.]' \
+            '--debug[Build a debug version of your app (default mode).]' \
+            '--profile[Build a version of your app specialized for performance profiling.]' \
+            '--release[Build a release version of your app.]' \
+            '--flavor[Build a custom app flavor as defined by platform-specific build setup. Supports the use of product flavors in Android Gradle scripts. Supports the use of custom Xcode schemes.]' \
+            '--trace-startup[Start tracing during startup.]' \
+            '--route[Which route to load when running the app.]' \
+            '--target-platform[Specify the target platform when building the app for an Android device. Ignored on iOS.]: :_target_platforms' \
+            '(-t= --target=)'{-t=,-target=}'[The main entry-point file of the application, as run on the device. If the --target option is omitted, but a file name is provided on the command line, then that is used instead. (defaults to "lib/main.dart")]: :_files -g "*.dart"' \
+            '--observatory-port[Listen to the given port for an observatory debugger connection. Specifying port 0 will find a random free port. Defaults to the first available port after 8100.]' \
+            '--pub[Whether to run "flutter packages get" before executing this command. (defaults to on)]' \
+            '--no-pub[Whether to run "flutter packages get" before executing this command. (defaults to on)]' \
+            '--no-keep-app-running[Will keep the Flutter application running when done testing. By default, "flutter drive" stops the application after tests are finished, and --keep-app-running overrides this. On the other hand, if --use-existing-app is specified, then "flutter drive" instead defaults to leaving the application running, and --no-keep-app-running overrides it.]' \
+            '--keep-app-running[Will keep the Flutter application running when done testing. By default, "flutter drive" stops the application after tests are finished, and --keep-app-running overrides this. On the other hand, if --use-existing-app is specified, then "flutter drive" instead defaults to leaving the application running, and --no-keep-app-running overrides it.]' \
+            '--use-existing-app=[Connect to an already running instance via the given observatory URL. If this option is given, the application will not be automatically started, and it will only be stopped if --no-keep-app-running is explicitly set.]' \
+            '--driver=[The test file to run on the host (as opposed to the target file to run on the device). By default, this file has the same base name as the target file, but in the "test_driver/" directory instead, and with "_test" inserted just before the extension, so e.g. if the target is "lib/main.dart", the driver will be "test_driver/main_test.dart".]: :_files' \
+            '--preview-dart-2[Preview Dart 2.0 functionality. (defaults to on)]' \
+            '--no-preview-dart-2[Preview Dart 2.0 functionality. (defaults to on)]' \
+          && ret=0
+        ;;
+        (format)
+            _arguments -C \
+            '(-h --help)'{-h,--help}'[Print this usage information.]' \
+          && ret=0
+        ;;
+        (fuchsia_reload)
+            _arguments -C \
+            '(-h --help)'{-h,--help}'[Print this usage information.]' \
+            '--debug[Build a debug version of your app (default mode).]' \
+            '--profile[Build a version of your app specialized for performance profiling.]' \
+            '--release[Build a release version of your app.]' \
+            '(-a --address)'{-a,--address}'[Fuchsia device network name or address.]' \
+            '(-b --build-dir)'{-b,--build-dir}'[Fuchsia build directory, e.g. out/release-x86-64.]' \
+            '(-g --gn-target)'{-g,--gn-target}'[GN target of the application, e.g //path/to/app:app.]' \
+            '(-i --isolate-number)'{-i,--isolate-number}'[To reload only one instance, specify the isolate number, e.g. the number in foo$main-###### given by --list.]' \
+            '(-l --list)'{-l,--list}'[Lists the running modules.]' \
+            '(-l --no-list)'{-l,--no-list}'[Lists the running modules.]' \
+            '(-n --name-override)'{-n,--name-override}'[On-device name of the application binary.]' \
+            '(-2 --preview-dart-2)'{-2,--preview-dart-2}'[Preview Dart 2.0 functionality.]' \
+            '(-2 --no-preview-dart-2)'{-2,--no-preview-dart-2}'[Preview Dart 2.0 functionality.]' \
+            '(-t --target)'{-t,--target}'[Target app path / main entry-point file. Relative to --gn-target path, e.g. lib/main.dart. (defaults to "lib/main.dart")]' \
+          && ret=0
+        ;;
+        (ide-config)
+            _arguments -C \
+            '(-h --help)'{-h,--help}'[Print this usage information.]' \
+            '--overwrite[When performing operations, overwrite existing files.]' \
+            '--no-overwrite[When performing operations, overwrite existing files.]' \
+            '--update-templates[Update the templates in the template directory from the current configuration files. This is the opposite of what ide-config usually does. Will search the flutter tree for .iml files and copy any missing ones into the template directory. If --overwrite is also specified, it will update any out-of-date files, and remove any deleted files from the template directory.]' \
+            && ret=0
+        ;;
+        (inject-plugins)
+            _arguments -C \
+            '(-h --help)'{-h,--help}'[Print this usage information.]' \
+          && ret=0
+        ;;
+        (install)
+            _arguments -C \
+            '(-h --help)'{-h,--help}'[Print this usage information.]' \
+          && ret=0
+        ;;
+        (logs)
+            _arguments -C \
+            '(-h --help)'{-h,--help}'[Print this usage information.]' \
+            '(-c --clear)'{-c,--clear}'[Clear log history before reading from logs.]' \
+          && ret=0
+        ;;
+        (packages)
+        _arguments -C \
+            '1: :_package_subcomands' \
+            '*::pkg-arg:->pkg-args' \
+          && ret=0
+          case "$state" in
+            (pkg-args)
+              case $words[1] in
+                (get)
+                  _arguments \
+                    '(-h --help)'{-h,--help}'[Print this usage information.]' \
+                    '--offline[Use cached packages instead of accessing the network.]' \
+                  && ret=0
+                ;;
+                (pub)
+                  _arguments \
+                    '(-h --help)'{-h,--help}'[Print this usage information.]' \
+                  && ret=0
+                ;;
+                (test)
+                  _arguments \
+                    '(-h --help)'{-h,--help}'[Print this usage information.]' \
+                  && ret=0
+                ;;
+                (upgrade)
+                  _arguments \
+                    '(-h --help)'{-h,--help}'[Print this usage information.]' \
+                    '--offline[Use cached packages instead of accessing the network.]' \
+                  && ret=0
+                ;;
+            esac
+            ;;
+          esac
+        ;;
+        
+        (precache)
+            _arguments -C \
+            '(-h --help)'{-h,--help}'[Print this usage information.]' \
+            '(-a --all-platforms)]'{-a--all-platforms}'[Precache artifacts for all platforms.]' \
+          && ret=0
+        ;;
+        (run)
+            _arguments -C \
+            '(-h --help)'{-h,--help}'[Print this usage information.]' \
+            '--debug[Build a debug version of your app (default mode).]' \
+            '--profile[Build a version of your app specialized for performance profiling.]' \
+            '--release[Build a release version of your app.]' \
+            '--flavor[Build a custom app flavor as defined by platform-specific build setup. Supports the use of product flavors in Android Gradle scripts. Supports the use of custom Xcode schemes.]' \
+            '--trace-startup[Start tracing during startup.]' \
+            '--route[Which route to load when running the app.]' \
+            '--target-platform[Specify the target platform when building the app for an Android device. Ignored on iOS.]: :_target_platforms' \
+            '(-t= --target=)'{-t=,--target=}'[The main entry-point file of the application, as run on the device. If the --target option is omitted, but a file name is provided on the command line, then that is used instead. (defaults to "lib/main.dart")]: :_files -g "*.dart"' \
+            '--observatory-port[Listen to the given port for an observatory debugger connection. Specifying port 0 will find a random free port.Defaults to the first available port after 8100.]' \
+            '--pub[Whether to run "flutter packages get" before executing this command. (defaults to on)]' \
+            '--no-pub[Whether to run "flutter packages get" before executing this command. (defaults to on)]' \
+            '--full-restart[Stop any currently running application process before running the app. (defaults to on)]' \
+            '--no-full-restart[Stop any currently running application process before running the app. (defaults to on)]' \
+            '--start-paused[Start in a paused mode and wait for a debugger to connect.]' \
+            '--enable-software-rendering[Enable rendering using the Skia software backend. This is useful when testing Flutter on emulators. By default, Flutter will attempt to either use OpenGL or Vulkan and fall back to software when neither is available.]' \
+            '--skia-deterministic-rendering    When combined with --enable-software-rendering, provides 100% deterministic Skia rendering.]' \
+            '--trace-skia[Enable tracing of Skia code. This is useful when debugging the GPU thread. By default, Flutter will not log skia code.]' \
+            '--use-test-fonts[Enable (and default to) the "Ahem" font. This is a special font used in tests to remove any dependencies on the font metrics. It is enabled when you use "flutter test". Set this flag when running a test using "flutter run" for debugging purposes. This flag is only available when running in debug mode.]' \
+            '--no-use-test-fonts[Enable (and default to) the "Ahem" font. This is a special font used in tests to remove any dependencies on the font metrics. It is enabled when you use "flutter test". Set this flag when running a test using "flutter run" for debugging purposes. This flag is only available when running in debug mode.]' \
+            '--build[If necessary, build the app before running. (defaults to on)]' \
+            '--no-build[If necessary, build the app before running. (defaults to on)]' \
+            '--hot[Run with support for hot reloading. (defaults to on)]' \
+            '--no-hot[Run with support for hot reloading. (defaults to on)]' \
+            '--pid-file[Specify a file to write the process id to. You can send SIGUSR1 to trigger a hot reload and SIGUSR2 to trigger a full restart.]' \
+          && ret=0
+        ;;
+        (screenshot)
+            _arguments -C \
+            '(-h --help)'{-h,--help}'[Print this usage information.]' \
+            '(-o --out)'{-o,--out}'[Location to write the screenshot.]: :_files' \
+            '--skia=[Retrieve the last frame rendered by a Flutter app as a Skia picture using the specified observatory port. To find the observatory port number, use "flutter run --verbose" and look for "Forwarded host port ... for Observatory" in the output.]' \
+          && ret=0
+        ;;
+        (stop)
+            _arguments -C \
+            '(-h --help)'{-h,--help}'[Print this usage information.]' \
+          && ret=0
+        ;;
+        (test)
+            _arguments -C \
+            '(-h --help)'{-h,--help}'[Print this usage information.]' \
+            '--pub[Whether to run "flutter packages get" before executing this command. (defaults to on)]' \
+            '--no-pub[Whether to run "flutter packages get" before executing this command. (defaults to on)]' \
+            '--name=[A regular expression matching substrings of the names of tests to run.]' \
+            '--plain-name=[A plain-text substring of the names of tests to run.]' \
+            '--start-paused[Start in a paused mode and wait for a debugger to connect. You must specify a single test file to run, explicitly. Instructions for connecting with a debugger and printed to the console once the test has started.]' \
+            '--coverage[Whether to collect coverage information.]' \
+            '--merge-coverage[Whether to merge coverage data with "coverage/lcov.base.info". Implies collecting coverage data. (Requires lcov)]' \
+            '--coverage-path[Where to store coverage information (if coverage is enabled). (defaults to "coverage/lcov.info")]' \
+          && ret=0
+        (trace)
+            _arguments -C \
+            '(-h --help)'{-h,--help}'[Print this usage information.]' \
+            '--start[Start tracing.]' \
+            '--stop[Stop tracing.]' \
+            '--out[Specify the path of the saved trace file.]' \
+            '(-d --duration)'{-d,--duration}'[Duration in seconds to trace. (defaults to "10")]' \
+            '--debug-port[Local port where the observatory is listening. (defaults to "8100")]' \
+          && ret=0
+        ;;
+        (update-packages)
+            _arguments -C \
+            '(-h --help)'{-h,--help}'[Print this usage information.]' \
+            '--force-upgrade[Attempt to update all the dependencies to their latest versions. This will actually modify the pubspec.yaml files in your checkout.]' \
+            '--no-force-upgrade[Attempt to update all the dependencies to their latest versions. This will actually modify the pubspec.yaml files in your checkout.]' \
+            '--paths[Finds paths in the dependency chain leading from package specified in --from to package specified in --to.]' \
+            '--no-paths[Finds paths in the dependency chain leading from package specified in --from to package specified in --to.]' \
+            '--from[Used with flag --dependency-path. Specifies the package to begin searching dependency path from.]' \
+            '--to[Used with flag --dependency-path. Specifies the package that the sought after dependency path leads to.]' \
+            '--transitive-closure[Prints the dependency graph that is the transitive closure of packages the Flutter SDK depends on.]' \
+            '--no-transitive-closure[Prints the dependency graph that is the transitive closure of packages the Flutter SDK depends on.]' \
+            '--verify-only[verifies the package checksum without changing or updating deps]' \
+            '--no-verify-only[verifies the package checksum without changing or updating deps]' \
+          && ret=0
+        ;;
+        (upgrade)
+            _arguments -C \
+            '(-h --help)'{-h,--help}'[Print this usage information.]' \
+          && ret=0
+        ;;
+        
+      esac
+    ;;
+  esac
+  
+  
+  return ret
+  
+  }
+
+  
+(( $+functions[root_commands] )) ||
+_root_commands() {
+  local commands;
+  commands=(
+    "analyze:Analyze the project's Dart code."
+    'build:Flutter build commands.'
+    'channel:List or switch flutter channels.'
+    'clean:Delete the build/ directory.'
+    'config:Configure Flutter settings.'
+    'create:Create a new Flutter project.'
+    'daemon:Run a persistent, JSON-RPC based server to communicate with devices.'
+    'devices:List all connected devices.'
+    'doctor:Show information about the installed tooling.'
+    'drive:Runs Flutter Driver tests for the current project.'
+    'format:Format one or more dart files.'
+    'fuchsia_reload:Hot reload on Fuchsia.'
+    'help:Display help information for flutter.'
+    'ide-config:Configure the IDE for use in the Flutter tree.'
+    'inject-plugins:Re-generates the GeneratedPluginRegistrants.'
+    'install:Install a Flutter app on an attached device.'
+    'logs:Show log output for running Flutter apps.'
+    'packages:Commands for managing Flutter packages.'
+    "precache:Populates the Flutter tool's cache of binary artifacts."
+    'run:Run your Flutter app on an attached device.'
+    'screenshot:Take a screenshot from a connected device.'
+    'stop:Stop your Flutter app on an attached device.'
+    'test:Run Flutter unit tests for the current project.'
+    'trace:Start and stop tracing for a running Flutter app.'
+    'update-packages:Update the packages inside the Flutter repo.'
+    'upgrade:Upgrade your copy of Flutter.')
+  _describe -t commands 'command' commands "$@"
+}
+
+(( $+functions[_build_entities] )) ||
+_build_entities() {
+  local entities;
+  entities=("aot:Build an ahead-of-time compiled snapshot of your app's Dart code."
+  "apk:Build an Android APK file from your app."
+  "flx:Build a Flutter FLX file from your app."
+  "ios:Build an iOS application bundle (Mac OS X host only).")
+  _describe -t entities 'entity' entities "$@"
+}
+
+(( $+functions[_project_templates] )) ||
+_project_templates() {
+  local templates;
+  templates=("app:(default) Generate a Flutter application."
+  "package:Generate a shareable Flutter project containing modular Dart code."
+  "plugin:Generate a shareable Flutter project containing an API in Dart code with a platform-specific implementation for Android, for iOS code, or for both.")
+  _describe -t templates 'template' templates "$@"
+}
+
+(( $+functions[_ios_languages] )) ||
+_ios_languages() {
+  local languages;
+  languages=("objc:(default) Objective-C."
+  "swift:Swift.")
+  _describe -t languages 'language' languages "$@"
+}
+
+(( $+functions[_droid_languages] )) ||
+_droid_languages() {
+  local languages;
+  languages=("java:(default) Java."
+  "kotlin:Kotlin.")
+  _describe -t languages 'language' languages "$@"
+}
+
+(( $+functions[_target_platforms] )) ||
+_target_platforms() {
+  local platforms;
+  platforms=("default:(default) default."
+  "android-arm:android-arm."
+  "android-arm64:android-arm64.")
+  _describe -t platforms 'platform' platforms "$@"
+}
+
+
+(( $+functions[_package_subcomands] )) ||
+_package_subcomands() {
+  local subcommands;
+  subcommands=("get:Get packages in a Flutter project."
+  "pub:Pass the remaining arguments to Dart's 'pub' tool."
+  "test:Run the 'test' package."
+  "upgrade:Upgrade packages in a Flutter project.")
+  _describe -t subcommands 'subcommand' subcommands "$@"
+}
+
+_flutter "$@"
