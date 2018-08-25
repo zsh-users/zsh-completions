@@ -169,8 +169,11 @@ _ansible-playbook ()
     "(-T --timeout)"{-T,--timeout}"[TIMEOUT override the SSH timeout (s) (default=10)]:ssh timeout:(10)"\
     "(-u --user)"{-u,--user}"[REMOTE_USER connect as this user (default=${USER})]:connect as user:(${USER})"\
     "--vault-password-file[VAULT_PASSWORD_FILE vault password file]:vault password file:_files"\
-    "(-v --verbose)"{-v,--verbose}"[verbose mode (-vvv for more, -vvvv to enable connection debugging)]"\
-    "--version[show program's version number and exit]"\
+    '(-vv -vvv -vvvv --verbose)-v[verbose mode (-vvv for more, -vvvv to enable connection debugging)]' \
+    "(-v -vvv -vvvv --verbose)-vv[verbose mode (-vvv for more, -vvvv to enable connection debugging)]" \
+    '(-v -vv -vvvv --verbose)-vvv[verbose mode (-vvv for more, -vvvv to enable connection debugging)]' \
+    '(-v -vv -vvv --verbose)-vvvv[verbose mode (-vvv for more, -vvvv to enable connection debugging)]' \
+    '(-v -vv -vvv -vvvv)--verbose[verbose mode (-vvv for more, -vvvv to enable connection debugging)]' \
 
   case $state in
     pattern)
