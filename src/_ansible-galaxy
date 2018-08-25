@@ -84,7 +84,7 @@ _ansible-galaxy ()
           _arguments \
             "(-h --help)"{-h,--help}"[help message]" \
             "(-c --ignore-certs)"{-c,--ignore-certs}"[Ignore SSL certificate validation errors.]" \
-            "(-p --roles-path)"{-p,--roles-path}"[ROLES_PATH The path to the directory containing your roles (default: from ansible.cfg)]:roles path:_files -/" \
+            "*"{-p,--roles-path}"[ROLES_PATH The path to the directory containing your roles (default: from ansible.cfg)]:roles path:_files -/" \
             "(-s --server)"{-s,--server}"[API_SERVER The API server destination]:api server:(http://apiserver)" \
             "(-v --verbose)"{-v,--verbose}"[verbose mode (-vvv for more, -vvvv to enable connection debugging)]" \
             "--version[show program's version number and exit]" \
