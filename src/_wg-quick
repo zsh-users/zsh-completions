@@ -24,4 +24,4 @@ local modes=('up\:"bring a wireguard interface up"'\
   'down\:"tear down and remove a wireguard interface"'\
   'save\:"save configuration of a running wireguard interface"')
 
-_arguments "1:mode:((${modes}))" "2:inferface:(${interfaces})"
+_arguments "1:mode:((${modes}))" "2:interface:(${interfaces})"
