@@ -35,7 +35,7 @@
 # -------
 #
 #  * Scott M. Kroll <skroll@gmail.com> (initial version)
-#  * Paul Seyfert <pseyfert.mathphys@gmail.com> (handling of --build)
+#  * Paul Seyfert <pseyfert.mathphys@gmail.com> (handling of --build and updates)
 #
 # -------------------------------------------------------------------------
 # Notes
@@ -345,7 +345,7 @@ _cmake_define_property_values() {
     (CMAKE_INSTALL_PREFIX) _files -/ && ret=0;;
     (CMAKE_EXPORT_COMPILE_COMMANDS) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
     (CMAKE_*_COMPILER)     _wanted compilers expl 'compiler' _cmake_compilers && ret=0;;
-    (CMAKE_*_FLAGS(|_?*))  _message -e compiler-flags 'compiler flags' && ret=0;;
+    (CMAKE_*_FLAGS(|_?*))  _message -e compiler-flags 'compiler flags' && _dispatch $service -value-,CPPFLAGS,-default- && ret=0;;
     (CMAKE_*_STANDARD_REQUIRED) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
     (CMAKE_*_EXTENSIONS) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
     (*)                    _files && ret=0;;
