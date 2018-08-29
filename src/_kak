@@ -42,8 +42,10 @@
 # ------------------------------------------------------------------------------
 
 _kak_sessions() {
-  session_ids=($(_call_program session_ids kak -l))
-  _values "${session_ids[@]}"
+  local -a session_ids expl
+  session_ids=($(_call_program session_names kak -l))
+  _description session-ids expl "session name"
+  compadd "$expl[@]" -a session_ids
 }
 
 _kak() {
