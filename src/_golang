@@ -30,13 +30,13 @@
 # Description
 # -----------
 #
-#  Completion script for go 1.5 (http://golang.org).
+#  Completion script for go 1.11 (http://golang.org).
 #
 # ------------------------------------------------------------------------------
 # Authors
 # -------
 #
-#  * Mikkel Oscar Lyderik <mikkeloscar@gmail.com>
+#  * Mikkel Oscar Lyderik Larsen <mikkeloscar@gmail.com>
 #  * oh-my-zsh authors:
 #        https://github.com/robbyrussell/oh-my-zsh/blob/master/plugins/golang/golang.plugin.zsh
 #  * Go authors
@@ -47,21 +47,23 @@ typeset -A opt_args
 
 local -a commands build_flags
 commands=(
+'bug:start a bug report'
 'build:compile packages and dependencies'
-'clean:remove object files'
+'clean:remove object files and cached files'
 'doc:show documentation for package or symbol'
 'env:print Go environment information'
-'fix:run go tool fix on packages'
-'fmt:run gofmt on package sources'
+'fix:update packages to use new APIs'
+'fmt:gofmt (reformat) package sources'
 'generate:generate Go files by processing source'
 'get:download and install packages and dependencies'
 'install:compile and install packages and dependencies'
-'list:list packages'
+'list:list packages or modules'
+'mod:module maintenance'
 'run:compile and run Go program'
 'test:test packages'
 'tool:run specified go tool'
-'version:print Go version'
-'vet:run go tool vet on packages'
+'version :print Go version'
+'vet:report likely mistakes in packages'
 'help:get more information about a command'
 )
 
@@ -168,9 +170,80 @@ case $state in
           '-e[changes the handling of erroneous packages]' \
           '-f[specifies an alternate format for the list]:format' \
           '-json[causes package data to be printed in JSON format]' \
+          '-compiled[set CompiledGoFiles to the Go source files presented to the compiler]' \
+          '-deps[iterate over named packages and their dependencies]' \
+          '-m[list modules instead of packages]' \
           ${build_flags[@]} \
           '*:importpaths:__go_packages'
           ;;
+
+      mod)
+        local -a mod_commands
+        mod_commands=(
+        'download:download modules to local cache'
+        'edit:edit go.mod from tools or scripts'
+        'graph:print module requirement graph'
+        'init:initialize new module in current directory'
+        'tidy:add missing and remove unused modules'
+        'vendor:make vendored copy of dependencies'
+        'verify:verify dependencies have expected content'
+        'why:explain why packages or modules are needed'
+        'help:get more information about a command'
+        )
+
+        _arguments \
+          "1: :{_describe 'command' mod_commands}" \
+          '*:: :->args'
+
+        case $state in
+          args)
+            case $words[1] in
+              download)
+                _arguments \
+                  '-json[print a sequance of JSON objects to standard output]'
+                ;;
+
+              edit)
+                _arguments \
+                  '-fmt[reformats the go.mod file without making other changes]' \
+                  "-module[change the module's path]" \
+                  '*-require=[add a requirement on the given module path and version]:require' \
+                  '*-droprequire=[drop a requirement on the given module path and version]:droprequire' \
+                  '*-exclude=[add an exclusion for the given module path and version]:exclude' \
+                  '*-dropexclude=[drop an exclusion for the given module path and version]:dropexclude' \
+                  '*-replace=[add a replacement of the given module path and version]:replace' \
+                  '*-dropreplace=[drop a replacement of the given module path and version]:dropreplace' \
+                  '-json[prints the final go.mod file in JSON format]' \
+                  '-print[prints the final go.mod in its text format]' \
+                  ':go.mod:_path_files -g "go.mod"'
+                ;;
+              graph)
+                ;;
+              init)
+                # Use go packages as module name suggestion
+                _arguments \
+                  '*:module:__go_packages'
+                ;;
+              tidy)
+                _arguments \
+                  '-v[print information about removed modules to standard error]'
+                ;;
+              vendor)
+                _arguments \
+                  '-v[print the names of vendored modules and packages to standard error]'
+                ;;
+              verify)
+                ;;
+              why)
+                _arguments \
+                  '-m[treats the arguments as a list of modules]' \
+                  '-vendor[exclude tests of dependencies]' \
+                  '*:module:__go_packages'
+                ;;
+            esac
+            ;;
+        esac
+        ;;
 
       run)
         _arguments \
@@ -532,15 +605,21 @@ case $state in
       help)
         local -a topics
         topics=(
+        'buildmode:build modes'
         'c:calling between Go and C'
-        'buildmode:description of build modes'
-        'filetype:file types'
-        'gopath:GOPATH environment variable'
+        'cache:build and test caching'
         'environment:environment variables'
+        'filetype:file types'
+        'go.mod:the go.mod file'
+        'gopath:GOPATH environment variable'
+        'gopath-get:legacy GOPATH go get'
+        'goproxy:module proxy protocol'
         'importpath:import path syntax'
-        'packages:description of package lists'
-        'testflag:description of testing flags'
-        'testfunc:description of testing functions'
+        'modules:modules, module versions, and more'
+        'module-get:module-aware go get'
+        'packages:package lists and patterns'
+        'testflag:testing flags'
+        'testfunc:testing functions'
         )
 
         _arguments "1: :{_describe 'command' commands -- topics}"
