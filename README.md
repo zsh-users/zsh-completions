@@ -15,11 +15,14 @@ zsh-completions ![GitHub release](https://img.shields.io/github/release/zsh-user
 | Debian / Ubuntu | [zsh-completions OBS repository](https://software.opensuse.org/download.html?project=shells%3Azsh-users%3Azsh-completions&package=zsh-completions) |
 | Fedora / CentOS / RHEL / Scientific Linux | [zsh-completions OBS repository](https://software.opensuse.org/download.html?project=shells%3Azsh-users%3Azsh-completions&package=zsh-completions) |
 | OpenSUSE / SLE | [zsh-completions OBS repository](https://software.opensuse.org/download.html?project=shells%3Azsh-users%3Azsh-completions&package=zsh-completions) |
-| Arch Linux | [zsh-completions](https://www.archlinux.org/packages/zsh-completions), [zsh-completions-git](https://aur.archlinux.org/packages/zsh-completions-git) |
-| Gentoo | [app-shells/zsh-completions](http://packages.gentoo.org/package/app-shells/zsh-completions)  |
-| NixOS | [zsh-completions](https://github.com/NixOS/nixpkgs/blob/master/pkgs/shells/zsh-completions/default.nix) |
-| Void Linux | [zsh-completions](https://github.com/voidlinux/void-packages/tree/master/srcpkgs/zsh-completions) |
+| Arch Linux / Manjaro / Antergos / Hyperbola | [zsh-completions](https://www.archlinux.org/packages/zsh-completions), [zsh-completions-git](https://aur.archlinux.org/packages/zsh-completions-git) |
+| Gentoo / Funtoo | [app-shells/zsh-completions](http://packages.gentoo.org/package/app-shells/zsh-completions)  |
+| NixOS | [zsh-completions](https://github.com/NixOS/nixpkgs/blob/master/pkgs/shells/zsh/zsh-completions/default.nix) |
+| Void Linux | [zsh-completions](https://github.com/void-linux/void-packages/blob/master/srcpkgs/zsh-completions/template) |
+| Slackware | [Slackbuilds](https://slackbuilds.org/repository/14.2/system/zsh-completions) |
 | Mac OS | [homebrew](https://github.com/Homebrew/homebrew-core/blob/master/Formula/zsh-completions.rb), [MacPorts](https://github.com/macports/macports-ports/blob/master/sysutils/zsh-completions/Portfile)  |
+| NetBSD | [pkgsrc](ftp://ftp.netbsd.org/pub/pkgsrc/current/pkgsrc/shells/zsh-completions/README.html)  |
+
 
 ### Using zsh frameworks
 
