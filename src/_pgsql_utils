@@ -303,7 +303,8 @@ _pg_restore () {
         --no-security-labels'[do not restore security labels]' \
         --no-tablespaces'[do not restore tablespace assignments]' \
         --section=':dump named section:_values "section" pre-data data post-data' \
-        --use-set-session-authorization'[use SET SESSION AUTHORIZATION commands instead of ALTER OWNER commands to set ownership]'
+        --use-set-session-authorization'[use SET SESSION AUTHORIZATION commands instead of ALTER OWNER commands to set ownership]' \
+        "1: :_files"
 }
 
 _pg_dumpall () {
