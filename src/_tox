@@ -40,7 +40,7 @@ _arguments \
   '--alwayscopy[override alwayscopy setting to True in all envs]' \
   '--skip-missing-interpreters[do not fail tests for missing interpreters]: :(config true false)' \
   '--workdir[tox working directory]: :_files -/' \
-  '*:command positional substitution arguments'
+  '*: :_guard "^-*" command positional substitution arguments'
 
 (( $+functions[_tox_envs_list] )) ||
 _tox_envs_list() {
