@@ -271,7 +271,7 @@ except that it has an extra : at the start, and now all of the possible ACTION f
 
 Here is an example:
 #+BEGIN_SRC sh 
-_regex_arguments _hello /$'[^\0]##\0'/ \( /$'word1(a|b|c)\0'/ ':word:first word:(word1a word1b word1c)' '|'\
+_regex_arguments _cmd /$'[^\0]##\0'/ \( /$'word1(a|b|c)\0'/ ':word:first word:(word1a word1b word1c)' '|'\
    /$'word11(a|b|c)\0'/ ':word:first word:(word11a word11b word11c)' \( /$'word2(a|b|c)\0'/ ':word:second word:(word2a word2b word2c)'\
    '|' /$'word22(a|b|c)\0'/ ':word:second word:(word22a word22b word22c)' \) \)
 _cmd "$@"
