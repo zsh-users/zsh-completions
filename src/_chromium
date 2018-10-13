@@ -43,14 +43,14 @@ _arguments \
        "--proxy-pac-url=[Specify proxy autoconfiguration URL]:proxy autoconfiguration url:_urls" \
        "--password-store=[Set the password store to use]:password store: _wanted arguments expl 'wallet store' compadd -- basic gnome kwallet" \
        "--version[print version]" \
-       "*:: :_urls"
+       "*:: :{ _alternative _urls _files }"
 
 # excerpt from the chromium help message:
 #
 #              Specify the HTTP/SOCKS4/SOCKS5 proxy server to use for requests.  This overrides any environment variables or settings picked via the options dialog.  An individual proxy server is specified
 #              using the format:
 #
-#                
+#
 #
 #              Where <proxy-scheme> is the protocol of the proxy server, and is one of:
 #
@@ -84,23 +84,23 @@ _arguments \
 _chromium_proxyurls () {
   #TODO: semicolon separated urls not yet implemented
   # mostly copied from _urls
-	local ipre scheme host user uhosts ret=1 expl match glob suf 
+	local ipre scheme host user uhosts ret=1 expl match glob suf
 	local localhttp
 	zstyle -a ":completion:${curcontext}:urls" local localhttp
-	local localhttp_servername="$localhttp[1]" 
-	local localhttp_documentroot="$localhttp[2]" 
-	local localhttp_userdir="$localhttp[3]" 
+	local localhttp_servername="$localhttp[1]"
+	local localhttp_documentroot="$localhttp[2]"
+	local localhttp_userdir="$localhttp[3]"
 	zstyle -a ":completion:${curcontext}:urls" urls urls
 	if [[ $#urls -gt 1 || ( $#urls -eq 1 && ! -d $urls[1] ) ]]
 	then
-		[[ $#urls -eq 1 && -f $urls[1] ]] && urls=($(< $urls[1])) 
+		[[ $#urls -eq 1 && -f $urls[1] ]] && urls=($(< $urls[1]))
 		_wanted urls expl 'URL' compadd "$@" -a urls && return 0
-		urls=() 
+		urls=()
 	fi
-	urls="$urls[1]" 
-	glob=(-g '*(^/)') 
+	urls="$urls[1]"
+	glob=(-g '*(^/)')
 	zparseopts -D -K -E 'g:=glob'
-	ipre="$IPREFIX" 
+	ipre="$IPREFIX"
 	if ! compset -P '(#b)([-+.a-z0-9]#):'
 	then
 		_tags -C argument prefixes
@@ -108,14 +108,14 @@ _chromium_proxyurls () {
 		do
 			while _next_label prefixes expl 'URL prefix' -S '' "$@"
 			do
-				compset -S '[^:/]*' && compstate[to_end]='' 
-				compadd "$expl[@]" http:// socks:// socks4:// socks5:// && ret=0 
+				compset -S '[^:/]*' && compstate[to_end]=''
+				compadd "$expl[@]" http:// socks:// socks4:// socks5:// && ret=0
 			done
 			(( ret )) || return 0
 		done
 		return 1
 	fi
-	scheme="$match[1]" 
+	scheme="$match[1]"
 	case "$scheme" in
     (http(|s)|socks(|4|5)) if ! compset -P //
 			then
@@ -133,11 +133,11 @@ _chromium_proxyurls () {
 					do
 						if [[ -prefix / ]]
 						then
-							_path_files "$expl[@]" -S '' "${glob[@]}" && ret=0 
-							_path_files "$expl[@]" -S/ -r '/' -/ && ret=0 
+							_path_files "$expl[@]" -S '' "${glob[@]}" && ret=0
+							_path_files "$expl[@]" -S/ -r '/' -/ && ret=0
 						elif [[ -z "$PREFIX" ]]
 						then
-							compadd -S '/' -r '/' "$expl[@]" "$@" - "${PWD%/}" && ret=0 
+							compadd -S '/' -r '/' "$expl[@]" "$@" - "${PWD%/}" && ret=0
 						fi
 					done
 					(( ret )) || return 0
@@ -147,22 +147,22 @@ _chromium_proxyurls () {
 	esac
 	if ! compset -P '(#b)([^:/]#)([:/])'
 	then
-		uhosts=($urls/$scheme/$PREFIX*$SUFFIX(/:t)) 
+		uhosts=($urls/$scheme/$PREFIX*$SUFFIX(/:t))
 		_tags hosts
 		while _tags
 		do
 			while _next_label hosts expl host
 			do
-				compset -S '[:/]*' || suf="/" 
-				(( $#uhosts )) || _hosts -S "$suf" -r '/:' "$expl[@]" && ret=0 
-				[[ "$scheme" = http ]] && uhosts=($uhosts $localhttp_servername) 
-				compadd -S "$suf" -r '/:' "$expl[@]" -a uhosts && ret=0 
+				compset -S '[:/]*' || suf="/"
+				(( $#uhosts )) || _hosts -S "$suf" -r '/:' "$expl[@]" && ret=0
+				[[ "$scheme" = http ]] && uhosts=($uhosts $localhttp_servername)
+				compadd -S "$suf" -r '/:' "$expl[@]" -a uhosts && ret=0
 			done
 			(( ret )) || return 0
 		done
 		return 1
 	fi
-	host="$match[1]" 
+	host="$match[1]"
 	[[ $match[2] = ':' ]] && ! compset -P '<->/' && _message -e ports 'port number' && return 0
 	_tags remote-files files || return 1
 	if [[ "$localhttp_servername" = "$host" ]]
@@ -174,13 +174,13 @@ _chromium_proxyurls () {
 				_users -S/ "$@"
 				return
 			fi
-			user="$match[1]" 
+			user="$match[1]"
 			while _tags
 			do
 				while _next_label files expl 'local file'
 				do
-					_path_files "$expl[@]" "$@" -W ~$user/$localhttp_userdir "${glob[@]}" && ret=0 
-					_path_files -S/ -r '/' "$expl[@]" -W ~$user/$localhttp_userdir-/ && ret=0 
+					_path_files "$expl[@]" "$@" -W ~$user/$localhttp_userdir "${glob[@]}" && ret=0
+					_path_files -S/ -r '/' "$expl[@]" -W ~$user/$localhttp_userdir-/ && ret=0
 				done
 				(( ret )) || return 0
 			done
@@ -189,8 +189,8 @@ _chromium_proxyurls () {
 			do
 				while _next_label files expl 'local file'
 				do
-					_path_files "$expl[@]" "$@" -W $localhttp_documentroot "${glob[@]}" && ret=0 
-					_path_files -S/ -r '/' "$expl[@]" -W $localhttp_documentroot -/ && ret=0 
+					_path_files "$expl[@]" "$@" -W $localhttp_documentroot "${glob[@]}" && ret=0
+					_path_files -S/ -r '/' "$expl[@]" -W $localhttp_documentroot -/ && ret=0
 				done
 				(( ret )) || return 0
 			done
@@ -200,10 +200,10 @@ _chromium_proxyurls () {
 		do
 			(( $#urls )) && while _next_label files expl 'local file'
 			do
-				_path_files "$expl[@]" "$@" -W $urls/$scheme/$host "${glob[@]}" && ret=0 
-				_path_files -S/ -r '/' "$expl[@]" -W $urls/$scheme/$host -/ && ret=0 
+				_path_files "$expl[@]" "$@" -W $urls/$scheme/$host "${glob[@]}" && ret=0
+				_path_files -S/ -r '/' "$expl[@]" -W $urls/$scheme/$host -/ && ret=0
 			done
-			[[ $scheme = (scp|sftp) ]] && _requested remote-files && _remote_files -h $host -- ssh && ret=0 
+			[[ $scheme = (scp|sftp) ]] && _requested remote-files && _remote_files -h $host -- ssh && ret=0
 			(( ret )) || return 0
 		done
 	fi
