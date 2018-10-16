@@ -45,6 +45,23 @@
 
 typeset -A opt_args
 
+__go_buildmodes() {
+  local -a buildmodes
+  buildmodes=(
+  'archive[non-main packages into .a files]'
+  'c-archive[main package, plus all packages it imports, into a C archive file]'
+  'c-shared[main package, plus all packages it imports, into a C shared library]'
+  'default[main packages are built into executables and listed non-main packages are built into .a files]'
+  'shared[non-main packages into a single shared library that will be used when building with the -linkshared option]'
+  'exe[main packages into executables]'
+  'pie[main packages and everything they import into position independent executables (PIE)]'
+  'plugin[main packages, plus all packages that they import, into a Go plugin]'
+  )
+
+  _values 'mode' $buildmodes
+}
+
+
 local -a commands build_flags
 commands=(
 'bug:start a bug report'
@@ -82,7 +99,7 @@ case $state in
     '-work[print temporary work directory and keep it]'
     '-x[print the commands]'
     '-asmflags[arguments for each go tool asm invocation]:flags'
-    '-buildmode[build mode to use]:mode'
+    '-buildmode[build mode to use]:mode:__go_buildmodes'
     '-compiler[name of compiler to use]:name'
     '-gccgoflags[arguments for gccgo]:args'
     '-gcflags[arguments for each go tool compile invocation]:args'
