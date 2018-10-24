@@ -14,6 +14,16 @@
 # ------------------------------------------------------------------------------
 
 
+(( $+functions[_tox_envs_list] )) ||
+_tox_envs_list() {
+  local envs; envs=($(_call_program envs $service --listenvs-all))
+  if [ ${#envs} -gt 0 ]; then
+    _values -s , 'tox environments' "${envs[@]}"
+  else
+    _message 'tox environments (none found)'
+  fi
+}
+
 _arguments \
   '(- 1 *)--version[show version and exit]' \
   '(- 1 *)'{-h,--help}'[show help options]' \
@@ -41,18 +51,6 @@ _arguments \
   '--skip-missing-interpreters[do not fail tests for missing interpreters]: :(config true false)' \
   '--workdir[tox working directory]: :_files -/' \
   '*: :_guard "^-*" command positional substitution arguments'
-
-(( $+functions[_tox_envs_list] )) ||
-_tox_envs_list() {
-  compset -P '*,'; compset -S ',*'
-  _wanted env-list expl 'tox env list' _tox_envs -qS,
-}
-
-(( $+functions[_tox_envs] )) ||
-_tox_envs() {
-  local envs; envs=($(_call_program envs $service --listenvs-all))
-  _describe -t envs 'tow env' envs "$@"
-}
 
 # Local Variables:
 # mode: Shell-Script
