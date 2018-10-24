@@ -19,9 +19,9 @@ zsh-completions ![GitHub release](https://img.shields.io/github/release/zsh-user
 | Gentoo / Funtoo | [app-shells/zsh-completions](http://packages.gentoo.org/package/app-shells/zsh-completions)  |
 | NixOS | [zsh-completions](https://github.com/NixOS/nixpkgs/blob/master/pkgs/shells/zsh/zsh-completions/default.nix) |
 | Void Linux | [zsh-completions](https://github.com/void-linux/void-packages/blob/master/srcpkgs/zsh-completions/template) |
-| Slackware | [Slackbuilds](https://slackbuilds.org/repository/14.2/system/zsh-completions) |
+| Slackware | [Slackbuilds](https://slackbuilds.org/repository/14.2/system/zsh-completions/) |
 | Mac OS | [homebrew](https://github.com/Homebrew/homebrew-core/blob/master/Formula/zsh-completions.rb), [MacPorts](https://github.com/macports/macports-ports/blob/master/sysutils/zsh-completions/Portfile)  |
-| NetBSD | [pkgsrc](ftp://ftp.netbsd.org/pub/pkgsrc/current/pkgsrc/shells/zsh-completions/README.html)  |
+| NetBSD | [pkgsrc](http://ftp.netbsd.org/pub/pkgsrc/current/pkgsrc/shells/zsh-completions/README.html)  |
 
 
 ### Using zsh frameworks
