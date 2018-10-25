@@ -44,7 +44,7 @@ _arguments -C \
   {-h,--help}'[display usage information]' \
   {-d,--directory}'[remove empty directories - ignored (for GNU rm compatibility)]' \
   {-f,--force}'[ignore nonexistent arguments and never prompt - ignored (for GNU rm compatibility)]' \
-  {-i,--interactive}'[prompt before every removal - ignored (for GNU rm compabilty)]' \
+  {-i,--interactive}'[prompt before every removal - ignored (for GNU rm compatibility)]' \
   {-r,-R,--recursive}'[remove directories and their content recursively - ignored (for GNU rm compatibility)]' \
   {-v,--verbose}'[explain what is being done]' \
   '*: :_files'
