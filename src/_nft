@@ -1,5 +1,17 @@
 #compdef nft
-
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for nft 0.9.0 (https://www.netfilter.org/projects/nftables/index.html).
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Markus Richter ( https://github.com/mqus , <mqus@disroot.org>)
+#
+# ------------------------------------------------------------------------------
 _nft(){
 local -a rules states prev args families options descriptors
 local state="start" line nextstate cmd_obj cmd_subcmd cmd_fam cmd_tab cmd_chain #curcontext="$curcontext"
