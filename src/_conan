@@ -40,7 +40,7 @@
 
 
 _conan() {
-	
+
   local context state state_descr line
   typeset -A opt_args
 
@@ -242,7 +242,7 @@ _conan_info_args() {
     '(-h --help)'{-s,--settings}'[settings to build the package, overwriting the defaults. e.g., -s compiler=gcc]: :_conan_settings' \
     '(-h --help)'{-e,--env}'[environment variables that will be set during the package build, -e CXX=/usr/bin/clang++]: :_conan_environment_variables' \
     '(-h --help -b --build)'{-b,--build}'[given a build policy (same install command "build" parameter), return an ordered list of packages that would be built from sources in install command (simulation)]: :_conan_build_policies' \
-    '(-h --help)1: :_conan_conanfile_or_package_references'
+    '(-h --help)1: :_conan_conanfiles_or_package_references'
 }
 
 (( $+functions[_conan_info_only_values] )) ||
@@ -288,7 +288,7 @@ _conan_install_args() {
     '(-h --help)'{-s,--settings}'[settings to build the package, overwriting the defaults. e.g., -s compiler=gcc]: :_conan_settings' \
     '(-h --help)'{-e,--env}'[environment variables that will be set during the package build, -e CXX=/usr/bin/clang++]: :_conan_environment_variables' \
     '(-h --help -b --build)'{-b,--build}'[given a build policy (same install command "build" parameter), return an ordered list of packages that would be built from sources in install command (simulation)]: :_conan_build_policies' \
-    '(-h --help)1: :_conan_conanfile'
+    '(-h --help)1: :_conan_conanfiles'
 }
 
 (( $+functions[_conan_new_args] )) ||
@@ -469,13 +469,13 @@ _conan_remote_list_ref_args() {
 # TODO complete conan remote add_ref
 # TODO complete conan remote remove_ref
 # TODO complete conan remote update_ref
-# TODO complete conan remove         
-# TODO complete conan search         
-# TODO complete conan source         
-# TODO complete conan upload         
-# TODO complete conan user           
-# TODO complete conan export-pkg           
-# TODO complete conan test         
+# TODO complete conan remove
+# TODO complete conan search
+# TODO complete conan source
+# TODO complete conan upload
+# TODO complete conan user
+# TODO complete conan export-pkg
+# TODO complete conan test
 
 
 (( $+functions[_conan_conanfiles] )) ||
@@ -484,7 +484,7 @@ _conan_conanfiles() {
 }
 
 (( $+functions[_conan_directory_or_package_references] )) ||
-_conan_conanfile_or_package_references() {
+_conan_conanfiles_or_package_references() {
   _alternative \
     'conanfile: :_conan_conanfiles' \
     'package-references: :_conan_package_references'
