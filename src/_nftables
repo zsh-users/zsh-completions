@@ -130,6 +130,10 @@ while true;do
       descriptors=(": : _nft_table ${line[1]}-handle")
       cmd_fam=$line[1]
     ;;
+    # if 'handle' was completed, complete the handle number.
+    (handle)
+      descriptors=(": : _nft_table_handle_all " )
+    ;;
     # else, complete nothing and go to the next state. default family is 'ip'
     (*)
       descriptors=()
@@ -158,6 +162,7 @@ while true;do
     nextstate="start"
   ;;
   (delete-table)
+    #if family AND handle were input, complete handle number for given family.
     if [[ $line[1] == "handle" ]]; then
       descriptors=(":table handle: _nft_table_handle $cmd_fam" )
     else
@@ -403,7 +408,7 @@ _nft_reset(){
   _describe -t commands 'nft reset' commands "$@"
 }
 _nft_families(){
-  local commands=(
+  local families=(
     "ip:IPv4 address family"
     "ip6:IPv6 address family"
     "inet:internet (IPv4+IPv6) address family"
@@ -411,7 +416,7 @@ _nft_families(){
     "bridge:Bridge address family, handling packets which traverse a bridge device"
     "netdev:Netdev address family, handling packets from ingress"
   )
-  _describe -t commands 'nft families' commands "$@"
+  _describe -t families 'nft families' families "$@"
 }
 
 _nft_table(){
@@ -419,29 +424,41 @@ _nft_table(){
   #$1 can be: all all-handle <family> <family>-handle
   local tables=()
   if [[ "$1" =~ "^all" ]]; then
-    tables+=( ${(f)"$(_call_program -p tables nft list tables 2>/dev/null \
-        | cut -d\  -f2 |sort|uniq -u )"} )
+    local families=( ${(f)"$(_call_program -p tables nft list tables 2>/dev/null \
+        | cut -d\  -f2 )"} )
+    # ip is the default family, search also for table names there
     1="${1/all/ip}"
+    _describe -t families "family" families -J "family"
   fi
   if [[ "$1" =~ "-handle$" ]]; then
-    tables+=("handle")
+    tables=("handle:adress the table by handle")
     #remove -handle from $1 to be able to complete table names
     1="${1/-handle/}"
+    _describe -t tables "table" tables -V "handle"
   fi
   case $1 in 
   (arp | bridge | inet | ip | ip6 | netdev)
-    tables+=( ${(f)"$(_call_program -p tables nft list tables $1 2>/dev/null \
-        | cut -d\  -f3 )"} )
+    tables=( ${(f)"$(_call_program -p tables nft list ruleset -a 2>/dev/null \
+      | grep '^table '"$1" | sed 's/table // ;s/{ # handle // ;s/\(\S*\) \(\S*\) \(\S*\)/\2:type \1, handle \3/' )"} )
+    _describe -t tables "table" tables -V "table-name"
   ;;
   esac
-  _describe -V -t tables "table" tables "${expl[@]}"
 }
 
 _nft_table_handle(){
-  # complete the handles of tables (with the table name in the description)
+  # complete the handles of tables with the specified family (with the table name in the description)
+  #$1:protocol family
+  local tables=( ${(f)"$(_call_program -p tables nft list ruleset -a 2>/dev/null \
+      | grep '^table '"$1" | sed 's/table // ;s/{ # handle // ;s/\(\S*\) \(\S*\) \(\S*\)/\3:\2(type \1)/' )"} )
+  echo $1 > /tmp/znfttab
+  _describe -t tables "table handle" tables
+}
+
+_nft_table_handle_all(){
+  # complete the handles of tables of all families (with the table name in the description)
   local tables=( ${(f)"$(_call_program -p tables nft list ruleset -a 2>/dev/null \
       | grep '^table' | sed 's/table // ;s/{ # handle // ;s/\(\S*\) \(\S*\) \(\S*\)/\3:\2(type \1)/' )"} )
-  _describe -t tables "table handle" tables "${expl[@]}"
+  _describe -t tables "table handle" tables 
 }
 
 _nft_object(){
@@ -455,7 +472,7 @@ _nft_object(){
   if $4 ;then
     objects+=( "handle:adress $3 by handle")
   fi
-  _describe -J -t objects "$3" objects "${expl[@]}"
+  _describe -t objects "$3" objects
 }
 
 _nft_object_handle(){
@@ -465,7 +482,7 @@ _nft_object_handle(){
   #$3:object type (chain/set/ct helper/counter/quota)
   local handles=( ${(f)"$(_call_program -p handles nft list table $1 $2 -a 2>/dev/null\
       | grep ""\\s\*$3"" | sed 's/\s*'"$3"' // ;s/ { # handle// ;s/\(\S*\) \(\S*\)/\2:\1/' )"} )
-  _describe -t handles "$3-handle" handles "${expl[@]}"
+  _describe -t handles "$3-handle" handles
 }
 
 _nft_rule_handle(){
@@ -476,7 +493,7 @@ _nft_rule_handle(){
   local rules=( ${(f)"$(_call_program -p nft-rule-handle nft list chain $1 $2 $3 -a 2>/dev/null \
       |grep -v '^\s*\(table\|chain\|type\|\}\)'|sed 's/^\s*\(.*\) # handle \(\S*\)$/\2:\1/' )"} )
   # don't sort those entries alphabetically, so they get shown in the order they are executed in nftables
-  _describe -t rules "rule" rules -V "rules" "${expl[@]}"
+  _describe -t rules "rule" rules -V "rules"
 }
 
 #currently, only the `nft` command is covered by this script.
