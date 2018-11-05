@@ -415,6 +415,7 @@ _nft_families(){
 }
 
 _nft_table(){
+  # complete the names of tables and the families of existing tables
   #$1 can be: all all-handle <family> <family>-handle
   local tables=()
   if [[ "$1" =~ "^all" ]]; then
@@ -437,6 +438,7 @@ _nft_table(){
 }
 
 _nft_table_handle(){
+  # complete the handles of tables (with the table name in the description)
   local tables=( ${(f)"$(_call_program -p tables nft list ruleset -a 2>/dev/null \
       | grep '^table' | sed 's/table // ;s/{ # handle // ;s/\(\S*\) \(\S*\) \(\S*\)/\3:\2(type \1)/' )"} )
   _describe -t tables "table handle" tables "${expl[@]}"
@@ -477,5 +479,5 @@ _nft_rule_handle(){
   _describe -t rules "rule" rules -V "rules" "${expl[@]}"
 }
 
-
+#currently, only the `nft` command is covered by this script.
 _nft "$@"
