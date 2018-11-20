@@ -110,10 +110,10 @@ _vboxmanage() {
 		'storageattach:attaches/modifies/removes a storage medium connected to a storage controller'
 		'storagectl:attaches/modifies/removes a storage controller'
 		'bandwidthctl:creates/deletes/modifies bandwidth groups'
-		'showhdinfo:shows information about a virtual hard disk image'
-		'createhd:creates a new virtual hard disk image'
-		'modifyhd:change the characteristics of a disk image after it has been created'
-		'clonehd:duplicates a registered virtual hard disk image to a new image file with a new unique identifier'
+		'showmediuminfo:shows information about a virtual hard disk image'
+		'createmedium:creates a new virtual hard disk image'
+		'modifymedium:change the characteristics of a disk image after it has been created'
+		'clonemedium:duplicates a registered virtual hard disk image to a new image file with a new unique identifier'
 		'convertfromraw:converts a raw disk image to a VirtualBox Disk Image (VDI) file'
 		'getextradata:retrieve string data to a virtual machine or to a VirtualBox configuration'
 		'setextradata:attach string data to a virtual machine or to a VirtualBox configuration'
@@ -171,7 +171,7 @@ _vboxmanage() {
 				:machine:_vboxmachines \
 				:modifyvm_option:_vboxopts_modifyvm
 		;;
-		modifyhd)
+		modifymedium|modifyhd)
 			_arguments \
 				:filename:_files \
 				'--type:hd type:(normal writethrough immutable shareable readonly multiattach)' \
@@ -248,7 +248,7 @@ _vboxmanage() {
 				'--password: :' \
 				'--intnet: :'
 		;;
-		createhd)
+		createmedium|createhd)
 			_arguments \
 				'--filename:filename:_files -g \*.{vdi,vmdk,vhd}' \
 				'--size:megabytes:' \
