@@ -79,7 +79,7 @@ commands=(
 'run:compile and run Go program'
 'test:test packages'
 'tool:run specified go tool'
-'version :print Go version'
+'version:print Go version'
 'vet:report likely mistakes in packages'
 'help:get more information about a command'
 )
