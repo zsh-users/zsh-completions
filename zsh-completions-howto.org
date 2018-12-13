@@ -137,7 +137,7 @@ topics=('e:description for e help topic' 'f:description for f help topic')
 _describe 'command' subcmds -- topics
 #+END_SRC
 
-If two candidates have the same description, _describe collects them together on the same rowand ensures that descriptions are aligned in neatedly in columns.
+If two candidates have the same description, _describe collects them together on the same row and ensures that descriptions are aligned in neatedly in columns.
 The _describe function can be used in an ACTION as part of a specification for _alternative, _arguments or _regex_arguments.
 In this case you will have to put it in braces with its arguments, e.g. 'TAG:DESCRIPTION:{_describe 'values' options}'
 ** Writing completion functions using _alternative
