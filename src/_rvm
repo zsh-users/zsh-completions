@@ -48,7 +48,7 @@ _arguments -C \
   '--nice[process niceness (for slow computers, default 0)]:number' \
   '--ree-options[Options passed directly to ree ./installer on the command line]:options' \
   '--head[with update, updates rvm to git head version]' \
-  '--rubygems[with update, updates rubygems for selected ruby]' \
+  '-r rubygems[with update, updates rubygems for selected ruby]' \
   '--default[with ruby select, sets a default ruby for new shells]' \
   '--debug[Toggle debug mode on for very verbose output]' \
   '--trace[Toggle trace mode on to see EVERYTHING rvm is doing]' \
