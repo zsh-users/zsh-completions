@@ -1,0 +1,59 @@
+#compdef you-get
+# ------------------------------------------------------------------------------
+# MIT license (https://raw.githubusercontent.com/soimort/you-get/master/LICENSE.txt)
+# Permission is hereby granted, free of charge, to any person obtaining a copy of
+# this software and associated documentation files (the "Software"), to deal in
+# the Software without restriction, including without limitation the rights to
+# use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+# of the Software, and to permit persons to whom the Software is furnished to do
+# so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+# Zsh completion definition for soimort/you-get(https://github.com/soimort/you-get)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * soimort <soi@mort.ninja>
+#
+# ------------------------------------------------------------------------------
+
+setopt localoptions noshwordsplit noksharrays
+local -a args
+
+args=(
+    '(- : *)'{-V,--version}'[print version and exit]'
+    '(- : *)'{-h,--help}'[print help and exit]'
+    '(-i --info)'{-i,--info}'[print extracted information]'
+    '(-u --url)'{-u,--url}'[print extracted information with URLs]'
+    '(--json)--json[print extracted URLs in JSON format]'
+    '(-n --no-merge)'{-n,--no-merge}'[do not merge video parts]'
+    '(--no-caption)--no-caption[do not download captions]'
+    '(-f --force)'{-f,--force}'[force overwrite existing files]'
+    '(-F --format)'{-F,--format}'[set video format to the specified stream id]:stream id'
+    '(-O --output-filename)'{-O,--output-filename}'[set output filename]:filename:_files'
+    '(-o --output-dir)'{-o,--output-dir}'[set output directory]:directory:_files -/'
+    '(-p --player)'{-p,--player}'[stream extracted URL to the specified player]:player and options'
+    '(-c --cookies)'{-c,--cookies}'[load cookies.txt or cookies.sqlite]:cookies file:_files'
+    '(-x --http-proxy)'{-x,--http-proxy}'[use the specified HTTP proxy for downloading]:host\:port:'
+    '(-y --extractor-proxy)'{-y,--extractor-proxy}'[use the specified HTTP proxy for extraction only]:host\:port'
+    '(--no-proxy)--no-proxy[do not use a proxy]'
+    '(-t --timeout)'{-t,--timeout}'[set socket timeout]:seconds'
+    '(-d --debug)'{-d,--debug}'[show traceback and other debug info]'
+    '*: :_guard "^-*" url'
+)
+_arguments -S -s $args
