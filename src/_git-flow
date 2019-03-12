@@ -60,7 +60,6 @@ _git-flow ()
 				'hotfix:Manage your hotfix branches.'
 				'support:Manage your support branches.'
 				'version:Shows version information.'
-				'status:Shows some status.'
 			)
 			_describe -t commands 'git flow' subcommands
 		;;
