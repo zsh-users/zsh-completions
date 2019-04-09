@@ -34,7 +34,7 @@ Add `antigen bundle zsh-users/zsh-completions` to your `~/.zshrc`.
 
 * Clone the repository inside your oh-my-zsh repo:
 
-        git clone https://github.com/zsh-users/zsh-completions ~/.oh-my-zsh/custom/plugins/zsh-completions
+        git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:=~/.oh-my-zsh/custom}/plugins/zsh-completions
 
 * Enable it in your `.zshrc` by adding it to your plugin list and reloading the completion:
 
