@@ -270,34 +270,62 @@ case $state in
           ;;
 
       test)
-        _arguments \
-          "-c[compile but don't run test]" \
-          '-i[install dependencies of the test]' \
-          '-bench[run benchmarks matching the regular expression]:regexp' \
-          '-benchmem[print memory allocation statistics for benchmarks]' \
-          '-benchtime[run benchmarks for t rime]:t' \
-          '-blockprofile[write a goroutine blocking profile to the specified file]:block' \
-          '-blockprofilerate[control goroutine blocking profiles]:n' \
-          '-count[run each test and benchmark n times]:n' \
-          '-cover[enable coverage analysis]' \
-          '-covermode[set the mode for coverage analysis]:mode:(set count atomic)' \
-          '-coverpkg[apply coverage analysis in each test of listed packages]:list' \
-          '-coverprofile[write a coverage profile to file]:cover' \
-          '-cpu[specify a list of GOMAXPROCS values]:cpus' \
-          '-cpuprofile[write a CPU profile to the specified file]:profile' \
-          '-memprofile[write a memory profile to file]:mem' \
-          '-memprofilerate[enable more precise memory profiles]:n' \
-          '-outputdir[place output files from profiling in output dir]:dir' \
-          '-parallel[allow parallel execution of test functions]:n' \
-          '-run[run tests and examples matching the regular expression]:regexp' \
-          '-short[tell long-running tests to shorten their run time]' \
-          '-timeout[timeout long running tests]:t' \
-          '-trace[write an execution trace to the specified file]:trace' \
-          '-v[verbose output]' \
-          ${build_flags[@]} \
-          '-exec[run test binary using xprog]:xprog' \
-          '-o[compile test binary to named file]:file:_files' \
-          '*:importpaths:__go_packages'
+        if [[ $words[$CURRENT] = -test.* ]]; then
+          _arguments \
+            '-test.bench[run only benchmarks matching regexp]:regexp' \
+            '-test.benchmem[print memory allocations for benchmarks]' \
+            '-test.benchtime[run each benchmark for duration d (default 1s)]:d' \
+            '-test.blockprofile[write a goroutine blocking profile to file]:file:_files' \
+            '-test.blockprofilerate[set blocking profile rate (see runtime.SetBlockProfileRate) (default 1)]:rate' \
+            '-test.count[run tests and benchmarks n times (default 1)]:n' \
+            '-test.coverprofile[write a coverage profile to file]:file:_files' \
+            '-test.cpu[comma-separated list of cpu counts to run each test with]:comma-separated list' \
+            '-test.cpuprofile[write a cpu profile to file]:file:_files' \
+            '-test.failfast[do not start new tests after the first test failure]' \
+            '-test.list[list tests, examples, and benchmarks matching regexp then exit]:regexp' \
+            '-test.memprofile[write an allocation profile to file]:file:_files' \
+            '-test.memprofilerate[set memory allocation profiling rate (see runtime.MemProfileRate)]:rate' \
+            '-test.mutexprofile[write a mutex contention profile to the named file after execution]:string' \
+            '-test.mutexprofilefraction[if >= 0, calls runtime.SetMutexProfileFraction() (default 1)]:int' \
+            '-test.outputdir[write profiles to dir]:dir:_path_files -/' \
+            '-test.parallel[run at most n tests in parallel (default 4)]:n' \
+            '-test.run[run only tests and examples matching regexp]:regexp' \
+            '-test.short[run smaller test suite to save time]' \
+            '-test.testlogfile[write test action log to file (for use only by cmd/go)]:file' \
+            '-test.timeout[panic test binary after duration d (default 0, timeout disabled)]:d' \
+            '-test.trace[write an execution trace to file]:file' \
+            '-test.v[verbose: print additional output]'
+        else
+          _arguments \
+            "-c[compile but don't run test]" \
+            '-i[install dependencies of the test]' \
+            '-bench[run benchmarks matching the regular expression]:regexp' \
+            '-benchmem[print memory allocation statistics for benchmarks]' \
+            '-benchtime[run benchmarks for t rime]:t' \
+            '-blockprofile[write a goroutine blocking profile to the specified file]:block' \
+            '-blockprofilerate[control goroutine blocking profiles]:n' \
+            '-count[run each test and benchmark n times]:n' \
+            '-cover[enable coverage analysis]' \
+            '-covermode[set the mode for coverage analysis]:mode:(set count atomic)' \
+            '-coverpkg[apply coverage analysis in each test of listed packages]:list' \
+            '-coverprofile[write a coverage profile to file]:cover' \
+            '-cpu[specify a list of GOMAXPROCS values]:cpus' \
+            '-cpuprofile[write a CPU profile to the specified file]:profile' \
+            '-memprofile[write a memory profile to file]:mem' \
+            '-memprofilerate[enable more precise memory profiles]:n' \
+            '-outputdir[place output files from profiling in output dir]:dir' \
+            '-parallel[allow parallel execution of test functions]:n' \
+            '-run[run tests and examples matching the regular expression]:regexp' \
+            '-short[tell long-running tests to shorten their run time]' \
+            '-test.-[specify options for test running]:test running options:' \
+            '-timeout[timeout long running tests]:t' \
+            '-trace[write an execution trace to the specified file]:trace' \
+            '-v[verbose output]' \
+            ${build_flags[@]} \
+            '-exec[run test binary using xprog]:xprog' \
+            '-o[compile test binary to named file]:file:_files' \
+            '*:importpaths:__go_packages'
+        fi
           ;;
 
       tool)
