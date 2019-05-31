@@ -28,11 +28,11 @@
 # Author
 # ------
 # Shivam Gupta <shivam98.tkg@gmail.com>
-# -------------------------------------------------
+# 
 # Description
 # ------------
 # Completion function for nano editor(https://www.nano-editor.org/)!
-# -----------------------------------------------------------
+# 
 
 (( $+functions[_nano_files] )) ||
 _nano_files () {
