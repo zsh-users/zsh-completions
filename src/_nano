@@ -49,4 +49,4 @@ _arguments -s -C \
   {-y,--afterends}'[Make Ctrl+Right stop at word ends]'\
   {-z,--suspend}'[Enable suspension]'\
   {-$,--softwrap}'[Enable soft line wrapping]'\
-   '(-t -q)*:file:_nano_files'
+   '(-t -q)*:file:_files'
