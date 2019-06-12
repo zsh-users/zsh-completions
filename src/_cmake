@@ -294,6 +294,7 @@ _cmake_define_lang_property_names() {
   local cmake_lang="$@[-2]" cmake_lang_desc="$@[-1]"
   local properties; properties=(
     "CMAKE_${cmake_lang}_COMPILER:${cmake_lang_desc} compiler"
+    "CMAKE_${cmake_lang}_COMPILER_LAUNCHER:${cmake_lang_desc} compiler launcher (e.g. ccache)"
     "CMAKE_${cmake_lang}_FLAGS:${cmake_lang_desc} compiler flags for all builds"
     "CMAKE_${cmake_lang}_FLAGS_DEBUG:${cmake_lang_desc} compiler flags for all Debug build"
     "CMAKE_${cmake_lang}_FLAGS_RELEASE:${cmake_lang_desc} compiler flags for all Relase build"
@@ -345,6 +346,7 @@ _cmake_define_property_values() {
     (CMAKE_INSTALL_PREFIX) _files -/ && ret=0;;
     (CMAKE_EXPORT_COMPILE_COMMANDS) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
     (CMAKE_*_COMPILER)     _wanted compilers expl 'compiler' _cmake_compilers && ret=0;;
+    (CMAKE_*_COMPILER_LAUNCHER) _wanted compilers expl 'compiler launcher' _cmake_launchers && ret=0;;
     (CMAKE_*_FLAGS(|_?*))  _message -e compiler-flags 'compiler flags' && _dispatch $service -value-,CPPFLAGS,-default- && ret=0;;
     (CMAKE_*_STANDARD_REQUIRED) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
     (CMAKE_*_EXTENSIONS) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
@@ -438,9 +440,22 @@ _cmake_booleans() {
 
 # ---------------
 # _cmake_compilers
+#
+# by default just executable commands, but can be overriden by users.
 # ---------------
 (( $+functions[_cmake_compilers] )) ||
 _cmake_compilers() {
+  _command_names -e
+}
+
+# ---------------
+# _cmake_launchers
+#
+# by default just executable commands, but can be overriden by users.
+# useful commands might be ccache, distcc, ...
+# ---------------
+(( $+functions[_cmake_launchers] )) ||
+_cmake_launchers() {
   _command_names -e
 }
 
