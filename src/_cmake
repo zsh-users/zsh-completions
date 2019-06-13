@@ -1,4 +1,4 @@
-#compdef cmake
+#compdef cmake -value-,CMAKE_GENERATOR,-default-
 # ------------------------------------------------------------------------------
 # Copyright (c) 2017 Github zsh-users - http://github.com/zsh-users
 # All rights reserved.
@@ -455,7 +455,9 @@ local cmake_suggest_build;cmake_suggest_build=(
     '--build[build]:build dir:_cmake_suggest_builddirs'
 )
 
-if [ $CURRENT -eq 2 ] ; then
+if [[ "$service" = -value-*CMAKE_GENERATOR* ]]; then
+  _cmake_generators
+elif [ $CURRENT -eq 2 ] ; then
   _arguments -C -s \
     - help \
       "$cmake_help_actions[@]" \
