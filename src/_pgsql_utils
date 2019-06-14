@@ -404,9 +404,9 @@ _createuser () {
         {-R,--no-createrole}'[role cannot create roles]' \
         {-s,--superuser}'[role will be superuser]' \
         {-S,--no-superuser}'[role will not be superuser]' \
-        {--interactive}'[prompt for missing role name and attributes rather than using defaults]' \
-        {--replication}'[role can initiate replication]' \
-        {--no-replication}'[role cannot initiate replication]' \
+        --interactive'[prompt for missing role name and attributes rather than using defaults]' \
+        --replication'[role can initiate replication]' \
+        --no-replication'[role cannot initiate replication]' \
 }
 
 _dropuser () {
