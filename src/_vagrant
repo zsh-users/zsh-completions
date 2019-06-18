@@ -133,8 +133,8 @@ _vagrant_caching_policy()
             ;;
     esac
 
-    case $(uname -s) in
-        Darwin) STATCMD="stat -f '%c'" ;;
+    case "$OSTYPE" in
+        darwin*) STATCMD="/usr/bin/stat -f '%c'" ;;
         *)      STATCMD="stat -c '%Z'" ;;
     esac
     reg_time=${$(${(z)STATCMD} $check_file):Q}
