@@ -1,0 +1,52 @@
+#compdef nano
+local curcontext="$curcontext" state line
+typeset -A opt_args
+_arguments -s -C \
+  '(-)'{-A,--smarthome}'[Enable smart home key]'\
+  {-B,--backup}'[Save backups of existing files]'\
+  {-C+,--backupdir=}'[Directory for saving unique backup files]:dir:_dirs'\
+  {-D,--boldtext}'[Use bold instead of reverse video text]'\
+  {-E,--tabstospaces}'[Convert typed tabs to spaces]'\
+  {-F,--multibuffer}'[Read a file into a new buffer by default]'\
+  {-G,--locking}'[Use vim-style lock files]'\
+  {-H,--historylog}'[Log & read search replace string history]'\
+  {-I,--ignorercfiles}'[Do not look at nanorc files]'\
+  {-J+,--guidestripe=}'[Show a guiding bar at this column]:number'\
+  {-K,--rawsequences}'[Fix numeric keypad key confusion problem]'\
+  {-L,--nonewlines}'[Do not add an automatic newline]'\
+  {-M,--trimblanks}'[Trim tail spaces when hard-wrapping]'\
+  {-N,--noconvert}'[Do not convert files from DOS/Mac format]'\
+  {-P,--positionlog}'[Log & read location of cursor position]'\
+  {-Q+,--quotestr=}'[Regular expression to match quoting]:str'\
+  {-R,--restricted}'[Restricted mode]'\
+  {-T+,--tabsize=}'[Set width of a tab to cols columns]:init'\
+  {-U,--quickblank}'[Do quick statusbar blanking]'\
+  '(- *)'{-V,--version}'[Print version information and exit]'\
+  {-W,--wordbounds}'[Detect word boundaries more accurately]'\
+  {-X+,--wordchars=}'[Which other characters are word parts]:str'\
+  {-Y+,--syntax=}'[Syntax definition to use for coloring]'\
+  {-Z,--zap}'[Let Bsp and Del erase a marked region]'\
+  {-a,--atblanks}'[When soft-wrapping, do it at whitespace]'\
+  {-b,--breaklonglines}'[Automatically hard-wrap overlong lines]'\
+  {-c,--constantshow}'[Constantly show cursor position]'\
+  {-d,--rebinddelete}'[Fix Backspace/Delete confusion problem]'\
+  {-e,--emptyline}'[Keep the line below the title bar empty]'\
+  {-g,--showcursor}'[Show cursor in file browser & help text]'\
+  '(- *)'{-h,--help}'[Show help text and exit]'\
+  {-i,--autoindent}'[Automatically indent new lines]'\
+  {-j,--jumpyscrolling}'[Scroll per half-screen, not per line]'\
+  {-k,--cutfromcursor}'[Cut from cursor to end of line]'\
+  {-l,--linenumbers}'[Show line numbers in front of the text]'\
+  {-m,--mouse}'[Enable the use of the mouse]'\
+  {-n,--noread}'[Do not read the file (only write it)]'\
+  {-o+,--operatingdir=}'[Set operating directory]:dir:_dirs'\
+  {-p,--preserve}'[Preserve XON (^Q) and XOFF (^S) keys]'\
+  {-r+,--fill=}'[Set width for hard-wrap and justify]:init'\
+  {-s+,--speller=}'[Enable alternate speller]:prog'\
+  {-t,--tempfile}'[Auto save on exit, do not prompt]'\
+  {-w,--nowrap}'[Do not hard-wrap long lines default]'\
+  {-x,--nohelp}'[Do not show the two help lines]'\
+  {-y,--afterends}'[Make Ctrl+Right stop at word ends]'\
+  {-z,--suspend}'[Enable suspension]'\
+  {-$,--softwrap}'[Enable soft line wrapping]'\
+   '(-t -q)*:file:_files'
