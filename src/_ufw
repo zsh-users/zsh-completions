@@ -105,6 +105,7 @@ _ufw() {
       "status:show firewall status"
       "show:show firewall report"
       "version:display version information"
+      "prepend:add rule before all of the same type"
     )
 
     _arguments -C -s -S -n \
