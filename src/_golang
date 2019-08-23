@@ -196,17 +196,18 @@ case $state in
           _arguments \
             '-json[print the environment in JSON format]' \
             '-u[unset environment variables]' \
-            '-w[change the default setting of environment variables]'
+            '-w[change the default setting of environment variables]' \
+            '*:[show environment variable]:_values ${goenvvars%=}'
         else
           case $words[2] in
-            -u)
-              _values -s ' ' -w 'environment variable' ${goenvvars%=}
-                ;;
             -w)
               if compset -P '*='; then
               else
                 _values -S "=" 'environment variable' $goenvvars
               fi
+              ;;
+            *)
+              _values -s ' ' -w 'environment variable' ${goenvvars%=}
               ;;
           esac
         fi
