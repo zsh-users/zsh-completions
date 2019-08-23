@@ -155,6 +155,56 @@ case $state in
           '-u[show docs for unexported and exported symbols and methods]'
           ;;
 
+      env)
+        local -a goenvvars
+        goenvvars=("CC="
+          "CGO_CFLAGS="
+          "CGO_CPPFLAGS="
+          "CGO_CXXFLAGS="
+          "CGO_ENABLED="
+          "CGO_FFLAGS="
+          "CGO_LDFLAGS="
+          "CXX="
+          "GCCGO="
+          "GOARCH="
+          "GOBIN="
+          "GOCACHE="
+          "GOEXE="
+          "GOFLAGS="
+          "GOGCCFLAGS="
+          "GOHOSTARCH="
+          "GOHOSTOS="
+          "GOMOD="
+          "GOOS="
+          "GOPATH="
+          "GOPROXY="
+          "GORACE="
+          "GOROOT="
+          "GOTMPDIR="
+          "GOTOOLDIR="
+          "PKG_CONFIG="
+        )
+
+        if (( $CURRENT == 2 )); then
+          _arguments \
+            '-json[print the environment in JSON format]' \
+            '-u[unset environment variables]' \
+            '-w[change the default setting of environment variables]'
+        else
+          case $words[2] in
+            -u)
+              _values -s ' ' -w 'environment variable' ${goenvvars%=}
+                ;;
+            -w)
+              if compset -P '*='; then
+              else
+                _values -S "=" 'environment variable' $goenvvars
+              fi
+              ;;
+          esac
+        fi
+        ;;
+
       fix)
         _arguments '*:importpaths:__go_packages'
         ;;
