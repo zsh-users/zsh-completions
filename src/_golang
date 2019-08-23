@@ -108,6 +108,7 @@ case $state in
     '-linkshared[link against shared libraries]'
     '-pkgdir[install and load all packages from dir]:dir'
     '-tags[list of build tags to consider satisfied]:tags'
+    '-trimpath[remove all file system paths from the resulting executable]'
     '-toolexec[program to use to invoke toolchain programs]:args'
     )
 
@@ -134,7 +135,7 @@ case $state in
     case $words[1] in
       build)
         _arguments \
-          '-o[force build to write to named output file]:file:_files' \
+          '-o[force build to write to named output file or directory]:file or directory:_files' \
           '-i[installs the packages that are dependencies of the target]' \
           ${build_flags[@]} \
           '*:importpaths:__go_packages'
