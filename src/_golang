@@ -117,8 +117,18 @@ case $state in
       gopaths=("${(s/:/)$(go env GOPATH)}")
       gopaths+=("$(go env GOROOT)")
       for p in $gopaths; do
-        _path_files -W "$p/src" -/
+        _path_files $@ -W "$p/src" -/
       done
+      # no special treatment for
+      # - relative paths starting with ..
+      # - absolute path starting with /
+      # - variables, substitutions, subshells
+      if [[ $words[$CURRENT] = ..* || $words[$CURRENT] = \$* || $words[$CURRENT] = /* ]]; then
+        _path_files $@ -/ -g '*.go'
+      else
+        # go build accepts paths relative to the cwd but they must start with './', so prefix them
+        _path_files $@ -P './' -/ -g '*.go'
+      fi
     }
 
     case $words[1] in
@@ -266,7 +276,7 @@ case $state in
         _arguments \
           ${build_flags[@]} \
           '-exec[invoke the binary using xprog]:xporg' \
-          '*:file:_files -g "*.go(-.)"'
+          '*:importpaths:__go_packages'
           ;;
 
       test)
