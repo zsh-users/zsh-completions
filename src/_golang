@@ -108,6 +108,7 @@ case $state in
     '-linkshared[link against shared libraries]'
     '-pkgdir[install and load all packages from dir]:dir'
     '-tags[list of build tags to consider satisfied]:tags'
+    '-trimpath[remove all file system paths from the resulting executable]'
     '-toolexec[program to use to invoke toolchain programs]:args'
     )
 
@@ -134,7 +135,7 @@ case $state in
     case $words[1] in
       build)
         _arguments \
-          '-o[force build to write to named output file]:file:_files' \
+          '-o[force build to write to named output file or directory]:file or directory:_files' \
           '-i[installs the packages that are dependencies of the target]' \
           ${build_flags[@]} \
           '*:importpaths:__go_packages'
@@ -154,6 +155,63 @@ case $state in
           '-cmd[treat a command (package main) like a regular package]' \
           '-u[show docs for unexported and exported symbols and methods]'
           ;;
+
+      env)
+        local -a goenvvars
+        goenvvars=("AR="
+          "CC="
+          "CGO_CFLAGS="
+          "CGO_CPPFLAGS="
+          "CGO_CXXFLAGS="
+          "CGO_ENABLED="
+          "CGO_FFLAGS="
+          "CGO_LDFLAGS="
+          "CXX="
+          "GCCGO="
+          "GO111MODULE="
+          "GOARCH="
+          "GOBIN="
+          "GOCACHE="
+          "GOENV="
+          "GOEXE="
+          "GOFLAGS="
+          "GOGCCFLAGS="
+          "GOHOSTARCH="
+          "GOHOSTOS="
+          "GOMOD="
+          "GONOPROXY="
+          "GONOSUMDB="
+          "GOOS="
+          "GOPATH="
+          "GOPRIVATE="
+          "GOPROXY="
+          "GOROOT="
+          "GOSUMDB="
+          "GOTMPDIR="
+          "GOTOOLDIR="
+          "PKG_CONFIG="
+        )
+
+        if (( $CURRENT == 2 )); then
+          _arguments \
+            '-json[print the environment in JSON format]' \
+            '-u[unset environment variables]' \
+            '-w[change the default setting of environment variables]' \
+            '*:[show environment variable]:_values ${goenvvars%=}'
+        else
+          case $words[2] in
+            -w)
+              if compset -P '*='; then
+              else
+                _values -S "=" 'environment variable' $goenvvars
+              fi
+              ;;
+            *)
+              _values -s ' ' -w 'environment variable' ${goenvvars%=}
+              ;;
+          esac
+        fi
+        ;;
 
       fix)
         _arguments '*:importpaths:__go_packages'
