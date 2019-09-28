@@ -59,6 +59,7 @@ _jrnl() {
       "-o[Optionally specifies output file when using --export If OUTPUT is a directory, exports each entry in individual file instead.]:output file:" \
       "--encrypt[Encrypts your existing journal with a new pass]" \
       "--decrypt[Decrypts your journal and stores it in plain text]" \
+      "--edit[Opens your editor to edit the selected entries.]" \
 }
 
 _jrnl
