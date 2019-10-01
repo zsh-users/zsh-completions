@@ -240,7 +240,8 @@ _yarn() {
 
         run)
           _arguments \
-            '1: :_yarn_scripts'
+            '1: :_yarn_scripts' \
+            '*:: :_default'
         ;;
 
         tag)
@@ -265,6 +266,10 @@ _yarn() {
         why)
           _arguments \
             '1:query:_files'
+        ;;
+
+        *) 
+          _default
         ;;
       esac
     ;;
