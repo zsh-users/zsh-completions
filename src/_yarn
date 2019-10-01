@@ -241,7 +241,7 @@ _yarn() {
         run)
           _arguments \
             '1: :_yarn_scripts' \
-            '*:: :_files'
+            '*:: :_default'
         ;;
 
         tag)
@@ -269,8 +269,7 @@ _yarn() {
         ;;
 
         *) 
-          _arguments \
-            '*:: :_files'
+          _default
         ;;
       esac
     ;;
