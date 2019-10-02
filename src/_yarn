@@ -81,29 +81,21 @@ _yarn_commands_scripts() {
 }
 
 _yarn_scripts() {
-  local -a commands
-  local -a binaries
-  local -a scripts
-  local -a scriptsUnescaped
-  
-  binaries=($(yarn run --json 2>/dev/null | sed -E '/Commands available/!d;s/.*Commands available from binary scripts: ([^"]+)".*/\1/;s/.*"items":\[([^]]+).*/\1/;s/[" ]//g' | tr , '\n' | sed -e 's/:/\\:/g'))
-  scriptsUnescaped=($(yarn run --json 2>/dev/null | sed -E '/possibleCommands/!d;s/.*Commands available from binary scripts: ([^"]+)".*/\1/;s/.*"items":\[([^]]+).*/\1/;s/[" ]//g' | tr , '\n'))
-  scripts=($(echo "${scriptsUnescaped[@]}" | sed -e 's/:/\\:/g'))
-  scriptsObject=$(yarn run --json 2>/dev/null | sed -n '/.type.\s\?:\s\?.possibleCommands./p' | head -1)
+  local -a commands binaries scripts
+  local -a scriptNames scriptCommands
+  local i runJSON
 
-  if [ "$(command -v jq)" ]; then
-    for script in "${scriptsUnescaped[@]}"; do
-      scriptCommand=$(echo -E $scriptsObject | jq ".data.hints.\"$script\"")
-      commands+=("$(echo "${script//:/\\:}"):$scriptCommand")
-    done
-  else
-    for script in "${scripts[@]}"; do
-      commands+=("$script:package\.json")
-    done
-  fi
+  runJSON=$(yarn run --json 2>/dev/null)
+  binaries=($(sed -E '/Commands available/!d;s/.*Commands available from binary scripts: ([^"]+)".*/\1/;s/.*"items":\[([^]]+).*/\1/;s/[" ]//g;s/:/\\:/g;s/,/\n/g' <<< "$runJSON"))
+  scriptNames=($(sed -E '/possibleCommands/!d;s/.*"items":\[([^]]+).*/\1/;s/[" ]//g;s/:/\\:/g;s/,/\n/g' <<< "$runJSON"))
+  scriptCommands=("${(@f)$(sed -E '/possibleCommands/!d;s/.*"hints":\{([^}]+)\}.*/\1/;s/"[^"]+"://g;s/:/\\:/g;s/","/\n/g;s/(^"|"$)//g' <<< "$runJSON")}")
 
-  commands=("${commands[@]}" "${binaries[@]}")
-  _describe 'scripts' commands
+  for (( i=1; i <= $#scriptNames; i++ )); do
+    scripts+=("${scriptNames[$i]}:${scriptCommands[$i]}")
+  done
+
+  commands=($scripts $binaries)
+  _describe 'command' commands
 }
 
 _yarn_global_commands() {
