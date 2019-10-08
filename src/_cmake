@@ -132,6 +132,7 @@ _cmake_on_build() {
     '--target[specify build target]'
     '--clean-first[build target clean first]'
     '--config[For multi-configuration tools]'
+    '--parallel[maximum number of build processes]'
     '--use-stderr')
   local -a undescribed_build_extras
   i=1
@@ -157,6 +158,7 @@ _cmake_on_build() {
     if [[ ${undescribed_build_extras[(r)$words[$i]]} == $words[$i] ]] ; then continue ; fi
     if [[ $words[(($i - 1))] == --target ]] ; then continue ; fi
     if [[ $words[(($i - 1))] == --config ]] ; then continue ; fi
+    if [[ $words[(($i - 1))] == --parallel ]] ; then continue ; fi
     outofbuild=true
   done
   if (( $dashdashposition > 0 )) ; then
@@ -174,6 +176,9 @@ _cmake_on_build() {
     _cmake_targets $words[(($buildat + 1))] && return 0
   elif [[ $words[(($CURRENT - 1))] == --config ]] ; then
     # after --build <dir> --config, no idea
+    return 0
+  elif [[ $words[(($CURRENT - 1))] == --parallel ]] ; then
+    # after --build <dir> --parallel
     return 0
   elif [ "$outofbuild" = true ] ; then
     # after --build <dir> --<not a --build option>, suggest other cmake_build_options (like -Wno-dev)
