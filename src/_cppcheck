@@ -44,13 +44,15 @@
 #
 # ------------------------------------------------------------------------------
 
+_cppcheck_files() {
+  _path_files -/ -g "*.(c|cpp|cxx|h|hpp|C)"
+}
+
 _cppcheck() {
   local curcontext="$curcontext" state line
   typeset -A opt_args
 
   _arguments -C \
-    ":command:->command" \
-    "*::options:->options" \
     "--addon=[Execute addon]" \
     "--cppcheck-build-dir=[Analysis output directory]:directory:_files -/" \
     "--check-config[Check cppcheck configuration]" \
@@ -97,7 +99,8 @@ _cppcheck() {
     {-v,--verbose}"[Output more detailed error information]" \
     "--version[Print out version number]" \
     "--xml[Write results in xml format to stderr]" \
-    "--xml-version=[Select the XML file version]"
+    "--xml-version=[Select the XML file version]" \
+    '*: :_cppcheck_files'
 }
 
 _cppcheck "$@"
