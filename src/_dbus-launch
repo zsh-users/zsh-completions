@@ -1,0 +1,30 @@
+#compdef dbus-launch
+# Copyright (c) 2019 Sebastian Gniazdowski
+
+setopt localoptions warncreateglobal typesetsilent
+
+local gn ret=1
+
+zstyle -s ':completion:*:*:dbus-launch:*' group-name gn || \
+    zstyle ':completion:*:*:dbus-launch:*' group-name ""
+
+local -a opts
+opts=(
+    --version:"print the version of dbus-launch"
+    --help:"print the help info of dbus-launch"
+    --sh-syntax:"emit bourne-shell compatible code to set up environment variables"
+    --csh-syntax:"emit csh compatible code to set up environment variables"
+    --auto-syntax:"choose --csh-syntax or --sh-syntax based on the SHELL environment variable"
+    --binary-syntax:"use a nul-terminated syntax with the environment data"
+    --close-stderr:"close stderr stream before starting the d-bus daemon"
+    --exit-with-session:"create a persistent \"babysitter\" process"
+    --exit-with-x11:"create a persistent \"babysitter\" process that will connect to the x server"
+    --autolaunch:"scan for a previously-started session and reuse the values found there"
+    --config-file:"pass --config-file=FILENAME to the bus daemon"
+)
+
+_alternative 'files:an optional program to run by dbus-launch:_files' \
+    'opts:option: _describe "dbus-launch options" opts' && \
+        ret=0
+
+return $ret
