@@ -1,0 +1,54 @@
+#compdef aplay
+# Copyright (c) 2019 Sebastian Gniazdowski
+
+setopt localoptions warncreateglobal typesetsilent
+
+local -a opts
+opts=(
+  + '(operation)'
+  {-h,--help}'[print help message]'
+  --version'[print current version]'
+  {-l,--list-devices}'[list all soundcards and digital audio devices]'
+  {-L,--list-pcms}'[list device names]'
+  + option
+  {-D,--device}'[select PCM by name]'
+  {-q,--quiet}'[quiet mode]'
+  {-t,--file-type}'[file type (voc, wav, raw or au)]'
+  {-c,--channels}'[channels]'
+  {-r,--rate}'[sample rate]'
+  {-f,--format}'[sample format (case insensitive)]'
+  {-d,--duration}'[interrupt after # seconds]'
+  {-s,--samples}'[interrupt after # samples per channel]'
+  {-M,--mmap}'[mmap stream]'
+  {-N,--nonblock}'[nonblocking mode]'
+  {-F,--period-time}'[distance between interrupts is # microseconds]'
+  {-B,--buffer-time}'[buffer duration is # microseconds]'
+  --period-size'[distance between interrupts is # frames]'
+  --buffer-size'[buffer duration is # frames]'
+  {-A,--avail-min}'[min available space for wakeup is # microseconds]'
+  {-R,--start-delay}'[delay for automatic PCM start is # microseconds]'
+  {-T,--stop-delay}'[delay for automatic PCM stop is # microseconds from xrun]'
+  {-v,--verbose}'[show PCM structure and setup (accumulative)]'
+  {-V,--vumeter}'[enable VU meter (TYPE: mono or stereo)]'
+  {-I,--separate-channels}'[file for each channel]'
+  {-i,--interactive}'[allow interactive operation from stdin]'
+  {-m,--chmap}'[give the channel map to override or follow]'
+  --disable-resample'[disable automatic rate resample]'
+  --disable-channels'[disable automatic channel conversions]'
+  --disable-format'[disable automatic format conversions]'
+  --disable-softvol'[disable software volume control (softvol)]'
+  --test-position'[test ring buffer position]'
+  --test-coef'[test coefficient for ring buffer position (default 8)]'
+  --test-nowait'[do not wait for ring buffer - eats whole CPU]'
+  --max-file-time'[start another output file when the old file has recorded]'
+  --process-id-file'[write the process ID here]'
+  --use-strftime'[apply the strftime facility to the output file name]'
+  --dump-hw-params'[dump hw_params of the device]'
+  --fatal-errors'[treat all errors as fatal]'
+
+  '*:sound file:_files'
+)
+
+_arguments -s $opts
+
+# The return value passes through
