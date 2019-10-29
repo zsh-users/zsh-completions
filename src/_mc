@@ -1,0 +1,42 @@
+#compdef mc
+# Copyright (c) 2019 Sebastian Gniazdowski
+
+setopt localoptions warncreateglobal typesetsilent
+
+local -a opts
+opts=(
+  {-h,--help}'[show help on options]'
+  --help-all'[show help on all options]'
+  --help-terminal'[terminal options help]'
+  --help-color'[color options help]'
+  {-x,--xterm}'[forces xterm features]'
+  {-X,--no-x11}'[disable X11 support]'
+  {-g,--oldmouse}'[tries to use an old highlight mouse tracking]'
+  {-d,--nomouse}'[disable mouse support in text version]'
+  {-t,--termcap}'[tries to use termcap instead of terminfo]'
+  {-s,--slow}'[to run on slow terminals]'
+  {-a,--stickchars}'[use stickchars to draw]'
+  {-k,--resetsoft}'[resets soft keys on HP terminals]'
+  {-K,--keymap=}'[load definitions of key bindings from specified file]'
+  --nokeymap'[dont load definitions of key bindings from file, use defaults]'
+  --colors'[KEYWORD={FORE},{BACK},{ATTR}:KEYWORD2=...]'
+  {-b,--nocolor}'[requests to run in black and white]'
+  {-c,--color}'[request to run in color mode]'
+  {-C,--colors}'[specifies a color configuration]'
+  {-S,--skin}'[show mc with specified skin]'
+  {-V,--version}'[displays the current version]'
+  {-f,--datadir}'[print data directory]'
+  {-F,--datadir-info}'[print extended info about used data directories]'
+  --configure-options'[print configure options]'
+  {-P,--printwd=}'[print last working directory to specified file]'
+  {-U,--subshell}'[enables subshell support (default)]'
+  {-u,--nosubshell}'[disables subshell support]'
+  {-l,--ftplog=}'[log ftp dialog to specified file]'
+  {-v,--view=}'[launches the file viewer on a file]'
+  {-e,--edit=}'[edit files]'
+  '*:pane directory:_directories'
+)
+
+_arguments -s $opts
+
+# Return value passes through
