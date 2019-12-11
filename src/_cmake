@@ -302,7 +302,7 @@ _cmake_define_lang_property_names() {
     "CMAKE_${cmake_lang}_COMPILER_LAUNCHER:${cmake_lang_desc} compiler launcher (e.g. ccache)"
     "CMAKE_${cmake_lang}_FLAGS:${cmake_lang_desc} compiler flags for all builds"
     "CMAKE_${cmake_lang}_FLAGS_DEBUG:${cmake_lang_desc} compiler flags for all Debug build"
-    "CMAKE_${cmake_lang}_FLAGS_RELEASE:${cmake_lang_desc} compiler flags for all Relase build"
+    "CMAKE_${cmake_lang}_FLAGS_RELEASE:${cmake_lang_desc} compiler flags for all Release build"
     "CMAKE_${cmake_lang}_FLAGS_MINSIZREL:${cmake_lang_desc} compiler flags for all MinSizRel build"
     "CMAKE_${cmake_lang}_FLAGS_RELWITHDEBINFO:${cmake_lang_desc} compiler flags for all RelWithDebInfo build"
     "CMAKE_${cmake_lang}_STANDARD:${cmake_lang_desc} language standard"
