@@ -328,6 +328,7 @@ _cmake_define_common_property_names() {
     'CMAKE_EXPORT_COMPILE_COMMANDS:Enable/disable output of compilation database during generation'
     'CMAKE_RULE_MESSAGES:Specify whether to report a message for each make rule'
     'CMAKE_VERBOSE_MAKEFILE:Enable verbose output from Makefile builds'
+    'CMAKE_UNITY_BUILD:Batch include source files'
   )
 
   _describe -t 'common-property-names' 'common property name' properties $@
@@ -348,6 +349,7 @@ _cmake_define_property_values() {
     (CMAKE_COLOR_MAKEFILE) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
     (CMAKE_RULE_MESSAGES)  _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
     (CMAKE_VERBOSE_MAKEFILE) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
+    (CMAKE_UNITY_BUILD) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
     (CMAKE_INSTALL_PREFIX) _files -/ && ret=0;;
     (CMAKE_EXPORT_COMPILE_COMMANDS) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
     (CMAKE_*_COMPILER)     _wanted compilers expl 'compiler' _cmake_compilers && ret=0;;
