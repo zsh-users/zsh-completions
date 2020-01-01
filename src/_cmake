@@ -72,6 +72,8 @@ local cmake_build_options;cmake_build_options=(
     '-i[Run in wizard mode]'
     '-L-[List cache variables]::_values "options" "[non-advanced cache variables]" "A[advanced cache variables]" "H[non-advanced cached variables with help]" "AH[advanced cache variables with help]"'
     '--trace[Put cmake in trace mode]'
+    '--trace-redirect=[redirect trace output to file]:trace file:_files'
+    '--log-level=[only print messages at or above the specified log level]:loglevel:(ERROR WARNING NOTICE STATUS VERBOSE DEBUG TRACE)'
     '--find-package[Run in pkg-config like mode.]'
     ':cmake project:_files -/'
 )
