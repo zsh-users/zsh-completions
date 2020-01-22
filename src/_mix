@@ -163,6 +163,7 @@ __task_list ()
         'escript.uninstall'
         'gettext.extract'
         'gettext.merge'
+        'format'
         'help'
         'hex'
         'hex.build'
@@ -227,6 +228,10 @@ case $state in
          return
       ;;
       (test)
+         _arguments ':PATH:_files'
+         return
+      ;;
+      (format)
          _arguments ':PATH:_files'
          return
       ;;
