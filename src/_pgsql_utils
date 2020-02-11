@@ -42,7 +42,7 @@
 #
 #  * Daniel Serodio <dserodio@gmail.com> pg_dumpall completion
 #
-#  * J Smith <dark.panda@gmail.com> pg_restore completion
+#  * J Smith <dark.panda@gmail.com> various completion additions
 #
 # ------------------------------------------------------------------------------
 
@@ -258,10 +258,14 @@ _pg_dump () {
         --if-exists'[use IF EXISTS when dropping objects]' \
         --inserts'[dump data as INSERT commands, rather than COPY]' \
         --lock-wait-timeout='[fail after waiting TIMEOUT for a table lock]' \
+        --load-via-partition-root'[load partitions via the root table]' \
+        --no-comments'[do not dump comments]' \
+        --no-publications'[do not dump publications]' \
         --no-security-labels'[do not dump security label assignments]' \
         --no-synchronized-snapshots'[do not use synchronized snapshots in parallel jobs]' \
         --no-tablespaces'[do not dump tablespace assignments]' \
         --no-unlogged-table-data'[do not dump unlogged table data]' \
+        --on-conflict-do-nothing'[add ON CONFLICT DO NOTHING to INSERT commands]' \
         --quote-all-identifiers'[quote all identifiers, even if not key words]' \
         --serializable-deferrable'[wait until the dump can run without anomalies]' \
         --snapshot='[use given snapshot for the dump]' \
@@ -280,6 +284,8 @@ _pg_restore () {
         {-F+,--format=}':output format:_values "format" "p[plain text]" "t[tar]" "c[custom]"' \
         {-l,--list}'[list databases]' \
         {-a,--data-only}'[dump only data]' \
+        {-b,--blobs}'[include large objects in dump]' \
+        {-B,--no-blobs}'[exclude large objects in dump]' \
         {-c,--clean}'[include clean (drop) cmds before recreating]' \
         {-C,--create}'[include createdb cmds in dump]' \
         {-e,--exit-on-error}'[exit on error, default is to continue]' \
@@ -298,9 +304,13 @@ _pg_restore () {
         {-v,--verbose}'[verbose mode]' \
         {-V,--version}'[display client version]' \
         --disable-triggers'[disable triggers during data-only restore]' \
+        --enable-row-security'[enable row security]' \
         --if-exists'[use IF EXISTS when dropping objects]' \
+        --no-comments'[do not restore comments]' \
         --no-data-for-failed-tables'[do not restore data of tables that could not be created]' \
+        --no-publications'[do not restore publications]' \
         --no-security-labels'[do not restore security labels]' \
+        --no-subscriptions'[do not restore subscriptions]' \
         --no-tablespaces'[do not restore tablespace assignments]' \
         --section=':dump named section:_values "section" pre-data data post-data' \
         --use-set-session-authorization'[use SET SESSION AUTHORIZATION commands instead of ALTER OWNER commands to set ownership]' \
@@ -374,11 +384,17 @@ _vacuumdb () {
         {-t+,--table=}':table to dump:_pgsql_tables' \
         {-f,--full}'[do full vacuuming]' \
         {-z,--analyze}'[update optimizer hints]' \
+        {-Z,--analyze-only}'[only update optimizer statistics; no vacuum]' \
         {-e,--echo}'[show the commands being sent to the server]' \
         {-q,--quiet}'[do not write any messages]' \
         {-v,--verbose}'[write a lot of output]' \
+        '--min-mxid-age=[minimum multixact ID age of tables to vacuum]' \
+        '--min-xid-age=[minimum transaction ID age of tables to vacuum]' \
+        '--skip-locked[skip relations that cannot be immediately locked]' \
+        '--analyze-in-stages[only update optimizer statistics, in multiple]' \
         '--help[show this help, then exit]' \
         '--version[output version information, then exit]' \
+        '--maintenance-db=[alternate maintenance database]' \
         '1:PostgreSQL database:_pgsql_databases'
 }
 
