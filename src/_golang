@@ -95,6 +95,7 @@ case $state in
     '-n[print the commands but do not run them]'
     '-p[number of builds that can be run in parallel]:number'
     '-race[enable data race detection]'
+    '-msan[enable interoperation with memory sanitizer]'
     '-v[print the names of packages as they are compiled]'
     '-work[print temporary work directory and keep it]'
     '-x[print the commands]'
@@ -110,6 +111,11 @@ case $state in
     '-tags[list of build tags to consider satisfied]:tags'
     '-trimpath[remove all file system paths from the resulting executable]'
     '-toolexec[program to use to invoke toolchain programs]:args'
+    )
+    mod_flags=(
+    '-mod=[module download mode to use]:download mode:(readonly vendor mod)'
+    '-modcacherw[leave newly-created directories in the module cache read-write]'
+    '-modfile=[read an alternate go.mod file]:modfile: _files -g "*.mod"'
     )
 
     __go_packages() {
@@ -138,6 +144,7 @@ case $state in
           '-o[force build to write to named output file or directory]:file or directory:_files' \
           '-i[installs the packages that are dependencies of the target]' \
           ${build_flags[@]} \
+          ${mod_flags[@]} \
           '*:importpaths:__go_packages'
           ;;
 
@@ -146,6 +153,7 @@ case $state in
           '-i[remove corresponding installed archive or binary]' \
           '-r[apply clean recursively on all dependencies]' \
           ${build_flags[@]} \
+          ${mod_flags[@]} \
           '*:importpaths:__go_packages'
           ;;
 
@@ -242,6 +250,7 @@ case $state in
           '-t[also download the packages required to build tests]' \
           '-u[use the network to update the named packages]' \
           ${build_flags[@]} \
+          # no mod_flags for get
           '*:importpaths:__go_packages'
           ;;
 
@@ -730,6 +739,8 @@ case $state in
         'importpath:import path syntax'
         'modules:modules, module versions, and more'
         'module-get:module-aware go get'
+        'module-auth:module authentication using go.sum'
+        'module-private:module configuration for non-public modules'
         'packages:package lists and patterns'
         'testflag:testing flags'
         'testfunc:testing functions'
