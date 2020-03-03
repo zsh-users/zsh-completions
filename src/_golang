@@ -59,6 +59,95 @@ __go_buildmodes() {
   _values 'mode' $buildmodes
 }
 
+_gcdebugflags() {
+  _values -s , -S = 'debug flag' \
+    'append[print information about append compilation]' \
+    'checkptr[instrument unsafe pointer conversions]:pointer conversion checks:((0\:"instrumentation disabled" 1\:"conversions involving unsafe.Pointer are instrumented" 2\:"conversions to unsafe.Pointer force heap allocation"))' \
+    'closure[print information about closure compilation]' \
+    'compilelater[compile functions as late as possible]' \
+    'disablenil[disable nil checks]' \
+    'dclstack[run internal dclstack check]' \
+    'gcprog[print dump of GC programs]' \
+    'libfuzzer[coverage instrumentation for libfuzzer]' \
+    'nil[print information about nil checks]' \
+    'panic[do not hide any compiler panic]' \
+    'slice[print information about slice compilation]' \
+    'typeassert[print information about type assertion inlining]' \
+    'wb[print information about write barriers]' \
+    'export[print export data]' \
+    'pctab[print named pc-value table]:pc-value:(pctospadj pctofile pctoline pctoinline pctopcdata)' \
+    'locationlists[print information about DWARF location list creation]' \
+    'typecheckinl[eager typechecking of inline function bodies]' \
+    'dwarfinl[print information about DWARF inlined function creation]' \
+    'softfloat[force compiler to emit soft-float code]' \
+    'defer[print information about defer compilation]' \
+    'ssa/help[print help about SSA debugging]'
+}
+
+_gcflags() {
+  _arguments \
+  '-%[debug non-static initializers]' \
+  '-c=[concurrency during compilation]:int' \
+  '-+[compiling runtime]' \
+  '-B[disable bounds checking]' \
+  '-C[disable printing of columns in error messages]' \
+  '-D=[set relative path for local imports]:path: _path_files -/' \
+  '-E[debug symbol export]' \
+  '-I=[add directory to import search path]:directory: _path_files -/' \
+  '-K[debug missing line numbers]' \
+  '-L[show full file names in error messages]' \
+  '-N[disable optimizations]' \
+  '-S[print assembly listing]' \
+  '-V[print version and exit]' \
+  '-W[debug parse tree after type checking]' \
+  '-asmhdr=[write assembly header to file]:file' \
+  '-bench=[append benchmark times to file]:file' \
+  '-blockprofile=[write block profile to file]:file' \
+  '-buildid=[record id as the build id in the export metadata]:id' \
+  '-complete[compiling complete package (no C or assembly)]' \
+  '-cpuprofile=[write cpu profile to file]:file' \
+  '-d=[print debug information about items in list; try -d help]:list: _gcdebugflags' \
+  '-dwarf[generate DWARF symbols (default true)]' \
+  '-dwarfbasentries[use base address selection entries in DWARF (default true)]' \
+  '-dwarflocationlists[add location lists to DWARF in optimized mode (default true)]' \
+  '-dynlink[support references to Go symbols defined in other shared libraries]' \
+  '-e[no limit on number of errors reported]' \
+  '-gendwarfinl=[generate DWARF inline info records (default 2)]:int' \
+  '-goversion=[required version of the runtime]:string' \
+  '-h[halt on error]' \
+  '-importcfg=[read import configuration from file]:file' \
+  '-importmap=[add definition of the form source=actual to import map]:definition' \
+  '-installsuffix=[set pkg directory suffix]:suffix' \
+  '-j[debug runtime-initialized variables]' \
+  '-json=[version,destination for JSON compiler/optimizer logging]:string' \
+  '-l[disable inlining]' \
+  '-lang=[release to compile for]:string' \
+  '-linkobj=[write linker-specific object to file]:file' \
+  '-linkshared[generate code that will be linked against Go shared libraries]' \
+  '-live[debug liveness analysis]' \
+  '-m[print optimization decisions]' \
+  '-memprofile=[write memory profile to file]:file' \
+  '-memprofilerate=[set runtime.MemProfileRate to rate]:rate' \
+  '-msan[build code compatible with C/C++ memory sanitizer]' \
+  '-mutexprofile=[write mutex profile to file]:file' \
+  '-newobj[use new object file format]' \
+  '-nolocalimports[reject local (relative) imports]' \
+  '-o=[write output to file]:file' \
+  '-p=[set expected package import path]:path: _path_files -/' \
+  '-pack[write to file.a instead of file.o]' \
+  '-r[debug generated wrappers]' \
+  '-race[enable race detector]' \
+  '-shared[generate code that can be linked into a shared library]' \
+  '-smallframes[reduce the size limit for stack allocated objects]' \
+  '-std[compiling standard library]' \
+  '-symabis=[read symbol ABIs from file]:file' \
+  '-traceprofile=[write an execution trace to file]:file' \
+  '-trimpath=[remove prefix from recorded source file paths]:prefix' \
+  '-v[increase debug verbosity]' \
+  '-w[debug type checking]' \
+  '-wb[enable write barrier (default true)]' \
+}
+
 
 local -a commands build_flags
 commands=(
