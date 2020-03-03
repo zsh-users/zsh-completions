@@ -101,7 +101,7 @@ case $state in
     '-buildmode[build mode to use]:mode:__go_buildmodes'
     '-compiler[name of compiler to use]:name'
     '-gccgoflags[arguments for gccgo]:args'
-    '-gcflags=[arguments for each go tool compile invocation]:args'
+    '*-gcflags=[arguments for each go tool compile invocation]:args:_gcflags'
     '-installsuffix[suffix to add to package directory]:suffix'
     '-ldflags[arguments to pass on each go tool link invocation.]:flags'
     '-linkshared[link against shared libraries]'
@@ -258,7 +258,6 @@ case $state in
           ;;
 
       list)
-        # TODO: if statement does not work atm
         local -a list_args
         list_args=(
           '-e[changes the handling of erroneous packages]'
@@ -271,7 +270,8 @@ case $state in
           ${mod_flags[@]}
           '*:importpaths:__go_packages'
         )
-        if [[ -n ${opt_args[(I)-m]} ]]; then
+        # -u and -versions are only available if -m is present on the commandline
+        if (($words[(I)-m])); then
           list_args+=(
           '-u[adds information about available upgrades]'
           '-versions[list all known versions of modules]'
