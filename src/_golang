@@ -376,70 +376,75 @@ case $state in
       env)
         local -a goenvvars
         goenvvars=(
-          "GOARCH[architecture, or processor, for which to compile code.]:architecture: _goenvvarvals"
-          "GCCGO[gccgo command to run.]:gccgo command: _goenvvarvals"
-          "GOBIN[directory where 'go install' installs to]:go install target dir: _goenvvarvals"
-          "GOCACHE[directory to store cached information]:go build cache dir: _goenvvarvals"
-          "GOENV[location of the go environment configuration file]:configuration file: _goenvvarvals" # exclude from go env -w
-          "GOFLAGS[default go command line flags]:space sparated default command line flags: _goenvvarvals"
-          "GOINSECURE[module prefixes that are feched insecurely]:comma separated module prefixes: _goenvvarvals"
-          "GOOS[target operating system]:operating system: _goenvvarvals"
-          "GOPATH[path to resolve import statements]:import path: _goenvvarvals"
-          "GOPROXY[URL of go module proxy]:proxy url: _goenvvarvals"
-          "GOROOT[root of the go tree]:go root directory: _goenvvarvals"
-          "GOTMPDIR[directory for temporary sources, packages, and binaries]:tmp directory: _goenvvarvals"
-          "GOPRIVATE[modules that should always be fetched directly]:comma separated glob patterns: _goenvvarvals"
-          "GONOPROXY[modules that should always be fetched directly]:comma separated glob patterns: _goenvvarvals"
-          "GONOSUMDB[modules that should not be compared against the checksum db]:comma separated glob patterns: _goenvvarvals"
-          "GOSUMDB[checksum database]:name(+publickey( url)): _goenvvarvals"
-          "AR[command for manipulating library archives (for gccgo)]:archive manipulation program: _goenvvarvals"
-          "CC[command to compile C code]:C compiler: _goenvvarvals"
-          "CGO_ENABLED[enable/disable cgo]:boolean: _goenvvarvals"
-          "CGO_CFLAGS[flags passed to the compiler for C code]:C compilation flags: _goenvvarvals"
-          "CGO_CFLAGS_ALLOW[additional flags to allow to appear in #cgo CFLAGS]:regular expression: _goenvvarvals"
-          "CGO_CFLAGS_DISALLOW[flags that must be disallowed from appearing in #cgo CFLAGS]: _goenvvarvals"
-          "CGO_CPPFLAGS[flags passed to the C preprocessor]:C preprocessor flags: _goenvvarvals"
-          "CGO_CPPFLAGS_ALLOW[additional flags to allow to appear in #cgo CPPFLAGS]:regular expression: _goenvvarvals"
-          "CGO_CPPFLAGS_DISALLOW[flags that must be disallowed from appearing in #cgo CPPFLAGS]: _goenvvarvals"
-          "CGO_CXXFLAGS[flags passed to the compiler for C++ code]:C++ compilation flags: _goenvvarvals"
-          "CGO_CXXFLAGS_ALLOW[additional flags to allow to appear in #cgo CXXFLAGS]:regular expression: _goenvvarvals"
-          "CGO_CXXFLAGS_DISALLOW[flags that must be disallowed from appearing in #cgo CXXFLAGS]: _goenvvarvals"
-          "CGO_FFLAGS[flags passed to the compiler for Fortran code]:Fortran compilation flags: _goenvvarvals"
-          "CGO_FFLAGS_ALLOW[additional flags to allow to appear in #cgo FFLAGS]:regular expression: _goenvvarvals"
-          "CGO_FFLAGS_DISALLOW[flags that must be disallowed from appearing in #cgo FFLAGS]: _goenvvarvals"
-          "CGO_LDFLAGS[flags passed to the compiler for linker]:linker flags: _goenvvarvals"
-          "CGO_LDFLAGS_ALLOW[additional flags to allow to appear in #cgo LDFLAGS]:regular expression: _goenvvarvals"
-          "CGO_LDFLAGS_DISALLOW[flags that must be disallowed from appearing in #cgo LDFLAGS]: _goenvvarvals"
-          "CXX[command to compile C++]:C++ compiler: _goenvvarvals"
-          "FC[command to compile Fortran]:Fortran compiler: _goenvvarvals"
-          "PKG_CONFIG[Path to pkg-config tool.]:path to pkg-config: _goenvvarvals"
-          "GOARM[arm architecture]:arm architecture: _goenvvarvals"
-          "GO386[x86 instruction set]:x86 instruction set: _goenvvarvals"
-          "GOMIPS[mips instruction set]:mips instruction set: _goenvvarvals"
-          "GOMIPS64[mips64 instruction set]:mips64 instruction set: _goenvvarvals"
-          "GOWASM[web assembly features]:comma separated web assembly features: _goenvvarvals"
-          "GCCGOTOOLDIR[directory of gccgo tools]:gccgo tool director: _goenvvarvals"
-          "GOROOT_FINAL[root of the go tree]:go root: _goenvvarvals"
-          "GO_EXTLINK_ENABLED[enable external linking mode]:boolean: _goenvvarvals"
-          "GIT_ALLOW_PROTOCOL[schemes allowed to fetch]:colon separated git schemes: _goenvvarvals"
-          "GOEXE[suffix for executables]:executable suffix: _goenvvarvals"
-          "GOGCCFLAGS[arguments supplied to CC]:space separated arguments to CC: _goenvvarvals"
-          "GOHOSTARCH[architecture of the toolchain binaries]:host os architecture: _goenvvarvals"
-          "GOHOSTOS[operating system of the toolchain binaries]:host os: _goenvvarvals"
-          "GOMOD[absolute path the the main go.mod]:abs path to main go.mod: _goenvvarvals"
-          "GOTOOLDIR[installation directory of go tools]:tool installation directory: _goenvvarvals"
+          "GOARCH[architecture, or processor, for which to compile code.]:architecture"
+          "GCCGO[gccgo command to run.]:gccgo command"
+          "GOBIN[directory where 'go install' installs to]:go install target dir"
+          "GOCACHE[directory to store cached information]:go build cache dir"
+          "GOENV[location of the go environment configuration file]:configuration file"
+          "GOFLAGS[default go command line flags]:space sparated default command line flags"
+          "GOINSECURE[module prefixes that are feched insecurely]:comma separated module prefixes"
+          "GOOS[target operating system]:operating system"
+          "GOPATH[path to resolve import statements]:import path"
+          "GOPROXY[URL of go module proxy]:proxy url"
+          "GOROOT[root of the go tree]:go root directory"
+          "GOTMPDIR[directory for temporary sources, packages, and binaries]:tmp directory"
+          "GOPRIVATE[modules that should always be fetched directly]:comma separated glob patterns"
+          "GONOPROXY[modules that should always be fetched directly]:comma separated glob patterns"
+          "GONOSUMDB[modules that should not be compared against the checksum db]:comma separated glob patterns"
+          "GOSUMDB[checksum database]:name(+publickey( url))"
+          "AR[command for manipulating library archives (for gccgo)]:archive manipulation program"
+          "CC[command to compile C code]:C compiler"
+          "CGO_ENABLED[enable/disable cgo]:boolean"
+          "CGO_CFLAGS[flags passed to the compiler for C code]:C compilation flags"
+          "CGO_CFLAGS_ALLOW[additional flags to allow to appear in #cgo CFLAGS]:regular expression"
+          "CGO_CFLAGS_DISALLOW[flags that must be disallowed from appearing in #cgo CFLAGS]"
+          "CGO_CPPFLAGS[flags passed to the C preprocessor]:C preprocessor flags"
+          "CGO_CPPFLAGS_ALLOW[additional flags to allow to appear in #cgo CPPFLAGS]:regular expression"
+          "CGO_CPPFLAGS_DISALLOW[flags that must be disallowed from appearing in #cgo CPPFLAGS]"
+          "CGO_CXXFLAGS[flags passed to the compiler for C++ code]:C++ compilation flags"
+          "CGO_CXXFLAGS_ALLOW[additional flags to allow to appear in #cgo CXXFLAGS]:regular expression"
+          "CGO_CXXFLAGS_DISALLOW[flags that must be disallowed from appearing in #cgo CXXFLAGS]"
+          "CGO_FFLAGS[flags passed to the compiler for Fortran code]:Fortran compilation flags"
+          "CGO_FFLAGS_ALLOW[additional flags to allow to appear in #cgo FFLAGS]:regular expression"
+          "CGO_FFLAGS_DISALLOW[flags that must be disallowed from appearing in #cgo FFLAGS]"
+          "CGO_LDFLAGS[flags passed to the compiler for linker]:linker flags"
+          "CGO_LDFLAGS_ALLOW[additional flags to allow to appear in #cgo LDFLAGS]:regular expression"
+          "CGO_LDFLAGS_DISALLOW[flags that must be disallowed from appearing in #cgo LDFLAGS]"
+          "CXX[command to compile C++]:C++ compiler"
+          "FC[command to compile Fortran]:Fortran compiler"
+          "PKG_CONFIG[Path to pkg-config tool.]:path to pkg-config"
+          "GOARM[arm architecture]:arm architecture"
+          "GO386[x86 instruction set]:x86 instruction set"
+          "GOMIPS[mips instruction set]:mips instruction set"
+          "GOMIPS64[mips64 instruction set]:mips64 instruction set"
+          "GOWASM[web assembly features]:comma separated web assembly features"
+          "GCCGOTOOLDIR[directory of gccgo tools]:gccgo tool director"
+          "GOROOT_FINAL[root of the go tree]:go root"
+          "GO_EXTLINK_ENABLED[enable external linking mode]:boolean"
+          "GIT_ALLOW_PROTOCOL[schemes allowed to fetch]:colon separated git schemes"
+          "GOEXE[suffix for executables]:executable suffix"
+          "GOGCCFLAGS[arguments supplied to CC]:space separated arguments to CC"
+          "GOHOSTARCH[architecture of the toolchain binaries]:host os architecture"
+          "GOHOSTOS[operating system of the toolchain binaries]:host os"
+          "GOMOD[absolute path the the main go.mod]:abs path to main go.mod"
+          "GOTOOLDIR[installation directory of go tools]:tool installation directory"
         )
+        local -a exclude_from_w
+        exclude_from_w=(GOENV)
 
         __list_env_vars() {
+          # the parameter expansion strops off everything after the first [
           _values -s ' ' -w 'environment variable' ${goenvvars[@]%%\[*}
         }
 
+        # the ^ parameter expansion appends ": _goenvvarvals" to every element of goenvvars
+        # the :# parameter expansion removes all elements matching GOENV*
         [[ $words[2] != '-w' ]] && _arguments \
           '-json[print the environment in JSON format]' \
           '-u[unset environment variables]' \
           '-w[change the default setting of environment variables]' \
           '*:[show environment variable]: __list_env_vars' || _values \
-          -s ' ' -S "=" -w 'environment variable' ${goenvvars}
+          -s ' ' -S "=" -w 'environment variable' ${^goenvvars:#GOENV*}": _goenvvarvals"
         ;;
 
       fix)
