@@ -59,6 +59,33 @@ __go_buildmodes() {
   _values 'mode' $buildmodes
 }
 
+
+__go_runtimedebug() {
+  local -a vars
+  vars=(
+    'allocfreetrace[profile allocations]:boolean:(1 0)'
+    'clobberfree[clobber memory after free]:boolean:(1 0)'
+    'cgocheck[check passing go pointers to non-go]: :((0\:"no checks" 1\:"check checks" 2\:"expensive checks"))'
+    'efence[allocate on unique pages]:boolean:(1 0)'
+    "gccheckmark[verify garbage collector's concurrent mark phase]:boolean:(1 0)"
+    'gcpacertrace[print state of the concurrent pacer from garbage collector]:boolean:(1 0)'
+    'gcshrinkstackoff[disable moving goroutines to smaller stacks]:boolean:(1 0)'
+    'gcstoptheworld[disable concurrent garbage collection]: :((0\:default 1\:"disable concurrent garbage collection" 2\:"disable concurrent gc and sweeping"))'
+    'gctrace[emit memory collection and pause information from the garbage collector]:boolean:(1 0)'
+    'madvdontneed[use MADV_DONTNEED instead of MADV_FREE]:boolean:(1 0)'
+    'memprofilerate[every N-th allocation should be profiled]:int:'
+    'invalidptr[crash on invalid integers in pointer-type variables]:boolean:(1 0)'
+    'sbrk[replace memory allocator and garbage collector by trivial allocator]:boolean:(1 0)'
+    'scavenge[enable debugging mode of heap scavenger]:boolean:(1 0)'
+    'scavtrace[emit scavenger work information (memory returned and memory utilization)]:boolean:(1 0)'
+    'scheddetail[emit detailed states of scheduler, processors, threads, goroutines]:boolean:(1 0)'
+    'schedtrace[emmit scheduler state every N ms to stderr]:int'
+    'tracebackancestors[set ancestor goroutines to be printed in goroutine creation stacks]:int'
+    'asyncpreemptoff[disable signal-based asynchronous goroutine preemption.]:boolean:(1 0)'
+  )
+  _values -s ',' -S '=' "runtime debug behaviour" $vars[@]
+}
+
 __go_gcdebugflags() {
   _values -s , -S = 'debug flag' \
     'append[print information about append compilation]' \
@@ -261,7 +288,7 @@ __go_envvarvals() {
       ;;
     # not implemented
     GODEBUG)
-      _message "see 'go doc runtime'"
+      __go_runtimedebug
       ;;
     GOFLAGS)
       ;&
@@ -380,6 +407,7 @@ case $state in
           "GCCGO[gccgo command to run.]:gccgo command"
           "GOBIN[directory where 'go install' installs to]:go install target dir"
           "GOCACHE[directory to store cached information]:go build cache dir"
+          "GODEBUG[enable runtime debug facilities]:runtime debug settings"
           "GOENV[location of the go environment configuration file]:configuration file"
           "GOFLAGS[default go command line flags]:space sparated default command line flags"
           "GOINSECURE[module prefixes that are feched insecurely]:comma separated module prefixes"
