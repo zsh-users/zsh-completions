@@ -59,7 +59,7 @@ __go_buildmodes() {
   _values 'mode' $buildmodes
 }
 
-_gcdebugflags() {
+__go_gcdebugflags() {
   _values -s , -S = 'debug flag' \
     'append[print information about append compilation]' \
     'checkptr[instrument unsafe pointer conversions]:pointer conversion checks:((0\:"instrumentation disabled" 1\:"conversions involving unsafe.Pointer are instrumented" 2\:"conversions to unsafe.Pointer force heap allocation"))' \
@@ -84,7 +84,7 @@ _gcdebugflags() {
     'ssa/help[print help about SSA debugging]'
 }
 
-_gcflags() {
+__go_gcflags() {
   _arguments \
   '-%[debug non-static initializers]' \
   '-c=[concurrency during compilation]:int' \
@@ -106,7 +106,7 @@ _gcflags() {
   '-buildid=[record id as the build id in the export metadata]:id' \
   '-complete[compiling complete package (no C or assembly)]' \
   '-cpuprofile=[write cpu profile to file]:file' \
-  '-d=[print debug information about items in list; try -d help]:list: _gcdebugflags' \
+  '-d=[print debug information about items in list; try -d help]:list: __go_gcdebugflags' \
   '-dwarf[generate DWARF symbols (default true)]' \
   '-dwarfbasentries[use base address selection entries in DWARF (default true)]' \
   '-dwarflocationlists[add location lists to DWARF in optimized mode (default true)]' \
@@ -171,9 +171,9 @@ commands=(
 'help:get more information about a command'
 )
 
-_goenvvarvals() {
-  # if _goenvvarvals is called for -value-, I use the function argument to
-  # decide which variable to go to.  if $1 is not set, then _goenvvarvals is
+__go_envvarvals() {
+  # if __go_envvarvals is called for -value-, I use the function argument to
+  # decide which variable to go to.  if $1 is not set, then __go_envvarvals is
   # called from the `go env` completion and the current word (with all after
   # the first '=' removed) is the current variable.
   local variable
@@ -289,7 +289,7 @@ if [[ "$service" = -value-* ]]; then
   if (($blacklist[(I)$variable])); then
     return
   fi
-  _goenvvarvals $variable
+  __go_envvarvals $variable
   return
 fi
 
@@ -312,7 +312,7 @@ case $state in
     '-buildmode[build mode to use]:mode:__go_buildmodes'
     '-compiler[name of compiler to use]:name'
     '-gccgoflags[arguments for gccgo]:args'
-    '*-gcflags=[arguments for each go tool compile invocation]:args:_gcflags'
+    '*-gcflags=[arguments for each go tool compile invocation]:args:__go_gcflags'
     '-installsuffix[suffix to add to package directory]:suffix'
     '-ldflags[arguments to pass on each go tool link invocation.]:flags'
     '-linkshared[link against shared libraries]'
@@ -437,14 +437,14 @@ case $state in
           _values -s ' ' -w 'environment variable' ${goenvvars[@]%%\[*}
         }
 
-        # the ^ parameter expansion appends ": _goenvvarvals" to every element of goenvvars
+        # the ^ parameter expansion appends ": __go_envvarvals" to every element of goenvvars
         # the :# parameter expansion removes all elements matching GOENV*
         [[ $words[2] != '-w' ]] && _arguments \
           '-json[print the environment in JSON format]' \
           '-u[unset environment variables]' \
           '-w[change the default setting of environment variables]' \
           '*:[show environment variable]: __list_env_vars' || _values \
-          -s ' ' -S "=" -w 'environment variable' ${^goenvvars:#GOENV*}": _goenvvarvals"
+          -s ' ' -S "=" -w 'environment variable' ${^goenvvars:#GOENV*}": __go_envvarvals"
         ;;
 
       fix)
