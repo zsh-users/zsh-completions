@@ -30,13 +30,14 @@
 # Description
 # -----------
 #
-#  Completion script for go 1.11 (http://golang.org).
+#  Completion script for go 1.14 (http://golang.org).
 #
 # ------------------------------------------------------------------------------
 # Authors
 # -------
 #
 #  * Mikkel Oscar Lyderik Larsen <mikkeloscar@gmail.com>
+#  * Paul Seyfert <pseyfert.mathphys@gmail.com>
 #  * oh-my-zsh authors:
 #        https://github.com/robbyrussell/oh-my-zsh/blob/master/plugins/golang/golang.plugin.zsh
 #  * Go authors
@@ -286,21 +287,21 @@ __go_envvarvals() {
     CGO_*FLAGS)
       _dispatch $service -value-,${variable#CGO_},-default-
       ;;
-    # not implemented
     GODEBUG)
       __go_runtimedebug
       ;;
     GOFLAGS)
-      ;&
-    GOINSECURE)
-      _message "not implemented"
+      # not implemented, sorry
       ;;
+    GOINSECURE)
+      ;&
     GOPRIVATE)
       ;&
     GONOPROXY)
       ;&
     GONOSUMDB)
-      # comma separated glob patterns
+      # comma separated glob patterns (in the syntax of Go's path.Match)
+      _message "comma separated glob pattern"
       ;;
     GOSUMDB)
       _message "e.g. sum.golang.org+<publickey> https://sum.golang.org"
