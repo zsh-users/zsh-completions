@@ -37,10 +37,18 @@
 #  * Mario Fernandez (https://github.com/sirech)
 #  * Nicholas Penree (https://github.com/drudge)
 #  * Masafumi Koba (https://github.com/ybiquitous)
+#  * Shohei YOSHIDA (https://github.com/syohex)
 #
 # ------------------------------------------------------------------------------
 
 _node_files() {
+  for (( i = 2; i < CURRENT; i++)); do
+    if [[ ${words[i]} == "--prof-process" ]]; then
+      _files -g "*.log"
+      return
+    fi
+  done
+
   _files -g "*.(js|mjs)"
 }
 
