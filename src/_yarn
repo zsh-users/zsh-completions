@@ -32,6 +32,7 @@
 # -------
 #
 #  * Massimiliano Torromeo <massimiliano.torromeo@gmail.com>
+#  * Shohei YOSHIDA <syohex@gmail.com>
 #
 # ------------------------------------------------------------------------------
 
@@ -110,6 +111,12 @@ _yarn_commands() {
   _describe 'command' _commands -- _global_commands
 }
 
+_yarn_add_files() {
+  if compset -P "(file|link):"; then
+    _files
+  fi
+}
+
 _yarn() {
   local context state state_descr line
   typeset -A opt_args
@@ -173,7 +180,7 @@ _yarn() {
             '(-O --optional)'{-O,--optional}'[install packages in optionalDependencies]' \
             '(-E --exact)'{-E,--exact}'[install packages as exact versions]' \
             '(-T --tilde)'{-T,--tilde}'[install the most recent release of the packages that have the same minor version]' \
-            '*:package-name:'
+            '*:package-name:_yarn_add_files'
         ;;
 
         cache)
