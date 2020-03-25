@@ -35,6 +35,7 @@
 # -------
 #
 #  * Kris Shannon <k.shannon@amaze.com.au>
+#  * Shohei YOSHIDA <syohex@gmail.com>
 #
 # ------------------------------------------------------------------------------
 
@@ -55,7 +56,15 @@ _dget() {
         '(--no-conf --insecure)--insecure[Do not check SSL certificates when downloading]' \
         '(--no-conf --no-cache)--no-cache[Disable server-side HTTP cache]' \
         "(--no-conf)--no-conf[Don't read devscripts config files]" \
-        '(-)*:debian package urls:_urls'
+        '(-)*:debian package or URL: _alternative "_deb_packages available" "_urls"'
 }
 
 _dget "$@"
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
