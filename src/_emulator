@@ -18,11 +18,15 @@
 typeset -A opt_args
 local context state line curcontext="$curcontext"
 
+_list_avds() {
+  local -a _avds=($HOME/.android/avd/*.ini(N.:t:r))
+  echo "${_avds[@]}"
+}
+
 # TODO All image options are contextual to -sysdir value
 # TODO All skin options are contextual to -skindir value
 # TODO snapshot options are mutually exclusive
 # TODO Use '-snapshot-list' output for snapshot names
-# TODO Complete -avd with avd names ?
 # TODO -logcat: use completer from _adb
 # TODO Complete options with device values
 # TODO Complete -prop
@@ -62,7 +66,7 @@ _arguments \
   '-snapshot-list[show a list of available snapshots]' \
   '-no-snapshot-update-time[do not do try to correct snapshot time on restore]' \
   '-wipe-data[reset the user data image (copy it from initdata)]' \
-  '-avd[use a specific android virtual device]:android virtual device name' \
+  '-avd[use a specific android virtual device]:android virtual device name:($(_list_avds))' \
   '-skindir[search skins in <dir> (default <system>/skins)]: :_files -/' \
   '-skin[select a given skin]' \
   '(-noskin -no-skin)'{-noskin,-no-skin}'[don'\''t use any emulator skin]' \
@@ -108,7 +112,21 @@ _arguments \
   '-memcheck[enable memory access checking]:flags' \
   '-qemu[pass arguments to qemu]:arguments' \
   '-verbose[same as '\''-debug-init'\'']' \
-  '*'{-debug,-debug-,-debug-no-}'[enable/disable specific debug messages]:tag'
+  '*'{-debug,-debug-,-debug-no-}'[enable/disable specific debug messages]:tag' \
+  '1: :->cmds' \
+  '*:: :->args' && ret=0
+
+case $state in
+  cmds)
+    local -a _avds=($(_list_avds))
+    for ((i=1; i<=${#_avds[@]}; i++)); do
+      _avds[i]="@${_avds[i]}"
+    done
+    _values 'avds' "${_avds[@]}"
+    ;;
+esac
+
+return ret
 
 # Local Variables:
 # mode: Shell-Script
