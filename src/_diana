@@ -116,7 +116,7 @@ _diana() {
         "list:Output the list of active downloads."
         "paused:Output the list of paused downloads."
         "stopped:Output the list of stopped downloads."
-        "info:Output informations regarding the given GIDs."
+        "info:Output information regarding the given GIDs."
         "files:Output the files owned by the downloads corresponding to the given GIDs."
         "errors:Output the list of errors."
         "stats:Output download bandwidth statistics."

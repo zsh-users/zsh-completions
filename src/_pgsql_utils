@@ -204,14 +204,14 @@ _psql () {
         {-R+,--record-separator=}':record separator char:' \
         {-s,--single-step}'[prompt before each query]' \
         {-S,--single-line}'[newline sends query]' \
-        {-t,--tuples-only}'[dont display header/footer]' \
+        {-t,--tuples-only}'[don'\''t display header/footer]' \
         {-T+,--table-attr=}':HTML table options:' \
         -u'[prompt for username/password]' \
         {-v+,--set=,--variable=}':set SQL variable:' \
         {-x,--expanded}'[one column per line]' \
         {-z,--field-separator-zero}'[set field separator for unaligned output to zero byte]' \
         {-0,--record-separator-zero}'[set record separator for unaligned output to zero byte]' \
-        {-X,--no-psqlrc}'[dont read ~/.psqlrc]' \
+        {-X,--no-psqlrc}'[don'\''t read ~/.psqlrc]' \
         ':PostgreSQL database:_pgsql_databases' \
         ':PostgreSQL user:_pgsql_users'
 }
@@ -236,15 +236,15 @@ _pg_dump () {
         {-n+,--schema=}':schema to dump:_pgsql_schemas' \
         {-N+,--exclude-schema=}':schema to NOT dump:_pgsql_schemas' \
         {-o,--oids}'[dump objects identifiers for every table]' \
-        {-O,--no-owner}'[dont recreate as same owner]' \
-        {-R,--no-reconnect}'[dont output connect]' \
+        {-O,--no-owner}'[don'\''t recreate as same owner]' \
+        {-R,--no-reconnect}'[don'\''t output connect]' \
         {-s,--schema-only}'[no data, only schema]' \
         {-S+,--superuser=}':superuser name:_pgsql_users' \
         {-t+,--table=}':table to dump:_pgsql_tables' \
         {-T+,--exclude-table=}':table to NOT dump:_pgsql_tables' \
         {-v,--verbose}'[verbose mode]' \
         {-V,--version}'[display client version]' \
-        {-x,--no-{acl,privileges}}'[dont dump ACLs]' \
+        {-x,--no-{acl,privileges}}'[don'\''t dump ACLs]' \
         -X+':option:_values "option" use-set-session-authorization disable-triggers' \
         {-Z+,--compress=}':compression level:_values "level" 9 8 7 6 5 4 3 2 1 0' \
         ':PostgreSQL database:_pgsql_databases' \
@@ -328,12 +328,12 @@ _pg_dumpall () {
         {-g,--globals-only}'[dump only global objects, no databases]' \
         {-f+,--file=}':output file:_files' \
         {-o,--oids}'[dump objects identifiers for every table]' \
-        {-O,--no-owner}'[dont recreate as same owner]' \
+        {-O,--no-owner}'[don'\''t recreate as same owner]' \
         {-r,--roles-only}'[no databases or tablespaces, only roles]' \
         {-s,--schema-only}'[no data, only schema]' \
         {-S+,--superuser=}':superuser name:_pgsql_users' \
         {-t,--tablespaces-only}'[no databases or roles, only tablespaces]' \
-        {-x,--no-privileges}'[dont dump ACLs]' \
+        {-x,--no-privileges}'[don'\''t dump ACLs]' \
         --binary-upgrade'[for use by upgrade utilities only]' \
         --column-inserts'[use INSERT with column names not COPY]' \
         --disable-dollar-quoting'[disable dollar quoting, use SQL standard quoting]' \

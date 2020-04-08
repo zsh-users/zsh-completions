@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for scrub an utility which iteratively writes patterns on files or disk devices to make retrieving the data more difficult. (http://linux.die.net/man/1/scrub).
+#  Completion script for scrub. A utility which iteratively writes patterns on files or disk devices to make retrieving the data more difficult. (http://linux.die.net/man/1/scrub).
 #
 # ------------------------------------------------------------------------------
 # Authors

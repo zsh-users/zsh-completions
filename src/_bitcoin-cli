@@ -47,7 +47,7 @@ _bitcoin-cli() {
     -datadir='[Specify data directory]:PATH:_directories' \
     -getinfo='[Get general information from the remote server.]' \
     -testnet'[Use the test chain]' \
-    -regtest'[Enter  regression test mode, which uses a special chain in which blocks can be solved instantly. This is intended for regression testing tools and app development.]' \
+    -regtest'[Enter regression test mode, which uses a special chain in which blocks can be solved instantly. This is intended for regression testing tools and app development.]' \
     -named'[Pass named instead of positional arguments (default: false)]' \
     -stdin'[Read extra arguments from standard input, one per line until EOF/Ctrl-D (recommended for sensitive information such as passphrases)]' \
     -rpcport='[Connect to JSON-RPC on <port> (default: 8332, testnet: 18332, regtest: 18443)]: :_guard "[[\:digit\:]]#" "PORT"' \

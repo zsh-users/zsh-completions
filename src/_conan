@@ -277,7 +277,7 @@ _conan_install_args() {
     '(-h --help --werror)--werror[error instead of warnings for graph inconsistencies]' \
     '(-h --help -if --install-folder)'{-if,--install-folder}'[Use this directory as the directory where to put the generatorfiles, conaninfo/conanbuildinfo.txt etc.]: :_files -/' \
     '(-h --help -m --manifests)'{-m,--manifests}'[install dependencies manifests in folder for later verify]: :_files -/' \
-    '(-h --help -mi --manifests-interactive)'{-mi,--manifests-interactive}'[install dependencies dependencies manifests in folder for later verify]: :_files -/' \
+    '(-h --help -mi --manifests-interactive)'{-mi,--manifests-interactive}'[install dependencies manifests in folder for later verify]: :_files -/' \
     '(-h --help -v --verify)'{-v,--verify}'[verify dependencies manifests against stored ones]: :_files -/' \
     '(-h --help --no-imports)--no-imports[install specified packages but avoid running imports]' \
     '(-h --help -u --update)'{-u,--update}'[check updates exist from upstream remotes]' \

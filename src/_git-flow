@@ -137,7 +137,7 @@ __git-flow-release ()
 						-s'[Sign the release tag cryptographically]'\
 						-u'[Use the given GPG-key for the digital signature (implies -s)]'\
 						-m'[Use the given tag message]'\
-						-n'[Dont tag this release ]'\
+						-n'[Don'\''t tag this release]'\
 						-p'[Push to $ORIGIN after performing finish]'\
 						-k'[Keep branch after performing finish]'\
 						':version:__git_flow_version_list'

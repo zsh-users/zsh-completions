@@ -51,7 +51,7 @@ _drush() {
     '(- *)'{-v,--verbose}'[Display extra information about the command.]' \
     '(- *)'{-y,--yes}'[Assume "yes" as answer to all prompts.]' \
     '(- *)'{-n,--no}'[Assume "no" as answer to all prompts.]' \
-    '(- *)'{-s,--simulate}'[Simulate all relevant actions (dont actually change the system).]' \
+    '(- *)'{-s,--simulate}'[Simulate all relevant actions (don'\''t actually change the system).]' \
     '(- *)'{-r,--root=}'[Drupal root directory to use (default: current directory).]' \
     '(- *)'{-l,--uri=}'[URI of the drupal site to use (only needed in multisite environments or when running on an alternate port).]' \
     '1: :->cmds' \
@@ -114,7 +114,7 @@ case $state in
           '(--description)--description=[Filter out extensions that are provided by drupal core.]' \
           '(--destination)--destination=[The full path and filename in which the archive should be stored. If omitted, it will be saved to the drush-backups directory.]' \
           '(--no-core)--no-core[Exclude Drupal core, so the backup only contains the site specific stuff.]' \
-          '(--pipe)--pipe[Only print the destination of the archive. Useful for scripts that dont pass --destination.]' \
+          '(--pipe)--pipe[Only print the destination of the archive. Useful for scripts that don'\''t pass --destination.]' \
           '(--tar-options)--tar-options=[Options passed thru to the tar command.]' \
         && ret=0
         compadd -a global_args
@@ -147,7 +147,7 @@ case $state in
           '(--no-core)--no-core[Filter out extensions that are provided by drupal core.]' \
           '(--pipe)--pipe[Returns a whitespace delimited list of the names of the resulting extensions.]' \
           '(--status)--status=-[Filter by extension status. Choices: enabled, disabled and/or "not installed".]:status:(enabled disabled)' \
-          '(--type)--type=-[Filter by extensions ension type. Choices: module, theme.]:type:(module theme)' \
+          '(--type)--type=-[Filter by extension type. Choices: module, theme.]:type:(module theme)' \
         && ret=0
       ;;
       (pm-disable|dis)
@@ -171,7 +171,7 @@ case $state in
           {-v,--verbose}'[Display extra information about the command.]' \
           {-y,--yes}'[Assume "yes" as answer to all prompts.]' \
           {-n,--no}'[Assume "no" as answer to all prompts.]' \
-          {-s,--simulate}'[Simulate all relevant actions (dont actually change the system).]' \
+          {-s,--simulate}'[Simulate all relevant actions (don'\''t actually change the system).]' \
           {-r,--root=}'[Drupal root directory to use (default: current directory).]' \
           {-l,--uri=}'[URI of the drupal site to use (only needed in multisite environments or when running on an alternate port).]'
         ;;

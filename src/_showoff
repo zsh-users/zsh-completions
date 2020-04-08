@@ -67,20 +67,20 @@ case $state in
 					'(-n --name)'{-n,--name}'=[Slide name (name of the new slide file)]:basename' \
 					{-s,--source}'=[Include code from the given file as the slide body]:file:_files' \
 					'(-t --style --type)'{-t,--style,--type}'=[Slide Type/Style (default: title)]:style' \
-					'(-u --no-number)'{-u,--no-number}'[Dont number the slide, use the given name verbatim]' \
+					'(-u --no-number)'{-u,--no-number}'[Don'\''t number the slide, use the given name verbatim]' \
 					'1:title' && ret=0
 				;;
 			(create|init)
 				_arguments \
 					'(-d --slidedir)'{-d,--slidedir}'=[Sample slide directory name (default: one)]:arg' \
-					'(-n --nosamples)'{-n,--nosamples}'=[Dont create sample slides]' \
+					'(-n --nosamples)'{-n,--nosamples}'=[Don'\''t create sample slides]' \
 					'1:dir_name' && ret=0
 				;;
 			help)
 				_values 'commands' add new create init help heroku serve static && ret=0
 				;;
 			heroku)
-				_message 'please entrer an heroku_name' && ret=0
+				_message 'please enter an heroku_name' && ret=0
 				;;
 			serve)
 				_arguments \
@@ -89,7 +89,7 @@ case $state in
 					'1:title' && ret=0
 				;;
 			static)
-				_message 'please entrer a name' && ret=0
+				_message 'please enter a name' && ret=0
 				;;
 			*)
 				(( ret )) && _message 'no more arguments'

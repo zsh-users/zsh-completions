@@ -40,7 +40,7 @@ _commands=(
   'access'
   'autoclean:Clean and remove unnecessary files from package dependencies'
   'cache:List or clean every cached package'
-  "check:Verify package dependencies agains yarn's lock file"
+  "check:Verify package dependencies against yarn's lock file"
   'config:Manages the yarn configuration files'
   'generate-lock-entry:Generates a lock file entry'
   'global:Install packages globally on your operating system'

@@ -164,10 +164,10 @@ if [[ "$service" = -value-* ]]; then
       _alternative ':PATH for compiler lookup (instead of $PATH):_dir_list'
       ;;
     *CCACHE_PREFIX*)
-      _alternative ':prefixes for compiler invokation: '
+      _alternative ':prefixes for compiler invocation: '
       ;;
     *CCACHE_PREFIX_CPP*)
-      _alternative ':prefixes for preprocessor invokation: '
+      _alternative ':prefixes for preprocessor invocation: '
       ;;
     *CCACHE_*READONLY*)
       _ccache_booleans "treat cache as read-only"
@@ -179,7 +179,7 @@ if [[ "$service" = -value-* ]]; then
       _ccache_booleans "use cache in write-only mode"
       ;;
     *CCACHE_*CPP2*)
-      _ccache_booleans "pass originial rather than preprocessed source code to compiler"
+      _ccache_booleans "pass original rather than preprocessed source code to compiler"
       ;;
     *CCACHE_SLOPPINESS*)
       _ccache_sloppiness
@@ -228,8 +228,8 @@ __ccache_config_keys() {
   'max_files:maximum number of files in the cache'
   'max_size:maximum size of the cache'
   'path:PATH for compiler lookup (instead of $PATH)'
-  'prefix_command:prefixes for compiler invokation'
-  'prefix_command_cpp:prefixes for preprocessor invokation'
+  'prefix_command:prefixes for compiler invocation'
+  'prefix_command_cpp:prefixes for preprocessor invocation'
   'sloppiness:hash files sloppy'
   'umask:set umask for ccache and child processes (e.g. for sharing cache)'
   )
@@ -289,10 +289,10 @@ if compset -P '--set-config=*='; then
       _alternative ':PATH for compiler lookup (instead of $PATH):_dir_list'
       ;;
     *=prefix_command=)
-      _alternative ':prefixes for compiler invokation: '
+      _alternative ':prefixes for compiler invocation: '
       ;;
     *=prefix_command_cpp=)
-      _alternative ':prefixes for preprocessor invokation: '
+      _alternative ':prefixes for preprocessor invocation: '
       ;;
     *=sloppiness=)
       _ccache_sloppiness
