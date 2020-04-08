@@ -38,35 +38,58 @@
 #
 # ------------------------------------------------------------------------------
 
-local cheats
+local cheats taglist pathlist
 
-_cheat_load_cheats() {
-  cheats=("${(f)$(cheat -l | cut -d' ' -f1)}")
+_cheat_complete_cheatsheets()
+{
+  cheats=("${(f)$(cheat -l -t personal | tail -n +2 | cut -d' ' -f1)}")
+  _describe -t cheats 'cheats' cheats
 }
 
+_cheat_complete_tags()
+{
+  taglist=("${(f)$(cheat -T)}")
+  _describe -t taglist 'taglist' taglist
+}
+
+_cheat_complete_paths()
+{
+  pathlist=("${(f)$(cheat -d | cut -d':' -f1)}")
+  _describe -t pathlist 'pathlist' pathlist
+}
 
 _cheat() {
 
+  _arguments -C \
+    '(--init)--init[Write a default config file to stdout]: :->none' \
+    '(-c --colorize)'{-c,--colorize}'[Colorize output]: :->none' \
+    '(-d --directories)'{-d,--directories}'[List cheatsheet directories]: :->none' \
+    '(-e --edit)'{-e,--edit}'[Edit <sheet>]: :->full' \
+    '(-l --list)'{-l,--list}'[List cheatsheets]: :->full' \
+    '(-p --path)'{-p,--path}'[Return only sheets found on path <name>]: :->pathlist' \
+    '(-r --regex)'{-r,--regex}'[Treat search <phrase> as a regex]: :->none' \
+    '(-s --search)'{-s,--search}'[Search cheatsheets for <phrase>]: :->none' \
+    '(-t --tag)'{-t,--tag}'[Return only sheets matching <tag>]: :->taglist' \
+    '(-T --tags)'{-T,--tags}'[List all tags in use]: :->none' \
+    '(-v --version)'{-v,--version}'[Print the version number]: :->none' \
+    '(--rm)--rm[Remove (delete) <sheet>]: :->full' \
 
-  _arguments -C -s -S -n \
-    '(- 1 *)'{-d,--directories}'[List directories on CHEATPATH]: :->full' \
-    '(- 1 *)'{-e,--edit}'[Edit cheatsheet]:cheat:->cheats' \
-    '(- 1 *)'{-l,--list}'[List cheatsheets]: :->full' \
-    '(- 1 *)'{-s,--search}'[Search cheatsheets for <keyword>]: :->full' \
-    '(- 1 *)'{-v,--version}'[display version and copyright information]: :->full' \
-
-    case "$state" in
+  case $state in
+    (none)
+      ;;
     (full)
-    ;;
-    (cheats)
-        _cheat_load_cheats
-        _describe -t cheats 'cheats' cheats
-    ;;
+      _cheat_complete_cheatsheets
+      ;;
+    (taglist)
+      _cheat_complete_tags
+      ;;
+    (pathlist)
+      _cheat_complete_paths
+      ;;
     (*)
-        _cheat_load_cheats
-        _describe -t cheats 'cheats' cheats
-    ;;
-    esac
+      _cheat_complete_cheatsheets
+      ;;
+  esac
 }
 
 _cheat
