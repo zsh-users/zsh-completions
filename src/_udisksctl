@@ -44,8 +44,8 @@
 # -----
 #
 # udisksctl actually provide built-in support for completion: It accepts an
-# special command 'complete' that returns completeions. That is what drives the
-# upstream bash completion. In the future one might condsider rewriting using
+# special command 'complete' that returns completions. That is what drives the
+# upstream bash completion. In the future one might consider rewriting using
 # that. (but not sure how straight forward it would be to provide descriptions?)
 #
 

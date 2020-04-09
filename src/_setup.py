@@ -460,7 +460,7 @@ _setuppy_bdist_wininst() {
     "--title=[title to display on the installer background instead of default]" \
     "-t[title to display on the installer background instead of default]" \
     "--skip-build[skip rebuilding everything (for testing/debugging)]" \
-    "--install-script=[basename of installation script to be run afterinstallation or before deinstallation]" \
+    "--install-script=[basename of installation script to be run after installation or before uninstallation]" \
     "--pre-install-script=[Fully qualified filename of a script to be run before any files are installed.  This script need not be in the distribution]" \
     "--user-access-control=[specify Vista's UAC handling - 'none'/default=no handling, 'auto'=use UAC if target Python installed for all users, 'force'=always use UAC]" \
     "*::setup.py commands:_setup.py"

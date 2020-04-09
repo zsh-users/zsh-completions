@@ -136,11 +136,11 @@ _ghc_compiler ()
         '-pgms[Use cmd as the splitter]' \
         '-pgml[Use cmd as the linker]' \
         '-pgmdll[Use cmd as the DLL generator]' \
-        '-pgmF[Use cmd as the pre-proecessor (with -F only)]' \
+        '-pgmF[Use cmd as the pre-processor (with -F only)]' \
         '-pgmwindres[Use cmd as the program for embedding manifests on Windows]' \
         '-pgmlibtool[Use cmd as the command for libtool (with -staticlib only)]' \
         '-rtsopts[Only a minimum of safe options can be given to RTS]' \
-        '-rtsopts=[Control whether the RTS behavior can be tweaked via command-line flags and the GHCRTS environment varaible (none, som, or all)]' \
+        '-rtsopts=[Control whether the RTS behavior can be tweaked via command-line flags and the GHCRTS environment variable (none, some, or all)]' \
         '-with-rtsopts=[Set the default RTS options]' \
         '-threaded[Use the threaded runtime]' \
         '-ticky[Turn on ticky-ticky profiling]' \

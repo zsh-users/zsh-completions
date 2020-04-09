@@ -54,9 +54,9 @@ local context state line curcontext="$curcontext" cmake_args
 
 local cmake_build_options;cmake_build_options=(
     '-C[Pre-load a script to populate the cache]:script:_files'
-    '*-D-[Create a cmake cache entry]:property:_cmake_define_property'
+    '*-D-[Create a CMake cache entry]:property:_cmake_define_property'
     '-U[Remove matching entries from CMake cache]:globbing expression'
-    '-G[Specify a makefile generator]:generator:_cmake_generators'
+    '-G[Specify a Makefile generator]:generator:_cmake_generators'
     '-T[Specify toolset name if supported by generator]:toolset name'
     '(-Wno-dev -Wdev)-Wno-dev[Suppress/Enable developer warnings]'
     '(-Wno-dev -Wdev)-Wdev[Suppress/Enable developer warnings]'
@@ -68,7 +68,7 @@ local cmake_build_options;cmake_build_options=(
     '(-Wno-error=deprecated -Werror=deprecated)-Wno-error=deprecated[Make deprecated macro and function warnings (not) errors]'
     '--warn-uninitialized[Warn about uninitialized values.]'
     '--warn-unused-vars[Warn about unused variables.]'
-    '--no-warn-unused-cli[Dont warn about command line options.]'
+    '--no-warn-unused-cli[Don'\''t warn about command line options.]'
     '-i[Run in wizard mode]'
     '-L-[List cache variables]::_values "options" "[non-advanced cache variables]" "A[advanced cache variables]" "H[non-advanced cached variables with help]" "AH[advanced cache variables with help]"'
     '--trace[Put cmake in trace mode]'
@@ -106,7 +106,7 @@ _cmake_targets() {
   local -a targets
   if [ -f $1/Makefile ]
   then
-    # `make help` doesn't work for Makefiles in general, but for cmake generated makefiles it does.
+    # `make help` doesn't work for Makefiles in general, but for CMake generated Makefiles it does.
     i=1
     for target in $(make help | \grep -e "\.\.\." | sed "s/\.\.\. //" | sed "s/ (the default.*//") ; do
       targets[$i]=$target
@@ -321,10 +321,10 @@ _cmake_define_lang_property_names() {
 (( $+functions[_cmake_define_common_property_names] )) ||
 _cmake_define_common_property_names() {
   local properties; properties=(
-    'CMAKE_MODULE_PATH:Search path for cmake modules (FindPROJECT.cmake)'
+    'CMAKE_MODULE_PATH:Search path for CMake modules (FindPROJECT.cmake)'
     'CMAKE_PREFIX_PATH:Search path for installations (PROJECTConfig.cmake)'
     'CMAKE_BUILD_TYPE:Specifies the build type for make based generators'
-    'CMAKE_TOOLCHAIN_FILE:Absolute or relative path to a cmake script which sets up toolchain related variables'
+    'CMAKE_TOOLCHAIN_FILE:Absolute or relative path to a CMake script which sets up toolchain related variables'
     'CMAKE_COLOR_MAKEFILE:Enables/disables color output when using the Makefile generator'
     'CMAKE_INSTALL_PREFIX:Install directory used by install'
     'CMAKE_EXPORT_COMPILE_COMMANDS:Enable/disable output of compilation database during generation'
@@ -450,7 +450,7 @@ _cmake_booleans() {
 # ---------------
 # _cmake_compilers
 #
-# by default just executable commands, but can be overriden by users.
+# by default just executable commands, but can be overridden by users.
 # ---------------
 (( $+functions[_cmake_compilers] )) ||
 _cmake_compilers() {
@@ -460,7 +460,7 @@ _cmake_compilers() {
 # ---------------
 # _cmake_launchers
 #
-# by default just executable commands, but can be overriden by users.
+# by default just executable commands, but can be overridden by users.
 # useful commands might be ccache, distcc, ...
 # ---------------
 (( $+functions[_cmake_launchers] )) ||

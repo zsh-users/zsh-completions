@@ -43,7 +43,7 @@ _exportfs() {
     '(-a -r -u)-i[Ignore the /etc/exports file and files under /etc/exports.d directory]' \
     '(-i)-r[Reexport  all  directories]' \
     '(-i)-u[Unexport one or more directories]' \
-    '-f[flush everything out of export table]' \
+    '-f[Flush everything out of export table]' \
     '-o[option1,option2.. Specify a list of export options]' \
     '-s[Display the current export list suitable for /etc/exports]' \
     '-v[Be verbose]'

@@ -339,7 +339,7 @@ _nft_delete(){
   local commands=(
     "table:delete the specified table"
     "chain:delete the specified chain, chain must be empty and mustn't be used as jump target"
-    "rule:delete the specified rule, rule must be referrable to by a handle"
+    "rule:delete the specified rule, rule must be referable to by a handle"
     "set:delete the specified set"
     "map:delete the specified map"
     "element:delete element(s) from the specified set/map"

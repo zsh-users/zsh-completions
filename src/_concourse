@@ -1194,7 +1194,7 @@ _concourse_web_args() {
     '--postgres-client-key=[client key file location]: :_files' \
     '--postgres-connect-timeout=[dialing timeout]: :_concourse_durations' \
     '--postgres-database=[the name of the database to use]:database name' \
-    '--secret-retry-attempts=[the number of attempts secret will be retried to be fetched, in case a retryable error happens]:number' \
+    '--secret-retry-attempts=[the number of attempts secret will be retried to be fetched, in case a retriable error happens]:number' \
     '--secret-retry-interval=[the interval between secret retry retrieval attempts]: :_concourse_durations' \
     '--secret-cache-enabled[enable in-memory cache for secrets]' \
     '--secret-cache-duration=[if the cache is enabled, secret values will be cached for not longer than this duration]: :_concourse_durations' \
@@ -1361,7 +1361,7 @@ _concourse_web_args() {
     '--tsa-authorized-keys=[path to file containing keys to authorize, in SSH authorized_keys format]: :_files' \
     '--tsa-team-authorized-keys=[path to file containing keys to authorize, in SSH authorized_keys format]: :_concourse_name_colon_paths' \
     '--tsa-atc-url=[ATC API endpoints to which workers will be registered]: :_urls' \
-    '--tsa-session-signing-key=[path to private key to use when signing tokens in reqests to the ATC during registration]: :_files' \
+    '--tsa-session-signing-key=[path to private key to use when signing tokens in requests to the ATC during registration]: :_files' \
     '--tsa-heartbeat-interval=[interval on which to heartbeat workers to the ATC]: :_concourse_durations' \
 }
 

@@ -9,7 +9,7 @@ Contributions are welcome, just make sure you follow the guidelines:
  * Please do not just copy/paste someone else's completion, ask before.
  * Partially implemented completions are not accepted.
  * Please add a header containing authors, status and origin of the script and license header if you do not wish to use the Zsh license (example [here](src/_tox)).
- * Any reasonable open source licence is acceptable but note that we recommend the use of the Zsh license and that you should use it if you hope for the function to migrate to zsh itself.
+ * Any reasonable open source license is acceptable but note that we recommend the use of the Zsh license and that you should use it if you hope for the function to migrate to zsh itself.
  * Please try to follow the [Zsh completion style guide](https://github.com/zsh-users/zsh/blob/master/Etc/completion-style-guide).
  * Please send one separate pull request per file.
  * Send a pull request or ask for committer access.

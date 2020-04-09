@@ -63,7 +63,7 @@ output_levels=(
 
 _arguments -w -S -C \
   '(-)'{-h,--help}'[show this help message and exit]: :->noargs' \
-  '(-)'{-V,--version}'[show program''s version number and exit]: :->noargs' \
+  '(-)'{-V,--version}'[show program'\''s version number and exit]: :->noargs' \
   '(-)--list[print list of possible commands and exit]: :->noargs' \
   '(-)--shortlist[print non-verbose list of possible commands and exit]: :->noargs' \
   '(--reject-unknown-hosts)--reject-unknown-hosts[reject unknown hosts]' \
@@ -75,8 +75,8 @@ _arguments -w -S -C \
   '(-p+ --password=-)'{-p+,--password=-}'[password for use with authentication and/or sudo]: :' \
   '(-H+ --hosts=-)'{-H+,--hosts=-}'[comma separated list of hosts to operate on]: :' \
   '(-R+ --roles=-)'{-R+,--roles=-}'[comma separated list of roles to operate on]: :' \
-  '(-a --no-agent)'{-a,--no-agent}'[don''t use the running SSH agent]' \
-  '(-k --no-keys)'{-k,--no-keys}'[don''t load private key files from ~/.ssh/]' \
+  '(-a --no-agent)'{-a,--no-agent}'[don'\''t use the running SSH agent]' \
+  '(-k --no-keys)'{-k,--no-keys}'[don'\''t load private key files from ~/.ssh/]' \
   '(-w --warn-only)'{-w,--warn-only}'[warn instead of abort, when commands fail]' \
   '-i+[path to SSH private key file. May be repeated]: :_files' \
   "(-f+ --fabfile=)"{-f+,--fabfile=}"[Python module file to import]: :_files -g *.py" \

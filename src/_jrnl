@@ -46,7 +46,7 @@ _jrnl() {
       '(- 1 *)'-v"[Prints version information and exits]" \
       '(- 1 *)'-ls"[Displays accessible journals]" \
       '(- 1 *)'-d"[Execute in debug mode]" \
-      '(- 1 *)'--tags"[Returns a list of all tags and number of occurences]" \
+      '(- 1 *)'--tags"[Returns a list of all tags and number of occurrences]" \
       "--short[Show only titles or line containing the search]" \
       "-from[View entries after this date]:date:" \
       "-until[View entries before this date]:date:" \

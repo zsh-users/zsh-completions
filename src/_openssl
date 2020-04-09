@@ -124,7 +124,7 @@ _openssl_ca() {
     '-utf8[input characters are UTF8 (default ASCII)]' \
     '-multivalue-rdn[enable support for multivalued RDNs]' \
     '-extensions[extension section (override value in config file)]:section: ' \
-    '-extfile[configuration file with X509v3 extentions to add]:file:_files' \
+    '-extfile[configuration file with X509v3 extensions to add]:file:_files' \
     '-crlexts[CRL extension section (override value in config file)]:section: ' \
     '-engine[use the specified engine, possibly a hardware device]:engine:_engines' \
     '-status[shows certificate status given the serial number]:serial: ' \
@@ -253,7 +253,7 @@ _openssl_dgst() {
     '-signature[signature to verify]:file:_files' \
     '-sigopt[signature parameter]:nm\:v: ' \
     '-hmac[create hashed MAC with key]:key: ' \
-    '-mac[create MAC (not neccessarily HMAC)]:algorithm: ' \
+    '-mac[create MAC (not necessarily HMAC)]:algorithm: ' \
     '-macopt[MAC algorithm parameters or key]:nm\:v: ' \
     '-engine[use the specified engine, possibly a hardware device]:engine:_engines' \
     "($digests)-dss1[use the dss1 message digest algorithm]" \
@@ -681,7 +681,7 @@ _openssl_ocsp() {
     '-resp_text[print text form of response]' \
     '-text[print text form of request and response]' \
     '-reqout[write DER encoded OCSP request to "file"]:file:_files' \
-    '-respout[write DER encoded OCSP reponse to "file"]:file:_files' \
+    '-respout[write DER encoded OCSP response to "file"]:file:_files' \
     '-reqin[read DER encoded OCSP request from "file"]:file:_files' \
     '-respin[read DER encoded OCSP reponse from "file"]:file:_files' \
     '-nonce[add OCSP nonce to request]' \
@@ -1053,7 +1053,7 @@ _openssl_s_client() {
     "(-ign_eof)-no_ign_eof[don't ignore input eof]" \
     '-psk_identity[PSK identity]:identity: ' \
     '-psk[PSK in hex (without 0x)]:key: ' \
-    "-srpuser[SRP authentification for 'user']:user: " \
+    "-srpuser[SRP authentication for 'user']:user: " \
     "-srppass[password for 'user']:password: " \
     '-srp_lateuser[SRP username into second ClientHello message]' \
     '-srp_moregroups[tolerate other than the known g N values]' \
@@ -1306,7 +1306,7 @@ _openssl_spkac() {
 _openssl_srp() {
   # written for openssl 1.0.1k
   _arguments -C \
-    '-verbose[talk alot while doing things]' \
+    '-verbose[talk a lot while doing things]' \
     '-config[a config file]:file:_files' \
     '-name[the particular srp definition to use]:definition: ' \
     '-srpvfile[the srp verifier file name]:file:_files' \
@@ -1372,7 +1372,7 @@ _openssl_ts() {
           '-chain[signer certificate chain in PEM format]:file:_files' \
           '-policy[default policy to use for response]:policy ID: ' \
           '-in[use the previously created time stamp response in DER format]:file:_files' \
-          '-token_in[the paramter to -in is a time stamp token in DER format]' \
+          '-token_in[the parameter to -in is a time stamp token in DER format]' \
           '-out[name of the output file to which the response will be written]:file:_files' \
           '-token_out[output a time stamp token instead of a time stamp response]' \
           '-text[output in human-readable format instead of DER]' \
@@ -1384,8 +1384,8 @@ _openssl_ts() {
           '(-data -queryfile)-digest[verify the response against the specified message digest]:digest bytes: ' \
           '(-data -digest)-queryfile[the original time stamp request in DER format]:file:_files' \
           '-in[time stamp response that needs to be verified in DER format]:file:_files' \
-          '-token_in[the paramter to -in is a time stamp token in DER format]' \
-          '-CApath[directory containing the trused CA certificates of the client]:directory:_files -/' \
+          '-token_in[the parameter to -in is a time stamp token in DER format]' \
+          '-CApath[directory containing the trusted CA certificates of the client]:directory:_files -/' \
           '-CAFile[file containing a set of trusted self-signed CA certificates in PEM format]:file:_files' \
           '-untrusted[set of additional untrusted certificates in PEM format which may be needed when building the certificate chain]:file:_files'
         ;;
@@ -1550,7 +1550,7 @@ _list_ciphers() {
     'EXPORT56[56 bit export encryption algorithms]' \
     {eNULL,NULL}'[ciphers offering no encryption]' \
     'aNULL[ciphers offering no authentication]' \
-    {kRSA,RSA}'[cipher suites rusing RSA key exchange]' \
+    {kRSA,RSA}'[cipher suites using RSA key exchange]' \
     'kDHr[cipher suites using DH key agreement signed by CAs with RSA keys]' \
     'kDHd[cipher suites using DH key agreement signed by CAs with DSS keys]' \
     'kDH[cipher suites using DH key agreement]' \
@@ -1591,7 +1591,7 @@ _list_ciphers() {
     {SHA1,SHA}'[cipher suites using SHA1]' \
     'SHA256[cipher suites using SHA256]' \
     'SHA384[cipher suites using SHA284]' \
-    'aGOST[cipher suites using GOST R 34.10 for authenticaction]' \
+    'aGOST[cipher suites using GOST R 34.10 for authentication]' \
     'aGOST01[cipher suites using GOST R 34.10-2001 authentication]' \
     'aGOST94[cipher suites using GOST R 34.10-94 authentication]' \
     'kGOST[cipher suites, using VKO 34.10 key exchange]' \

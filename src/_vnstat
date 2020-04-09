@@ -47,7 +47,7 @@ _arguments -C : \
   '--cleartop[remove all top 10 entries]' \
   '--config[specify alternate configuration file]:file:_files' \
   "($period)"{-d,--days}'[show traffic for days]' \
-  "($period)"{-h,--hours}'[show trafic for last 24 hours]' \
+  "($period)"{-h,--hours}'[show traffic for last 24 hours]' \
   "($period)"{-m,--months}'[show traffic for months]' \
   "($period)"{-w,--weeks}'[show traffic for 7 days]' \
   '--dbdir[specify database directory]:directory:_files -/' \
@@ -64,7 +64,7 @@ _arguments -C : \
   '--oneline[traffic summary in one-line, parseable format]' \
   '(-q --query)'{-q,--query}'[force database query mode]' \
   '(-r --reset)'{-r,--reset}'[reset internal counters]' \
-  '--rebuildtotal[reset total trafic counters]' \
+  '--rebuildtotal[reset total traffic counters]' \
   '(-ru --rateunit)'{-ru,--rateunit}'[swap configured rate unit]' \
   '--savemerged[write result of database merge]'  \
   '(-s --short)'{-s,--short}'[use short output mode]' \

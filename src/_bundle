@@ -88,7 +88,7 @@ case $state in
 					'(--with)--with=-[include gems that are part of the specified named group]:groups' \
 					'(--clean)--clean[remove any gems not present in the current Gemfile]' \
 					'(--full-index)--full-index[download and cache the index file of all gems]' \
-					'(--jobs)--jobs=-[install gems parallely]:number' \
+					'(--jobs)--jobs=-[install gems parallelly]:number' \
 					'(--force)--force[force download every gem]' \
 					'(--no-cache)--no-cache[do not update the cache in vendor/cache with newly installed gems]' \
 					'(--no-prune)--no-prune[do not remove stale gem from cache after installation]' \
