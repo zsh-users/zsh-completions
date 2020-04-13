@@ -1,0 +1,120 @@
+#compdef toolbox
+
+_toolbox-create() {
+  _arguments -C -A '-*' \
+    '--help[display help]' \
+    '--candidate-registry[pull the base image from candidate-registry.fedoraproject.org]' \
+    '(--container -c)'{--container,-c}'[toolbox name]:container name' \
+    '(--image -i)'{--image,-i}'[image name]:image:( $(_toolbox-imagenames) )' \
+    '(--release -r)'{--release,-r}'[create toolbox of another release]:release'
+}
+
+_toolbox-enter() {
+  _arguments -C -A '-*' \
+    '--help[display help]' \
+    '(--container -c)'{--container,-c}'[toolbox name to enter]:container name:( $(_toolbox-containernames) )' \
+    '(--release -r)'{--release,-r}'[enter a toolbox container for a different release than the host]:release'
+}
+
+_toolbox-help() {
+  _arguments -C -A '-*' \
+    '--help[pretty meta]' \
+    '1:command:( $subcmds )'
+}
+
+_toolbox-list() {
+  _arguments -C -A '-*' \
+    '--help[display help]' \
+    '(--container -c --image -i)'{--container,-c}'[list containers]' \
+    '(--image -i --container -c)'{--image,-i}'[list images]'
+}
+
+_toolbox-rm() {
+  _arguments -C -A '-*' \
+    '--help[display help]' \
+    '(--all -a)'{--all,-a}'[delete all containers]' \
+    '(--force -f)'{--force,-f}'[force deletion of paused or running containers]' \
+    '*:container:( $(_toolbox-containernames) )'
+}
+
+_toolbox-rmi() {
+  _arguments -C -A '-*' \
+    '--help[display help]' \
+    '(--all -a)'{--all,-a}'[delete all images]' \
+    '(--force -f)'{--force,-f}'[force deletion of images used by toolboxes]' \
+    '*:image:( $(_toolbox-imagenames) )'
+}
+
+_toolbox-run() {
+  _arguments -C -A '-*' \
+    '--help[display help]' \
+    '(--container -c)'{--container,-c}'[toolbox name]:container name:( $(_toolbox-containernames) )' \
+    '(--release -r)'{--release,-r}'[create toolbox of another release]:release' \
+    '*::: :{ 
+      if (( CURRENT == 1 )); then
+        _alternative "commands:command: _command_names -e" "files:file: _files"
+      else
+        _normal
+      fi
+    }'
+}
+
+_toolbox-init-container() {
+  _arguments -C -A '-*' \
+    '--help[display help]' \
+    '--home[create a user inside the toolbox container whose login directory is specified]:home:_files -/' \
+    '--home-link[make /home a symbolic link to /var/home]' \
+    '--monitor-host[synchronize special configuration files from host]' \
+    "--shell[set user's login shell]:path to shell:_files" \
+    "--uid[set user's UID]:UID" \
+    "--user[create given username]:username:_users" \
+}
+
+_toolbox-reset() {
+  _arguments -C -A '-*' '--help[display help]'
+}
+
+_toolbox-containernames() {
+  podman ps --all --format '{{.Names}}' 2>/dev/null
+}
+
+_toolbox-imagenames() {
+  podman images --format '{{.Repository}}:{{.Tag}}' 2>/dev/null
+}
+
+_toolbox() {
+  local -a subcmds
+  local cmdname=$service subcmdcompleter
+
+  subcmds=(
+    create enter
+    help rm
+    init-container rmi
+    list run
+    reset
+  )
+
+  if [[ $service == $cmdname ]]; then
+    _arguments -C -A '-*' \
+      '(-h --help)'{-h,--help}'[show this help message and exit]' \
+      '(--assumeyes -y)'{--assumeyes,-y}'[assume yes to all questions]' \
+      '(--verbose -v)'{--verbose,-v}'[be verbose]' \
+      '*::command:->subcmd' && return 0
+
+    if (( CURRENT == 1 )); then
+      _wanted commands expl "subcommand" compadd -a subcmds
+      return
+    fi
+    service="$words[1]"
+    curcontext="${curcontext%:*}-$service:"
+  fi
+
+
+  if (( $+functions[${subcmdcompleter:=_$cmdname-$service}] )); then
+    local ret=1
+    $subcmdcompleter && ret=0
+    return $ret
+  fi
+}
+
+_toolbox "$@"
