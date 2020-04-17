@@ -36,8 +36,15 @@
 # -------
 #
 #  * Mario Fernandez (https://github.com/sirech)
+#  * Shohei YOSHIDA (https://github.com/syohex)
 #
 # ------------------------------------------------------------------------------
+
+__git_wtf_branches() {
+  local -a branches
+  branches=(${(f)"$(git for-each-ref --format='%(refname:short)' refs/heads/)"})
+  _describe 'branch' branches
+}
 
 _arguments -w -C -s \
     '(--long --short)'{-l,--long}'[include author info and date for each commit]' \
@@ -47,7 +54,7 @@ _arguments -w -C -s \
     '(--key)'{-k,--key}'[show key]' \
     '(--relations)'{-r,--relations}'[show relation to features / integration branches]' \
     '(--dump-config)--dump-config[print out current configuration and exit]' \
-    '*: :__git_branch_names'
+    '*: :__git_wtf_branches'
 
 # Local Variables:
 # mode: Shell-Script
