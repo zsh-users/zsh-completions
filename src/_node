@@ -52,6 +52,15 @@ _node_files() {
   _files -g "*.(js|mjs)"
 }
 
+_node_args() {
+  if (( CURRENT == 2 )); then
+    _alternative "_node_files" "_values 'command' 'inspect[enable inspector for debugging]'"
+    return
+  fi
+
+  _node_files
+}
+
 local curcontext="$curcontext" state line ret=1
 typeset -A opt_args
 
@@ -150,10 +159,7 @@ _arguments -C \
   '(- 1 *)'{-p,--print}'[evaluate script and print result]:inline JavaScript' \
   '*'{-r,--require}'[module to preload (option can be repeated)]: :_node_files' \
   '(- 1 *)'{-v,--version}'[print Node.js version]' \
-  '*: :_node_files' && ret=0
-
-_values 'commands' \
-  'inspect[enable inspector for debugging]' && ret=0
+  '*: :_node_args' && ret=0
 
 return ret
 
