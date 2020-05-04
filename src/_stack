@@ -45,8 +45,10 @@ _stack () {
         --version'[show version]' \
         --numeric-version'[show only version number]' \
         --hpack-numeric-version"[show only hpack's version number]" \
-        '--docker*[run "stack --docker-help" for details]' \
-        '--nix*[run "stack --nix-help" for details]' \
+        '--docker[enable using a Docker container, run "stack --docker-help" for details]' \
+        '--no-docker[disable using a Docker container, run "stack --docker-help" for details]' \
+        '--nix[enable use of a Nix-shell, run "stack --nix-help" for details]' \
+        '--no-nix[disable use of a Nix-shell, run "stack --nix-help" for details]' \
         --verbosity'[verbosity: silent, error, warn, info, debug]' \
         {-v,--verbose}'[enable verbose mode: verbosity level "debug"]' \
         --silent'[enable silent mode: verbosity level "silent"]' \
