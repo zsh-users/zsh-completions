@@ -78,14 +78,14 @@ _stack () {
         --no-allow-different-user'[disable permission for non-owners to use a stack installation (POSIX only)]' \
         --dump-logs'[enable dump the build output logs for local packages to the console]' \
         --no-dump-logs'[disable dump the build output logs for local packages to the console]' \
-        {--color,--colour}'[Specify when to use color in output; WHEN is "always", "never", or "auto".]' \
+        {--color,--colour}'[specify when to use color in output; WHEN is "always", "never", or "auto".]' \
         --resolver'[override resolver in project file]' \
         --terminal'[enable overriding terminal detection in the case of running in a false terminal]' \
         --no-terminal'[disable overriding terminal detection in the case of running in a false terminal]' \
-        {--stack-colors,--stack-colours}"[Specify stack's output styles]" \
-        --terminal-width'[Specify the width of the terminal, used for pretty-print messages]' \
+        {--stack-colors,--stack-colours}"[specify stack's output styles]" \
+        --terminal-width'[specify the width of the terminal, used for pretty-print messages]' \
         --stack-yaml'[override project stack.yaml file]' \
-        --lock-file'[Specify how to interact with lock files.]' \
+        --lock-file'[specify how to interact with lock files.]' \
         '*: :__stack_modes'
 }
 
@@ -121,11 +121,11 @@ __stack_modes () {
         'eval[evaluate some haskell code inline.]' \
         'clean[delete build artefacts for the project packages.]' \
         'purge[delete the project stack working directories.]' \
-        'query[Query general build information (experimental)]' \
-        'ide[IDE-specific commands]' \
+        'query[query general build information (experimental)]' \
+        'ide[ide-specific commands]' \
         'docker[subcommands specific to Docker use]' \
-        'config[Subcommands for accessing and modifying configuration values]' \
-        'hpc[Subcommands specific to Haskell Program Coverage]'
+        'config[subcommands for accessing and modifying configuration values]' \
+        'hpc[subcommands specific to Haskell Program Coverage]'
 
 }
 
