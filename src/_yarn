@@ -125,37 +125,51 @@ _yarn() {
     '(-h --help)'{-h,--help}'[output usage information]' \
     '(-V --version)'{-V,--version}'[output the version number]' \
     '--verbose[output verbose messages on internal operations]' \
-    '--offline[trigger an error if any required dependencies are not available in local cache]' \
-    '--prefer-offline[use network only if dependencies are not available in local cache]' \
-    '--strict-semver' \
-    '--json' \
-    "--ignore-scripts[don't run lifecycle scripts]" \
-    '--har[save HAR output of network traffic]' \
-    '--ignore-platform[ignore platform checks]' \
-    '--ignore-engines[ignore engines check]' \
-    '--ignore-optional[ignore optional dependencies]' \
-    '--force[install and build packages even if they were built before, overwrite lockfile]' \
-    '--skip-integrity-check[run install without checking if node_modules is installed]' \
-    '--check-files[install will verify file tree of packages for consistency]' \
-    "--no-bin-links[don't generate bin links when setting up packages]" \
-    '--flat[only allow one version of a package]' \
-    '(--prod --production)'{--prod,--production} \
-    "--no-lockfile[don't read or generate a lockfile]" \
-    "--pure-lockfile[don't generate a lockfile]" \
-    "--frozen-lockfile[don't generate a lockfile and fail if an update is needed]" \
-    '--link-duplicates[create hardlinks to the repeated modules in node_modules]' \
-    '--global-folder=[modules folder]:folder:_files -/' \
-    '--modules-folder=[rather than installing modules into the node_modules folder relative to the cwd, output them here]:folder:_files -/' \
     '--cache-folder=[specify a custom folder to store the yarn cache]:folder:_files -/' \
-    '--mutex=[use a mutex to ensure only one yarn instance is executing]:type[\:specifier]' \
-    '--no-emoji[disable emoji in output]' \
-    '(-s --silent)'{-s,--silent}'[skip Yarn console logs, other types of logs (script output) will be printed]' \
-    '--proxy=:host:_hosts' \
+    '--check-files[install will verify file tree of packages for consistency]' \
+    '--cwd=[working directory to use]:path:_files -/' \
+    "(--enable-pnp --pnp)--disable-pnp[disable the Plug'n'Play installation]" \
+    '(--no-emoji)--emoji=[enable emoji in output(default: false)]:enabled:(true false)' \
+    '(--emoji)--no-emoji[disable emoji in output]' \
+    '(--disable-pnp)'{--enable-pnp,--pnp}"[enable the Plug'n'Play installation]" \
+    '--flat[only allow one version of a package]' \
+    '--focus[Focus on a single workspace by installing remote copies of its sibiling workspaces]' \
+    '--force[install and build packages even if they were built before, overwrite lockfile]' \
+    "--frozen-lockfile[don't generate a lockfile and fail if an update is needed]" \
+    '--global-folder=[modules folder]:folder:_files -/' \
+    '--har[save HAR output of network traffic]' \
     '--https-proxy=:host:_hosts' \
-    '--no-progress[disable progress bar]' \
+    '--ignore-engines[ignore engines check]' \
+    "--ignore-scripts[don't run lifecycle scripts]" \
+    '--ignore-optional[ignore optional dependencies]' \
+    '--ignore-platform[ignore platform checks]' \
+    '--json[format Yarn log messages as lines of JSON]' \
+    '--link-duplicates[create hardlinks to the repeated modules in node_modules]' \
+    '--link-folder=[specify a custom folder to store global links]' \
+    '--modules-folder=[rather than installing modules into the node_modules folder relative to the cwd, output them here]:folder:_files -/' \
+    '--mutex=[use a mutex to ensure only one yarn instance is executing]:type[\:specifier]' \
     '--network-concurrency=[maximum number of concurrent network requests]:number' \
     '--network-timeout=[TCP timeout for network requests]:milliseconds' \
+    "--no-bin-links[don't generate bin links when setting up packages]" \
+    '--no-default-rc[prevent Yarn from automatically detecting yarnrc and npmrc files]' \
+    "--no-lockfile[don't read or generate a lockfile]" \
     '--non-interactive[do not show interactive prompts]' \
+    '--no-node-version-check[do not warn when using a potentially unsupported Node version]' \
+    '--no-progress[disable progress bar]' \
+    '--offline[trigger an error if any required dependencies are not available in local cache]' \
+    '--otp=[one-time password for two factor authentication]:otpcode' \
+    '--prefer-offline[use network only if dependencies are not available in local cache]' \
+    '--preferred-cache-folder=[specify a custom folder to store the yarn cache if possible]:folder:_files -/' \
+    '(--prod --production)'{--prod,--production} \
+    '--proxy=:host:_hosts' \
+    "--pure-lockfile[don't generate a lockfile]" \
+    '--registry=[override configuration registry]:url:_urls' \
+    '(-s --silent)'{-s,--silent}'[skip Yarn console logs, other types of logs (script output) will be printed]' \
+    '--scripts-prepend-node-path=[prepend the node executable dir to the PATH in scripts]:bool:(true false)' \
+    '--skip-integrity-check[run install without checking if node_modules is installed]' \
+    '--strict-semver' \
+    '--update-checksum[update package checksums from current repository]' \
+    '--use-yarnrc=[specifies a yarnrc that Yarn should use]:yarnrc:_files' \
     '1: :_yarn_commands_scripts' \
     '*:: :->command_args'
 
@@ -294,7 +308,7 @@ _yarn() {
             '1:query:_files'
         ;;
 
-        *) 
+        *)
           _default
         ;;
       esac
