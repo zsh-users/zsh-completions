@@ -138,7 +138,7 @@ _yarn() {
     "--frozen-lockfile[don't generate a lockfile and fail if an update is needed]" \
     '--global-folder=[modules folder]:folder:_files -/' \
     '--har[save HAR output of network traffic]' \
-    '--https-proxy=:host:_hosts' \
+    '--https-proxy=[HTTPS proxy]:host:_hosts' \
     '--ignore-engines[ignore engines check]' \
     "--ignore-scripts[don't run lifecycle scripts]" \
     '--ignore-optional[ignore optional dependencies]' \
@@ -160,14 +160,14 @@ _yarn() {
     '--otp=[one-time password for two factor authentication]:otpcode' \
     '--prefer-offline[use network only if dependencies are not available in local cache]' \
     '--preferred-cache-folder=[specify a custom folder to store the yarn cache if possible]:folder:_files -/' \
-    '(--prod --production)'{--prod,--production} \
-    '--proxy=:host:_hosts' \
+    '(--prod --production)'{--prod,--production}'[install only production dependencies]' \
+    '--proxy=[HTTP proxy]:host:_hosts' \
     "--pure-lockfile[don't generate a lockfile]" \
     '--registry=[override configuration registry]:url:_urls' \
     '(-s --silent)'{-s,--silent}'[skip Yarn console logs, other types of logs (script output) will be printed]' \
     '--scripts-prepend-node-path=[prepend the node executable dir to the PATH in scripts]:bool:(true false)' \
     '--skip-integrity-check[run install without checking if node_modules is installed]' \
-    '--strict-semver' \
+    "--strict-semver[don't compare semver loosely]" \
     '--update-checksum[update package checksums from current repository]' \
     '--use-yarnrc=[specifies a yarnrc that Yarn should use]:yarnrc:_files' \
     '1: :_yarn_commands_scripts' \
