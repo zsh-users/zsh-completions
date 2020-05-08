@@ -38,10 +38,13 @@
 
 _commands=(
   'access'
+  'audit:Checks for known security issues with the installed packages'
   'autoclean:Clean and remove unnecessary files from package dependencies'
   'cache:List or clean every cached package'
   "check:Verify package dependencies against yarn's lock file"
   'config:Manages the yarn configuration files'
+  'create:Creates new projects from any create-* starter kits'
+  'exec'
   'generate-lock-entry:Generates a lock file entry'
   'global:Install packages globally on your operating system'
   'help:Show information about a command'
@@ -51,25 +54,30 @@ _commands=(
   'install:Install all the dependencies listed within package.json'
   'licenses:List licenses for installed packages'
   'link:Symlink a package folder during development'
-  'list:List installed packages'
   'login:Store registry username and email'
   'logout:Clear registry username and email'
+  'node:Runs Node with the same version that the one used by Yarn itself'
   'outdated:Check for outdated package dependencies'
   'owner:Manage package owners'
   'pack:Create a compressed gzip archive of package dependencies'
+  'policies:Defines project-wide policies for your project'
   'publish:Publish a package to the npm registry'
   'run:Run a defined package script'
   'tag:Add, remove, or list tags on a package'
   'team:Maintain team memberships'
   'unlink:Unlink a previously created symlink for a package'
+  'unplug:Temporarily copies a package outside of the global cache for debugging purposes'
   'version:Update the package version'
   'versions:Display version information of currently installed Yarn, Node.js, and its dependencies'
   'why:Show information about why a package is installed'
+  'workspace'
+  'workspaces:Show information about your workspaces'
 )
 
 _global_commands=(
   'add:Installs a package and any packages that it depends on'
   'bin:Displays the location of the yarn bin folder'
+  'list:List installed packages'
   'remove:Remove installed package from dependencies updating package.json'
   'upgrade:Upgrades packages to their latest version based on the specified range'
   'upgrade-interactive:Interactively upgrade packages'
@@ -115,6 +123,11 @@ _yarn_add_files() {
   if compset -P "(file|link):"; then
     _files
   fi
+}
+
+_yarn_workspaces() {
+  local -a workspaces=(${(@f)$(yarn workspaces info |sed -n -r -e 's/^  "([^"]+)": \{/\1/p')})
+  _describe 'workspace' workspaces
 }
 
 _yarn() {
@@ -197,6 +210,14 @@ _yarn() {
             '*:package-name:_yarn_add_files'
         ;;
 
+        audit)
+          _arguments \
+            '--verbose[output verbose message]' \
+            '--json[format Yarn log messages as lines of JSON]' \
+            '--level=[only print advisories with severity greater than or equal to]:level:(info low moderate high critical)' \
+            '--groups=[only audit dependencies from listed groups]:groups:->groups_args'
+        ;;
+
         cache)
           _arguments \
             '1: :(ls dir clean)'
@@ -268,6 +289,11 @@ _yarn() {
             '1: :_files'
         ;;
 
+        policies)
+          _arguments \
+            '1: :(set-version)'
+        ;;
+
         remove|upgrade)
           _arguments \
             '*:package:'
@@ -308,6 +334,18 @@ _yarn() {
             '1:query:_files'
         ;;
 
+        workspace)
+          _arguments \
+            '1:workspace:_yarn_workspaces' \
+            '*:: :_yarn_global_commands'
+        ;;
+
+        workspaces)
+          _arguments \
+            '--json[format Yarn log messages as lines of JSON]' \
+            '1:commands:(info run)'
+        ;;
+
         *)
           _default
         ;;
@@ -330,6 +368,10 @@ _yarn() {
             '2:value:'
         ;;
       esac
+    ;;
+    groups_args)
+      local dependency_groups=(devDependencies dependencies optionalDependencies peerDependencies bundledDependencies)
+      _values -s ',' 'groups' $dependency_groups
     ;;
 
     owner_args)
