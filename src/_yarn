@@ -36,6 +36,8 @@
 #
 # ------------------------------------------------------------------------------
 
+declare -g _yarn_run_cwd
+
 _commands=(
   'access'
   'audit:Checks for known security issues with the installed packages'
@@ -99,8 +101,8 @@ _yarn_scripts() {
   local -a scriptNames scriptCommands
   local i runJSON
 
-  if [[ -n $opt_args[--cwd] ]]; then
-    runJSON=$(cd $opt_args[--cwd] && yarn run --json 2>/dev/null)
+  if [[ -n $_yarn_run_cwd ]]; then
+    runJSON=$(cd $_yarn_run_cwd && yarn run --json 2>/dev/null)
   else
     runJSON=$(yarn run --json 2>/dev/null)
   fi
@@ -313,6 +315,11 @@ _yarn() {
         ;;
 
         run)
+          if [[ -n $opt_args[--cwd] ]]; then
+            _yarn_run_cwd=$opt_args[--cwd]
+          else
+            _yarn_run_cwd=''
+          fi
           _arguments \
             '1: :_yarn_scripts' \
             '*:: :_default'
