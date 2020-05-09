@@ -85,7 +85,12 @@ _global_commands=(
 
 _yarn_commands_scripts() {
   local -a scripts
-  scripts=($(yarn run --json 2>/dev/null | sed -E '/Commands available|possibleCommands/!d;s/.*Commands available from binary scripts: ([^"]+)".*/\1/;s/.*"items":\[([^]]+).*/\1/;s/[" ]//g' | tr , '\n' | sed -e 's/:/\\:/g'))
+  if [[ -n $opt_args[--cwd] ]]; then
+    scripts=($(cd $opt_args[--cwd] && yarn run --json 2>/dev/null | sed -E '/Commands available|possibleCommands/!d;s/.*Commands available from binary scripts: ([^"]+)".*/\1/;s/.*"items":\[([^]]+).*/\1/;s/[" ]//g' | tr , '\n' | sed -e 's/:/\\:/g'))
+  else
+    scripts=($(yarn run --json 2>/dev/null | sed -E '/Commands available|possibleCommands/!d;s/.*Commands available from binary scripts: ([^"]+)".*/\1/;s/.*"items":\[([^]]+).*/\1/;s/[" ]//g' | tr , '\n' | sed -e 's/:/\\:/g'))
+  fi
+
   _describe 'command or script' _commands -- _global_commands -- scripts
 }
 
@@ -94,7 +99,11 @@ _yarn_scripts() {
   local -a scriptNames scriptCommands
   local i runJSON
 
-  runJSON=$(yarn run --json 2>/dev/null)
+  if [[ -n $opt_args[--cwd] ]]; then
+    runJSON=$(cd $opt_args[--cwd] && yarn run --json 2>/dev/null)
+  else
+    runJSON=$(yarn run --json 2>/dev/null)
+  fi
   # Some sed utilities (e.g. Mac OS / BSD) don't interpret `\n` in a replacement
   # pattern as a newline. See https://superuser.com/q/307165
   binaries=($(sed -E '/Commands available/!d;s/.*Commands available from binary scripts: ([^"]+)".*/\1/;s/.*"items":\[([^]]+).*/\1/;s/[" ]//g;s/:/\\:/g;s/,/\'$'\n/g' <<< "$runJSON"))
