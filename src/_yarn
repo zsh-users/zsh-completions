@@ -114,7 +114,7 @@ _yarn_scripts() {
     scripts+=("${scriptNames[$i]}:${scriptCommands[$i]}")
   done
 
-  commands=($scripts $binaries)
+  commands=('env' $scripts $binaries)
   _describe 'command' commands
 }
 
@@ -216,6 +216,8 @@ _yarn() {
             '(-O --optional)'{-O,--optional}'[install packages in optionalDependencies]' \
             '(-E --exact)'{-E,--exact}'[install packages as exact versions]' \
             '(-T --tilde)'{-T,--tilde}'[install the most recent release of the packages that have the same minor version]' \
+            '(--ignore-workspace-root-check -W)'{--ignore-workspace-root-check,-W}'[allows a package to be installed at the workspaces root]' \
+            '--audit[checks for known security issues with the installed packages]' \
             '*:package-name:_yarn_add_files'
         ;;
 
@@ -229,13 +231,14 @@ _yarn() {
 
         cache)
           _arguments \
-            '1: :(ls dir clean)'
+            '1: :(list dir clean)' \
+            '*:: :->cache_args'
         ;;
 
         check)
           _arguments \
-            '--integrity' \
-            '--verify-tree'
+            '--integrity[Verifies that versions and hashed values of the package contents in package.json]' \
+            '--verify-tree[Recursively verifies that the dependencies in package.json are present in node_modules]'
         ;;
 
         config)
@@ -274,12 +277,13 @@ _yarn() {
 
         list)
           _arguments \
-            '--depth[Limit the depth of the shown dependencies]:depth'
+            '--depth=[Limit the depth of the shown dependencies]:depth' \
+            '--pattern=[filter the list of dependencies by the pattern]'
         ;;
 
         owner)
           _arguments \
-            '1: :(ls add rm)' \
+            '1: :(list add rm)' \
             '*:: :->owner_args'
         ;;
 
@@ -316,26 +320,33 @@ _yarn() {
 
         tag)
           _arguments \
-            '1: :(ls add rm)' \
+            '1: :(lists add rm)' \
             '*:: :->tag_args'
         ;;
 
         team)
           _arguments \
-            '1: :(create destroy add rm ls)' \
+            '1: :(create destroy add rm list)' \
             '*:: :->team_args'
         ;;
 
         upgrade-interactive)
           _arguments \
-            '--latest:use the version tagged latest in the registry:'
+            '--latest[use the version tagged latest in the registry]'
         ;;
 
         version)
           _arguments \
-            '--new-version:version:' \
-            '--message:message:' \
-            '--no-git-tag-version'
+            '--new-version[create a new version using an interactive session to prompt you]:version:' \
+            '--major[creates a new version by incrementing the major version]' \
+            '--minor[creates a new version by incrementing the minor version]' \
+            '--patch[creates a new version by incrementing the patch version]' \
+            '--premajor[creates a new prerelease version by incrementing the major version]' \
+            '--preminor[creates a new prerelease version by incrementing the minor version]' \
+            '--prepatch[creates a new prerelease version by incrementing the patch version]' \
+            '--prerelease[increments the prerelease version number keeping the main version]' \
+            '--no-git-tag-version[creates a new version without creating a git tag]' \
+            '--no-commit-hooks[bypasses running commit hooks when committing the new version]'
         ;;
 
         why)
@@ -363,6 +374,12 @@ _yarn() {
   esac
 
   case $state in
+    cache_args)
+      if [[ $words[1] == "list" ]]; then
+        _arguments \
+          '--pattern=[print out every cached package that matches the pattern]:pattern:'
+      fi
+    ;;
     config_args)
       case $words[1] in
         get|delete)
