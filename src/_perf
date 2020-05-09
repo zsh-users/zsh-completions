@@ -10,9 +10,19 @@
 # -------
 #
 #  * Julien Nicoulaud <julien.nicoulaud@gmail.com>
+#  * Shohei YOSHIDA <syohex@gmail.com>
 #
 # ------------------------------------------------------------------------------
 
+_perf_events() {
+  local -a events=(${(@f)$(perf list | sed -n -e 's/^  \([^ =]*\).*$/\1/p')})
+  _values -s ',' 'events' $events
+}
+
+_perf_top_fields() {
+  local fields=(overhead overhead_sys overhead_us overhead_children sample period)
+  _values -s ',' 'fields' $fields
+}
 
 _perf() {
   local context curcontext="$curcontext" state line
@@ -196,7 +206,63 @@ _perf() {
             && ret=0
         ;;
         (top)
-          # TODO not implemented
+          _arguments \
+            '(-a --all-cpus)'{-a,--all-cpus}'[system wide collection]' \
+            '(-c --count)'{-c,--count=}'[event period to sample]:count:' \
+            '(-C --cpu)'{-C,--cpu=}'[monitor only the list of CPUs provided]:cpu_list:' \
+            '(-d --delay)'{-d,--delay=}'[number of seconds to delay between refreshes]' \
+            '(-e --event)'{-e,--event=}'[select the PMU event]:event:_perf_events' \
+            '(-E --entries)'{-E,--entries=}'[display thie many functions]' \
+            '(-f --count-filter)'{-f,--count-filter=}'[only display fnctions with more events than this]:count:' \
+            '--group[put the counters into a counter group]' \
+            '(-F --freq)'{-F,--freq=}'[profile at thie frequency]:freq:(max)' \
+            '(-i --inherit)'{-i,--inherit}'[child tasks do not inherit counters]' \
+            '(-k --vmlinux --ignore-vmlinux)'{-k,--vmlinux=}'[path to vmlinux]:vmlinux:_files' \
+            '(-k --vmlinux)--ignore-vmlinux[ignore vmlinux files]' \
+            '--kallsyms=[kallsyms pathname]:sym_path:_files' \
+            '(-m --mmap-pages)'{-m,--mmap-pages=}'[number of mmap data pages or size]:number:' \
+            '(-p --pid)'{-p,--pid=}'[profile events on existing process ID]:pid:_pids' \
+            '(-t --tid)'{-t,--tid=}'[profile events on existing thread ID]:tid:' \
+            '(-u --uid)'{-u,--uid=}'[record events in threads owned by uid]:uid:' \
+            '(-r --realtime)'{-r,--realtime=}'[collect data with this RT SCHED_FIFO priority]:priority:' \
+            '--sym-annotate=[annotate this symbol]' \
+            '(-K --hide_kernel_symbols)'{-K,--hide_kernel_symbols}'[hide kernel symbols]' \
+            '(-U --hide_user_symbols)'{-K,--hide_user_symbols}'[hide user symbols]' \
+            '--demangle-kernel[demangle kernel symbols]' \
+            '(-D --dump-symtab)'{-D,--dump-symtab}'[dump the symbol table used for profiling]' \
+            '(-v --verbose)'{-v,--verbose}'[be more verbose]' \
+            '(-z --zero)'{-z,--zero}'[zero history access display updates]' \
+            '(-s --sort)'{-s,--sort}'[sort by keys]' \
+            '--fields=[specify output field ]:fields:_perf_top_fields' \
+            '(-n --show-nr-samples)'{-n,--show-nr-samples}'[show a column with the number of samples]' \
+            '--show-total-period[show a column with the sum of periods]' \
+            '--dsos[only consider symbols in these dsos]' \
+            '--comms[only consider symbols in these comms]' \
+            '--symbols[only consider these symbols]' \
+            '(-M --disassembler-style)'{-M,--disassembler-style=}'[set disassembler style]:style:' \
+            '(--no-source)--source[interleave source code with assembly code]' \
+            '(--source)--no-source[disable interleaving source code]' \
+            '--asm-raw[show raw instruction encoding of assembly instructions]' \
+            '-g[Enables call-graph recording]' \
+            '--call-graph[setup and enable call-graph recording]' \
+            '--children[accumulate callchain of children to parent entry]' \
+            '--max-stack[set the stack depth limit]' \
+            '--ignore-callees=[ignore callees of functions regex]:regex:' \
+            '--percent-limit[do not show entries which have an overhead under that percent]' \
+            '(-w --column-widths)'{-w,--column-widths=}'[force each column width to this list]' \
+            '--proc-map-timeout[set timeout limit for processing process map]' \
+            '(-b --branch-any)'{-b,--branch-any}'[enable taken branch stack sampling]' \
+            '(-j --branch-filter)'{-j,--branch-filter}'[enable taken branch stack sampling]' \
+            '--raw-trace[do not use print fmt or plugins]' \
+            '--hierarchy[enable hierarchy output]' \
+            '--overwrite[overwrite records]' \
+            '--force[do not do ownership validation]' \
+            '--num-thread-synthesize[threads to run when synthesizing events for existing processes]'\
+            '--namespaces[record events of type PREF_RECORD_NAMESPACES]' \
+            '--switch-on=[only consider events after this event is found]:event:' \
+            '--switch-off=[stop considering events after this event is found]:event:' \
+            '--show-on-off-events[show the --switch-on/off events too]' \
+            && ret=0
         ;;
         (help)
           _arguments \
