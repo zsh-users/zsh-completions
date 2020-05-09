@@ -24,6 +24,10 @@ _perf_top_fields() {
   _values -s ',' 'fields' $fields
 }
 
+_perf_stat_command() {
+  _alternative "_command_names -e" "subcommand:command:(record report)"
+}
+
 _perf() {
   local context curcontext="$curcontext" state line
   typeset -A opt_args
@@ -186,7 +190,43 @@ _perf() {
           # TODO not implemented
         ;;
         (stat)
-          # TODO not implemented
+          _arguments \
+            '(-e --events)'{-e,--events=}'[select the PMU event]:event:_perf_events' \
+            '(-i --no-inherit)'{-i,--no-inherit}'[child tasks do not inherit conters]' \
+            '(-p --pid)'{-p,--pid=}'[stat events on existing process id]:pid:_pids' \
+            '(-t --tid)'{-t,--tid=}'[stat events on existing thread id]:tid:' \
+            '(-a --all-cpus)'{-a,--all-cpus}'[system-wide collection from all CPUs]' \
+            '--no-scale[do not scale/normalize counter values]' \
+            \*{-d,--detailed}'[print more detailed statistics]' \
+            '(-r --repeat)'{-r,--repeat=}'[repeat command and print average + stddev]:count:' \
+            '(-B --big-num)'{-B,--big-num}'[print large numbers with thousands separators according to locale]' \
+            '(-C --cpu)'{-C,--cpu=}'[count only the list of CPUs]:cpus:' \
+            '(-A --no-aggr)'{-A,--no-aggr}'[do not aggregate counts across all monitored CPUs]' \
+            '(-n --null)'{-n,--null}'[null run]' \
+            '(-v --verbose)'{-v,--verbose}'[be more verbose]' \
+            '(-x --field-seperator)'{-x,--field-separator=}'[print separator]' \
+            '--table[display time for each run in a table format]' \
+            '(-G --cgroup)'{-G,--cgroup=}'[monitor only in the container called this name]' \
+            '(-o --output)'{-o,--output=}'[print the output into this file]:file:_files' \
+            '--append[append to the output file desinated with -o option]' \
+            '--log-fd[log output to fd, instead of stderr]' \
+            '--pre[pre measurement hook]: :_command_names -e' \
+            '--post[post measurement hook]: :_command_names -e' \
+            '(-I --interval-print)'{-I,--interval-print=}'[print count deltas every millseconds]:msec:' \
+            '--interval-count[print count delta for fixed number of times]:times:' \
+            '--interval-clear[clear the screen before next interval]' \
+            '--timeout[stop the perf stat session and print count after milliseconds]:msec:' \
+            '--metric-only[only print compted metrics]' \
+            '--per-socket[aggregate counts per processor socket for system-wide mode measurements]' \
+            '--per-die[aggregate counts per processor die for sytem-wide mode measurements]' \
+            '--per-core[aggregate counts per phisical processor for sytem-wide mode measurements]' \
+            '--per-thread[aggregate counts per mmonitored threads]' \
+            '(-D --delay)'{-D,--delay=}'[wait msecs before measuring]:msec:' \
+            '(-T --transaction)'{-T,--transaction}'[print statistics of transactional execution]' \
+            '(-)1:command:_perf_stat_command' \
+            '*::arg:_normal' \
+            && ret=0
+          # TODO report/record sub-subcommand completion
         ;;
         (test)
           _arguments \
