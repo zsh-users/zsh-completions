@@ -33,6 +33,11 @@ _perf_stat_command() {
   _alternative "_command_names -e" "subcommand:command:(record report)"
 }
 
+_perf_c2c_coalesce() {
+  local columns=(tid pid iaddr dso)
+  _values -s ',' 'columns' $columns
+}
+
 _perf() {
   local context curcontext="$curcontext" state line
   typeset -A opt_args
@@ -108,6 +113,9 @@ _perf() {
         ;;
         (c2c)
           # TODO not implemented
+          _arguments \
+            '1:subcmd:(record report)' \
+            '*:: :->c2c_args'
         ;;
         (config)
           _arguments \
@@ -254,7 +262,7 @@ _perf() {
         ;;
         (stat)
           _arguments \
-            '(-e --events)'{-e,--events=}'[select the PMU event]:event:_perf_events' \
+            \*{-e,--events=}'[select the PMU event]:event:_perf_events' \
             '(-i --no-inherit)'{-i,--no-inherit}'[child tasks do not inherit conters]' \
             '(-p --pid)'{-p,--pid=}'[stat events on existing process id]:pid:_pids' \
             '(-t --tid)'{-t,--tid=}'[stat events on existing thread id]:tid:' \
@@ -314,7 +322,7 @@ _perf() {
             '(-c --count)'{-c,--count=}'[event period to sample]:count:' \
             '(-C --cpu)'{-C,--cpu=}'[monitor only the list of CPUs provided]:cpu_list:' \
             '(-d --delay)'{-d,--delay=}'[number of seconds to delay between refreshes]' \
-            '(-e --event)'{-e,--event=}'[select the PMU event]:event:_perf_events' \
+            \*{-e,--event=}'[select the PMU event]:event:_perf_events' \
             '(-E --entries)'{-E,--entries=}'[display thie many functions]' \
             '(-f --count-filter)'{-f,--count-filter=}'[only display fnctions with more events than this]:count:' \
             '--group[put the counters into a counter group]' \
@@ -384,6 +392,41 @@ _perf() {
         *)
           _call_function ret _perf_cmd_$words[1] && ret=0
           (( ret )) && _message 'no more arguments'
+        ;;
+      esac
+    ;;
+  esac
+
+  case $state in
+    (c2c_args)
+      case $words[1] in
+        (record)
+          _arguments \
+            \*{-e,--event=}'[select the PMU event]:events:_perf_events' \
+            '(-v --verbose)'{-v,--verbose}'[be more verbose]' \
+            '(-l --ldlat)'{-l,--ldlat=}'[configure mem-loads latency]:latency:' \
+            '(-k --all-kernel)'{-k,--all-kernel}'[configure all used events to run in the kernel space]' \
+            '(-u --all-user)'{-u,--all-user}'[configure all used events to run in user space]' \
+            '1:command:_command_names -e' \
+            '*::args:_normal' \
+            && ret=0
+        ;;
+        (report)
+          _arguments \
+            '(-k --vmlinux)'{-k,--vmlinux=}'[vmlinux pathname]:vmlinux:_files' \
+            '(-v --verbose)'{-v,--verbose}'[be more verbose]' \
+            '(-i --input)'{-i,--input=}'[specify the input file to process]:proc_file:_files' \
+            '(-N --node-info)'{-N,--node-info}'[show extra node info in report]' \
+            '(-c --coalesce)'{-c,--coalesce=}'[specify sorting fields for single cacheline display]:field:_perf_c2c_coalesce' \
+            '(-g --call-graph)'{-g,--call-graph}'[setup callchains parameters]' \
+            '--stdio[force the stdio output]' \
+            '--stats[display only statistic tables]' \
+            '--full-symbols[display full length of symbols]' \
+            '--no-source[do not display source line column]' \
+            '--show-all[show all captured HITM lines]' \
+            '(-f --force)'{-f,--force}'[do not do ownership validation]' \
+            '(-d --display)'{-d,--display=}'[switch to HITM type]:hitm_type:(rmt lcl)' \
+            && ret=0
         ;;
       esac
     ;;
