@@ -24,6 +24,11 @@ _perf_top_fields() {
   _values -s ',' 'fields' $fields
 }
 
+_perf_pids() {
+  local -a pids=(/proc/[1-9]*(:t))
+  _values -s ',' 'pids' $pids
+}
+
 _perf_stat_command() {
   _alternative "_command_names -e" "subcommand:command:(record report)"
 }
@@ -105,7 +110,11 @@ _perf() {
           # TODO not implemented
         ;;
         (config)
-          # TODO not implemented
+          _arguments \
+            '(-l --list)'{-l,--list}'[show current config variables for all sections]' \
+            '--user[read or write user config]' \
+            '--system[read or write system config]' \
+            && ret=0
         ;;
         (data)
           # TODO not implemented
@@ -133,7 +142,18 @@ _perf() {
             && ret=0
         ;;
         (ftrace)
-          # TODO not implemented
+          _arguments \
+            '(-t --tracer)'{-t,--tracer=}'[tracer to use]:tracer:(function_tracer function)' \
+            '(-v --verbose)'{-v,--verbose=}'[verbosity level]:level:' \
+            '(-p --pid)'{-p,--pid=}'[trace on existing process ID]:pids:_perf_pids' \
+            '(-a --all-cpus)'{-a,--all-cpus}'[force system-wide collection]' \
+            '(-C --cpu)'{-C,--cpu=}'[only trace for the list of CPUs]:cpu_list:' \
+            \*{-T,--trace-funcs=}'[only trace functions given by the argument]:func:' \
+            \*{-N,--notrace-funcs=}'[do not trace functions given by the argument]:func:' \
+            \*{-G,--graph-funcs=}'[set graph filter on the given function]:func:' \
+            \*{-g,--nograph-funcs=}'[set graph notrace filter on the given function]:func:' \
+            '(-D,--graph-depth)'{-D,--graph-depth=}'[set max depth for function graph tracer]' \
+            && ret=0
         ;;
         (inject)
           _arguments \
@@ -141,8 +161,10 @@ _perf() {
             '(-v --verbose)'{-v,--verbose}'[be more verbose]' \
             && ret=0
         ;;
-        (kallsymb)
-          # TODO not implemented
+        (kallsyms)
+          _arguments \
+            '(-v --verbose)'{-v,--verbose=}'[increse verbosity level]' \
+            && ret=0
         ;;
         (kmem)
           # TODO Complete 'record' command
