@@ -169,7 +169,30 @@ _perf() {
             && ret=0
         ;;
         (probe)
-          # TODO not implemented
+          _arguments \
+            '(-k --vmlinux)'{-k,--vmlinux=}'[specify vmlinux path which has debuginfo]:path:_files' \
+            '(-m --module)'{-m,--module=}'[specify module name]:modname_or_path:_files' \
+            '(-s --source)'{-s,--source=}'[specify path to kernel source]:path:_files -/' \
+            '(-v --verbose -q --quiet)'{-v,--verbose}'[be more verbose]' \
+            '(-q --quiet -v --verbose)'{-q,--quiet}'[be quiet]' \
+            \*{-a,--add=}'[define a probe event]:probe:' \
+            \*{-d,--del=}'[delete probe events]:probe:' \
+            '(-l --list)'{-l,--list=}'[list up current probe events]:event:' \
+            '(-L --line)'{-L,--line=}'[show source code lines which can be probed]' \
+            \*{-V,--vars=}'[show available local variables at given probe point]:probe:' \
+            '--externs[show external defined variables]' \
+            '--no-inlines[search only for non-inlined functions]' \
+            \*{-F,--funcs=}'[show available functions in given module or kernel]:filter:' \
+            \*{-D,--definition=}'[show trace-event definition]:probe:' \
+            '*--filter=[set filter]:filter:' \
+            '(-f --force)'{-f,--force}'[forcibly add events with existing name]' \
+            '(-n --dry-run)'{-n,--dry-run}'[dry run]' \
+            '--cache[cache the probes]' \
+            '--max-probes=[set the maximum number of probe points for an event]:number:' \
+            '--target-ns=[obtain mount namespace information from the target pid]:pid:_pids' \
+            '(-x --exec)'{-x,--exec=}'[specify path to the executable of shared library]:path:_files' \
+            '--demangle-kernel[demangle kernel symbols]' \
+            && ret=0
         ;;
         (record)
           # TODO not implemented
