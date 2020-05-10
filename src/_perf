@@ -101,6 +101,15 @@ _perf() {
             '(-v --verbose)'{-v,--verbose}'[be more verbose]' \
             && ret=0
         ;;
+        (c2c)
+          # TODO not implemented
+        ;;
+        (config)
+          # TODO not implemented
+        ;;
+        (data)
+          # TODO not implemented
+        ;;
         (diff)
           _arguments \
             '(-M --displacement)'{-M,--displacement}'[show position displacement relative to baseline]' \
@@ -123,11 +132,17 @@ _perf() {
             '(-i --input)'{-i,--input=}'[input file name]: :_files' \
             && ret=0
         ;;
+        (ftrace)
+          # TODO not implemented
+        ;;
         (inject)
           _arguments \
             '(-b --build-ids)'{-b,--build-ids=}'[inject build-ids into the output stream]:build-id list' \
             '(-v --verbose)'{-v,--verbose}'[be more verbose]' \
             && ret=0
+        ;;
+        (kallsymb)
+          # TODO not implemented
         ;;
         (kmem)
           # TODO Complete 'record' command
@@ -167,6 +182,9 @@ _perf() {
             '(-D --dump-raw-trace)'{-D,--dump-raw-trace}'[dump raw trace in ASCII]' \
             '1:command:((record\:record\ lock\ events trace\:show\ raw\ lock\ events report\:report\ statistical\ data))' \
             && ret=0
+        ;;
+        (mem)
+          # TODO not implemented
         ;;
         (probe)
           _arguments \
@@ -327,6 +345,14 @@ _perf() {
             '--show-on-off-events[show the --switch-on/off events too]' \
             && ret=0
         ;;
+        (trace)
+          # TODO not implemented
+        ;;
+        (version)
+          _arguments \
+            '--build-options[the status of compiled-in libraries are printed]' \
+            && ret=0
+        ;;
         (help)
           _arguments \
             '(- : *)'{-a,--all}'[prints all the available commands on the standard output]' \
@@ -351,13 +377,19 @@ _perf_cmds() {
     'bench:general framework for benchmark suites'
     'buildid-cache:manage build-id cache'
     'buildid-list:list the buildids in a perf.data file'
+    'c2c:shared data C2C/HITM analyzer'
+    'config:get and set variables in a configuration file'
+    'data:data file related processing'
     'diff:read two perf.data files and display the differential profile'
     'evlist:list the event names in a perf.data file'
+    'ftrace:simple wrapper for kernel ftrace functionality'
     'inject:filter to augment the events stream with additional information'
+    'kallsyms:searches running kernel for symbols'
     'kmem:tool to trace/measure kernel memory(slab) properties'
     'kvm:tool to trace/measure kvm guest os'
     'list:list all symbolic event types'
     'lock:analyze lock events'
+    'mem:profile memory access'
     'probe:define new dynamic tracepoints'
     'record:run a command and record its profile into perf.data'
     'report:read perf.data (created by perf record) and display the profile'
@@ -367,6 +399,8 @@ _perf_cmds() {
     'test:runs sanity tests'
     'timechart:tool to visualize total system behavior during a workload'
     'top:system profiling tool'
+    'trace:strace inspired tool'
+    'version:display the version of perf binary'
     'help:show command usage information'
   )
   _describe -t commands 'command' commands "$@"
