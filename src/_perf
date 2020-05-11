@@ -38,6 +38,11 @@ _perf_c2c_coalesce() {
   _values -s ',' 'columns' $columns
 }
 
+_perf_mem_type() {
+  local types=(load store)
+  _values -s ',' 'type' $types
+}
+
 _perf_test_list() {
   # TODO show test detail
   local -a test_list=(${(@f)$(perf test list 2>&1 | sed -n -e 's/^ *\([^ ]*\): \(.*\)$/\1/p')})
@@ -220,7 +225,18 @@ _perf() {
             && ret=0
         ;;
         (mem)
-          # TODO not implemented
+          _arguments \
+            '(-i --input)'{-i,--input=}'[input file name]:file:_files' \
+            '(-f --force)'{-f,--force}'[do not ownership validation]' \
+            '(-t --type)'{-t,--type=}'[select the memory operation type]:type:_perf_mem_type' \
+            '(-D --dump-raw-samples)'{-D,--dump-raw-trace}'[dump the raw decoded samples]' \
+            '(-x --field-separator)'{-x,--field-separator=}'[specify the field separator used when raw samples]:separator:' \
+            '(-C --cpu)'{-C,--cpu=}'[monitor only on the list of CPUs provided]:cpus:' \
+            '(-U --hide-unresolved)'{-U,--hide-unresolved}'[only display entries resolved to a symbol]' \
+            '(-p --phys-data)'{-p,--phys-data}'[record/report sample phisical addresses]' \
+            '1:command:(record report)' \
+            '*::arg:->mem_args' \
+            && ret=0
         ;;
         (probe)
           _arguments \
@@ -435,6 +451,21 @@ _perf() {
             '--show-all[show all captured HITM lines]' \
             '(-f --force)'{-f,--force}'[do not do ownership validation]' \
             '(-d --display)'{-d,--display=}'[switch to HITM type]:hitm_type:(rmt lcl)' \
+            && ret=0
+        ;;
+      esac
+    ;;
+    (mem_args)
+      case $words[1] in
+        (record)
+          _arguments \
+            \*{-e,--event=}'[event selector]:events:_perf_events' \
+            '(-K --all-kernel)'{-K,--all-kernel}'[configure all used events to run in kernel space]' \
+            '(-U --all-user)'{-K,--all-user}'[configure all used events to run in user space]' \
+            '(-v --verbose)'{-v,--verbose}'[be more verbose]' \
+            '--ldlat=[specify desired latency for loads event]:latency:' \
+            '1:command:_command_names -e' \
+            '*::args:_normal' \
             && ret=0
         ;;
       esac
