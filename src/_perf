@@ -109,8 +109,16 @@ _perf() {
         (buildid-cache)
           _arguments \
             '(-a --add)'{-a,--add=}'[add specified file to the cache]: :_files' \
+            '(-f --force)'{-f,--force}'[do not complain, do it]' \
+            '(-k --kcore)'{-k,--kcore=}'[add specified kcore file to core]:kcore:_files' \
             '(-r --remove)'{-r,--remove=}'[remove specified file from the cache]: :_files' \
+            '(-p,--purge)'{-p,--purge=}'[purge all cached binaries including older caches which have specified path]: :_files' \
+            '(-P,--purge-all)'{-P,--purge-all}'[puge all cached binaries]' \
+            '(-M,--missing)'{-M,--missing=}'[list missing build ids in the cache for the specified file]: :_files' \
+            '(-u,--update)'{-u,--update=}'[update specified file of the cache]: :_files' \
+            '(-l,--list)'{-l,--list}'[list all valid binaries from cache]' \
             '(-v --verbose)'{-v,--verbose}'[be more verbose]' \
+            '--target-ns=[obtain mount namespace information from the target pid]: :_pids' \
             && ret=0
 		;;
         (buildid-list)
@@ -123,7 +131,6 @@ _perf() {
             && ret=0
         ;;
         (c2c)
-          # TODO not implemented
           _arguments \
             '1:subcmd:(record report)' \
             '*:: :->c2c_args'
@@ -178,6 +185,14 @@ _perf() {
           _arguments \
             '(-b --build-ids)'{-b,--build-ids=}'[inject build-ids into the output stream]:build-id list' \
             '(-v --verbose)'{-v,--verbose}'[be more verbose]' \
+            '(-i --input)'{-i,--input=}'[input file name]:input:_files' \
+            '(-o --output)'{-o,--output=}'[output file name]:output:_files' \
+            '(-s --sched-stat)'{-s,--sched-stat}'[merge sched_stat and sched_switch for getting events]' \
+            '--kallsyms=[kallsyms file]:kallsyms:_files' \
+            '--itrace=[decode instruction tracing data]' \
+            '--strip[use with --itrace to strip out non-synthesized events]' \
+            '(-j --jit)'{-j,--jit}'[process jitdump files]' \
+            '(-f --force)'{-f,--force}'[do not complain, do it]' \
             && ret=0
         ;;
         (kallsyms)
