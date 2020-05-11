@@ -38,6 +38,12 @@ _perf_c2c_coalesce() {
   _values -s ',' 'columns' $columns
 }
 
+_perf_test_list() {
+  # TODO show test detail
+  local -a test_list=(${(@f)$(perf test list 2>&1 | sed -n -e 's/^ *\([^ ]*\): \(.*\)$/\1/p')})
+  _values -s ',' 'test' $test_list
+}
+
 _perf() {
   local context curcontext="$curcontext" state line
   typeset -A opt_args
@@ -302,6 +308,9 @@ _perf() {
         (test)
           _arguments \
             '(-v --verbose)'{-v,--verbose}'[be more verbose]' \
+            '(-s --skip)'{-s,--skip=}'[Tests to skip]:tests:_perf_test_list' \
+            '(-F --dont-fork)'{-F,--dont-fork}'[do not fork child for each test]' \
+            '1:command:((list))' \
             && ret=0
         ;;
         (timechart)
