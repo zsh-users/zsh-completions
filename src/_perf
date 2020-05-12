@@ -143,7 +143,10 @@ _perf() {
             && ret=0
         ;;
         (data)
-          # TODO not implemented
+          _arguments \
+            '1:command:((convert))' \
+            '*:: :->data_args' \
+            && ret=0
         ;;
         (diff)
           _arguments \
@@ -469,6 +472,17 @@ _perf() {
             && ret=0
         ;;
       esac
+    ;;
+    (data_args)
+      if [[ $words[1] == "convert" ]]; then
+        _arguments \
+          '--to-ctf=[specify the path of CTF data directory]:data_dir:_files -/' \
+          '-i[specify input perf data file path]:path:_files' \
+          '(-f --force)'{-f,--force}'[do not complain do it]' \
+          '(-v --verbose)'{-v,--verbose}'[be more verbose]' \
+          '--all[convert all events including non-sample events to output]' \
+          && ret=0
+      fi
     ;;
     (mem_args)
       case $words[1] in
