@@ -49,21 +49,35 @@ _perf_test_list() {
   _values -s ',' 'test' $test_list
 }
 
+_perf_report_sort_keys() {
+  local -a sort_keys=(
+    "comm" "pid" "dso" "dso_size" "symbol" "symbol_size" "parent" "cpu"
+    "socket" "srcline" "srcfile" "weight" "local_weight" "cgroup_id"
+    "transaction" "overhead" "overhead_sys" "overhead_us" "overhead_guest_sys"
+    "overhead_guest_us" "sample" "period" "time" "dso_from" "dso_to" "symbol_from"
+    "symbol_to" "srcline_from" "srcline_to" "mispredict" "in_tx" "abort" "cycles"
+    "symbol_daddr" "dso_daddr" "locked" "tlb" "mem" "snoop" "dcacheline"
+    "phys_daddr" "trace" "trace_fields"
+  )
+
+  _values -s ',' 'keys' $sort_keys
+}
+
 _perf_branch_filter() {
   local -a filters=(
     'any:any type of branches'
-    'any_call: any function call or system call'
-    'any_ret: any function return or system call return'
-    'ind_call: any indirect branch'
-    'call: direct calls, including far (to/from kernel) calls'
-    'u: only when the branch target is at the user level'
-    'k: only when the branch target is in the kernel'
-    'hv: only when the target is at the hypervisor level'
-    'in_tx: only when the target is in a hardware transaction'
-    'no_tx: only when the target is not in a hardware transaction'
-    'abort_tx: only when the target is a hardware transaction abort'
-    'cond: conditional branches'
-    'save_type: save branch type during sampling in case binary is not available later'
+    'any_call:any function call or system call'
+    'any_ret:any function return or system call return'
+    'ind_call:any indirect branch'
+    'call:direct calls, including far (to/from kernel) calls'
+    'u:only when the branch target is at the user level'
+    'k:only when the branch target is in the kernel'
+    'hv:only when the target is at the hypervisor level'
+    'in_tx:only when the target is in a hardware transaction'
+    'no_tx:only when the target is not in a hardware transaction'
+    'abort_tx:only when the target is a hardware transaction abort'
+    'cond:conditional branches'
+    'save_type:save branch type during sampling in case binary is not available later'
   )
   _describe -t filters 'branch filter' filters
 }
@@ -375,7 +389,80 @@ _perf() {
             && ret=0
         ;;
         (report)
-          # TODO not implemented
+          _arguments \
+            '(-i --input)'{-i,--input=}'[input file name]:file:_files' \
+            '(-v --verbose)'{-v,--verbose}'[be more verbose]' \
+            '(-q --quiet)'{-q,--quiet}'[do not show any message]' \
+            '(-n --show-nr-samples)'{-n,--show-nr-samples}'[show the number of samples for each symbol]' \
+            '--show-cpu-utilization[show sample percentage for different cpu modes]' \
+            '(-T --threads)'{-T,--threads}'[show per-thread event counters]' \
+            '(-c --comms)'{-c,--comms=}'[only condier symbols in these comms]:comms:' \
+            '--pid=[only show events for given process ID]:pid:_perf_pids' \
+            '--tid=[only show events for given thread ID]:tid:' \
+            \*{-d,--dsos=}'[only consider symbols in these dsos]:dsos:' \
+            \*{-S,--symbols=}'[only consider these symbols]:symbol:' \
+            '--symbol-filter=[only show symbols that match with this filter]:filter:' \
+            '(-U --hide-unresolved)'{-U,--hide-unresolved}'[only display entries resolved to a symbol]' \
+            '(-s --sort)'{-s,--sort=}'[sort histogram entries by given keys]:keys:_perf_report_sort_keys' \
+            '(-F --fields)'{-F,--fields=}'[specify output field]:field:(overhead overhead_sys overhead_us overhead_children sample period)' \
+            '(-p --parent)'{-p,--parent=}'[a regex filter to identify parent]:regex:' \
+            '(-x --exclude-other)'{-x,--exclude-other}'[only display entries with parent-match]' \
+            '(-w --column-widths)'{-w,--column-widths=}'[force each column width to the provided list]' \
+            '(-t --field-separator)'{-t,--field-separator=}'[use a special separator character]:sep:' \
+            '(-D --dump-raw-trace)'{-D,--dump-raw-trace}'[dump raw trace in ASCII]' \
+            '(-g --call-graph)'{-g,--call-graph=}'[display call chains using this argument]' \
+            '--children[accumulate callchain of children to parent entry]' \
+            '--max-stack=[set the stack depth limit]:number:' \
+            '(-G --inverted)'{-G,--inverted}'[alias for inverted caller based call graph]' \
+            '--ignore-callees=[regex for ignoring callees of the function]:regex:' \
+            '--pretty=[pretty printing style]:style:(normal raw)' \
+            '--stdio[use the stdio interface]' \
+            '--stdio-color=[color output configuring]:type:(always never auto)' \
+            '--tui[use the TUI interface]' \
+            '--gtk[use the GTK2 interface]' \
+            '(-k --vmlinux --ignore-vmlinux)'{-k,--vmlinux=}'[vmlinux pathname]:vmlinux:_files' \
+            '(-k --vmlinux)--ignore-vmlinux[ignore vmlinux files]' \
+            '--kallsyms=[kallsyms pathname]:kallsyms:_files' \
+            '(-m --modules)'{-m,--modules}'[load module symbols]' \
+            '(-f --force)'{-f,--force}'[do not do ownership validation]' \
+            '--symfs=[look for files with symbols relative to this directory]:symfs:_files -/' \
+            '(-C --cpu)'{-C,--cpu=}'[only report sample for the list of CPUs provided]' \
+            '(-M --disassembler-style)'{-M,--disassembler-style=}'[set disassembler style for objdump]:style:' \
+            '--source[interleave source code with assembly code]' \
+            '--asm-raw[show raw instruction encoding of assembly instructions]' \
+            '--show-total-period[show a column with sum of periods]' \
+            '(-I --show-info)'{-I,--show-info}'[display extended information about the perf.data file]' \
+            '(-b --branch-stack)'{-b,--branch-stack}'[use the addressed of sampled taken branch]' \
+            '--branch-history[add the addresses of sampled taken branches to the callstack]' \
+            '--objdump=[path to objdump binary]:path:_files' \
+            '--group[show event group information together]' \
+            '--demangle[demangle symbol names to human readable form]' \
+            '--demangle-kernel[demangle kernel symbol names to human readable form]' \
+            '--mem-mode[use the data addresses of samples]' \
+            '--percent-limit=[do not show entries which have an overhead under this percent]:number:' \
+            '--percentage=[determine how to display the overhead percentage of filtered entries]:number:' \
+            '--header[show header information in the perf.data file]' \
+            '--header-only[show only perf.data header]' \
+            '--time=[only analyze samples within given time window]:time:' \
+            '--switch-on=[only consider events after this event is found]:event:' \
+            '--switch-off=[stop considering events after this event is found]:event:' \
+            '--show-on-off-events[show the --switch-on/off events too]' \
+            '--itrace=[options for decoding instruction tracing data]' \
+            '--full-source-path[show the full path for source files]' \
+            '--show-ref-call-graph[show reference callgraphs]' \
+            '--socket-filter[only report the samples on the processor socket]' \
+            '--samples=[save N individual samples for each histogram entry]:number:' \
+            '--raw-trace[do not use print fmt or plugins]' \
+            '--hierarchy[enable hierarchical output]' \
+            '(--no-inline)--inline[print inline stack]' \
+            '(--inline)--no-inline[do not print inline stack]' \
+            '--mmaps[show --tasks output plus mmap information]' \
+            '--ns[show time stamps in nanoseconds]' \
+            '--stat[display overall events statistics without any further processing]' \
+            '--tasks[display monitored taks stored in perf data]' \
+            '--percent-type=[set annotation percent type]:type:(global-period local-period global-hits local-hits)' \
+            '--time-quantum=[configure time quantum for time sort key]' \
+            && ret=0
         ;;
         (sched)
           # TODO Complete 'record' command
