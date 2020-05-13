@@ -49,6 +49,30 @@ _perf_test_list() {
   _values -s ',' 'test' $test_list
 }
 
+_perf_branch_filter() {
+  local -a filters=(
+    'any:any type of branches'
+    'any_call: any function call or system call'
+    'any_ret: any function return or system call return'
+    'ind_call: any indirect branch'
+    'call: direct calls, including far (to/from kernel) calls'
+    'u: only when the branch target is at the user level'
+    'k: only when the branch target is in the kernel'
+    'hv: only when the target is at the hypervisor level'
+    'in_tx: only when the target is in a hardware transaction'
+    'no_tx: only when the target is not in a hardware transaction'
+    'abort_tx: only when the target is a hardware transaction abort'
+    'cond: conditional branches'
+    'save_type: save branch type during sampling in case binary is not available later'
+  )
+  _describe -t filters 'branch filter' filters
+}
+
+_perf_clock_id() {
+  local clocks=(CLOCK_MONOTONIC CLOCK_MONOTONIC_RAW CLOCK_BOOTTIME CLOCK_REALTIME CLOCK_TAI)
+  _values 'clocks' $clocks
+}
+
 _perf() {
   local context curcontext="$curcontext" state line
   typeset -A opt_args
@@ -283,7 +307,72 @@ _perf() {
             && ret=0
         ;;
         (record)
-          # TODO not implemented
+          _arguments \
+            \*{-e,--events=}'[select the PMU event]:event:_perf_events' \
+            '*--filter=[event filter]:filter:' \
+            '--exclude-perf[do not record events issued by perf itself]' \
+            '(-a --all-cpus)'{-a,--all-cpus}'[system-wide collection from all CPUs]' \
+            '(-p --pid)'{-p,--pid=}'[record events on existing process ID]:pids:_perf_pids' \
+            '(-t --tid)'{-t,--tid=}'[record events on existing thread ID]:tids:' \
+            '(-u --uid)'{-u,--uid=}'[record events in threads owned by uid]:uid:' \
+            '(-r --realtime)'{-r,--realtime=}'[collect data with this RT SCHED_FIFO priority]:priority:' \
+            '--no-buffering[collect data without buffering]' \
+            '(-c --count)'{-c,--count=}'[event period to sample]:period:' \
+            '(-o --output)'{-o,--output=}'[output file name]:out_file:_files' \
+            '(-i --no-inherit)'{-i,--no-inherit}'[child tasks do not inherit counters]' \
+            '(-F --freq)'{-F,--freq=}'[profile at this frequency]:freq:(max)' \
+            '--string-freq[fail if the specified frequency cannot be used]' \
+            '(-m --mmap-pages)'{-m,--mmap-pages=}'[number of mmap data pages]:pages:' \
+            '--group[put all events in a single event group]' \
+            '-g[enables call-graph recording]' \
+            '--call-graph=[setup and enable call-graph recording]:method:(fp dwarf lbr)' \
+            '(-q --quiet)'{-q,--quiet}'[do not print any message]' \
+            '(-v --verbose)'{-v,--verbose}'[be more verbose]' \
+            '(-s --stat)'{-s,--stat}'[record per-thread event counts]' \
+            '(-d --data)'{-d,--data}'[record the sample virtual addresses]' \
+            '--phys-data[record the sample physical addresses]' \
+            '(-T --timestamp)'{-T,--timestamp}'[record the sample timestamps]' \
+            '(-P --period)'{-P,--period}'[record the sample period]' \
+            '--sample-cpu[record the sample cpu]' \
+            '(-n --no-samples)'{-n,--no-samples}'[do not sample]' \
+            '(-C --cpu)'{-C,--cpu=}'[collect samples only on the list of CPUs provided]:cpus:' \
+            '(-B --no-buildid)'{-B,--no-buildid}'[do not save the build ids of binaries in the perf.data files]' \
+            '(-N --no-buildid-cache)'{-N,--no-buildid-cache}'[do not update the buildid cache]' \
+            \*{-G,--cgroup=}'[monitor only in the container (cgroup) called "name"]:name:' \
+            '(-b --branch-any)'{-b,--branch-any}'[enable taken branch stack sampling]' \
+            '(-j --branch-filter)'{-j,--branch-filter=}'[specify stack sampling filter]:filter:_perf_branch_filter' \
+            '--weight[enable weightened sampling]' \
+            '--namespaces[record events of type PREF_RECORD_NAMESPACES]' \
+            '--tarnsaction[record transaction flags for transaction related events]' \
+            '(-D --delay)'{-D,--delay=}'[wait msecs before measuring]' \
+            '(-I,--intr-regs)'{-I,--intr-regs=}'[capture machine state (registers) at interrupt]:registers:' \
+            '--user-regs=[capture user registers at sample time]:registers:' \
+            '--running-time[record running and enabled time for read events]' \
+            '(-k --clockid)'{-k,--clockid=}'[sets the clockid to use for time fields]:clock_id:_perf_clock_id' \
+            '--proc-map-timeout=[time out(ms) limit of processing /proc/XXX/mmap]:msecs:' \
+            '--switch-events[record context switch events]' \
+            '--clang-path=[path to clang binary to use compiling BPF scripts]:clang_path:_files' \
+            '--clang-opt=[option passed to clang when compiling BPF scripts]:clang_opt:' \
+            '--vmlinux=[specify vmlinux path which has debuginfo]:vmlinux_path:_files' \
+            '--buildid-all[record build-id of all DSOs]' \
+            '--aio=[use "n" control blocks in asynchronous trace writing mode]:number:' \
+            '--affinity=[set affinity mask by mode value]' \
+            '--mmap-flush=[specify minimal number of bytes]:bytes:' \
+            '(-z --compression-level)'{-z,--compression-level=}'[compressed level]:level:' \
+            '--all-kernel[configure all used events to run in kernel space]' \
+            '--all-user[configure all used events to run in user space]' \
+            '(--user-callchains)--kernel-callchains[collect callchains only from kernel space]' \
+            '(--kernel-callchains)--user-callchains[collect callchains only from user space]' \
+            '--timestamp-filename[append timestamp to output file name]' \
+            '--timestamp-boundary[record timestamp boundary]' \
+            '--switch-output=[generate multiple perf.data files based on mode]:mode:' \
+            '--switch-max-files=[when rotating perf.data only keep N files]:number:' \
+            '--dry-run[parse options then exit]' \
+            '--tail-synthesize[collect samples during finalization instead of beginning of recording]' \
+            '--overwrite[makes all events use an overwritable ring buffer]' \
+            '1:command:_command_names -e' \
+            '*::args:_normal' \
+            && ret=0
         ;;
         (report)
           # TODO not implemented
