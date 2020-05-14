@@ -136,12 +136,11 @@ _perf() {
             && ret=0
         ;;
         (bench)
-          # TODO Complete subsystems
-          # TODO Complete suites
           _arguments \
-            '(-f --format)'{-f,--format=}'[specify format style]: :((default\:mainly\ for\ human\ reading simple\:friendly\ for\ automated\ processing\ by\ scripts))' \
-            '1::subsystem' \
-            '2::suite' \
+            '(-r --repeat)'{-r,--repeat=}'[specify amount of times to repeat the run]' \
+            '(-f --format)'{-f,--format=}'[specify format style]: :(default simple)' \
+            '1:subsystem:(sched mem numa futex epoll all)' \
+            '*:: :->bench_subsystem' \
             && ret=0
         ;;
         (buildid-cache)
@@ -625,6 +624,37 @@ _perf() {
   esac
 
   case $state in
+    (bench_subsystem)
+      case $words[1] in
+        (sched)
+          _arguments \
+            '1:suite:(messaging pipe)' \
+            '*:: :->bench_sched_suite' \
+            && ret=0
+        ;;
+        (mem)
+          _arguments \
+            '1:suite:(memcpy memset)' \
+            '*:: :->bench_mem_suite' \
+            && ret=0
+        ;;
+        (numa)
+          _arguments \
+            '1:suite:(mem)' \
+            && ret=0
+        ;;
+        (futex)
+          _arguments \
+            '1:suite:(hash wake wake-parallel requeue lock-pi)' \
+            && ret=0
+        ;;
+        (epoll)
+          _arguments \
+            '1:suite:(wait ctl)' \
+            && ret=0
+        ;;
+      esac
+    ;;
     (c2c_args)
       case $words[1] in
         (record)
@@ -694,6 +724,34 @@ _perf() {
           '*::args:_normal' \
           && ret=0
       fi
+    ;;
+  esac
+
+  case $state in
+    (bench_sched_suite)
+      case $words[1] in
+        (messaging)
+          _arguments \
+            '(-p --pipe)'{-p,--pipe}'[use pipe instead of socketpair]' \
+            '(-t --thread)'{-t,--thread}'[be multi thread instead of multi process]' \
+            '(-g --group)'{-g,--group=}'[specify number of groups]:number:' \
+            '(-l --nr_loops)'{-l,--nr_loops=}['specify number of loops']\
+            && ret=0
+        ;;
+        (pipe)
+          _arguments \
+            '(-l --loop)'{-l,--loop}'[specify number of loops]:number:' \
+            && ret=0
+      esac
+    ;;
+    (bench_mem_suite)
+      # memcpy and memset support same options
+      _arguments \
+        '(-l --size)'{-l,--size=}'[specify size of memory to copy]:size:' \
+        '(-f --function)'{-f,--function=}'[specify function to copy]:function:' \
+        '(-l --nr_loops)'{-l,--nr_loops=}'[repeat memcpy invocation this number of times]:number:' \
+        '(-c --cycles)'{-c,--cycles}'[use perf cpu-cycles event instead of gettimeofday]' \
+        && ret=0
     ;;
   esac
 }
