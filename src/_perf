@@ -524,15 +524,23 @@ _perf() {
             && ret=0
         ;;
         (timechart)
-          # TODO Complete 'record' command
           _arguments \
             '(-i --input)'{-i,--input=}'[input file name]: :_files' \
             '(-o --output)'{-o,--output=}'[output file name]: :_files' \
             '(-w --width)'{-w,--width=}'[select the width of the SVG file]:width' \
             '(-P --power-only)'{-P,--power-only}'[only output the CPU power section of the diagram]' \
+            '(-T --task-only)'{-T,--task-only}'[do not output processor state transitions]' \
             '(-p --process)'{-p,--process}'[select the processes to display, by name or PID]:process' \
+            '(-f --force)'{-f,--force}'[do not complain, do it]' \
             '--symfs=[look for files with symbols relative to this directory]: :_files -/' \
+            '(-n --proc-num)'{-n,--proc-num=}'[print task info for at least given number of tasks]:number:' \
+            '(-t --topology)'{-t,--topology}'[sort CPUs acording to topology]' \
+            '--highlight=[highlight tasks using different color]:nsecs_or_task:' \
+            '--io-skip-eagain[do not draw EAGAIN IO events]' \
+            '--io-min-times=[draw small events as if they lasted min-time]:nsecs:' \
+            '--io-merge-dist=[merge events that are merge-dist nanoseconds apart]:nsecs:' \
             '1:command:((record))' \
+            '*:: :->timechart_args' \
             && ret=0
         ;;
         (top)
@@ -674,6 +682,18 @@ _perf() {
             && ret=0
         ;;
       esac
+    ;;
+    (timechart_args)
+      if [[ $words[1] == "record" ]]; then
+        _arguments \
+          '(-P --power-only)'{-P,--power-only}'[record only power-related events]' \
+          '(-T --tasks-only)'{-T,--tasks-only}'[record only tasks-related events]' \
+          '(-I --io-only)'{-I,--io-only}'[record only io-related events]' \
+          '(-g --callchain)'{-g,--callchain}'[do call-graph recording]' \
+          '1:command:_command_names -e' \
+          '*::args:_normal' \
+          && ret=0
+      fi
     ;;
   esac
 }
