@@ -87,6 +87,16 @@ _perf_clock_id() {
   _values 'clocks' $clocks
 }
 
+_perf_lock_subcommand() {
+  local -a subcmds=(
+    'record:records lock events'
+    'report:reports statistical data'
+    'script:shows raw lock events'
+    'info:shows metadata like threads or addresses of lock instances'
+  )
+  _describe -t subcmds 'lock subcommand ' subcmds
+}
+
 _perf() {
   local context curcontext="$curcontext" state line
   typeset -A opt_args
@@ -270,13 +280,13 @@ _perf() {
             && ret=0
         ;;
         (lock)
-          # TODO Complete 'record' command
-          # TODO Complete 'report' command options
           _arguments \
             '(-i --input)'{-i,--input=}'[input file name]: :_files' \
             '(-v --verbose)'{-v,--verbose}'[be more verbose]' \
             '(-D --dump-raw-trace)'{-D,--dump-raw-trace}'[dump raw trace in ASCII]' \
-            '1:command:((record\:record\ lock\ events trace\:show\ raw\ lock\ events report\:report\ statistical\ data))' \
+            '(-f --force)'{-f,--force}'[dont complain do it]' \
+            '1:command:_perf_lock_subcommand' \
+            '*:: :->lock_args' \
             && ret=0
         ;;
         (mem)
@@ -697,6 +707,27 @@ _perf() {
           '--all[convert all events including non-sample events to output]' \
           && ret=0
       fi
+    ;;
+    (lock_args)
+      case $words[1] in
+        (record)
+          _arguments \
+            '1:command:_command_names -e' \
+            '*::args:_normal' \
+            && ret=0
+        ;;
+        (report)
+          _arguments \
+            '(-k --key)'{-k,--key=}'[sorting key]:key:(default contented avg_wait wait_total wait_max wait_min)' \
+            && ret=0
+        ;;
+        (info)
+          _arguments \
+            '(-t --threads)'{-t,--threads}'[dump thread list in perf.data]' \
+            '(-m --map)'{-m,--map}'[dump map of lock instances]' \
+            && ret=0
+        ;;
+      esac
     ;;
     (mem_args)
       case $words[1] in
