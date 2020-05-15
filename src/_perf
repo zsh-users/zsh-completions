@@ -97,6 +97,10 @@ _perf_lock_subcommand() {
   _describe -t subcmds 'lock subcommand ' subcmds
 }
 
+_perf_trace_subcommand() {
+  _alternative "_command_names -e" "subcommand:command:(record)"
+}
+
 _perf() {
   local context curcontext="$curcontext" state line
   typeset -A opt_args
@@ -612,7 +616,49 @@ _perf() {
             && ret=0
         ;;
         (trace)
-          # TODO not implemented
+          _arguments \
+            '(-a --all-cpus)'{-a,--all-cpus}'[force system-wide collection from all cpus]' \
+            '(-e --expr --event)'{-e,--expr=,--event=}'[list of syscalls and other perf events to show]::event:' \
+            '(-D --delay)'{-d,--delay=}'[wait msecs before measuring]' \
+            '(-o --output)'{-o,--output=}'[output file name]:output:_files' \
+            '(-p --pid)'{-p,--pid=}'[record events on existing process ID]:pid:_perf_pids' \
+            '(-t --tid)'{-u,--tid=}'[record events on existing thread ID]:tid:' \
+            '(-u --uid)'{-u,--uid=}'[record events in threads owned by uid]:uid:' \
+            \*{-G,--cgroup=}'[record events in threads in a cgroup]' \
+            '--filter-pids=[filter out events for these pids and for trace itself]:pid:_perf_pids' \
+            '(-v --verbose)'{-v,--verbose=}'[verbosity level]' \
+            '--no-inherit[child tasks do not inherit counters]' \
+            '(-m --mmap-pages)'{-m,--mmap-pages=}'[number of mmap data pages]:number:' \
+            '(-C --cpu)'{-C,--cpu}'[collect samples only on the list of CPUs provides]:cpus:' \
+            '--duration=[show only events that had a duration grater than N.M ms]' \
+            '--sched[accrue thread runtime and provide a summary at the end of the session]' \
+            '--failure[show only syscalls that failed]' \
+            '(-i --input)'{-i,--input=}'[process events from a given perf data file]:file:_files' \
+            '(-T --time)'{-T,--time}'[print full timestamp]' \
+            '(--no-comm)--comm[show process COMM]' \
+            '(--comm)--no-comm[do not show process COMM]' \
+            '(-s --summary)'{-s,--summary}'[show only a summary of syscalls by thread]' \
+            '(-S --with-summary)'{-S,--with-summary}'[show all syscalls followed by a summary by thread]' \
+            '--tool_stats[show tool stats]' \
+            '(-f --force)'{-f,--force}'[do not complain, do it]' \
+            '(-F --pf)'{-F,--pf=}'[trace pagefaults]:type:(all min maj)' \
+            '(--no-syscalls)--syscalls[trace system calls]' \
+            '(--syscalls)--no-syscalls[not trace system calls]' \
+            '--call-graph=[setup and enable call-graph recording]' \
+            '--kernel-syscall-graph[show the kernel callchains on the syscall exit path]' \
+            '--max-events=[stop after processing N events]:events:' \
+            '--switch-on=[only consider events after this event is found]:event:' \
+            '--switch-off=[stop considering events after this event is found]:event:' \
+            '--show-on-off-events[show the --switch-on/off events too]' \
+            '--max-stack=[set the stack depth max limit]:limit:' \
+            '--min-stack=[set the stack depth min limit]:limit:' \
+            '--print-sample[print the PERF_RECORD_SAMPLE PERF_SAMPLE_ info]' \
+            '--proc-map-timeout=[time out(ms) limit of processing /proc/XXX/mmap]' \
+            '--sort-evetns[do sorting on batches of events]' \
+            '--map-dump[dump BPF maps setup by events passed via -e]' \
+            '1: :_perf_trace_subcommand' \
+            && ret=0
+            # TODO command completion
         ;;
         (version)
           _arguments \
