@@ -119,6 +119,18 @@ _perf_kmem_sort_keys() {
   _values -s ',' 'key' $keys
 }
 
+_perf_sched_subcommand() {
+  local -a subcmds=(
+    'record:record the scheduling events'
+    'latency:report the per task scheduling latencies'
+    'script:see a detailed trace'
+    'replay:simulate the workload'
+    'map:print a textual context-switching outline'
+    'timehist:provides an analysis of scheduling events'
+  )
+  _describe -t subcmds 'lock subcommand ' subcmds
+}
+
 _perf() {
   local context curcontext="$curcontext" state line
   typeset -A opt_args
@@ -502,12 +514,13 @@ _perf() {
             && ret=0
         ;;
         (sched)
-          # TODO Complete 'record' command
           _arguments \
             '(-i --input)'{-i,--input=}'[input file name]: :_files' \
             '(-v --verbose)'{-v,--verbose}'[be more verbose]' \
             '(-D --dump-raw-trace)'{-D,--dump-raw-trace}'[dump raw trace in ASCII]' \
-            '1:command:((record\:record\ scheduling\ events script\:see\ a\ detailed\ trace replay\:simulate\ the\ workload map\:print\ a\ textual\ context-switching\ outline))' \
+            '(-f --force)'{-f,--force}'[do not complain, do it]' \
+            '1:command:_perf_sched_subcommand' \
+            '*:: :->sched_args' \
             && ret=0
         ;;
         (script)
@@ -818,6 +831,44 @@ _perf() {
             '--ldlat=[specify desired latency for loads event]:latency:' \
             '1:command:_command_names -e' \
             '*::args:_normal' \
+            && ret=0
+        ;;
+      esac
+    ;;
+    (sched_args)
+      case $words[1] in
+        (record)
+          _arguments \
+          '1:command:_command_names -e' \
+          '*::args:_normal' \
+          && ret=0
+        ;;
+        (map)
+          _arguments \
+            '--compact[show only CPUs with activity]' \
+            '--cpus[show just entries with activities]' \
+            '--color-cpus=[highlight the given cpus]:cpus:' \
+            '--color-pids=[highlight the given pids]:pids:' \
+            && ret=0
+        ;;
+        (timehist)
+          _arguments \
+            '(-k --vmlinux)'{-k,--vmlinux=}'[vmlinux pathname]:vmlinux:_files' \
+            '--kallsyms=[kallsyms pathname]:kallsyms:_files' \
+            '(-g --call-graph)'{-g,--callgraph}'[display call chains]' \
+            '--max-stack=[maximum number of functions to display in backtrace]:number:' \
+            '(-p --pid)'{-p,--pid=}'[only show events for given process ID]:pids:_perf_pids' \
+            '(-t --tid)'{-t,--tid=}'[only show events for given thread ID]:tids:' \
+            '(-s --summary)'{-s,--summary}'[show only summary scheduling]' \
+            '(-S --with-summary)'{-S,--with-summary}'[show all scheduling events by a summary]' \
+            '--symfs=[look for files with symbols relative to this directory]:dir:_files -/' \
+            '(-V --cpu-visual)'{-V,--cpu-visual}'[show visual aid for sched switches by CPU]' \
+            '(-w --wakeups)'{-w,--wakeups}'[show wakeup events]' \
+            '(-M --migrations)'{-M,--migrations}'[show migration events]' \
+            '(-n --next)'{-n,--next}'[show next task]' \
+            '(-I --idle-hist)'{-I,--idle-hist}'[show idle-related events only]' \
+            '--time=[only analyze samples within given time window]:time_window:' \
+            '--state[show task state when it switched out]' \
             && ret=0
         ;;
       esac
