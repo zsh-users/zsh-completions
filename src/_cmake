@@ -128,6 +128,10 @@ _cmake_suggest_builddirs() {
   _alternative ':current directory:(.)' 'directory::_directories' && return 0
 }
 
+_cmake_suggest_installdirs() {
+  _alternative ':current directory:(.)' 'directory::_directories' && return 0
+}
+
 _cmake_on_build() {
   local build_extras;build_extras=(
     '--[Native build tool options]'
@@ -181,6 +185,68 @@ _cmake_on_build() {
     return 0
   elif [[ $words[(($CURRENT - 1))] == --parallel ]] ; then
     # after --build <dir> --parallel
+    return 0
+  elif [ "$outofbuild" = true ] ; then
+    # after --build <dir> --<not a --build option>, suggest other cmake_build_options (like -Wno-dev)
+    _arguments "$cmake_build_options[@]" && return 0
+  else
+    # after --build <dir>, suggest other cmake_build_options (like -Wno-dev) or --build options (like --clean-first)
+    _arguments "$build_extras[@]" "$cmake_build_options[@]" && return 0
+  fi
+}
+
+_cmake_on_install() {
+  local build_extras;build_extras=(
+    '--[Native build tool options]'
+    '--prefix[Override the installation prefix, CMAKE_INSTALL_PREFIX]'
+    '--config[For multi-configuration generators(e.g. Visual Studio)]'
+    '--component[Component-based install]'
+    '--strip[Strip before installing.]'
+    )
+  local -a undescribed_build_extras
+  i=1
+  for be in $build_extras ; do
+    undescribed_build_extras[$i]=$(echo $be | sed "s/\[.*//")
+    (( i++ ))
+  done
+  inbuild=false
+  dashdashposition=-1
+  for ((i = (($CURRENT - 1)); i > 1 ; i--)); do
+    if [[ $words[$i] == --install ]] ; then
+      inbuild=true
+      buildat=$i
+      (( difference = $CURRENT - $i ))
+    elif [[ $words[$i] == -- ]] ; then
+      dashdashposition=$i
+    fi
+  done
+  outofbuild=false
+  for ((i = (($CURRENT - 1)); i > (($buildat + 1)); i--)); do
+    # don't check the word after --install (should be a directory)
+    if [[ ${undescribed_build_extras[(r)$words[$i]]} == $words[$i] ]] ; then continue ; fi
+    if [[ $words[(($i - 1))] == --prefix ]] ; then continue ; fi
+    if [[ $words[(($i - 1))] == --config ]] ; then continue ; fi
+    if [[ $words[(($i - 1))] == --component ]] ; then continue ; fi
+    outofbuild=true
+  done
+  if (( $dashdashposition > 0 )) ; then
+    _cmake_generator_options $words[(($buildat + 1))] $dashdashposition && return 0
+  fi
+  if [[ "$inbuild" == false || "$difference" -eq 1 ]] ; then
+    # either there is no --install or completing the directory after --install
+    _arguments -C -s \
+      - build_opts \
+      "$cmake_build_options[@]" \
+      - build_cmds \
+      "$cmake_suggest_install[@]" && return 0
+  elif [[ $words[(($CURRENT - 1))] == --prefix ]] ; then
+    # after --install <dir> --prefix, no idea
+    return 0
+  elif [[ $words[(($CURRENT - 1))] == --config ]] ; then
+    # after --install <dir> --config, no idea
+    return 0
+  elif [[ $words[(($CURRENT - 1))] == --component ]] ; then
+    # after --build <dir> --component, no idea
     return 0
   elif [ "$outofbuild" = true ] ; then
     # after --build <dir> --<not a --build option>, suggest other cmake_build_options (like -Wno-dev)
@@ -479,6 +545,10 @@ local cmake_suggest_build;cmake_suggest_build=(
     '--build[build]:build dir:_cmake_suggest_builddirs'
 )
 
+local cmake_suggest_install;cmake_suggest_install=(
+    '--install[install]:install dir:_cmake_suggest_installdirs'
+)
+
 if [[ "$service" = -value-*CMAKE_GENERATOR* ]]; then
   _cmake_generators
 elif [ $CURRENT -eq 2 ] ; then
@@ -490,11 +560,16 @@ elif [ $CURRENT -eq 2 ] ; then
     - build_opts \
       "$cmake_build_options[@]" \
     - build_cmds \
-      "$cmake_suggest_build[@]" && return 0
+      "$cmake_suggest_build[@]" \
+    - install_cmds \
+      "$cmake_suggest_install[@]" && return 0
 elif [[ $words[2] = --help* ]] ; then
   _cmake_help
-elif [[ $words[2] != -E ]] ; then
+#elif [[ $words[2] != -E ]] ; then
+elif [[ $words[2] == --build ]] ; then
   _cmake_on_build
+elif [[ $words[2] == --install ]] ; then
+  _cmake_on_install
 else
   _cmake_command
 fi
