@@ -101,6 +101,24 @@ _perf_trace_subcommand() {
   _alternative "_command_names -e" "subcommand:command:(record)"
 }
 
+_perf_kmem_sort_keys() {
+  local -a keys=(ptr callsite bytes hit pingpong frag page order migtype gfp)
+
+  for ((i = 1; i < CURRENT; i++))
+  do
+    if [[ $words[$i] == "--slab" ]]; then
+      keys=(ptr callsite bytes hit pingpong frag)
+      break
+    fi
+    if [[ $words[$i] == "--page" ]]; then
+      keys=(page callsite hit order migtype gfp)
+      break
+    fi
+  done
+
+  _values -s ',' 'key' $keys
+}
+
 _perf() {
   local context curcontext="$curcontext" state line
   typeset -A opt_args
@@ -255,14 +273,20 @@ _perf() {
             && ret=0
         ;;
         (kmem)
-          # TODO Complete 'record' command
           _arguments \
             '(-i --input)'{-i,--input=}'[input file name]: :_files' \
+            '(-f --force)'{-f,--force}'[dont do ownership validation]' \
             '--caller[show per-callsite statistics]' \
             '--alloc[show per-allocation statistics]' \
-            '(-s --sort)'{-s,--sort=}'[sort by output]: :_values -s , key frag hit bytes' \
+            '(-s --sort)'{-s,--sort=}'[sort by output]: :_perf_kmem_sort_keys' \
             '(-n --lines)'{-n,--lines}'[print n lines only]:number' \
+            '--raw-ip[print raw ip instead of symbol]' \
+            '--slab[analyze slab allocator events]' \
+            '--page[analyze page allocator events]' \
+            '--live[show live page stat]' \
+            '--time=[only analyze samples within given time window]:time_window:' \
             '1:command:((record\:record\ the\ kmem\ events\ of\ an\ arbitrary\ workload stat\:report\ kernel\ memory\ statistics))' \
+            '*:: :->kmem_args' \
             && ret=0
         ;;
         (kvm)
@@ -751,6 +775,14 @@ _perf() {
           '(-f --force)'{-f,--force}'[do not complain do it]' \
           '(-v --verbose)'{-v,--verbose}'[be more verbose]' \
           '--all[convert all events including non-sample events to output]' \
+          && ret=0
+      fi
+    ;;
+    (kmem_args)
+      if [[ $words[1] == "record" ]]; then
+        _arguments \
+          '1:command:_command_names -e' \
+          '*::args:_normal' \
           && ret=0
       fi
     ;;
