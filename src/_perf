@@ -131,6 +131,20 @@ _perf_sched_subcommand() {
   _describe -t subcmds 'lock subcommand ' subcmds
 }
 
+_perf_script_fields() {
+  local -a fields=(
+    "comm" "tid" "pid" "time" "cpu" "event" "trace" "ip" "sym" "dso"
+    "addr" "symoff" "srcline" "period" "iregs" "uregs" "brstack"
+    "brstacksym" "flags" "bpf-output" "brstackinsn"  "brstackoff"
+    "callindent" "insn" "insnlen" "synth" "phys_addr" "metric"
+    "misc" "srccode" "ipc"
+  )
+
+  compset -P '(hw|sw|trace):'
+
+  _values -s ',' 'fields' $fields
+}
+
 _perf() {
   local context curcontext="$curcontext" state line
   typeset -A opt_args
@@ -194,7 +208,7 @@ _perf() {
             '(-k --kcore)'{-k,--kcore=}'[add specified kcore file to core]:kcore:_files' \
             '(-r --remove)'{-r,--remove=}'[remove specified file from the cache]: :_files' \
             '(-p,--purge)'{-p,--purge=}'[purge all cached binaries including older caches which have specified path]: :_files' \
-            '(-P,--purge-all)'{-P,--purge-all}'[puge all cached binaries]' \
+            '(-P,--purge-all)'{-P,--purge-all}'[purge all cached binaries]' \
             '(-M,--missing)'{-M,--missing=}'[list missing build ids in the cache for the specified file]: :_files' \
             '(-u,--update)'{-u,--update=}'[update specified file of the cache]: :_files' \
             '(-l,--list)'{-l,--list}'[list all valid binaries from cache]' \
@@ -281,7 +295,7 @@ _perf() {
         ;;
         (kallsyms)
           _arguments \
-            '(-v --verbose)'{-v,--verbose=}'[increse verbosity level]' \
+            '(-v --verbose)'{-v,--verbose=}'[increase verbosity level]' \
             && ret=0
         ;;
         (kmem)
@@ -406,7 +420,7 @@ _perf() {
             '(-j --branch-filter)'{-j,--branch-filter=}'[specify stack sampling filter]:filter:_perf_branch_filter' \
             '--weight[enable weightened sampling]' \
             '--namespaces[record events of type PREF_RECORD_NAMESPACES]' \
-            '--tarnsaction[record transaction flags for transaction related events]' \
+            '--transaction[record transaction flags for transaction related events]' \
             '(-D --delay)'{-D,--delay=}'[wait msecs before measuring]' \
             '(-I,--intr-regs)'{-I,--intr-regs=}'[capture machine state (registers) at interrupt]:registers:' \
             '--user-regs=[capture user registers at sample time]:registers:' \
@@ -445,7 +459,7 @@ _perf() {
             '(-n --show-nr-samples)'{-n,--show-nr-samples}'[show the number of samples for each symbol]' \
             '--show-cpu-utilization[show sample percentage for different cpu modes]' \
             '(-T --threads)'{-T,--threads}'[show per-thread event counters]' \
-            '(-c --comms)'{-c,--comms=}'[only condier symbols in these comms]:comms:' \
+            '(-c --comms)'{-c,--comms=}'[only consider symbols in these comms]:comms:' \
             '--pid=[only show events for given process ID]:pid:_perf_pids' \
             '--tid=[only show events for given thread ID]:tid:' \
             \*{-d,--dsos=}'[only consider symbols in these dsos]:dsos:' \
@@ -508,7 +522,7 @@ _perf() {
             '--mmaps[show --tasks output plus mmap information]' \
             '--ns[show time stamps in nanoseconds]' \
             '--stat[display overall events statistics without any further processing]' \
-            '--tasks[display monitored taks stored in perf data]' \
+            '--tasks[display monitored tasks stored in perf data]' \
             '--percent-type=[set annotation percent type]:type:(global-period local-period global-hits local-hits)' \
             '--time-quantum=[configure time quantum for time sort key]' \
             && ret=0
@@ -524,12 +538,63 @@ _perf() {
             && ret=0
         ;;
         (script)
-          # TODO not implemented
+          # TODO 'perf-script' completion
+          _arguments \
+            '(-D --dump-raw-trace)'{-d,--dump-raw-trace}'[display verbose dump of the trace data]' \
+            '(-L --Latency)'{-L,--Latency=}'[show latency attributes]: :' \
+            '(-l --list)'{-l,--list=}'[display a list of available trace scripts]: :' \
+            '(-s --script)'{-s,--script=}'[process trace data with the given script]: :' \
+            '(-g --gen-script)'{-g,--gen-script=}'[generate perf-script starter script for given language]:lang:' \
+            '-a[force system-wide collection]' \
+            '(-i --input)'{-i,--input=}'[input file name]:file:_files' \
+            '(-d --debug-mode)'{-d,--debug-mode}'[do various checks]' \
+            \*{-F,--fields=}'[comma separated list of fields to print]:fields:_perf_script_fields' \
+            '(-k --vmlinux)'{-k,--vmlinux=}'[vmlinux pathname]:vmlinux:_files' \
+            '--kallsyms=[kallsyms pathname]:kallsyms:_files' \
+            '(-G --hide-call-graph)'{-G,--hide-call-graph}'[when printing symbols do not display call chain]' \
+            '--stop-bt[stop display of callgraph at these symbols]' \
+            '(-C --cpu)'{-C,--cpu=}'[only report samples for the list of CPUs provided]:cpus:' \
+            '(-c --comms)'{-c,--comms=}'[only display events for these comms]:comms:' \
+            '--pid=[only show events for given process ID]:pids:_perf_pids' \
+            '--tid=[only show events for given thread ID]:tids:' \
+            '(-I --show-info)'{-I,--show-info}'[display extended information about the perf.data file]' \
+            '--show-kernel-path[try to resolve the path of kernel.kallsyms]' \
+            '--show-task-events[display task related events]' \
+            '--show-mmap-events[display mmap related events]' \
+            '--show-namespace-events[display namespace events]' \
+            '--show-switch-events[display context switch events]' \
+            '--show-lost-events[display lost events]' \
+            '--show-round-events[display finished round events]' \
+            '--show-bpf-events[display bpf events]' \
+            '--demangle[demangle symbol names to human readable form]' \
+            '--demangle-kernel[demangle kernel symbol names to human readable form]' \
+            '--header[show perf.data header]' \
+            '--header-only[show only perf.data header]' \
+            '--itrace=[options for decoding instruction tracing data]' \
+            '--full-source-path[show the full path for source files for srcline output]' \
+            '--max-stack=[set the stack depth limit]:number:' \
+            '--ns[use 9 decimal places when displaying time]' \
+            '(-f --force)'{-f,--force}'[do not ownership validation]' \
+            '--time=[only analyze samples within given time window]' \
+            '--max-blocks=[set the maximum number of program blocks to print]:number:' \
+            '--reltime[print time stamps relative to trace start]' \
+            '--per-event-dump[create per event files]' \
+            '--inline[the inline stack will be printed]' \
+            '--insn-trace[show instruction stream for intel_pt traces]' \
+            '--xed[run xed disassembler on output]' \
+            '--call-trace[show call stream for intel_pt traces]' \
+            '--call-ret-trace[show call and return stream for intel_pt traces]' \
+            '--graph-function=[for itrace only show specified functions and their callees for itrace]:functions:' \
+            '--switch-on=[only consider events after this event is found]:event:' \
+            '--switch-off=[stop considering events after this event is found]' \
+            '--show-on-off-events[show the --switch-on/off events too]'  \
+            '1:command:(record report)' \
+            && ret=0
         ;;
         (stat)
           _arguments \
             \*{-e,--events=}'[select the PMU event]:event:_perf_events' \
-            '(-i --no-inherit)'{-i,--no-inherit}'[child tasks do not inherit conters]' \
+            '(-i --no-inherit)'{-i,--no-inherit}'[child tasks do not inherit counters]' \
             '(-p --pid)'{-p,--pid=}'[stat events on existing process id]:pid:_pids' \
             '(-t --tid)'{-t,--tid=}'[stat events on existing thread id]:tid:' \
             '(-a --all-cpus)'{-a,--all-cpus}'[system-wide collection from all CPUs]' \
@@ -541,11 +606,11 @@ _perf() {
             '(-A --no-aggr)'{-A,--no-aggr}'[do not aggregate counts across all monitored CPUs]' \
             '(-n --null)'{-n,--null}'[null run]' \
             '(-v --verbose)'{-v,--verbose}'[be more verbose]' \
-            '(-x --field-seperator)'{-x,--field-separator=}'[print separator]' \
+            '(-x --field-separator)'{-x,--field-separator=}'[print separator]' \
             '--table[display time for each run in a table format]' \
             '(-G --cgroup)'{-G,--cgroup=}'[monitor only in the container called this name]' \
             '(-o --output)'{-o,--output=}'[print the output into this file]:file:_files' \
-            '--append[append to the output file desinated with -o option]' \
+            '--append[append to the output file designated with -o option]' \
             '--log-fd[log output to fd, instead of stderr]' \
             '--pre[pre measurement hook]: :_command_names -e' \
             '--post[post measurement hook]: :_command_names -e' \
@@ -557,7 +622,7 @@ _perf() {
             '--per-socket[aggregate counts per processor socket for system-wide mode measurements]' \
             '--per-die[aggregate counts per processor die for sytem-wide mode measurements]' \
             '--per-core[aggregate counts per phisical processor for sytem-wide mode measurements]' \
-            '--per-thread[aggregate counts per mmonitored threads]' \
+            '--per-thread[aggregate counts per monitored threads]' \
             '(-D --delay)'{-D,--delay=}'[wait msecs before measuring]:msec:' \
             '(-T --transaction)'{-T,--transaction}'[print statistics of transactional execution]' \
             '(-)1:command:_perf_stat_command' \
@@ -584,7 +649,7 @@ _perf() {
             '(-f --force)'{-f,--force}'[do not complain, do it]' \
             '--symfs=[look for files with symbols relative to this directory]: :_files -/' \
             '(-n --proc-num)'{-n,--proc-num=}'[print task info for at least given number of tasks]:number:' \
-            '(-t --topology)'{-t,--topology}'[sort CPUs acording to topology]' \
+            '(-t --topology)'{-t,--topology}'[sort CPUs according to topology]' \
             '--highlight=[highlight tasks using different color]:nsecs_or_task:' \
             '--io-skip-eagain[do not draw EAGAIN IO events]' \
             '--io-min-times=[draw small events as if they lasted min-time]:nsecs:' \
@@ -601,7 +666,7 @@ _perf() {
             '(-d --delay)'{-d,--delay=}'[number of seconds to delay between refreshes]' \
             \*{-e,--event=}'[select the PMU event]:event:_perf_events' \
             '(-E --entries)'{-E,--entries=}'[display thie many functions]' \
-            '(-f --count-filter)'{-f,--count-filter=}'[only display fnctions with more events than this]:count:' \
+            '(-f --count-filter)'{-f,--count-filter=}'[only display functions with more events than this]:count:' \
             '--group[put the counters into a counter group]' \
             '(-F --freq)'{-F,--freq=}'[profile at thie frequency]:freq:(max)' \
             '(-i --inherit)'{-i,--inherit}'[child tasks do not inherit counters]' \
@@ -691,7 +756,7 @@ _perf() {
             '--min-stack=[set the stack depth min limit]:limit:' \
             '--print-sample[print the PERF_RECORD_SAMPLE PERF_SAMPLE_ info]' \
             '--proc-map-timeout=[time out(ms) limit of processing /proc/XXX/mmap]' \
-            '--sort-evetns[do sorting on batches of events]' \
+            '--sort-events[do sorting on batches of events]' \
             '--map-dump[dump BPF maps setup by events passed via -e]' \
             '1: :_perf_trace_subcommand' \
             && ret=0
