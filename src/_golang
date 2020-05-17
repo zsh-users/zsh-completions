@@ -1,4 +1,4 @@
-#compdef go
+#compdef go -P -value-,GO*,-default- -P -value-,CGO*,-default-
 # ------------------------------------------------------------------------------
 # Copyright (c) 2016 Github zsh-users - http://github.com/zsh-users
 # Copyright (c) 2013-2015 Robby Russell and contributors (see
@@ -30,20 +30,19 @@
 # Description
 # -----------
 #
-#  Completion script for go 1.11 (http://golang.org).
+#  Completion script for go 1.14 (http://golang.org).
 #
 # ------------------------------------------------------------------------------
 # Authors
 # -------
 #
 #  * Mikkel Oscar Lyderik Larsen <mikkeloscar@gmail.com>
+#  * Paul Seyfert <pseyfert.mathphys@gmail.com>
 #  * oh-my-zsh authors:
 #        https://github.com/robbyrussell/oh-my-zsh/blob/master/plugins/golang/golang.plugin.zsh
 #  * Go authors
 #
 # ------------------------------------------------------------------------------
-
-typeset -A opt_args
 
 __go_buildmodes() {
   local -a buildmodes
@@ -59,6 +58,122 @@ __go_buildmodes() {
   )
 
   _values 'mode' $buildmodes
+}
+
+
+__go_runtimedebug() {
+  local -a vars
+  vars=(
+    'allocfreetrace[profile allocations]:boolean:(1 0)'
+    'clobberfree[clobber memory after free]:boolean:(1 0)'
+    'cgocheck[check passing go pointers to non-go]: :((0\:"no checks" 1\:"check checks" 2\:"expensive checks"))'
+    'efence[allocate on unique pages]:boolean:(1 0)'
+    "gccheckmark[verify garbage collector's concurrent mark phase]:boolean:(1 0)"
+    'gcpacertrace[print state of the concurrent pacer from garbage collector]:boolean:(1 0)'
+    'gcshrinkstackoff[disable moving goroutines to smaller stacks]:boolean:(1 0)'
+    'gcstoptheworld[disable concurrent garbage collection]: :((0\:default 1\:"disable concurrent garbage collection" 2\:"disable concurrent gc and sweeping"))'
+    'gctrace[emit memory collection and pause information from the garbage collector]:boolean:(1 0)'
+    'madvdontneed[use MADV_DONTNEED instead of MADV_FREE]:boolean:(1 0)'
+    'memprofilerate[every N-th allocation should be profiled]:int:'
+    'invalidptr[crash on invalid integers in pointer-type variables]:boolean:(1 0)'
+    'sbrk[replace memory allocator and garbage collector by trivial allocator]:boolean:(1 0)'
+    'scavenge[enable debugging mode of heap scavenger]:boolean:(1 0)'
+    'scavtrace[emit scavenger work information (memory returned and memory utilization)]:boolean:(1 0)'
+    'scheddetail[emit detailed states of scheduler, processors, threads, goroutines]:boolean:(1 0)'
+    'schedtrace[emmit scheduler state every N ms to stderr]:int'
+    'tracebackancestors[set ancestor goroutines to be printed in goroutine creation stacks]:int'
+    'asyncpreemptoff[disable signal-based asynchronous goroutine preemption.]:boolean:(1 0)'
+  )
+  _values -s ',' -S '=' "runtime debug behaviour" $vars[@]
+}
+
+__go_gcdebugflags() {
+  _values -s , -S = 'debug flag' \
+    'append[print information about append compilation]' \
+    'checkptr[instrument unsafe pointer conversions]:pointer conversion checks:((0\:"instrumentation disabled" 1\:"conversions involving unsafe.Pointer are instrumented" 2\:"conversions to unsafe.Pointer force heap allocation"))' \
+    'closure[print information about closure compilation]' \
+    'compilelater[compile functions as late as possible]' \
+    'disablenil[disable nil checks]' \
+    'dclstack[run internal dclstack check]' \
+    'gcprog[print dump of GC programs]' \
+    'libfuzzer[coverage instrumentation for libfuzzer]' \
+    'nil[print information about nil checks]' \
+    'panic[do not hide any compiler panic]' \
+    'slice[print information about slice compilation]' \
+    'typeassert[print information about type assertion inlining]' \
+    'wb[print information about write barriers]' \
+    'export[print export data]' \
+    'pctab[print named pc-value table]:pc-value:(pctospadj pctofile pctoline pctoinline pctopcdata)' \
+    'locationlists[print information about DWARF location list creation]' \
+    'typecheckinl[eager typechecking of inline function bodies]' \
+    'dwarfinl[print information about DWARF inlined function creation]' \
+    'softfloat[force compiler to emit soft-float code]' \
+    'defer[print information about defer compilation]' \
+    'ssa/help[print help about SSA debugging]'
+}
+
+__go_gcflags() {
+  _arguments \
+  '-%[debug non-static initializers]' \
+  '-c=[concurrency during compilation]:int' \
+  '-+[compiling runtime]' \
+  '-B[disable bounds checking]' \
+  '-C[disable printing of columns in error messages]' \
+  '-D=[set relative path for local imports]:path: _path_files -/' \
+  '-E[debug symbol export]' \
+  '-I=[add directory to import search path]:directory: _path_files -/' \
+  '-K[debug missing line numbers]' \
+  '-L[show full file names in error messages]' \
+  '-N[disable optimizations]' \
+  '-S[print assembly listing]' \
+  '-V[print version and exit]' \
+  '-W[debug parse tree after type checking]' \
+  '-asmhdr=[write assembly header to file]:file' \
+  '-bench=[append benchmark times to file]:file' \
+  '-blockprofile=[write block profile to file]:file' \
+  '-buildid=[record id as the build id in the export metadata]:id' \
+  '-complete[compiling complete package (no C or assembly)]' \
+  '-cpuprofile=[write cpu profile to file]:file' \
+  '-d=[print debug information about items in list; try -d help]:list: __go_gcdebugflags' \
+  '-dwarf[generate DWARF symbols (default true)]' \
+  '-dwarfbasentries[use base address selection entries in DWARF (default true)]' \
+  '-dwarflocationlists[add location lists to DWARF in optimized mode (default true)]' \
+  '-dynlink[support references to Go symbols defined in other shared libraries]' \
+  '-e[no limit on number of errors reported]' \
+  '-gendwarfinl=[generate DWARF inline info records (default 2)]:int' \
+  '-goversion=[required version of the runtime]:string' \
+  '-h[halt on error]' \
+  '-importcfg=[read import configuration from file]:file' \
+  '-importmap=[add definition of the form source=actual to import map]:definition' \
+  '-installsuffix=[set pkg directory suffix]:suffix' \
+  '-j[debug runtime-initialized variables]' \
+  '-json=[version,destination for JSON compiler/optimizer logging]:string' \
+  '-l[disable inlining]' \
+  '-lang=[release to compile for]:string' \
+  '-linkobj=[write linker-specific object to file]:file' \
+  '-linkshared[generate code that will be linked against Go shared libraries]' \
+  '-live[debug liveness analysis]' \
+  '-m[print optimization decisions]' \
+  '-memprofile=[write memory profile to file]:file' \
+  '-memprofilerate=[set runtime.MemProfileRate to rate]:rate' \
+  '-msan[build code compatible with C/C++ memory sanitizer]' \
+  '-mutexprofile=[write mutex profile to file]:file' \
+  '-newobj[use new object file format]' \
+  '-nolocalimports[reject local (relative) imports]' \
+  '-o=[write output to file]:file' \
+  '-p=[set expected package import path]:path: _path_files -/' \
+  '-pack[write to file.a instead of file.o]' \
+  '-r[debug generated wrappers]' \
+  '-race[enable race detector]' \
+  '-shared[generate code that can be linked into a shared library]' \
+  '-smallframes[reduce the size limit for stack allocated objects]' \
+  '-std[compiling standard library]' \
+  '-symabis=[read symbol ABIs from file]:file' \
+  '-traceprofile=[write an execution trace to file]:file' \
+  '-trimpath=[remove prefix from recorded source file paths]:prefix' \
+  '-v[increase debug verbosity]' \
+  '-w[debug type checking]' \
+  '-wb[enable write barrier (default true)]' \
 }
 
 
@@ -84,6 +199,128 @@ commands=(
 'help:get more information about a command'
 )
 
+__go_envvarvals() {
+  # if __go_envvarvals is called for -value-, I use the function argument to
+  # decide which variable to go to.  if $1 is not set, then __go_envvarvals is
+  # called from the `go env` completion and the current word (with all after
+  # the first '=' removed) is the current variable.
+  local variable
+  variable=${1-${words[$CURRENT]%%=*}}
+  case $variable in
+    # commands
+    AR)
+      ;&
+    CC)
+      ;&
+    CXX)
+      ;&
+    FC)
+      ;&
+    GCCGO)
+      _command_names -e
+      ;;
+    # directories (using fallthrough)
+    GOBIN)
+      ;&
+    GOCACHE)
+      ;&
+    GOTMPDIR)
+      ;&
+    GOTOOLDIR)
+      ;&
+    GOROOT)
+      ;&
+    GOROOT_FINAL)
+      ;&
+    GCCGOTOOLDIR)
+      ;&
+    GOPATH)
+      _files -/
+      ;;
+    # regular files (using fallthrough)
+    GOMOD)
+      ;&
+    PKG_CONFIG)
+      ;&
+    GOENV)
+      _files
+      ;;
+    # special
+    GOHOSTOS)
+      ;&
+    GOOS)
+      # from https://golang.org/doc/install/source#environment
+      _values 'operating system' aix android darwin dragonfly freebsd illumos js linux netbsd openbsd plan9 solaris windows
+      ;;
+    GOHOSTARCH)
+      ;&
+    GOARCH)
+      _values 'architecture' amd64 386 arm ppc64
+      ;;
+    CGO_ENABLED)
+      _values 'enable/disable cgo' 0 1
+      ;;
+    GO_EXTLINK_ENABLED)
+      _values 'enable/disable external linkage' 0 1
+      ;;
+    GOARM)
+      _values 'target arm architecture' 5 6 7
+      ;;
+    GO386)
+      _values 'x86 floating point instruction set' 387 sse2
+      ;;
+    GOMIPS*)
+      _values 'mips floating point instructions' hardfloat softfloat
+      ;;
+    GOWASM)
+      _values 'web assembly features' -s ',' satconv signext
+      ;;
+    GOPROXY)
+      _urls
+      ;;
+    GOEXE)
+      _message "suffix for executables"
+      ;;
+    CGO_*FLAGS_*ALLOW)
+      _message "regexp"
+      ;;
+    CGO_*FLAGS)
+      _dispatch $service -value-,${variable#CGO_},-default-
+      ;;
+    GODEBUG)
+      __go_runtimedebug
+      ;;
+    GOFLAGS)
+      # not implemented, sorry
+      ;;
+    GOINSECURE)
+      ;&
+    GOPRIVATE)
+      ;&
+    GONOPROXY)
+      ;&
+    GONOSUMDB)
+      # comma separated glob patterns (in the syntax of Go's path.Match)
+      _message "comma separated glob pattern"
+      ;;
+    GOSUMDB)
+      _message "e.g. sum.golang.org+<publickey> https://sum.golang.org"
+      ;;
+  esac
+}
+
+if [[ "$service" = -value-* ]]; then
+  variable=${${service%,-default-}#-value-,}
+  # some special variables are not read from the environment
+  local -a blacklist
+  blacklist=('GOEXE' 'GOGCCFLAGS' 'GOHOSTARCH' 'GOHOSTOS' 'GOMOD' 'GOTOOLDIR')
+  if (($blacklist[(I)$variable])); then
+    return
+  fi
+  __go_envvarvals $variable
+  return
+fi
+
 _arguments \
   "1: :{_describe 'command' commands}" \
   '*:: :->args'
@@ -95,6 +332,7 @@ case $state in
     '-n[print the commands but do not run them]'
     '-p[number of builds that can be run in parallel]:number'
     '-race[enable data race detection]'
+    '-msan[enable interoperation with memory sanitizer]'
     '-v[print the names of packages as they are compiled]'
     '-work[print temporary work directory and keep it]'
     '-x[print the commands]'
@@ -102,7 +340,7 @@ case $state in
     '-buildmode[build mode to use]:mode:__go_buildmodes'
     '-compiler[name of compiler to use]:name'
     '-gccgoflags[arguments for gccgo]:args'
-    '-gcflags[arguments for each go tool compile invocation]:args'
+    '*-gcflags=[arguments for each go tool compile invocation]:args:__go_gcflags'
     '-installsuffix[suffix to add to package directory]:suffix'
     '-ldflags[arguments to pass on each go tool link invocation.]:flags'
     '-linkshared[link against shared libraries]'
@@ -110,6 +348,11 @@ case $state in
     '-tags[list of build tags to consider satisfied]:tags'
     '-trimpath[remove all file system paths from the resulting executable]'
     '-toolexec[program to use to invoke toolchain programs]:args'
+    )
+    mod_flags=(
+    '-mod=[module download mode to use]:download mode:(readonly vendor mod)'
+    '-modcacherw[leave newly-created directories in the module cache read-write]'
+    '-modfile=[read an alternate go.mod file]:modfile: _files -g "*.mod"'
     )
 
     __go_packages() {
@@ -138,6 +381,7 @@ case $state in
           '-o[force build to write to named output file or directory]:file or directory:_files' \
           '-i[installs the packages that are dependencies of the target]' \
           ${build_flags[@]} \
+          ${mod_flags[@]} \
           '*:importpaths:__go_packages'
           ;;
 
@@ -146,6 +390,7 @@ case $state in
           '-i[remove corresponding installed archive or binary]' \
           '-r[apply clean recursively on all dependencies]' \
           ${build_flags[@]} \
+          ${mod_flags[@]} \
           '*:importpaths:__go_packages'
           ;;
 
@@ -158,59 +403,77 @@ case $state in
 
       env)
         local -a goenvvars
-        goenvvars=("AR="
-          "CC="
-          "CGO_CFLAGS="
-          "CGO_CPPFLAGS="
-          "CGO_CXXFLAGS="
-          "CGO_ENABLED="
-          "CGO_FFLAGS="
-          "CGO_LDFLAGS="
-          "CXX="
-          "GCCGO="
-          "GO111MODULE="
-          "GOARCH="
-          "GOBIN="
-          "GOCACHE="
-          "GOENV="
-          "GOEXE="
-          "GOFLAGS="
-          "GOGCCFLAGS="
-          "GOHOSTARCH="
-          "GOHOSTOS="
-          "GOMOD="
-          "GONOPROXY="
-          "GONOSUMDB="
-          "GOOS="
-          "GOPATH="
-          "GOPRIVATE="
-          "GOPROXY="
-          "GOROOT="
-          "GOSUMDB="
-          "GOTMPDIR="
-          "GOTOOLDIR="
-          "PKG_CONFIG="
+        goenvvars=(
+          "GOARCH[architecture, or processor, for which to compile code.]:architecture"
+          "GCCGO[gccgo command to run.]:gccgo command"
+          "GOBIN[directory where 'go install' installs to]:go install target dir"
+          "GOCACHE[directory to store cached information]:go build cache dir"
+          "GODEBUG[enable runtime debug facilities]:runtime debug settings"
+          "GOENV[location of the go environment configuration file]:configuration file"
+          "GOFLAGS[default go command line flags]:space sparated default command line flags"
+          "GOINSECURE[module prefixes that are feched insecurely]:comma separated module prefixes"
+          "GOOS[target operating system]:operating system"
+          "GOPATH[path to resolve import statements]:import path"
+          "GOPROXY[URL of go module proxy]:proxy url"
+          "GOROOT[root of the go tree]:go root directory"
+          "GOTMPDIR[directory for temporary sources, packages, and binaries]:tmp directory"
+          "GOPRIVATE[modules that should always be fetched directly]:comma separated glob patterns"
+          "GONOPROXY[modules that should always be fetched directly]:comma separated glob patterns"
+          "GONOSUMDB[modules that should not be compared against the checksum db]:comma separated glob patterns"
+          "GOSUMDB[checksum database]:name(+publickey( url))"
+          "AR[command for manipulating library archives (for gccgo)]:archive manipulation program"
+          "CC[command to compile C code]:C compiler"
+          "CGO_ENABLED[enable/disable cgo]:boolean"
+          "CGO_CFLAGS[flags passed to the compiler for C code]:C compilation flags"
+          "CGO_CFLAGS_ALLOW[additional flags to allow to appear in #cgo CFLAGS]:regular expression"
+          "CGO_CFLAGS_DISALLOW[flags that must be disallowed from appearing in #cgo CFLAGS]"
+          "CGO_CPPFLAGS[flags passed to the C preprocessor]:C preprocessor flags"
+          "CGO_CPPFLAGS_ALLOW[additional flags to allow to appear in #cgo CPPFLAGS]:regular expression"
+          "CGO_CPPFLAGS_DISALLOW[flags that must be disallowed from appearing in #cgo CPPFLAGS]"
+          "CGO_CXXFLAGS[flags passed to the compiler for C++ code]:C++ compilation flags"
+          "CGO_CXXFLAGS_ALLOW[additional flags to allow to appear in #cgo CXXFLAGS]:regular expression"
+          "CGO_CXXFLAGS_DISALLOW[flags that must be disallowed from appearing in #cgo CXXFLAGS]"
+          "CGO_FFLAGS[flags passed to the compiler for Fortran code]:Fortran compilation flags"
+          "CGO_FFLAGS_ALLOW[additional flags to allow to appear in #cgo FFLAGS]:regular expression"
+          "CGO_FFLAGS_DISALLOW[flags that must be disallowed from appearing in #cgo FFLAGS]"
+          "CGO_LDFLAGS[flags passed to the compiler for linker]:linker flags"
+          "CGO_LDFLAGS_ALLOW[additional flags to allow to appear in #cgo LDFLAGS]:regular expression"
+          "CGO_LDFLAGS_DISALLOW[flags that must be disallowed from appearing in #cgo LDFLAGS]"
+          "CXX[command to compile C++]:C++ compiler"
+          "FC[command to compile Fortran]:Fortran compiler"
+          "PKG_CONFIG[Path to pkg-config tool.]:path to pkg-config"
+          "GOARM[arm architecture]:arm architecture"
+          "GO386[x86 instruction set]:x86 instruction set"
+          "GOMIPS[mips instruction set]:mips instruction set"
+          "GOMIPS64[mips64 instruction set]:mips64 instruction set"
+          "GOWASM[web assembly features]:comma separated web assembly features"
+          "GCCGOTOOLDIR[directory of gccgo tools]:gccgo tool director"
+          "GOROOT_FINAL[root of the go tree]:go root"
+          "GO_EXTLINK_ENABLED[enable external linking mode]:boolean"
+          "GIT_ALLOW_PROTOCOL[schemes allowed to fetch]:colon separated git schemes"
+          "GOEXE[suffix for executables]:executable suffix"
+          "GOGCCFLAGS[arguments supplied to CC]:space separated arguments to CC"
+          "GOHOSTARCH[architecture of the toolchain binaries]:host os architecture"
+          "GOHOSTOS[operating system of the toolchain binaries]:host os"
+          "GOMOD[absolute path the the main go.mod]:abs path to main go.mod"
+          "GOTOOLDIR[installation directory of go tools]:tool installation directory"
         )
+        local -a exclude_from_w
+        exclude_from_w=(GOENV)
 
-        if (( $CURRENT == 2 )); then
-          _arguments \
-            '-json[print the environment in JSON format]' \
-            '-u[unset environment variables]' \
-            '-w[change the default setting of environment variables]' \
-            '*:[show environment variable]:_values ${goenvvars%=}'
-        else
-          case $words[2] in
-            -w)
-              if compset -P '*='; then
-              else
-                _values -S "=" 'environment variable' $goenvvars
-              fi
-              ;;
-            *)
-              _values -s ' ' -w 'environment variable' ${goenvvars%=}
-              ;;
-          esac
-        fi
+        __list_env_vars() {
+          # the parameter expansion strops off everything after the first [
+          _values -s ' ' -w 'environment variable' ${goenvvars[@]%%\[*}
+        }
+
+        # the ^ parameter expansion appends ": __go_envvarvals" to every element of goenvvars
+        # the :# parameter expansion removes all elements matching GOENV*
+        [[ $words[2] != '-w' ]] && _arguments \
+          '-json[print the environment in JSON format]' \
+          '-u[unset environment variables]' \
+          '-w[change the default setting of environment variables]' \
+          '*:[show environment variable]: __list_env_vars' || _values \
+          -s ' ' -S "=" -w 'environment variable' ${^goenvvars:#GOENV*}": __go_envvarvals"
         ;;
 
       fix)
@@ -242,6 +505,7 @@ case $state in
           '-t[also download the packages required to build tests]' \
           '-u[use the network to update the named packages]' \
           ${build_flags[@]} \
+          # no mod_flags for get
           '*:importpaths:__go_packages'
           ;;
 
@@ -251,15 +515,26 @@ case $state in
           ;;
 
       list)
-        _arguments \
-          '-e[changes the handling of erroneous packages]' \
-          '-f[specifies an alternate format for the list]:format' \
-          '-json[causes package data to be printed in JSON format]' \
-          '-compiled[set CompiledGoFiles to the Go source files presented to the compiler]' \
-          '-deps[iterate over named packages and their dependencies]' \
-          '-m[list modules instead of packages]' \
-          ${build_flags[@]} \
+        local -a list_args
+        list_args=(
+          '-e[changes the handling of erroneous packages]'
+          '-f[specifies an alternate format for the list]:format'
+          '-json[causes package data to be printed in JSON format]'
+          '-compiled[set CompiledGoFiles to the Go source files presented to the compiler]'
+          '-deps[iterate over named packages and their dependencies]'
+          '-m[list modules instead of packages]'
+          ${build_flags[@]}
+          ${mod_flags[@]}
           '*:importpaths:__go_packages'
+        )
+        # -u and -versions are only available if -m is present on the commandline
+        if (($words[(I)-m])); then
+          list_args+=(
+          '-u[adds information about available upgrades]'
+          '-versions[list all known versions of modules]'
+          )
+        fi
+        _arguments ${list_args[@]}
           ;;
 
       mod)
@@ -730,6 +1005,8 @@ case $state in
         'importpath:import path syntax'
         'modules:modules, module versions, and more'
         'module-get:module-aware go get'
+        'module-auth:module authentication using go.sum'
+        'module-private:module configuration for non-public modules'
         'packages:package lists and patterns'
         'testflag:testing flags'
         'testfunc:testing functions'
@@ -740,3 +1017,11 @@ case $state in
     esac
     ;;
 esac
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
