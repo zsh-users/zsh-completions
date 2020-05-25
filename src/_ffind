@@ -42,6 +42,7 @@ _arguments -C \
   '--nosymlinks[do not follow symlinks]' \
   '--hidden[do not ignore hidden directories]' \
   '-c[force case sensitive]' \
+  '-i[force case insensitive]' \
   '--delete[delete files found]' \
   '--exec[execute the given command with the file found]:command:_command_names' \
   '--module[execute the given module with the file found]:module_name args:' \
