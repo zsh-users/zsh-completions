@@ -31,6 +31,7 @@ _arguments -s -C \
   {-c,--constantshow}'[Constantly show cursor position]'\
   {-d,--rebinddelete}'[Fix Backspace/Delete confusion problem]'\
   {-e,--emptyline}'[Keep the line below the title bar empty]'\
+  {-f,--rcfile=}'[Use only this file for configuring nano]:file:_files'\
   {-g,--showcursor}'[Show cursor in file browser & help text]'\
   '(- *)'{-h,--help}'[Show help text and exit]'\
   {-i,--autoindent}'[Automatically indent new lines]'\
