@@ -57,7 +57,7 @@ _rspec() {
     --dry-run'[Print the formatter output of your suite without running any examples or hooks]' \
     '(-X --drb)'{-X,--drb}'[Run examples via DRb]' \
     --drb-port'[Port to connect to the DRb server]: :_guard "[[\:digit\:]]#" "PORT"' \
-    '(-f --format)'{-f,--format}'[Choose a formatter]:FORMATTER:(progress documentation html json)' \
+    '(-f --format)'{-f,--format}'[Choose a formatter]:FORMATTER:(progress documentation html json failures)' \
     '(-o --out)'{-o,--out}'[Write output to a file instead of $stdout]:FILE:_files' \
     --deprecation-out'[Write deprecation warnings to a file instead of $stderr]:FILE:_files' \
     '(-b --backtrace)'{-b,--backtrace}'[Enable full backtrace]' \
