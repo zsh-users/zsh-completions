@@ -497,6 +497,7 @@ case $state in
           ;;
 
       get)
+        # no mod_flags for get
         _arguments \
           '-d[instructs get to stop after downloading the packages]' \
           '-f[force get -u not to verify that each package has been checked from vcs]' \
@@ -505,7 +506,6 @@ case $state in
           '-t[also download the packages required to build tests]' \
           '-u[use the network to update the named packages]' \
           ${build_flags[@]} \
-          # no mod_flags for get
           '*:importpaths:__go_packages'
           ;;
 
