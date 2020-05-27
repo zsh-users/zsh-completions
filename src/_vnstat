@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for vnstat 1.10
+#  Completion script for vnstat 2.6
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -44,36 +44,44 @@ typeset -A opt_args
 local period="-d --days -h --hours -m --months -w --weeks"
 
 _arguments -C : \
-  '--cleartop[remove all top 10 entries]' \
+  '--add[create database entry for interface specified]' \
+  '(-b --begin)'{-b,--begin}'[begin the list output with a specific date]:date:' \
   '--config[specify alternate configuration file]:file:_files' \
   "($period)"{-d,--days}'[show traffic for days]' \
   "($period)"{-h,--hours}'[show traffic for last 24 hours]' \
   "($period)"{-m,--months}'[show traffic for months]' \
   "($period)"{-w,--weeks}'[show traffic for 7 days]' \
+  "($period)"{-y,--years}'[show traffic statistics for the last year]' \
+  "($period)"{-5,--fiveminutes}'[show traffic statistic with a 5 minute resolution for the last hours]' \
   '--dbdir[specify database directory]:directory:_files -/' \
   '(-D --debug)'{-D,--debug}'[show additional debug output]' \
+  '(-e --end)'{-e,--end}'[end the list output with a specific date]:date:' \
   '--delete[delete database and stop monitoring selected interface]' \
   '--dumpdb[dump database in parseable format]' \
   '(--disable)--enable[enable updates for selected interface]' \
   '(--enable)--disable[disable updates for selected interface]' \
+  '(-hg --hoursgraph)'{-hg,--hoursgraph}'[show traffic statistics using a bar graph]' \
   '(-i --iface)'{-i,--iface}'[specify interface for actions]:interface:->interface' \
   '--iflist[list available interfaces]' \
+  '--limit[set the maximum number of shown entries]:limit:' \
   '(-l --live)'{-l,--live}'[display current transfer rate]:mode:->live' \
+  '--json[show database content in json format]' \
   '--locale[specify locale]:locale:' \
   '--nick[set nickname for alias]:nickname:' \
   '--oneline[traffic summary in one-line, parseable format]' \
   '(-q --query)'{-q,--query}'[force database query mode]' \
+  '--remove[delete the database entry for the interface specified]' \
+  '--rename[rename the interface specified in the database with new name]' \
   '(-r --reset)'{-r,--reset}'[reset internal counters]' \
-  '--rebuildtotal[reset total traffic counters]' \
+  '--setalias[set alias as an alias for the selected interface]:alias:' \
   '(-ru --rateunit)'{-ru,--rateunit}'[swap configured rate unit]' \
-  '--savemerged[write result of database merge]'  \
   '(-s --short)'{-s,--short}'[use short output mode]' \
+  '--showconfig[show current configuration]' \
   '--style[modify content and style of output]:style:->style' \
   '--sync[synchronize internal counters]' \
   '--testkernel[test kernel boot time information]' \
-  '(-t --top10)'{-t,--top10}'[show all time top 10 traffic days]' \
-  '-tr[calculate amount of traffic in given time]:seconds:' \
-  '(-u --update)'{-u,--update}'[update databases]' \
+  '(-t --top)'{-t,--top}'[show all time top traffic days]' \
+  '(-tr --traffic)'{-tr,--traffic}'[calculate amount of traffic in given time]:seconds:' \
   '--xml[show database content in XML format]' \
   '(-)'{-v,--version}'[show current version]' \
   '(-)'{-\?,--help}'[show command summary]' \
