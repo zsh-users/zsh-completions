@@ -89,7 +89,7 @@ _pgsql_users () {
 
     _pgsql_user_sql='select r.rolname from pg_catalog.pg_roles r where r.rolcanlogin = true'
 
-    compadd "$@" - $( psql $_pgsql_params[@] -Aqt -c $_pgsql_user_sql template1 2>/dev/null )
+    compadd "$@" - $( psql $_pgsql_params[@] -XAqt -c $_pgsql_user_sql template1 2>/dev/null )
 
 }
 
@@ -122,7 +122,7 @@ _pgsql_tables () {
 	order by 1"
 
     compadd "$@" - \
-        $( psql $_pgsql_params[@] -Aqt -c $_pgsql_table_sql $db 2>/dev/null )
+        $( psql $_pgsql_params[@] -AXqt -c $_pgsql_table_sql $db 2>/dev/null )
 }
 
 _pgsql_schemas () {
@@ -139,7 +139,7 @@ _pgsql_schemas () {
         order by 1;"
 
     compadd "$@" - \
-        $( psql $_pgsql_params[@] -Aqt -c $_pgsql_schema_sql $db 2>/dev/null )
+        $( psql $_pgsql_params[@] -AXqt -c $_pgsql_schema_sql $db 2>/dev/null )
 }
 
 _pgsql_databases () {
@@ -147,10 +147,9 @@ _pgsql_databases () {
     _pgsql_get_identity
 
     local _pgsql_services _pgsql_service_files
-    _pgsql_service_files=(
-      ~/.pg_service.conf
-      $(pg_config --sysconfdir)/pg_service.conf
-    )
+    _pgsql_service_files=(~/.pg_service.conf)
+    (( $+commands[pg_config] )) && _pgsql_service_files+=$(pg_config --sysconfdir)/pg_service.conf
+
     _pgsql_services=$( grep -h '^\[.*\]' $_pgsql_service_files 2>/dev/null \
                          | sed -e 's/^\[/service=/' -e 's/\].*$//' )
 
@@ -160,7 +159,7 @@ _pgsql_databases () {
 
     compadd "$@" - \
             ${(f)_pgsql_services} \
-            $( psql $_pgsql_params[@] -Atq -c $_pgsql_db_sql template1 2>/dev/null )
+            $( psql $_pgsql_params[@] -AXtq -c $_pgsql_db_sql template1 2>/dev/null )
 }
 
 _pgsql_encodings () {
@@ -170,7 +169,7 @@ _pgsql_encodings () {
     local _pgsql_db_sql
     _pgsql_db_sql="select pg_encoding_to_char(i) from generate_series(0,100) i;"
 
-    compadd "$@" - $( psql $_pgsql_params[@] -Atq -c $_pgsql_db_sql template1  )
+    compadd "$@" - $( psql $_pgsql_params[@] -AXtq -c $_pgsql_db_sql template1  )
 }
 
 
