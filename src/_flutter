@@ -340,7 +340,31 @@ _arguments -C -A "-*" \
             '(-h --help)'{-h,--help}'[Print this usage information.]' \
           && ret=0
         ;;
-        
+        (assemble)
+            _arguments -C \
+            '(-h --help)'{-h,--help}'[Print this usage information.]' \
+          && ret=0
+        ;;
+        (attach)
+            _arguments -C \
+            '(-h --help)'{-h,--help}'[Print this usage information.]' \
+          && ret=0
+        ;;
+        (bash-completion)
+            _arguments -C \
+            '(-h --help)'{-h,--help}'[Print this usage information.]' \
+          && ret=0
+        ;;
+        (emulators)
+            _arguments -C \
+            '(-h --help)'{-h,--help}'[Print this usage information.]' \
+          && ret=0
+        ;;
+        (version)
+            _arguments -C \
+            '(-h --help)'{-h,--help}'[Print this usage information.]' \
+          && ret=0
+        ;;
       esac
     ;;
   esac
@@ -380,7 +404,12 @@ _root_commands() {
     'test:Run Flutter unit tests for the current project.'
     'trace:Start and stop tracing for a running Flutter app.'
     'update-packages:Update the packages inside the Flutter repo.'
-    'upgrade:Upgrade your copy of Flutter.')
+    'upgrade:Upgrade your copy of Flutter.'
+    'assemble:Assemble and build flutter resources.'
+    'attach:Attach to a running application.'
+    'bash-completion:Output command line shell completion setup scripts.'
+    'emulators:List, launch and create emulators.'
+    'version:List or switch flutter versions.')
   _describe -t commands 'command' commands "$@"
 }
 
