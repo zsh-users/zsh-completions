@@ -86,6 +86,21 @@ _arguments -C -A "-*" \
             '--no-preamble[When analyzing the flutter repository, display the number of files that will be analyzed. (defaults to on)]' \
           && ret=0
         ;;
+        (assemble)
+            _arguments -C \
+            '(-h --help)'{-h,--help}'[Print this usage information.]' \
+          && ret=0
+        ;;
+        (attach)
+            _arguments -C \
+            '(-h --help)'{-h,--help}'[Print this usage information.]' \
+          && ret=0
+        ;;
+        (bash-completion)
+            _arguments -C \
+            '(-h --help)'{-h,--help}'[Print this usage information.]' \
+          && ret=0
+        ;;
         (build)
             _arguments -C \
             '1: :_build_entities' \
@@ -167,6 +182,11 @@ _arguments -C -A "-*" \
             '--driver=[The test file to run on the host (as opposed to the target file to run on the device). By default, this file has the same base name as the target file, but in the "test_driver/" directory instead, and with "_test" inserted just before the extension, so e.g. if the target is "lib/main.dart", the driver will be "test_driver/main_test.dart".]: :_files' \
             '--preview-dart-2[Preview Dart 2.0 functionality. (defaults to on)]' \
             '--no-preview-dart-2[Preview Dart 2.0 functionality. (defaults to on)]' \
+          && ret=0
+        ;;
+        (emulators)
+            _arguments -C \
+            '(-h --help)'{-h,--help}'[Print this usage information.]' \
           && ret=0
         ;;
         (format)
@@ -340,7 +360,11 @@ _arguments -C -A "-*" \
             '(-h --help)'{-h,--help}'[Print this usage information.]' \
           && ret=0
         ;;
-        
+        (version)
+            _arguments -C \
+            '(-h --help)'{-h,--help}'[Print this usage information.]' \
+          && ret=0
+        ;;
       esac
     ;;
   esac
@@ -356,6 +380,9 @@ _root_commands() {
   local commands;
   commands=(
     "analyze:Analyze the project's Dart code."
+    'assemble:Assemble and build flutter resources.'
+    'attach:Attach to a running application.'
+    'bash-completion:Output command line shell completion setup scripts.'
     'build:Flutter build commands.'
     'channel:List or switch flutter channels.'
     'clean:Delete the build/ directory.'
@@ -365,6 +392,7 @@ _root_commands() {
     'devices:List all connected devices.'
     'doctor:Show information about the installed tooling.'
     'drive:Runs Flutter Driver tests for the current project.'
+    'emulators:List, launch and create emulators.'
     'format:Format one or more dart files.'
     'fuchsia_reload:Hot reload on Fuchsia.'
     'help:Display help information for flutter.'
@@ -380,7 +408,8 @@ _root_commands() {
     'test:Run Flutter unit tests for the current project.'
     'trace:Start and stop tracing for a running Flutter app.'
     'update-packages:Update the packages inside the Flutter repo.'
-    'upgrade:Upgrade your copy of Flutter.')
+    'upgrade:Upgrade your copy of Flutter.'
+    'version:List or switch flutter versions.')
   _describe -t commands 'command' commands "$@"
 }
 
