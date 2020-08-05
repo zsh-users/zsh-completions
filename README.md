@@ -22,6 +22,7 @@ zsh-completions ![GitHub release](https://img.shields.io/github/release/zsh-user
 | Slackware | [Slackbuilds](https://slackbuilds.org/repository/14.2/system/zsh-completions/) |
 | macOS | [homebrew](https://github.com/Homebrew/homebrew-core/blob/master/Formula/zsh-completions.rb), [MacPorts](https://github.com/macports/macports-ports/blob/master/sysutils/zsh-completions/Portfile)  |
 | NetBSD | [pkgsrc](http://ftp.netbsd.org/pub/pkgsrc/current/pkgsrc/shells/zsh-completions/README.html)  |
+| FreeBSD | [shells/zsh-completions](https://www.freshports.org/shells/zsh-completions)  |
 
 
 ### Using zsh frameworks
