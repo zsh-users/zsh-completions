@@ -45,6 +45,7 @@ _arguments -s -C \
   {-r+,--fill=}'[Set width for hard-wrap and justify]:init'\
   {-s+,--speller=}'[Enable alternate speller]:prog'\
   {-t,--tempfile}'[Auto save on exit, do not prompt]'\
+  {-u,--unix}'[Save a file by default in Unix format]'\
   {-w,--nowrap}'[Do not hard-wrap long lines default]'\
   {-x,--nohelp}'[Do not show the two help lines]'\
   {-y,--afterends}'[Make Ctrl+Right stop at word ends]'\
