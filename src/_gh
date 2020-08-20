@@ -526,3 +526,4 @@ function _gh_repo_view {
     '--help[Show help for command]'
 }
 
+_gh "$@"
