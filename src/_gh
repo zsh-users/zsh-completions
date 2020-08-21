@@ -305,6 +305,9 @@ function _gh_issue_view {
 function _gh_pr {
   local -a commands
 
+  zstyle -s ':completion:*:*:gh:argument-1:' sort oldsort # Save the sort setting
+  zstyle ':completion:*:*:gh:argument-1:' sort false
+
   _arguments -C \
     '(-R --repo)'{-R,--repo}'[Select another repository using the `OWNER/REPO` format]:' \
     '--help[Show help for command]' \
@@ -365,6 +368,8 @@ function _gh_pr {
     _gh_pr_view
     ;;
   esac
+
+  zstyle ':completion:*:*:gh:argument-1:' sort $oldsort # Restore the sort setting
 }
 
 function __pr_numbers {
