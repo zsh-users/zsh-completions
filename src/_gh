@@ -92,8 +92,14 @@ function _gh_alias {
   esac
 }
 
+function __aliases {
+  local options=$(gh alias list | awk -F '\t' '{print $1 "\\:" "\"" $2 "\""}' | tr '\n' ' ')
+  echo $options
+}
+
 function _gh_alias_delete {
-  _arguments \
+  _arguments -C \
+    "1:Alias:(($(__aliases)))" \
     '--help[Show help for command]'
 }
 
