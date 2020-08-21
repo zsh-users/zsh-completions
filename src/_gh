@@ -367,21 +367,21 @@ function _gh_pr {
   esac
 }
 
-function _pr_helper {
+function __pr_numbers {
   local options=$(gh pr list "$@" | awk -F '\t' '{print $1 "\\:" "\"" $2 " (" $3 ")" "\""}' | tr '\n' ' ')
   echo $options
 }
 
 function _gh_pr_checkout {
   _arguments -C \
-    "1:PR:(($(_pr_helper --state all)))" \
+    "1:PR:(($(__pr_numbers --state all)))" \
     '--help[Show help for command]' \
     '(-R --repo)'{-R,--repo}'[Select another repository using the `OWNER/REPO` format]:'
 }
 
 function _gh_pr_close {
   _arguments -C \
-    "1:PR:(($(_pr_helper --state open)))" \
+    "1:PR:(($(__pr_numbers --state open)))" \
     '--help[Show help for command]' \
     '(-R --repo)'{-R,--repo}'[Select another repository using the `OWNER/REPO` format]:'
 }
@@ -405,7 +405,7 @@ function _gh_pr_create {
 
 function _gh_pr_diff {
   _arguments -C \
-    "1:PR:(($(_pr_helper --state all)))" \
+    "1:PR:(($(__pr_numbers --state all)))" \
     '(-c --color)'{-c,--color}'[Whether or not to output color: {always|never|auto}]:' \
     '--help[Show help for command]' \
     '(-R --repo)'{-R,--repo}'[Select another repository using the `OWNER/REPO` format]:'
@@ -425,7 +425,7 @@ function _gh_pr_list {
 
 function _gh_pr_merge {
   _arguments -C \
-    "1:PR:(($(_pr_helper --state open )))" \
+    "1:PR:(($(__pr_numbers --state open )))" \
     '(-d --delete-branch)'{-d,--delete-branch}'[Delete the local and remote branch after merge]' \
     '(-m --merge)'{-m,--merge}'[Merge the commits with the base branch]' \
     '(-r --rebase)'{-r,--rebase}'[Rebase the commits onto the base branch]' \
@@ -436,21 +436,21 @@ function _gh_pr_merge {
 
 function _gh_pr_ready {
   _arguments -C \
-    "1:PR:(($(_pr_helper --state open)))" \
+    "1:PR:(($(__pr_numbers --state open)))" \
     '--help[Show help for command]' \
     '(-R --repo)'{-R,--repo}'[Select another repository using the `OWNER/REPO` format]:'
 }
 
 function _gh_pr_reopen {
   _arguments -C \
-    "1:PR:(($(_pr_helper --state closed)))" \
+    "1:PR:(($(__pr_numbers --state closed)))" \
     '--help[Show help for command]' \
     '(-R --repo)'{-R,--repo}'[Select another repository using the `OWNER/REPO` format]:'
 }
 
 function _gh_pr_review {
   _arguments -C \
-    "1:PR:(($(_pr_helper --state open)))" \
+    "1:PR:(($(__pr_numbers --state open)))" \
     '(-a --approve)'{-a,--approve}'[Approve pull request]' \
     '(-b --body)'{-b,--body}'[Specify the body of a review]:' \
     '(-c --comment)'{-c,--comment}'[Comment on a pull request]' \
@@ -467,7 +467,7 @@ function _gh_pr_status {
 
 function _gh_pr_view {
   _arguments -C \
-    "1:PR:(($(_pr_helper --state all)))" \
+    "1:PR:(($(__pr_numbers --state all)))" \
     '(-w --web)'{-w,--web}'[Open a pull request in the browser]' \
     '--help[Show help for command]' \
     '(-R --repo)'{-R,--repo}'[Select another repository using the `OWNER/REPO` format]:'
