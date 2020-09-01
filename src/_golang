@@ -167,6 +167,7 @@ __go_gcflags() {
   '-race[enable race detector]' \
   '-shared[generate code that can be linked into a shared library]' \
   '-smallframes[reduce the size limit for stack allocated objects]' \
+  '-spectre=[enable spectre mitigations]:mitigations:(all index ret)' \
   '-std[compiling standard library]' \
   '-symabis=[read symbol ABIs from file]:file' \
   '-traceprofile=[write an execution trace to file]:file' \
@@ -235,6 +236,8 @@ __go_envvarvals() {
     GCCGOTOOLDIR)
       ;&
     GOPATH)
+      ;&
+    GOMODCACHE)
       _files -/
       ;;
     # regular files (using fallthrough)
@@ -420,6 +423,7 @@ case $state in
           "GOPRIVATE[modules that should always be fetched directly]:comma separated glob patterns"
           "GONOPROXY[modules that should always be fetched directly]:comma separated glob patterns"
           "GONOSUMDB[modules that should not be compared against the checksum db]:comma separated glob patterns"
+          "GOMODCACHE[module cache directory]:path"
           "GOSUMDB[checksum database]:name(+publickey( url))"
           "AR[command for manipulating library archives (for gccgo)]:archive manipulation program"
           "CC[command to compile C code]:C compiler"
