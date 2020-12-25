@@ -465,13 +465,45 @@ _cmake_launchers() {
   _command_names -e
 }
 
-local cmake_command_actions;cmake_command_actions=(
-    '-E[CMake command mode]:*:command'
+local _cmake_commands=(
+  'capabilities:Report capabilities built into cmake in JSON format' \
+  'cat:concat the files and print them to the standard output' \
+  'chdir:run command in a given directory' \
+  'compare_files:check if file1 is same as file2' \
+  'copy:copy files to destination (either file or directory)' \
+  'copy_directory:copy content of <dir>... directories to destination directory' \
+  'copy_if_different:copy files if it has changed' \
+  'echo:displays arguments as text' \
+  'echo_append:displays arguments as text but no new line' \
+  'env:run command in a modified environment' \
+  'environment:display the current environment' \
+  'make_directory:create parent and <dir> directories' \
+  'md5sum:create MD5 checksum of files' \
+  'sha1sum:create SHA1 checksum of files' \
+  'sha224sum:create SHA224 checksum of files' \
+  'sha256sum:create SHA256 checksum of files' \
+  'sha384sum:create SHA384 checksum of files' \
+  'sha512sum:create SHA512 checksum of files' \
+  'remove:remove the file(s), use -f to force it' \
+  'remove_directory:remove directories and their contents' \
+  'rename:rename a file or directory (on one volume)' \
+  'rm:remove files or directories' \
+  'server:start cmake in server mode' \
+  'sleep:sleep for given number of seconds' \
+  'tar:create or extract a tar or zip archive' \
+  'time:run command and display elapsed time' \
+  'touch:touch a <file>' \
+  'touch_nocreate:touch a <file> but do not create it' \
+  'create_symlink:create a symbolic link new -> old' \
+  'create_hardlink:create a hard link new -> old' \
+  'true:do nothing with an exit code of 0' \
+  'false:do nothing with an exit code of 1'
 )
 _cmake_command() {
-  _arguments -C -s - command "$cmake_command_actions[@]"
-}
+  _arguments -C \
+    '-E[CMake command mode]:command:(("${_cmake_commands[@]}"))'
 
+}
 local cmake_suggest_build;cmake_suggest_build=(
     '--build[build]:build dir:_cmake_suggest_builddirs'
 )
@@ -487,7 +519,7 @@ elif [ $CURRENT -eq 2 ] ; then
     - help \
       "$cmake_help_actions[@]" \
     - command \
-      "$cmake_command_actions[@]" \
+      '-E[CMake command mode]:command:( )' \
     - build_opts \
       "$cmake_build_options[@]" \
     - build_cmds \
