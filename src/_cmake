@@ -53,29 +53,66 @@
 local context state line curcontext="$curcontext" cmake_args
 
 local cmake_build_options;cmake_build_options=(
-    '-C[Pre-load a script to populate the cache]:script:_files'
-    '*-D-[Create a CMake cache entry]:property:_cmake_define_property'
-    '-U[Remove matching entries from CMake cache]:globbing expression'
-    '-G[Specify a Makefile generator]:generator:_cmake_generators'
+    '-S[Explicitly specify a source directory]:source directory:_path_files -/'
+    '-B[Explicitly specify a build directory]:build directory:_path_files -/'
+    '-C[Pre-load a script to populate the cache]:initial cache:_files'
+    '*-D-[Create a cmake cache entry]:property:_cmake_define_property'
+    '*-U[Remove matching entries from CMake cache]:globbing expression'
+    '-G[Specify a makefile generator]:generator:_cmake_generators'
     '-T[Specify toolset name if supported by generator]:toolset name'
-    '(-Wno-dev -Wdev)-Wno-dev[Suppress/Enable developer warnings]'
-    '(-Wno-dev -Wdev)-Wdev[Suppress/Enable developer warnings]'
-    '(-Wno-deprecated -Wdeprecated)-Wno-deprecated[Suppress/Enable deprecation warnings]'
-    '(-Wno-deprecated -Wdeprecated)-Wdeprecated[Suppress/Enable deprecation warnings]'
-    '(-Wno-error=dev -Werror=dev)-Wno-error=dev[Make developer warnings (not) errors]'
-    '(-Wno-error=dev -Werror=dev)-Werror=dev[Make developer warnings (not) errors]'
-    '(-Wno-error=deprecated -Werror=deprecated)-Werror=deprecated[Make deprecated macro and function warnings (not) errors]'
-    '(-Wno-error=deprecated -Werror=deprecated)-Wno-error=deprecated[Make deprecated macro and function warnings (not) errors]'
-    '--warn-uninitialized[Warn about uninitialized values.]'
-    '--warn-unused-vars[Warn about unused variables.]'
-    '--no-warn-unused-cli[Don'\''t warn about command line options.]'
-    '-i[Run in wizard mode]'
+    '-A[Specify platform name if supported by generator]:platform name'
+
+    # Warnings
+    '(-Wdev)-Wno-dev[Suppress/Enable developer warnings]'
+    '(-Wno-dev)-Wdev[Suppress/Enable developer warnings]'
+    '(-Wdeprecated)-Wno-deprecated[Suppress/Enable deprecation warnings]'
+    '(-Wno-deprecated)-Wdeprecated[Suppress/Enable deprecation warnings]'
+    '(-Werror=dev)-Wno-error=dev[Make developer warnings (not) errors]'
+    '(-Wno-error=dev)-Werror=dev[Make developer warnings (not) errors]'
+    '(-Wno-error=deprecated)-Werror=deprecated[Make deprecated macro and function warnings (not) errors]'
+    '(-Werror=deprecated)-Wno-error=deprecated[Make deprecated macro and function warnings (not) errors]'
+
+    '--preset=[Specify a configure preset]:preset:_cmake_presets'
+    '--list-presets[List available presets]'
+
+    '-E[CMake command mode]:command:_cmake_command_help'
+
     '-L-[List cache variables]::_values "options" "[non-advanced cache variables]" "A[advanced cache variables]" "H[non-advanced cached variables with help]" "AH[advanced cache variables with help]"'
-    '--trace[Put cmake in trace mode]'
-    '--trace-redirect=[redirect trace output to file]:trace file:_files'
-    '--log-level=[only print messages at or above the specified log level]:loglevel:(ERROR WARNING NOTICE STATUS VERBOSE DEBUG TRACE)'
-    '--find-package[Run in pkg-config like mode.]'
-    ':cmake project:_files -/'
+
+    '--build[Build a CMake-generated project binary tree]:project directory:_path_files -/'
+    '--install[Install a CMake-generated project binary tree]:project directory:_path_files -/'
+    '--open[Open generated project in the associated application]:project directory:_path_files -/'
+
+    '-N[View mode only]'
+    '-P[Process script mode]:script:_files'
+
+    '--find-package[Legacy pkg-config like mode. Do not use]'
+
+    '--graphviz=[Generate graphviz of dependencies, see CMakeGraphVizOptions.cmake for more]:graphviz output:_files'
+    '--system-information[Dump information about this system]::system information output:_files'
+
+    '--log-level=[Set the verbosity of messages from CMake files]:log level:(ERROR WARNING NOTICE STATUS VERBOSE DEBUG TRACE)'
+    '--log-context[Prepend log messages with context, if given]'
+
+    '--debug-trycompile[Do not delete the try_compile build tree. Only useful on one try_compile at a time]'
+    '--debug-output[Put cmake in a debug mode]'
+    '--debug-find[Put cmake find in a debug mode]'
+
+    '(--trace-expand)--trace[Put cmake in trace mode]'
+    '(--trace)--trace-expand[Put cmake in trace mode with variable expansion]'
+    '--trace-format=[Set the output format of the trace]:trace format:(human json-v1)'
+    '*--trace-source[Trace only this CMake file/module. Multiple options allowed]:filename:_files'
+    '--trace-redirect[Redirect trace output to a file instead of stderr]:trace output:_files'
+
+    '--warn-uninitialized[Warn about uninitialized values]'
+    '--no-warn-unused-cli[Do not warn about command line options]'
+    '--warn-unused-vars[Warn about unused variables]'
+    '--check-system-vars[Find problems with variable usage in system files]'
+
+    '--profiling-format[Output data for profiling CMake scripts]:profiling format:(google-trace)'
+    '--profiling-output[Select an output path for the profiling data]:filename:_files'
+
+    ':cmake project:_path_files -/'
 )
 
 # ------------------------
@@ -96,6 +133,22 @@ _cmake_generator_options() {
   then
     $_comps[ninja]
   fi
+}
+
+# --------------
+# _cmake_presets
+# --------------
+(( $+functions[_cmake_presets] )) ||
+_cmake_presets() {
+  local invoke; invoke=(${words[@]})
+  # TODO: remove all arguments -* except -S
+  invoke[$CURRENT]=--list-presets
+
+  # TODO: Problems with quotes need eval
+  # would need a way to exec the array
+  local list_presets; list_presets=(${(f)"$(eval "${invoke[@]} 2> /dev/null" | sed -n 's,^[[:space:]]*"\([^"]*\)"[[:space:]]*-[[:space:]]*\(.*\),\1:\2,p' )"})
+
+  _describe 'presets' list_presets
 }
 
 # --------------
