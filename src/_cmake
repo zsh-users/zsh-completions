@@ -565,11 +565,12 @@ elif [ $CURRENT -eq 2 ] ; then
       "$cmake_suggest_install[@]" && return 0
 elif [[ $words[2] = --help* ]] ; then
   _cmake_help
-#elif [[ $words[2] != -E ]] ; then
 elif [[ $words[2] == --build ]] ; then
   _cmake_on_build
 elif [[ $words[2] == --install ]] ; then
   _cmake_on_install
-else
+elif [[ $words[2] == -E ]]; then
   _cmake_command
+else
+  _arguments "$cmake_build_options[@]"
 fi
