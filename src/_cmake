@@ -258,37 +258,29 @@ _cmake_on_install() {
 }
 
 local cmake_help_actions;cmake_help_actions=(
-    '(- 1)--help-command[Print help for a single command and exit]:command-name:_cmake_command_names'
-    '(- 1)--help-command-list[List available listfile commands and exit]'
-    '(- 1)--help-commands[Print help for all commands and exit]'
-    '(- 1)--help-compatcommands[Print help for compatibility commands]'
-    '(- 1)--help-module[Print help for compatibility commands]:module-name:_cmake_module_names'
-    '(- 1)--help-module-list[Print help for a single module and exit]'
-    '(- 1)--help-modules[Print help for all modules and exit]'
-    '(- 1)--help-property[List available properties and exit]:property-name:_cmake_property_names'
-    '(- 1)--help-property-list[List available properties and exit]'
-    '(- 1)--help-properties[Print help for all properties and exit]'
-    '(- 1)--help-variable[Print help for a single variable and exit]:variable-name:_cmake_variable_names'
-    '(- 1)--help-variable-list[List documented variables and exit]'
-    '(- 1)--help-variables[Print help for all variables and exit]'
-    '(- 1)--copyright[Print the CMake copyright and exit]'
     '(- 1)'{--help,-help,-usage,-h,-H}'[Print usage information and exit]'
-    '(- 1)--help-full[Print full help and exit]'
-    '(- 1)--help-html[Print full help in HTML format]'
-    '(- 1)--help-man[Print full help as a UNIX man page and exit]'
-    '(- 1)'{--version,-version}'[Print full help as a UNIX man page and exit]'
+    '(- 1)'{--version,-version}'[Print version number and exit]'
+    '(- 1)--help-full[Print all help manuals and exit]'
+    '(- 1)--help-manual[Print one help manual and exit]:module-name: _cmake_list_names --help-manual-list "manual name"'
+    '(- 1)--help-manual-list[List help manuals available and exit]'
+    '(- 1)--help-command[Print help for one command and exit]:command-name: _cmake_list_names --help-command-list "command name"'
+    '(- 1)--help-command-list[List commands with help available and exit]'
+    '(- 1)--help-commands[Print cmake-commands manual and exit]'
+    '(- 1)--help-module[Print help for one module and exit]:module-name: _cmake_list_names --help-module-list "module name"'
+    '(- 1)--help-module-list[List modules with help available and exit]'
+    '(- 1)--help-modules[Print cmake-modules manual and exit]'
+    '(- 1)--help-policy[Print help for one policy and exit]:policy-name: _cmake_list_names --help-policy-list "policy name"'
+    '(- 1)--help-policy-list[List policies with help available and exit]'
+    '(- 1)--help-policies[Print cmake-policies manual and exit]'
+    '(- 1)--help-property[Print help for one property and exit]:property-name: _cmake_list_names --help-property-list "property name" brakremove'
+    '(- 1)--help-property-list[List properties with help available and exit]'
+    '(- 1)--help-properties[Print cmake-properties manual and exit]'
+    '(- 1)--help-variable[Print help for one variable and exit]:variable-name: _cmake_list_names --help-variable-list "variable name" brakremove'
+    '(- 1)--help-variable-list[List variables with help available and exit]'
+    '(- 1)--help-variables[Print cmake-variables manual and exit]'
 )
 _cmake_help() {
   _arguments -C -s - help "$cmake_help_actions[@]"
-}
-
-# -------------------
-# _cmake_command_names
-# -------------------
-(( $+functions[_cmake_command_names] )) ||
-_cmake_command_names() {
-  local command_names; command_names=(${(f)"$($service --help-command-list 2> /dev/null)"})
-  _values 'command name' ${command_names[@]:1} && return 0
 }
 
 # -----------------
@@ -298,33 +290,17 @@ _cmake_command_names() {
 _cmake_list_names() {
   local command; command="$@[1]"
   local desc; desc="$@[2]"
-  local list_names; list_names=(${(f)"$($service $command 2> /dev/null | sed -e 's/\[/\\\[/' -e 's/\]/\\\]/')"})
+  local opts; opts=($@[3])
+  local list_names; list_names=(${(f)"$($service $command 2> /dev/null)"})
+  # Older CMake (< 3.0) writes out the version
+  list_names=(${^list_names##cmake version*})
 
-  _values ${desc} ${list_names[@]:1} && return 0
-}
+  if [[ ${opts[(i)brakremove]} -le ${#opts} ]]; then
+    list_names=(${^list_names//\[/\\\[})
+    list_names=(${^list_names//\]/\\\]})
+  fi
 
-# ------------------
-# _cmake_module_names
-# ------------------
-(( $+functions[_cmake_module_names] )) ||
-_cmake_module_names() {
-  _cmake_list_names '--help-module-list' 'module name' && return 0
-}
-
-# --------------------
-# _cmake_property_names
-# --------------------
-(( $+functions[_cmake_property_names] )) ||
-_cmake_property_names() {
-  _cmake_list_names '--help-property-list' 'property name' && return 0
-}
-
-# ---------------------
-# _cmake_variable_names
-# ---------------------
-(( $+functions[_cmake_variable_names] )) ||
-_cmake_variable_names() {
-  _cmake_list_names '--help-variable-list' 'variable name' && return 0
+  _values ${desc} ${list_names[@]:-1} && return 0
 }
 
 # ----------------------
