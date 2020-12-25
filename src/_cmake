@@ -464,26 +464,30 @@ _cmake_define_property_values() {
   return ret
 }
 
+local _cmake_generator_list
+_cmake_generator_list=(
+  'Green Hills MULTI'
+  'Unix Makefiles'
+  'Ninja'
+  'Ninja Multi-Config'
+  'CodeBlocks - Ninja'
+  'CodeBlocks - Unix Makefiles'
+  'CodeLite - Ninja'
+  'CodeLite - Unix Makefiles'
+  'Eclipse CDT4 - Ninja'
+  'Eclipse CDT4 - Unix Makefiles'
+  'Kate - Ninja'
+  'Kate - Unix Makefiless'
+  'Sublime Text 2 - Ninja'
+  'Sublime Text 2 - Unix Makefiles'
+)
 
 # -----------------
 # _cmake_generators
 # -----------------
 (( $+functions[_cmake_generators] )) ||
 _cmake_generators() {
-  local generators; generators=(
-    'Unix Makefiles'
-    'Ninja'
-    'CodeBlocks - Ninja'
-    'CodeBlocks - Unix Makefiles'
-    'Eclipse CDT4 - Ninja'
-    'Eclipse CDT4 - Unix Makefiles'
-    'KDevelop3'
-    'KDevelop3 - Unix Makefiles'
-    'Sublime Text 2 - Ninja'
-    'Sublime Text 2 - Unix Makefiles'
-  )
-
-  _describe -t generators 'generator' generators
+  _describe -t generators 'generator' _cmake_generator_list
 }
 
 # ----------------------
