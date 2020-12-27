@@ -36,6 +36,7 @@
 #
 #  * Scott M. Kroll <skroll@gmail.com> (initial version)
 #  * Paul Seyfert <pseyfert.mathphys@gmail.com> (handling of --build and updates)
+#  * Norbert Lange <nolange79@gmail.com> (presets, command mode, updates)
 #
 # -------------------------------------------------------------------------
 # Notes
@@ -53,29 +54,66 @@
 local context state line curcontext="$curcontext" cmake_args
 
 local cmake_build_options;cmake_build_options=(
-    '-C[Pre-load a script to populate the cache]:script:_files'
-    '*-D-[Create a CMake cache entry]:property:_cmake_define_property'
-    '-U[Remove matching entries from CMake cache]:globbing expression'
-    '-G[Specify a Makefile generator]:generator:_cmake_generators'
+    '-S[Explicitly specify a source directory]:source directory:_path_files -/'
+    '-B[Explicitly specify a build directory]:build directory:_path_files -/'
+    '-C[Pre-load a script to populate the cache]:initial cache:_files'
+    '*-D-[Create a cmake cache entry]:property:_cmake_define_property'
+    '*-U[Remove matching entries from CMake cache]:globbing expression'
+    '-G[Specify a makefile generator]:generator:_cmake_generators'
     '-T[Specify toolset name if supported by generator]:toolset name'
-    '(-Wno-dev -Wdev)-Wno-dev[Suppress/Enable developer warnings]'
-    '(-Wno-dev -Wdev)-Wdev[Suppress/Enable developer warnings]'
-    '(-Wno-deprecated -Wdeprecated)-Wno-deprecated[Suppress/Enable deprecation warnings]'
-    '(-Wno-deprecated -Wdeprecated)-Wdeprecated[Suppress/Enable deprecation warnings]'
-    '(-Wno-error=dev -Werror=dev)-Wno-error=dev[Make developer warnings (not) errors]'
-    '(-Wno-error=dev -Werror=dev)-Werror=dev[Make developer warnings (not) errors]'
-    '(-Wno-error=deprecated -Werror=deprecated)-Werror=deprecated[Make deprecated macro and function warnings (not) errors]'
-    '(-Wno-error=deprecated -Werror=deprecated)-Wno-error=deprecated[Make deprecated macro and function warnings (not) errors]'
-    '--warn-uninitialized[Warn about uninitialized values.]'
-    '--warn-unused-vars[Warn about unused variables.]'
-    '--no-warn-unused-cli[Don'\''t warn about command line options.]'
-    '-i[Run in wizard mode]'
+    '-A[Specify platform name if supported by generator]:platform name'
+
+    # Warnings
+    '(-Wdev)-Wno-dev[Suppress/Enable developer warnings]'
+    '(-Wno-dev)-Wdev[Suppress/Enable developer warnings]'
+    '(-Wdeprecated)-Wno-deprecated[Suppress/Enable deprecation warnings]'
+    '(-Wno-deprecated)-Wdeprecated[Suppress/Enable deprecation warnings]'
+    '(-Werror=dev)-Wno-error=dev[Make developer warnings (not) errors]'
+    '(-Wno-error=dev)-Werror=dev[Make developer warnings (not) errors]'
+    '(-Wno-error=deprecated)-Werror=deprecated[Make deprecated macro and function warnings (not) errors]'
+    '(-Werror=deprecated)-Wno-error=deprecated[Make deprecated macro and function warnings (not) errors]'
+
+    '--preset=[Specify a configure preset]:preset:_cmake_presets'
+    '--list-presets[List available presets]'
+
+    '-E[CMake command mode]:command:_cmake_command_help'
+
     '-L-[List cache variables]::_values "options" "[non-advanced cache variables]" "A[advanced cache variables]" "H[non-advanced cached variables with help]" "AH[advanced cache variables with help]"'
-    '--trace[Put cmake in trace mode]'
-    '--trace-redirect=[redirect trace output to file]:trace file:_files'
-    '--log-level=[only print messages at or above the specified log level]:loglevel:(ERROR WARNING NOTICE STATUS VERBOSE DEBUG TRACE)'
-    '--find-package[Run in pkg-config like mode.]'
-    ':cmake project:_files -/'
+
+    '--build[Build a CMake-generated project binary tree]:project directory:_path_files -/'
+    '--install[Install a CMake-generated project binary tree]:project directory:_path_files -/'
+    '--open[Open generated project in the associated application]:project directory:_path_files -/'
+
+    '-N[View mode only]'
+    '-P[Process script mode]:script:_files'
+
+    '--find-package[Legacy pkg-config like mode. Do not use]'
+
+    '--graphviz=[Generate graphviz of dependencies, see CMakeGraphVizOptions.cmake for more]:graphviz output:_files'
+    '--system-information[Dump information about this system]::system information output:_files'
+
+    '--log-level=[Set the verbosity of messages from CMake files]:log level:(ERROR WARNING NOTICE STATUS VERBOSE DEBUG TRACE)'
+    '--log-context[Prepend log messages with context, if given]'
+
+    '--debug-trycompile[Do not delete the try_compile build tree. Only useful on one try_compile at a time]'
+    '--debug-output[Put cmake in a debug mode]'
+    '--debug-find[Put cmake find in a debug mode]'
+
+    '(--trace-expand)--trace[Put cmake in trace mode]'
+    '(--trace)--trace-expand[Put cmake in trace mode with variable expansion]'
+    '--trace-format=[Set the output format of the trace]:trace format:(human json-v1)'
+    '*--trace-source[Trace only this CMake file/module. Multiple options allowed]:filename:_files'
+    '--trace-redirect[Redirect trace output to a file instead of stderr]:trace output:_files'
+
+    '--warn-uninitialized[Warn about uninitialized values]'
+    '--no-warn-unused-cli[Do not warn about command line options]'
+    '--warn-unused-vars[Warn about unused variables]'
+    '--check-system-vars[Find problems with variable usage in system files]'
+
+    '--profiling-format[Output data for profiling CMake scripts]:profiling format:(google-trace)'
+    '--profiling-output[Select an output path for the profiling data]:filename:_files'
+
+    ':cmake project:_path_files -/'
 )
 
 # ------------------------
@@ -96,6 +134,22 @@ _cmake_generator_options() {
   then
     $_comps[ninja]
   fi
+}
+
+# --------------
+# _cmake_presets
+# --------------
+(( $+functions[_cmake_presets] )) ||
+_cmake_presets() {
+  local invoke; invoke=(${words[@]})
+  # TODO: remove all arguments -* except -S
+  invoke[$CURRENT]=--list-presets
+
+  # TODO: Problems with quotes need eval
+  # would need a way to exec the array
+  local list_presets; list_presets=(${(f)"$(eval "${invoke[@]} 2> /dev/null" | sed -n 's,^[[:space:]]*"\([^"]*\)"[[:space:]]*-[[:space:]]*\(.*\),\1:\2,p' )"})
+
+  _describe 'presets' list_presets
 }
 
 # --------------
@@ -258,37 +312,29 @@ _cmake_on_install() {
 }
 
 local cmake_help_actions;cmake_help_actions=(
-    '(- 1)--help-command[Print help for a single command and exit]:command-name:_cmake_command_names'
-    '(- 1)--help-command-list[List available listfile commands and exit]'
-    '(- 1)--help-commands[Print help for all commands and exit]'
-    '(- 1)--help-compatcommands[Print help for compatibility commands]'
-    '(- 1)--help-module[Print help for compatibility commands]:module-name:_cmake_module_names'
-    '(- 1)--help-module-list[Print help for a single module and exit]'
-    '(- 1)--help-modules[Print help for all modules and exit]'
-    '(- 1)--help-property[List available properties and exit]:property-name:_cmake_property_names'
-    '(- 1)--help-property-list[List available properties and exit]'
-    '(- 1)--help-properties[Print help for all properties and exit]'
-    '(- 1)--help-variable[Print help for a single variable and exit]:variable-name:_cmake_variable_names'
-    '(- 1)--help-variable-list[List documented variables and exit]'
-    '(- 1)--help-variables[Print help for all variables and exit]'
-    '(- 1)--copyright[Print the CMake copyright and exit]'
     '(- 1)'{--help,-help,-usage,-h,-H}'[Print usage information and exit]'
-    '(- 1)--help-full[Print full help and exit]'
-    '(- 1)--help-html[Print full help in HTML format]'
-    '(- 1)--help-man[Print full help as a UNIX man page and exit]'
-    '(- 1)'{--version,-version}'[Print full help as a UNIX man page and exit]'
+    '(- 1)'{--version,-version}'[Print version number and exit]'
+    '(- 1)--help-full[Print all help manuals and exit]'
+    '(- 1)--help-manual[Print one help manual and exit]:module-name: _cmake_list_names --help-manual-list "manual name"'
+    '(- 1)--help-manual-list[List help manuals available and exit]'
+    '(- 1)--help-command[Print help for one command and exit]:command-name: _cmake_list_names --help-command-list "command name"'
+    '(- 1)--help-command-list[List commands with help available and exit]'
+    '(- 1)--help-commands[Print cmake-commands manual and exit]'
+    '(- 1)--help-module[Print help for one module and exit]:module-name: _cmake_list_names --help-module-list "module name"'
+    '(- 1)--help-module-list[List modules with help available and exit]'
+    '(- 1)--help-modules[Print cmake-modules manual and exit]'
+    '(- 1)--help-policy[Print help for one policy and exit]:policy-name: _cmake_list_names --help-policy-list "policy name"'
+    '(- 1)--help-policy-list[List policies with help available and exit]'
+    '(- 1)--help-policies[Print cmake-policies manual and exit]'
+    '(- 1)--help-property[Print help for one property and exit]:property-name: _cmake_list_names --help-property-list "property name" brakremove'
+    '(- 1)--help-property-list[List properties with help available and exit]'
+    '(- 1)--help-properties[Print cmake-properties manual and exit]'
+    '(- 1)--help-variable[Print help for one variable and exit]:variable-name: _cmake_list_names --help-variable-list "variable name" brakremove'
+    '(- 1)--help-variable-list[List variables with help available and exit]'
+    '(- 1)--help-variables[Print cmake-variables manual and exit]'
 )
 _cmake_help() {
   _arguments -C -s - help "$cmake_help_actions[@]"
-}
-
-# -------------------
-# _cmake_command_names
-# -------------------
-(( $+functions[_cmake_command_names] )) ||
-_cmake_command_names() {
-  local command_names; command_names=(${(f)"$($service --help-command-list 2> /dev/null)"})
-  _values 'command name' ${command_names[@]:1} && return 0
 }
 
 # -----------------
@@ -298,33 +344,17 @@ _cmake_command_names() {
 _cmake_list_names() {
   local command; command="$@[1]"
   local desc; desc="$@[2]"
-  local list_names; list_names=(${(f)"$($service $command 2> /dev/null | sed -e 's/\[/\\\[/' -e 's/\]/\\\]/')"})
+  local opts; opts=($@[3])
+  local list_names; list_names=(${(f)"$($service $command 2> /dev/null)"})
+  # Older CMake (< 3.0) writes out the version
+  list_names=(${^list_names##cmake version*})
 
-  _values ${desc} ${list_names[@]:1} && return 0
-}
+  if [[ ${opts[(i)brakremove]} -le ${#opts} ]]; then
+    list_names=(${^list_names//\[/\\\[})
+    list_names=(${^list_names//\]/\\\]})
+  fi
 
-# ------------------
-# _cmake_module_names
-# ------------------
-(( $+functions[_cmake_module_names] )) ||
-_cmake_module_names() {
-  _cmake_list_names '--help-module-list' 'module name' && return 0
-}
-
-# --------------------
-# _cmake_property_names
-# --------------------
-(( $+functions[_cmake_property_names] )) ||
-_cmake_property_names() {
-  _cmake_list_names '--help-property-list' 'property name' && return 0
-}
-
-# ---------------------
-# _cmake_variable_names
-# ---------------------
-(( $+functions[_cmake_variable_names] )) ||
-_cmake_variable_names() {
-  _cmake_list_names '--help-variable-list' 'variable name' && return 0
+  _values ${desc} ${list_names[@]:-1} && return 0
 }
 
 # ----------------------
@@ -402,6 +432,10 @@ _cmake_define_common_property_names() {
   _describe -t 'common-property-names' 'common property name' properties $@
 }
 
+local _cmake_build_types=('Debug' 'Release' 'RelWithDebInfo' 'MinSizeRel')
+local _cmake_c_standards=(90 99 11)
+local _cmake_cxx_standards=(98 11 14 17 20)
+
 # ----------------------------
 # _cmake_define_property_values
 # ----------------------------
@@ -410,87 +444,51 @@ _cmake_define_property_values() {
   local ret=1
   setopt localoptions extendedglob
   case $@[-1] in
-    (CMAKE_BUILD_TYPE)     _wanted build-types expl 'build type' _cmake_build_types && ret=0;;
-    (CMAKE_CXX_STANDARD) _wanted cxx-standards expl 'cxx standard' _cmake_cxx_standars && ret=0;;
-    (CMAKE_C_STANDARD) _wanted c-standards expl 'c standard' _cmake_c_standars && ret=0;;
+    (CMAKE_BUILD_TYPE)     _wanted build-types expl 'build type' _values 'build type' ${_cmake_build_types[@]} && ret=0;;
+    (CMAKE_CXX_STANDARD) _wanted cxx-standards expl 'cxx standard' _values 'cxx standard' ${_cmake_cxx_standards[@]} && ret=0;;
+    (CMAKE_C_STANDARD) _wanted c-standards expl 'c standard' _values 'c standard' ${_cmake_c_standards[@]} && ret=0;;
     (CMAKE_TOOLCHAIN_FILE) _wanted toolchain-files expl 'file' _cmake_toolchain_files && ret=0;;
-    (CMAKE_COLOR_MAKEFILE) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
-    (CMAKE_RULE_MESSAGES)  _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
-    (CMAKE_VERBOSE_MAKEFILE) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
-    (CMAKE_UNITY_BUILD) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
+    (CMAKE_COLOR_MAKEFILE) _wanted booleans expl 'boolean' ${_cmake_booleans[@]} && ret=0;;
+    (CMAKE_RULE_MESSAGES)  _wanted booleans expl 'boolean' ${_cmake_booleans[@]} && ret=0;;
+    (CMAKE_VERBOSE_MAKEFILE) _wanted booleans expl 'boolean' ${_cmake_booleans[@]} && ret=0;;
+    (CMAKE_UNITY_BUILD) _wanted booleans expl 'boolean' ${_cmake_booleans[@]} && ret=0;;
     (CMAKE_INSTALL_PREFIX) _files -/ && ret=0;;
-    (CMAKE_EXPORT_COMPILE_COMMANDS) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
+    (CMAKE_EXPORT_COMPILE_COMMANDS) _wanted booleans expl 'boolean' ${_cmake_booleans[@]} && ret=0;;
     (CMAKE_*_COMPILER)     _wanted compilers expl 'compiler' _cmake_compilers && ret=0;;
     (CMAKE_*_COMPILER_LAUNCHER) _wanted compilers expl 'compiler launcher' _cmake_launchers && ret=0;;
     (CMAKE_*_FLAGS(|_?*))  _message -e compiler-flags 'compiler flags' && _dispatch $service -value-,CPPFLAGS,-default- && ret=0;;
-    (CMAKE_*_STANDARD_REQUIRED) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
-    (CMAKE_*_EXTENSIONS) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
+    (CMAKE_*_STANDARD_REQUIRED) _wanted booleans expl 'boolean' ${_cmake_booleans[@]} && ret=0;;
+    (CMAKE_*_EXTENSIONS) _wanted booleans expl 'boolean' ${_cmake_booleans[@]} && ret=0;;
     (*)                    _files && ret=0;;
   esac
 
   return ret
 }
 
-# ------------------
-# _cmake_build_types
-# ------------------
-(( $+functions[_cmake_build_types] )) ||
-_cmake_build_types() {
-  local build_types; build_types=(
-    'Debug'
-    'Release'
-    'RelWithDebInfo'
-    'MinSizeRel'
-  )
-  _values 'build type' ${build_types[@]}
-}
-
-# -------------------
-# _cmake_c_standars
-# -------------------
-(( $+functions[_cmake_c_standars] )) ||
-_cmake_c_standars() {
-  local c_standards; c_standards=(
-  '90'
-  '99'
-  '11'
-  )
-  _values 'c standard' ${c_standards[@]}
-}
-
-# -------------------
-# _cmake_cxx_standars
-# -------------------
-(( $+functions[_cmake_cxx_standars] )) ||
-_cmake_cxx_standars() {
-  local cxx_standards; cxx_standards=(
-  '98'
-  '11'
-  '14'
-  '17'
-  )
-  _values 'cxx standard' ${cxx_standards[@]}
-}
+local _cmake_generator_list
+_cmake_generator_list=(
+  'Green Hills MULTI'
+  'Unix Makefiles'
+  'Ninja'
+  'Ninja Multi-Config'
+  'CodeBlocks - Ninja'
+  'CodeBlocks - Unix Makefiles'
+  'CodeLite - Ninja'
+  'CodeLite - Unix Makefiles'
+  'Eclipse CDT4 - Ninja'
+  'Eclipse CDT4 - Unix Makefiles'
+  'Kate - Ninja'
+  'Kate - Unix Makefiless'
+  'Sublime Text 2 - Ninja'
+  'Sublime Text 2 - Unix Makefiles'
+)
 
 # -----------------
 # _cmake_generators
 # -----------------
 (( $+functions[_cmake_generators] )) ||
 _cmake_generators() {
-  local generators; generators=(
-    'Unix Makefiles'
-    'Ninja'
-    'CodeBlocks - Ninja'
-    'CodeBlocks - Unix Makefiles'
-    'Eclipse CDT4 - Ninja'
-    'Eclipse CDT4 - Unix Makefiles'
-    'KDevelop3'
-    'KDevelop3 - Unix Makefiles'
-    'Sublime Text 2 - Ninja'
-    'Sublime Text 2 - Unix Makefiles'
-  )
-
-  _describe -t generators 'generator' generators
+  _describe -t generators 'generator' _cmake_generator_list
 }
 
 # ----------------------
@@ -501,17 +499,8 @@ _cmake_toolchain_files() {
   _files -g '*\.cmake*'
 }
 
-# ---------------
-# _cmake_booleans
-# ---------------
-(( $+functions[_cmake_booleans] )) ||
-_cmake_booleans() {
-  local booleans; booleans=(
-    'YES'
-    'NO'
-  )
-  _describe -t booleans 'boolean' booleans
-}
+
+local _cmake_booleans=(_describe -t booleans 'boolean' 'YES' 'NO')
 
 # ---------------
 # _cmake_compilers
@@ -534,13 +523,45 @@ _cmake_launchers() {
   _command_names -e
 }
 
-local cmake_command_actions;cmake_command_actions=(
-    '-E[CMake command mode]:*:command'
+local _cmake_commands=(
+  'capabilities:Report capabilities built into cmake in JSON format' \
+  'cat:concat the files and print them to the standard output' \
+  'chdir:run command in a given directory' \
+  'compare_files:check if file1 is same as file2' \
+  'copy:copy files to destination (either file or directory)' \
+  'copy_directory:copy content of <dir>... directories to destination directory' \
+  'copy_if_different:copy files if it has changed' \
+  'echo:displays arguments as text' \
+  'echo_append:displays arguments as text but no new line' \
+  'env:run command in a modified environment' \
+  'environment:display the current environment' \
+  'make_directory:create parent and <dir> directories' \
+  'md5sum:create MD5 checksum of files' \
+  'sha1sum:create SHA1 checksum of files' \
+  'sha224sum:create SHA224 checksum of files' \
+  'sha256sum:create SHA256 checksum of files' \
+  'sha384sum:create SHA384 checksum of files' \
+  'sha512sum:create SHA512 checksum of files' \
+  'remove:remove the file(s), use -f to force it' \
+  'remove_directory:remove directories and their contents' \
+  'rename:rename a file or directory (on one volume)' \
+  'rm:remove files or directories' \
+  'server:start cmake in server mode' \
+  'sleep:sleep for given number of seconds' \
+  'tar:create or extract a tar or zip archive' \
+  'time:run command and display elapsed time' \
+  'touch:touch a <file>' \
+  'touch_nocreate:touch a <file> but do not create it' \
+  'create_symlink:create a symbolic link new -> old' \
+  'create_hardlink:create a hard link new -> old' \
+  'true:do nothing with an exit code of 0' \
+  'false:do nothing with an exit code of 1'
 )
 _cmake_command() {
-  _arguments -C -s - command "$cmake_command_actions[@]"
-}
+  _arguments -C \
+    '-E[CMake command mode]:command:(("${_cmake_commands[@]}"))'
 
+}
 local cmake_suggest_build;cmake_suggest_build=(
     '--build[build]:build dir:_cmake_suggest_builddirs'
 )
@@ -556,7 +577,7 @@ elif [ $CURRENT -eq 2 ] ; then
     - help \
       "$cmake_help_actions[@]" \
     - command \
-      "$cmake_command_actions[@]" \
+      '-E[CMake command mode]:command:( )' \
     - build_opts \
       "$cmake_build_options[@]" \
     - build_cmds \
@@ -565,11 +586,12 @@ elif [ $CURRENT -eq 2 ] ; then
       "$cmake_suggest_install[@]" && return 0
 elif [[ $words[2] = --help* ]] ; then
   _cmake_help
-#elif [[ $words[2] != -E ]] ; then
 elif [[ $words[2] == --build ]] ; then
   _cmake_on_build
 elif [[ $words[2] == --install ]] ; then
   _cmake_on_install
-else
+elif [[ $words[2] == -E ]]; then
   _cmake_command
+else
+  _arguments "$cmake_build_options[@]"
 fi
