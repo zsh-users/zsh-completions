@@ -1,0 +1,52 @@
+#compdef mssh
+
+# mssh is a Python client for accessing EC2 instances via AWS EC2 Instance
+# Connect.
+#
+# References:
+#   https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-connect-methods.html#ec2-instance-connect-connecting-ec2-cli
+#   https://github.com/aws/aws-ec2-instance-connect-cli
+#   https://pypi.org/project/ec2instanceconnectcli/
+
+# Define function only when it doesn't exist
+(( $+functions[_mssh_cache_policy] )) || _mssh_cache_policy() {
+  # Cache invalidates after 30 seconds
+  #
+  # Reference:
+  #   http://zsh.sourceforge.net/Doc/Release/Expansion.html#index-globbing_002c-qualifiers
+  local -a oldp
+  oldp=( "$1"(ms+30) )
+  (( $#oldp ))
+}
+
+# Unless user explicitly turned off caching, enable caching just for this context
+local existing_setting
+zstyle -s ":completion:${curcontext}:" use-cache existing_setting
+if [[ -z "${existing_setting}" ]]; then
+  zstyle ":completion:${curcontext}:" use-cache on
+fi
+
+# Update cache policy only when there was no existing policy
+local existing_policy
+zstyle -s ":completion:${curcontext}:" cache-policy existing_policy
+if [[ -z "${existing_policy}" ]]; then
+  zstyle ":completion:${curcontext}:" cache-policy _mssh_cache_policy
+fi
+
+local -a instances
+if _cache_invalid mssh_instances || ! _retrieve_cache mssh_instances; then
+  # Cache is invalid or caching feature is disabled
+  IFS=$'\n\t' instances=($(
+    aws ec2 describe-instances \
+      --query 'Reservations[].Instances[] | [?State.Name == `running`].join(`:`, [InstanceId, Tags[?Key == `Name`].Value | [0]])' \
+      --output text
+  ))
+
+  _store_cache mssh_instances instances
+fi
+
+_describe 'command' instances
+
+# Reference:
+#   http://zsh.sourceforge.net/Doc/Release/Completion-System.html
+#   https://github.com/zsh-users/zsh-completions/blob/master/zsh-completions-howto.org
