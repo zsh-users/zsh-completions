@@ -611,7 +611,9 @@ _openssl_gendsa() {
 _openssl_genpkey() {
   # written for openssl 1.0.1k
   local ciphers cipher_opts
-  ciphers=( ${$(openssl list-cipher-algorithms | cut -d' ' -f1)} )
+  if ! ciphers=( ${$(openssl list-cipher-algorithms | cut -d' ' -f1)} ) 2>/dev/null ; then
+    ciphers=( ${$(openssl list -cipher-algorithms | cut -d' ' -f1)} )
+  fi
   cipher_opts=()
   for alg in ${ciphers}; do
     cipher_opts=(${cipher_opts} "(${${(l:32:: ::-:)ciphers[@]}//  / })-${alg}[use this cipher to encrypt the key]")
