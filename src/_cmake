@@ -162,7 +162,7 @@ _cmake_targets() {
   then
     # `make help` doesn't work for Makefiles in general, but for CMake generated Makefiles it does.
     i=1
-    for target in $(make help | \grep -e "\.\.\." | sed "s/\.\.\. //" | sed "s/ (the default.*//") ; do
+    for target in $(make -f $1/Makefile help | \grep -e "\.\.\." | sed "s/\.\.\. //" | sed "s/ (the default.*//") ; do
       targets[$i]=$target
       (( i = $i + 1 ))
     done
