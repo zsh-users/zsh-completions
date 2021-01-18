@@ -52,7 +52,7 @@
 _paths() {
     local -a _path_list
 
-    for _path in $(_call_program paths "udisksctl complete \"udisksctl $words\" $CURSOR"); do
+    for _path in $(_call_program paths "udisksctl complete \"udisksctl $words\" $CURSOR" | sed 's/:/\\:/g'); do
         _path_list+=$_path
     done
 
