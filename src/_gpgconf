@@ -8,8 +8,7 @@
 
 _gpgconf_component() {
   local values=(
-    "${(@f)$(gpgconf --list-components \
-        | perl -lne 'my ($name, $desc, $x) = split /:/; print "${name}[$desc]"')}"
+    "${(@f)$(gpgconf --list-components | perl -F: -ale 'print "${F[0]}[$F[1]]"')}"
   )
   if [ "${action[2]}" = all ]; then
     values+=('all[All daemon components]')
