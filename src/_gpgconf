@@ -37,6 +37,7 @@ _arguments \
     '--check-options[check options]:component:_gpgconf_component' \
     '--apply-profile[update configuration files using the specified file]:configuration file:_path_files' \
     '--status-fd[write status info to the specified file descriptor]:file descriptor' \
+    '--homedir[specify an alternative gnupg configuration home directory]:directory:_directories' \
     '(-o --output)'{-o,--output}'[write output to the specified file]:output file:_path_files' \
     '(-v --verbose)'{-v,--verbose}'[verbose]' \
     '(-q --quiet)'{-q,--quiet}'[quiet]' \
