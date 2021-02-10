@@ -16,9 +16,11 @@ _arguments -s -C \
   {-L,--nonewlines}'[Do not add an automatic newline]'\
   {-M,--trimblanks}'[Trim tail spaces when hard-wrapping]'\
   {-N,--noconvert}'[Do not convert files from DOS/Mac format]'\
+  {-O,--bookstyle}'[Leading whitespace means new paragraph]'\
   {-P,--positionlog}'[Log & read location of cursor position]'\
   {-Q+,--quotestr=}'[Regular expression to match quoting]:str'\
   {-R,--restricted}'[Restricted mode]'\
+  {-S,--softwrap}'[Display overlong lines on multiple rows]'\
   {-T+,--tabsize=}'[Set width of a tab to cols columns]:init'\
   {-U,--quickblank}'[Do quick statusbar blanking]'\
   '(- *)'{-V,--version}'[Print version information and exit]'\
@@ -42,13 +44,16 @@ _arguments -s -C \
   {-n,--noread}'[Do not read the file (only write it)]'\
   {-o+,--operatingdir=}'[Set operating directory]:dir:_dirs'\
   {-p,--preserve}'[Preserve XON (^Q) and XOFF (^S) keys]'\
+  {-q,--indicator}'[Show a position+portion indicator]'\
   {-r+,--fill=}'[Set width for hard-wrap and justify]:init'\
   {-s+,--speller=}'[Enable alternate speller]:prog'\
   {-t,--tempfile}'[Auto save on exit, do not prompt]'\
   {-u,--unix}'[Save a file by default in Unix format]'\
+  {-v,--view}'[View mode (read-only)]'\
   {-w,--nowrap}'[Do not hard-wrap long lines default]'\
   {-x,--nohelp}'[Do not show the two help lines]'\
   {-y,--afterends}'[Make Ctrl+Right stop at word ends]'\
   {-z,--suspend}'[Enable suspension]'\
+  {-%,--stateflags}'[Show some states on the title bar]'\
   {-$,--softwrap}'[Enable soft line wrapping]'\
    '(-t -q)*:file:_files'
