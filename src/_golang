@@ -347,6 +347,7 @@ case $state in
     '-installsuffix[suffix to add to package directory]:suffix'
     '-ldflags[arguments to pass on each go tool link invocation.]:flags'
     '-linkshared[link against shared libraries]'
+    '-overlay[read a JSON config file that provides an overlay for build operations]:file:_files -g "*.json"'
     '-pkgdir[install and load all packages from dir]:dir'
     '-tags[list of build tags to consider satisfied]:tags'
     '-trimpath[remove all file system paths from the resulting executable]'
@@ -590,11 +591,13 @@ case $state in
                 ;;
               tidy)
                 _arguments \
-                  '-v[print information about removed modules to standard error]'
+                  '-v[print information about removed modules to standard error]' \
+                  '-e[attempt to proceed despite errors encountered while loading packages]'
                 ;;
               vendor)
                 _arguments \
-                  '-v[print the names of vendored modules and packages to standard error]'
+                  '-v[print the names of vendored modules and packages to standard error]' \
+                  '-e[attempt to proceed despite errors encountered while loading packages]'
                 ;;
               verify)
                 ;;
