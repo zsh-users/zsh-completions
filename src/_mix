@@ -227,11 +227,7 @@ case $state in
          _arguments ':feature:__task_list'
          return
       ;;
-      (test)
-         _arguments ':PATH:_files'
-         return
-      ;;
-      (format)
+      (test|format|run)
          _arguments ':PATH:_files'
          return
       ;;
