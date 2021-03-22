@@ -20,7 +20,7 @@ _arguments -s -C \
   {-P,--positionlog}'[Log & read location of cursor position]'\
   {-Q+,--quotestr=}'[Regular expression to match quoting]:str'\
   {-R,--restricted}'[Restricted mode]'\
-  {-S,--softwrap}'[Display overlong lines on multiple rows]'\
+  {-S,--softwrap}'[Display overly long lines on multiple rows]'\
   {-T+,--tabsize=}'[Set width of a tab to cols columns]:init'\
   {-U,--quickblank}'[Do quick statusbar blanking]'\
   '(- *)'{-V,--version}'[Print version information and exit]'\
@@ -55,5 +55,4 @@ _arguments -s -C \
   {-y,--afterends}'[Make Ctrl+Right stop at word ends]'\
   {-z,--suspend}'[Enable suspension]'\
   {-%,--stateflags}'[Show some states on the title bar]'\
-  {-$,--softwrap}'[Enable soft line wrapping]'\
    '(-t -q)*:file:_files'
