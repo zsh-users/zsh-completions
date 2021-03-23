@@ -1,3 +1,22 @@
+* Table of Contents                                                     :TOC:
+- [[#intro][Intro]]
+- [[#getting-started][Getting started]]
+  - [[#telling-zsh-which-function-to-use-for-completing-a-command][Telling zsh which function to use for completing a command]]
+  - [[#completing-generic-gnu-commands][Completing generic gnu commands]]
+  - [[#copying-completions-from-another-command][Copying completions from another command]]
+- [[#writing-your-own-completion-functions][Writing your own completion functions]]
+  - [[#utility-functions][Utility functions]]
+  - [[#writing-simple-completion-functions-using-_describe][Writing simple completion functions using _describe]]
+  - [[#writing-completion-functions-using-_alternative][Writing completion functions using _alternative]]
+  - [[#writing-completion-functions-using-_arguments][Writing completion functions using _arguments]]
+  - [[#writing-completion-functions-using-_regex_arguments-and-_regex_words][Writing completion functions using _regex_arguments and _regex_words]]
+  - [[#complex-completions-with-_values-_sep_parts--_multi_parts][complex completions with _values, _sep_parts, & _multi_parts]]
+  - [[#adding-completion-words-directly-using-compadd][Adding completion words directly using compadd]]
+- [[#testing--debugging][Testing & debugging]]
+- [[#gotchas-things-to-watch-out-for][Gotchas (things to watch out for)]]
+- [[#tips][Tips]]
+- [[#other-resources][Other resources]]
+
 * Intro
 The official documentation for writing zsh completion functions is difficult to understand, and doesn't give many examples.
 At the time of writing this document I was able to find a few other tutorials on the web, however those tutorials only
