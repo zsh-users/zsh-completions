@@ -375,7 +375,7 @@ _arguments -C -A "-*" \
   }
 
   
-(( $+functions[root_commands] )) ||
+(( $+functions[_root_commands] )) ||
 _root_commands() {
   local commands;
   commands=(
