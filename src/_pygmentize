@@ -75,7 +75,7 @@ _get_filters() {
 }
 
 
-(( $+functions[_pygmentize_get_formatters] )) ||
+(( $+functions[_get_formatters] )) ||
 _get_formatters() {
   local cache_policy
   zstyle -s ":completion:${curcontext}:" cache-policy cache_policy
