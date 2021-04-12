@@ -1,58 +1,73 @@
 #compdef nano
+
 local curcontext="$curcontext" state line
-typeset -A opt_args
-_arguments -s -C \
-  '(-)'{-A,--smarthome}'[Enable smart home key]'\
-  {-B,--backup}'[Save backups of existing files]'\
-  {-C+,--backupdir=}'[Directory for saving unique backup files]:dir:_dirs'\
-  {-D,--boldtext}'[Use bold instead of reverse video text]'\
-  {-E,--tabstospaces}'[Convert typed tabs to spaces]'\
-  {-F,--multibuffer}'[Read a file into a new buffer by default]'\
-  {-G,--locking}'[Use vim-style lock files]'\
-  {-H,--historylog}'[Log & read search replace string history]'\
-  {-I,--ignorercfiles}'[Do not look at nanorc files]'\
-  {-J+,--guidestripe=}'[Show a guiding bar at this column]:number'\
-  {-K,--rawsequences}'[Fix numeric keypad key confusion problem]'\
-  {-L,--nonewlines}'[Do not add an automatic newline]'\
-  {-M,--trimblanks}'[Trim tail spaces when hard-wrapping]'\
-  {-N,--noconvert}'[Do not convert files from DOS/Mac format]'\
-  {-O,--bookstyle}'[Leading whitespace means new paragraph]'\
-  {-P,--positionlog}'[Log & read location of cursor position]'\
-  {-Q+,--quotestr=}'[Regular expression to match quoting]:str'\
-  {-R,--restricted}'[Restricted mode]'\
-  {-S,--softwrap}'[Display overly long lines on multiple rows]'\
-  {-T+,--tabsize=}'[Set width of a tab to cols columns]:init'\
-  {-U,--quickblank}'[Do quick statusbar blanking]'\
-  '(- *)'{-V,--version}'[Print version information and exit]'\
-  {-W,--wordbounds}'[Detect word boundaries more accurately]'\
-  {-X+,--wordchars=}'[Which other characters are word parts]:str'\
-  {-Y+,--syntax=}'[Syntax definition to use for coloring]'\
-  {-Z,--zap}'[Let Bsp and Del erase a marked region]'\
-  {-a,--atblanks}'[When soft-wrapping, do it at whitespace]'\
-  {-b,--breaklonglines}'[Automatically hard-wrap overlong lines]'\
-  {-c,--constantshow}'[Constantly show cursor position]'\
-  {-d,--rebinddelete}'[Fix Backspace/Delete confusion problem]'\
-  {-e,--emptyline}'[Keep the line below the title bar empty]'\
-  {-f,--rcfile=}'[Use only this file for configuring nano]:file:_files'\
-  {-g,--showcursor}'[Show cursor in file browser & help text]'\
-  '(- *)'{-h,--help}'[Show help text and exit]'\
-  {-i,--autoindent}'[Automatically indent new lines]'\
-  {-j,--jumpyscrolling}'[Scroll per half-screen, not per line]'\
-  {-k,--cutfromcursor}'[Cut from cursor to end of line]'\
-  {-l,--linenumbers}'[Show line numbers in front of the text]'\
-  {-m,--mouse}'[Enable the use of the mouse]'\
-  {-n,--noread}'[Do not read the file (only write it)]'\
-  {-o+,--operatingdir=}'[Set operating directory]:dir:_dirs'\
-  {-p,--preserve}'[Preserve XON (^Q) and XOFF (^S) keys]'\
-  {-q,--indicator}'[Show a position+portion indicator]'\
-  {-r+,--fill=}'[Set width for hard-wrap and justify]:init'\
-  {-s+,--speller=}'[Enable alternate speller]:prog'\
-  {-t,--tempfile}'[Auto save on exit, do not prompt]'\
-  {-u,--unix}'[Save a file by default in Unix format]'\
-  {-v,--view}'[View mode (read-only)]'\
-  {-w,--nowrap}'[Do not hard-wrap long lines default]'\
-  {-x,--nohelp}'[Do not show the two help lines]'\
-  {-y,--afterends}'[Make Ctrl+Right stop at word ends]'\
-  {-z,--suspend}'[Enable suspension]'\
-  {-%,--stateflags}'[Show some states on the title bar]'\
-   '(-t -q)*:file:_files'
+local -i ret=1
+
+_arguments -s -S -C \
+  '(-)'{-A,--smarthome}'[enable smart home key]' \
+  '(-B --backup)'{-B,--backup}'[save backups of existing files]' \
+  '(-C --backupdir)'{-C+,--backupdir=}'[specify directory for saving unique backup files]:directory:_directories' \
+  '(-D --boldtext)'{-D,--boldtext}'[use bold instead of reverse video text]' \
+  '(-E --tabstospaces)'{-E,--tabstospaces}'[convert typed tabs to spaces]' \
+  '(-F --multibuffer)'{-F,--multibuffer}'[read a file into a new buffer by default]' \
+  '(-G --locking)'{-G,--locking}'[use vim-style lock files]' \
+  '(-H --historylog)'{-H,--historylog}'[log & read search replace string history]' \
+  '(-I --ignorercfiles)'{-I,--ignorercfiles}"[don't look at nanorc files]" \
+  '(-J --guidestripe)'{-J+,--guidestripe=}'[show a guide bar at specified column]:number' \
+  '(-K --rawsequences)'{-K,--rawsequences}'[fix numeric keypad key confusion problem]' \
+  '(-L --nonewlines)'{-L,--nonewlines}"[don't add an automatic newline]" \
+  '(-M --trimblanks)'{-M,--trimblanks}'[trim trailing spaces when hard-wrapping]' \
+  '(-N --noconvert -u --unix)'{-N,--noconvert}"[don't convert files from DOS/Mac format]" \
+  '(-O --bookstyle)'{-O,--bookstyle}'[leading whitespace means new paragraph]' \
+  '(-P --positionlog)'{-P,--positionlog}'[log & read location of cursor position]' \
+  '(-Q --quotestr)'{-Q+,--quotestr=}'[specify regular expression to match quoted parts of lines]:regex [^([ \t]*([!#%\:;>|}]|//))+]' \
+  '(-R --restricted)'{-R,--restricted}'[restricted mode]' \
+  '(-S --softwrap)'{-S,--softwrap}'[display overly long lines on multiple rows]' \
+  '(-T --tabsize)'{-T+,--tabsize=}'[set width of a tab]:columns [8]' \
+  '(-U --quickblank -c --constantshow -_ --minibar)'{-U,--quickblank}'[do quick statusbar blanking]' \
+  '(- *)'{-V,--version}'[print version information and exit]' \
+  '(-W --wordbounds -X --wordchars)'{-W,--wordbounds}'[detect word boundaries more accurately]' \
+  '(-X --wordchars -W --wordbounds)'{-X+,--wordchars=}'[specify which other characters are word parts]:string' \
+  '(-Y --syntax=)'{-Y+,--syntax=}'[syntax definition to use for coloring]:value' \
+  '(-Z --zap)'{-Z,--zap}'[let backspace and delete erase a marked region]' \
+  '(-a --atblanks)'{-a,--atblanks}'[when soft-wrapping, do it at whitespace]' \
+  '(-b --breaklonglines -w --nowrap)'{-b,--breaklonglines}'[automatically hard-wrap overlong lines]' \
+  '(-c --constantshow -U --quickblank)'{-c,--constantshow}'[show cursor position constantly]' \
+  '(-d --rebinddelete)'{-d,--rebinddelete}'[fix Backspace/Delete confusion problem]' \
+  '(-e --emptyline)'{-e,--emptyline}'[keep the line below the title bar empty]' \
+  '(-f --rcfile)'{-f,--rcfile=}'[Use only specified file for configuring nano]:file:_files' \
+  '(-g --showcursor)'{-g,--showcursor}'[show cursor in file browser & help text]' \
+  '(- *)'{-h,--help}'[show help text and exit]' \
+  '(-i --autoindent)'{-i,--autoindent}'[automatically indent new lines]' \
+  '(-j --jumpyscrolling)'{-j,--jumpyscrolling}'[scroll by half-screen, not by line]' \
+  '(-k --cutfromcursor)'{-k,--cutfromcursor}'[cut from cursor to end of line]' \
+  '(-l --linenumbers)'{-l,--linenumbers}'[show line numbers in front of the text]' \
+  '(-m --mouse)'{-m,--mouse}'[enable the use of the mouse]' \
+  '(-n --noread)'{-n,--noread}"[don't read the file (only write it)]" \
+  '(-o --operatingdir)'{-o+,--operatingdir=}'[set operating directory]:directory:_directories' \
+  '(-p --preserve)'{-p,--preserve}'[preserve XON (^Q) and XOFF (^S) keys]' \
+  '(-q --indicator)'{-q,--indicator}'[show a position+portion indicator]' \
+  '(-r --fill)'{-r+,--fill=}'[set width for hard-wrap and justification]:width [-8]' \
+  '(-s --speller)'{-s+,--speller=}'[enable alternate speller]:program:_command_names -e' \
+  '(-t --tempfile)'{-t,--tempfile}'[auto save on exit, do not prompt]' \
+  '(-u --unix -N --noconvert)'{-u,--unix}'[save a file by default in Unix format]' \
+  '(-v --view)'{-v,--view}'[view mode (read-only)]' \
+  '(-w --nowrap -b --breaklonglines)'{-w,--nowrap}"[don't hard-wrap long lines default]" \
+  '(-x --nohelp)'{-x,--nohelp}"[don't show the two help lines]"  \
+  '(-y --afterends)'{-y,--afterends}'[make Ctrl+Right stop at word ends]' \
+  '(-z --suspend)'{-z,--suspend}'[enable suspension]' \
+  '(-% --stateflags)'{-%,--stateflags}'[show some states in the title bar]' \
+  '(-_ --minibar -U --quickblank)'{-_,--minibar}'[suppress the title bar and show information at the bottom of the screen]' \
+  '(-! --magic)'{-\!,--magic}'[try libmagic to determine applicable syntax]' \
+  '(-t -q)*: :->args' && ret=0
+
+if [[ -n $state ]]; then
+  case $PREFIX in
+    +) _message -e lines "start at a given line" ;;
+    +[crCR]#[/?]) _message -e 'search string' ;;
+    +<->,) _message -e 'column number' ;;
+    *) _files && ret=0 ;;
+  esac
+fi
+
+return ret
