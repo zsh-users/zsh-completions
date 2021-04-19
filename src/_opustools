@@ -2,7 +2,7 @@
 
 case $service in
   opusenc)
-    _arguments \
+    _arguments -S \
       '1:input file:_files -g "*.(#i)(wav|flac|ogg|aif(|f))(-.)"' \
       '2:output file:_files -g "*.(#i)opus(-.)"' \
       '(- 1 *)'{-h,--help}'[show usage information]' \
@@ -44,7 +44,7 @@ case $service in
       '--set-ctl-int[pass encoder control]:encoder control'
     ;;
   opusdec)
-    _arguments \
+    _arguments -S \
       '1:input file:_files -g "*.(#i)opus(-.)"' \
       '2::output file:_files -g "*.(#i)wav(-.)"' \
       '(- 1 *)'{-h,--help}'[show usage information]' \
@@ -61,7 +61,7 @@ case $service in
       '--save-range[save check values for every frame to a file]:output for check values:_files'
     ;;
   opusinfo)
-    _arguments \
+    _arguments -s -S \
       '(- 1 *)-h[show usage information]' \
       '(- 1 *)-V[show version information]' \
       '*-q[make the output quieter]' \
