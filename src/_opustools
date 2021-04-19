@@ -1,0 +1,112 @@
+#compdef opusenc opusdec opusinfo
+# ------------------------------------------------------------------------------
+# Copyright (c) 2021 Andre Kugland, MIT License
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for opus-tools (https://opus-codec.org/)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Andre Kugland (https://github.com/kugland)
+#
+# ------------------------------------------------------------------------------
+
+case $service in
+  opusenc)
+    _arguments \
+      '1:input file:_files -g "*.(#i)(wav|flac|ogg|aif(|f))(-.)"' \
+      '2:output file:_files -g "*.(#i)opus(-.)"' \
+      '(- 1 *)'{-h,--help}'[Show usage information]' \
+      '(- 1 *)'{-V,--version}'[Show version information]' \
+      '(- 1 *)--help-picture[Show help on attaching album art]' \
+      '--quiet[Enable quiet mode]' \
+      '--bitrate[Set target bitrate in kbit/s (6-256/channel)]:target bitrate in kbit/s (6-256/channel)' \
+      '--comp[Set encoding complexity (0-10)]:encoding complexity (1-10) [10]:(1 2 3 4 5 6 7 8 9 10)' \
+      '--cvbr[Use constrained variable bitrate encoding]' \
+      '--downmix-mono[Downmix to mono]' \
+      '--downmix-stereo[Downmix to stereo (if >2 channels)]' \
+      '--expect-loss[Set expected packet loss in percent]:expected packet loss in percent [0]' \
+      '--framesize[Set maximum frame size in milliseconds \[20\]]:maximum frame size in milliseconds [20]:(2.5 5 10 20 40 60)' \
+      '--hard-cbr[Use hard constant bitrate encoding]' \
+      '--max-delay[Set maximum container delay in milliseconds (0-1000) \[1000\]]:maximum container delay in milliseconds (0-1000) [1000]' \
+      '--music[Tune low bitrates for music (override automatic detection)]' \
+      '--no-phase-inv[Disable use of phase inversion for intensity stereo]' \
+      '--speech[Tune low bitrates for speech (override automatic detection)]' \
+      '--vbr[Use variable bitrate encoding (default)]' \
+      '--album[Set album or collection]:album or collection' \
+      '--date[Set date of track (YYYY, YYYY-MM, or YYYY-MM-DD)]:date of track (YYYY, YYYY-MM, or YYYY-MM-DD)' \
+      '--discard-comments[Don'\''t keep metadata when transcoding]' \
+      '--discard-pictures[Don'\''t keep pictures when transcoding]' \
+      '--padding[Reserve n extra bytes for metadata \[512\]]:padding size in bytes' \
+      '--title[Set track title]:track title' \
+      '--tracknumber[Set track number]:track number' \
+      '*--artist[Set artist or author, may be used multiple times]:artist or author' \
+      '*--comment[Add the given string as an extra comment, may be used multiple times]:comment (tag=val)' \
+      '*--genre[Set genre, may be used multiple times]:genre' \
+      '*--picture[Attach album art, may be used multiple times]:album art:_files -g "*.(#i)(jp(|e)g|png|gif)(-.)"' \
+      '--ignorelength[Ignore the data length in Wave headers]' \
+      '--raw-bits[Set bits/sample for raw input \[16\]]:bits per sample' \
+      '--raw-chan[Set number of channels for raw input \[2\]]:number of channels' \
+      '--raw-endianness[Set endianness for raw input, 0 for little endian, 1 for big \[0\]]:endianness:(("0"\:"big endian" "1"\:"little endian"))' \
+      '--raw-rate[Set sampling rate for raw input \[48000\]]:sample rate in Hz' \
+      '--raw[Interpret input as raw PCM data without headers]' \
+      '--serial[Force use of a specific stream serial number]:stream serial number' \
+      '--save-range[Save check values for every frame to a file]:file:_files' \
+      '--set-ctl-int[Pass encoder control]:encoder control'
+    ;;
+  opusdec)
+    _arguments \
+      '1:input file:_files -g "*.(#i)opus(-.)"' \
+      '2::output file:_files -g "*.(#i)wav(-.)"' \
+      '(- 1 *)'{-h,--help}'[Show usage information]' \
+      '(- 1 *)'{-V,--version}'[Show version information]' \
+      '(- 1 *)--help-picture[Show help on attaching album art]' \
+      '--quiet[Enable quiet mode]' \
+      '--rate[Force decoding at sampling rate in Hz]:sample rate in Hz' \
+      '--force-stereo[Force decoding to stereo]' \
+      '--gain[Adjust output volume in dB (negative is quieter)]:gain in dB (negative is quieter)' \
+      '--no-dither[Do not dither 16-bit output]' \
+      '--float[Output 32-bit floating-point samples]' \
+      '--force-wav[Force Wave header on output]' \
+      '--packet-loss[Simulate n% random packet loss]:percentage of packets' \
+      '--save-range[Save check values for every frame to a file]:output:_files'
+    ;;
+  opusinfo)
+    _arguments \
+      '(- 1 *)-h[Show usage information]' \
+      '(- 1 *)-V[Show version information]' \
+      '-q[Make less verbose]' \
+      '-v[Make more verbose]' \
+      '*:opus file:_files -g "*.(#i)opus(-.)"'
+    ;;
+esac
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
