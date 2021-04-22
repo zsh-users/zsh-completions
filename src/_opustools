@@ -53,7 +53,7 @@ case $service in
       '--cvbr[use constrained variable bitrate encoding]' \
       '--downmix-mono[downmix to mono]' \
       '--downmix-stereo[downmix to stereo (if >2 channels)]' \
-      '--expect-loss[set expected packet loss]:expected packet loss (%) (0-100) [0]' \
+      '--expect-loss[set expected packet loss]:expected packet loss (percent) (0-100) [0]' \
       '--framesize[set maximum frame size]:maximum frame size (milliseconds) [20]:(2.5 5 10 20 40 60)' \
       '--hard-cbr[use hard constant bitrate encoding]' \
       '--max-delay[set maximum container delay]:maximum container delay (milliseconds) (0-1000) [1000]' \
@@ -96,7 +96,7 @@ case $service in
       '--no-dither[do not dither 16-bit output]' \
       '--float[output 32-bit floating-point samples]' \
       '--force-wav[force RIFF wav header on output]' \
-      '--packet-loss[simulate random packet loss]:packet loss probability (%) (0-100)' \
+      '--packet-loss[simulate random packet loss]:packet loss probability (percent) (0-100)' \
       '--save-range[save check values for every frame to a file]:output for check values:_files'
     ;;
   opusinfo)
