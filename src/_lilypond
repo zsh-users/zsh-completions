@@ -51,15 +51,15 @@ _arguments -S -A "-*" \
   '(-E --eps)'{-E,--eps}'[generate .eps files]' \
   '(-O --pspdfopt)'{-O,--pspdfopt=}'[set .ps/.pdf optimization]:.ps/.pdf optimization:(size TeX TeX-GS)' \
   '*'{-d,--define-default=}'[set scheme option]:scheme option:->scheme_opt' \
-  (-e --evaluate){-e,--evaluate=}'[evaluate scheme code]:scheme code' \
-  (-H --header){-H,--header=}'[dump header field to file]:field' \
+  '(-e --evaluate)'{-e,--evaluate=}'[evaluate scheme code]:scheme code' \
+  '(-H --header)'{-H,--header=}'[dump header field to file]:field' \
   '*'{-I,--include=}'[append directory to include search path]:directory:_files -/' \
   '(-i --init)'{-i,--init=}'[use file as init file]:file:_files -g "*.(#i)ly(-.)"' \
   '(-j --jail)'{-j,--jail=}'[chroot to jail, become user:group and cd into dir]:jail arg (user,group,jail,dir)' \
-  '(-l --loglevel)'{-l,--loglevel=}'[set level of the log]:log level [INFO]:(NONE ERROR WARNING BASIC PROGRESS INFO DEBUG)' \
   '(-o --output)'{-o,--output=}'[set output base filename or folder]:output base filename or folder:_files' \
-  '(-V --verbose -s --silent)'{-s,--silent}'[no progress, only error messages (same as --loglevel=ERROR)]' \
-  '(-V --verbose -s --silent)'{-V,--verbose}'[be verbose (same as --loglevel=DEBUG)]' \
+  '(-l --loglevel -s --silent -V --verbose)'{-l,--loglevel=}'[set level of the log]:log level [INFO]:(NONE ERROR WARNING BASIC PROGRESS INFO DEBUG)' \
+  '(-l --loglevel -s --silent -V --verbose)'{-s,--silent}'[no progress, only error messages (same as --loglevel=ERROR)]' \
+  '(-l --loglevel -s --silent -V --verbose)'{-V,--verbose}'[be verbose (same as --loglevel=DEBUG)]' \
   '*:input file:_files -g "*.(#i)ly(-.)"'
 
 case $state in
