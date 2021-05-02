@@ -36,6 +36,7 @@
 #
 #  * Akira Maeda <https://github.com/glidenote>
 #  * Patrick Ziegler <https://github.com/patrick96>
+#  * Shivam Mehta <https://github.com/maniac-en>
 #
 # ------------------------------------------------------------------------------
 # -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
@@ -53,7 +54,7 @@ _arguments -C \
   '(--no-private)'--no-private'[Makes your gist no private.]' \
   '(-d --description)'{-d,--description}'[Adds a description to your gist.]:DESCRIPTION' \
   '(-s --shorten)'{-s,--shorten}'[Shorten the gist URL using git.io.]' \
-  '(-u --update)'{-u,--update}'[Update an existing gist.]:URL ID' \
+  '(-u --update)'{-u,--update}'[Update an existing gist.]:URL ID:user_gists' \
   '(-a --anonymous)'{-a,--anonymous}'[Create an anonymous gist.]' \
   '(-c --copy)'{-c,--copy}'[Copy the resulting URL to the clipboard]' \
   '(-e --embed)'{-e,--embed}'[Copy the embed code for the gist to the clipboard]' \
