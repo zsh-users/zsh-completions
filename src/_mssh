@@ -39,6 +39,11 @@
 #
 # ------------------------------------------------------------------------------
 
+# Do nothing if there's no AWS CLI
+if (( ! $+commands[aws] )); then
+  return
+fi
+
 # Define function only when it doesn't exist
 (( $+functions[_mssh_cache_policy] )) || _mssh_cache_policy() {
   # Cache invalidates after 30 seconds
@@ -66,14 +71,34 @@ fi
 
 local -a instances
 if _cache_invalid mssh_instances || ! _retrieve_cache mssh_instances; then
-  # Cache is invalid or caching feature is disabled
-  IFS=$'\n\t' instances=($(
+  # Cache is invalid or caching retrieval failed (usually due to disabled cache)
+
+  # Store the output of the AWS CLI separately
+  #
+  # Reference:
+  #   https://unix.stackexchange.com/a/430182
+  local stderr
+  local -i exit_code
+  () {
     aws ec2 describe-instances \
       --query 'Reservations[].Instances[] | [?State.Name == `running`].join(`:`, [InstanceId, Tags[?Key == `Name`].Value | [0]])' \
-      --output text
-  ))
+      --output text \
+      >${1} 2>${2}
+    exit_code=${?}
+    IFS=$'\n\t' instances=($(<${1}))
+    stderr=$(<${2})
+  } =(:) =(:)
 
-  _store_cache mssh_instances instances
+  if (( $exit_code == 0 )); then
+    # AWS CLI successfully executed
+    _store_cache mssh_instances instances
+  else
+    # AWS CLI failed, abort autocompletion
+    _message -r "\
+Failed autocomplete due to following reason:
+${stderr}"
+    return
+  fi
 fi
 
 _describe 'command' instances
