@@ -41,14 +41,13 @@
 #
 # ------------------------------------------------------------------------------
 
-SESSIONS_CONFIGS_NAMES=$(openvpn3 sessions-list | grep 'Config name:' | awk '{print $3}' | xargs)
-SESSIONS_PATHS=$(openvpn3 sessions-list | grep 'Path:' | awk '{print $2}' | xargs)
-SESSIONS_INTERFACES=$(openvpn3 sessions-list | grep 'Device:' | awk '{print $4}' | xargs)
-SESSIONS_USERS=$(openvpn3 sessions-list | grep 'Owner:' | awk '{print $2}' | xargs)
-SESSIONS_NAMES=$(openvpn3 sessions-list | grep 'Session name:' | awk '{print $2}' | xargs)
-
-CONFIGS_NAMES=$(openvpn3 configs-list | awk 'count&&!--count; /\/net\/openvpn\//{count=2}' | awk '{print $1}' | xargs)
-CONFIGS_PATHS=$(openvpn3 configs-list | grep '/net/openvpn/v3/configuration/' | xargs)
+local SESSIONS_CONFIGS_NAMES=$(openvpn3 sessions-list | grep 'Config name:' | awk '{print $3}' | xargs)
+local SESSIONS_PATHS=$(openvpn3 sessions-list | grep 'Path:' | awk '{print $2}' | xargs)
+local SESSIONS_INTERFACES=$(openvpn3 sessions-list | grep 'Device:' | awk '{print $4}' | xargs)
+local SESSIONS_USERS=$(openvpn3 sessions-list | grep 'Owner:' | awk '{print $2}' | xargs)
+local SESSIONS_NAMES=$(openvpn3 sessions-list | grep 'Session name:' | awk '{print $2}' | xargs)
+local CONFIGS_NAMES=$(openvpn3 configs-list | awk 'count&&!--count; /\/net\/openvpn\//{count=2}' | awk '{print $1}' | xargs)
+local CONFIGS_PATHS=$(openvpn3 configs-list | grep '/net/openvpn/v3/configuration/' | xargs)
 
 _openvpn3_config-acl(){
     _arguments \
