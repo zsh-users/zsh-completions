@@ -41,26 +41,26 @@
 #
 # ------------------------------------------------------------------------------
 
-local SESSIONS_CONFIGS_NAMES=$(openvpn3 sessions-list | grep 'Config name:' | awk '{print $3}' | xargs)
-local SESSIONS_PATHS=$(openvpn3 sessions-list | grep 'Path:' | awk '{print $2}' | xargs)
-local SESSIONS_INTERFACES=$(openvpn3 sessions-list | grep 'Device:' | awk '{print $4}' | xargs)
-local SESSIONS_USERS=$(openvpn3 sessions-list | grep 'Owner:' | awk '{print $2}' | xargs)
-local SESSIONS_NAMES=$(openvpn3 sessions-list | grep 'Session name:' | awk '{print $2}' | xargs)
-local CONFIGS_NAMES=$(openvpn3 configs-list | awk 'count&&!--count; /\/net\/openvpn\//{count=2}' | awk '{print $1}' | xargs)
-local CONFIGS_PATHS=$(openvpn3 configs-list | grep '/net/openvpn/v3/configuration/' | xargs)
+local sessions_configs_names=$(openvpn3 sessions-list | grep 'Config name:' | awk '{print $3}' | xargs)
+local sessions_paths=$(openvpn3 sessions-list | grep 'Path:' | awk '{print $2}' | xargs)
+local sessions_interfaces=$(openvpn3 sessions-list | grep 'Device:' | awk '{print $4}' | xargs)
+local sessions_users=$(openvpn3 sessions-list | grep 'Owner:' | awk '{print $2}' | xargs)
+local sessions_names=$(openvpn3 sessions-list | grep 'Session name:' | awk '{print $2}' | xargs)
+local configs_names=$(openvpn3 configs-list | awk 'count&&!--count; /\/net\/openvpn\//{count=2}' | awk '{print $1}' | xargs)
+local configs_paths=$(openvpn3 configs-list | grep '/net/openvpn/v3/configuration/' | xargs)
 
 _openvpn3_config-acl(){
     _arguments \
         {-s,--show}"[Show the current access control lists]" \
-        {-o,--path}"[OBJ-PATH Path to the configuration in the configuration manager]: :($CONFIG_PATHS)" \
+        {-o,--path}"[OBJ-PATH Path to the configuration in the configuration manager]: :($configs_paths)" \
         {-h,--help}"[This help screen]" \
-        {-c,--config}"[CONFIG-NAME Alternative to --path, where configuration profile name is used instead]: :($CONFIGS_NAMES)" \
+        {-c,--config}"[CONFIG-NAME Alternative to --path, where configuration profile name is used instead]: :($configs_names)" \
         {-S,--seal}"[Make the configuration profile permanently read-only]" \
         {-R,--revoke}"[<UID | username> Revoke this user access from this configuration profile]" \
         {-G,--grant}"[<UID | username> Grant this user access to this configuration profile]" \
         "--public-access[<true|false> Set/unset the public access flag]" \
         "--lock-down[<true|false> Set/unset the lock-down flag.Will disable config retrieval for users]: :(true false)" \
-        "--config-path[OBJ-PATH Alias for --path]: :($CONFIG_PATHS)" \
+        "--config-path[OBJ-PATH Alias for --path]: :($configs_paths)" \
 }
 
 _openvpn3_config-import(){
@@ -75,9 +75,9 @@ _openvpn3_config-manage(){
     _arguments \
         {-s,--show}"[Show current configuration options]" \
         {-r,--rename}"[NEW-CONFIG-NAME Renames the configuration]" \
-        {-o,--path}"[CONFIG-PATH Path to the configuration in the configuration manager]: :($CONFIG_PATHS)" \
+        {-o,--path}"[CONFIG-PATH Path to the configuration in the configuration manager]: :($configs_paths)" \
         {-h,--help}"[This help screen]" \
-        {-c,--config}"[CONFIG-NAME Alternative to --path, where configuration profile name is used instead]: :($CONFIGS_NAMES)" \
+        {-c,--config}"[CONFIG-NAME Alternative to --path, where configuration profile name is used instead]: :($configs_names)" \
         "--unset-override[<name> Removes the <name> override]" \
         "--tls-version-min[<tls_1_0|tls_1_1|tls_1_2|tls_1_3> Sets the minimal TLS version for the control channel]: :(tls_1_0 tls_1_1 tls_1_2 tls_1_3)" \
         "--tls-cert-profile[<legacy preferred suiteb> Sets the control channel tls profile]: :(legacy preferred suiteb)" \
@@ -95,27 +95,27 @@ _openvpn3_config-manage(){
         "--dns-sync-lookup[<true|false> Adds the boolean override dns-sync-lookup]: :(true false)" \
         "--dns-setup-disabled[<true|false> Adds the boolean override dns-setup-disabled]: :(true false)" \
         "--dns-fallback-google[<true|false> Adds the boolean override dns-fallback-google]: :(true false)" \
-        "--config-path[CONFIG-PATH Alias for --path]: :($CONFIGS_PATHS)" \
+        "--config-path[CONFIG-PATH Alias for --path]: :($configs_paths)" \
         "--auth-fail-retry[<true|false> Adds the boolean override auth-fail-retry]: :(true false)" \
         "--allow-compression[<no asym yes> Set compression mode]: :(no asym yes)" \
 }
 
 _openvpn3_config-remove(){
     _arguments \
-        {-o,--path}"[OBJ-PATH Path to the configuration in the configuration manager]: :($CONFIGS_PATHS)" \
+        {-o,--path}"[OBJ-PATH Path to the configuration in the configuration manager]: :($configs_paths)" \
         {-h,--help}"[This help screen]" \
-        {-c,--config}"[CONFIG-NAME Alternative to --path, where configuration profile name is used instead]: :($CONFIGS_NAMES)" \
+        {-c,--config}"[CONFIG-NAME Alternative to --path, where configuration profile name is used instead]: :($configs_names)" \
         "--force[Force the deletion process without asking for confirmation]" \
-        "--config-path[OBJ-PATH Alias for --path]: :($CONFIGS_PATHS)" \
+        "--config-path[OBJ-PATH Alias for --path]: :($configs_paths)" \
 }
 
 _openvpn3_config-show(){
     _arguments \
-        {-o,--path}"[OBJ-PATH Path to the configuration in the configuration manager]: :($CONFIGS_PATHS)" \
+        {-o,--path}"[OBJ-PATH Path to the configuration in the configuration manager]: :($configs_paths)" \
         {-j,--json}"[Dump the configuration in JSON format]" \
         {-h,--help}"[This help screen]" \
-        {-c,--config}"[CONFIG-NAME Alternative to --path, where configuration profile name is used instead]: :($CONFIGS_NAMES)" \
-        "--config-path[OBJ-PATH Alias for --path]: :($CONFIGS_PATHS)" \
+        {-c,--config}"[CONFIG-NAME Alternative to --path, where configuration profile name is used instead]: :($configs_names)" \
+        "--config-path[OBJ-PATH Alias for --path]: :($configs_paths)" \
 }
 
 _openvpn3_configs-list(){
@@ -131,9 +131,9 @@ _openvpn3_help(){
 _openvpn3_log(){
     _arguments \
         {-h,--help}"[This help screen]" \
-        {-c,--config}"[CONFIG-NAME Alternative to --session-path, where configuration profile name is used instead]: :($SESSIONS_CONFIGS_NAMES $CONFIGS_NAMES)" \
-        {-I,--interface}"[INTERFACE Alternative to --session-path, where tun interface name is used instead]: :($SESSIONS_INTERFACES)" \
-        "--session-path[SESSION-PATH Receive log events for a specific session]: :($SESSIONS_PATHS)" \
+        {-c,--config}"[CONFIG-NAME Alternative to --session-path, where configuration profile name is used instead]: :($sessions_configs_names $configs_names)" \
+        {-I,--interface}"[INTERFACE Alternative to --session-path, where tun interface name is used instead]: :($sessions_interfaces)" \
+        "--session-path[SESSION-PATH Receive log events for a specific session]: :($sessions_paths)" \
         "--log-level[LOG-LEVEL Set the log verbosity level of messages to be shown (default: 4)]" \
         "--config-events[Receive log events issued by the configuration manager]" \
 }
@@ -141,34 +141,34 @@ _openvpn3_log(){
 _openvpn3__session-acl(){
     _arguments \
         {-s,--show}"[Show the current access control lists]" \
-        {-o,--path}"[SESSION-PATH Path to the session in the session manager]: :($SESSIONS_PATHS)" \
+        {-o,--path}"[SESSION-PATH Path to the session in the session manager]: :($sessions_paths)" \
         {-h,--help}"[This help screen]" \
-        {-c,--config}"[CONFIG-NAME Alternative to --path, where configuration profile name is used instead]: :($SESSIONS_CONFIGS_NAMES)" \
+        {-c,--config}"[CONFIG-NAME Alternative to --path, where configuration profile name is used instead]: :($sessions_configs_names)" \
         {-R,--revoke}"[<UID | username> Revoke this user access from this session]" \
-        {-I,--interface}"[INTERFACE   Alternative to --path, where tun interface name is used instead]: :($SESSIONS_INTERFACES)" \
+        {-I,--interface}"[INTERFACE   Alternative to --path, where tun interface name is used instead]: :($sessions_interfaces)" \
         {-G,--grant}"[<UID | username> Grant this user access to this session]" \
-        "--session-path[SESSION-PATH Alias for --path]: :($SESSIONS_PATHS)" \
+        "--session-path[SESSION-PATH Alias for --path]: :($sessions_paths)" \
         "--public-access[<true|false> Set/unset the public access flag]: :(true false)" \
         "--allow-log-access[<true|false> Can users granted access also access the session log?]: :(true false)" \
 }
 
 _openvpn3_session-manage(){
     _arguments \
-        {-o,--path}"[SESSION-PATH Path to the session in the session manager]: :($SESSIONS_PATHS)" \
+        {-o,--path}"[SESSION-PATH Path to the session in the session manager]: :($sessions_paths)" \
         {-h,--help}"[This help screen]" \
-        {-c,--config}"[CONFIG-NAME Alternative to --path, where configuration profile name is used instead]: :($SESSIONS_CONFIGS_NAMES)" \
+        {-c,--config}"[CONFIG-NAME Alternative to --path, where configuration profile name is used instead]: :($sessions_configs_names)" \
         {-R,--resume}"[Resumes a paused VPN session]" \
         {-P,--pause}"[Pauses the VPN session]" \
-        {-I,--interface}"[INTERFACE Alternative to --path, where tun interface name is used instead]: :($SESSIONS_INTERFACES)" \
+        {-I,--interface}"[INTERFACE Alternative to --path, where tun interface name is used instead]: :($sessions_interfaces)" \
         {-D,--disconnect}"[Disconnects a VPN session]" \
-        "--session-path[SESSION-PATH Alias for --path]: :($SESSIONS_PATHS)" \
+        "--session-path[SESSION-PATH Alias for --path]: :($sessions_paths)" \
         "--restart[Disconnect and reconnect a running VPN session]" \
         "--cleanup[Clean up stale sessions]" \
 }
 
 _openvpn3_session-start(){
     _arguments \
-        {-p,--config-path}"[CONFIG-PATH Configuration path to an already imported configuration]: :($CONFIGS_PATHS)" \
+        {-p,--config-path}"[CONFIG-PATH Configuration path to an already imported configuration]: :($configs_paths)" \
         {-h,--help}"[This help screen]" \
         {-c,--config}"[CONFIG-FILE Configuration file to start directly]: :_files" \
         "--persist-tun[Enforces persistent tun/seamless tunnel (requires --config)]" \
@@ -176,12 +176,12 @@ _openvpn3_session-start(){
 
 _openvpn3_session-stats(){
     _arguments \
-        {-o,--path}"[SESSION-PATH Path to the configuration in the configuration manager]: :($SESSIONS_PATHS)" \
+        {-o,--path}"[SESSION-PATH Path to the configuration in the configuration manager]: :($sessions_paths)" \
         {-j,--json}"[Dump the configuration in JSON format]" \
         {-h,--help}"[This help screen]" \
-        {-c,--config}"[CONFIG-NAME Alternative to --path, where configuration profile name is used instead]: :($SESSIONS_CONFIGS_NAMES)" \
-        {-I,--interface}"[INTERFACE Alternative to --path, where tun interface name is used instead]: :($SESSIONS_INTERFACES)" \
-        "--session-path[SESSION-PATH Alias for --path]: :($SESSIONS_PATHS)" \
+        {-c,--config}"[CONFIG-NAME Alternative to --path, where configuration profile name is used instead]: :($sessions_configs_names)" \
+        {-I,--interface}"[INTERFACE Alternative to --path, where tun interface name is used instead]: :($sessions_interfaces)" \
+        "--session-path[SESSION-PATH Alias for --path]: :($sessions_paths)" \
 }
 
 _openvpn3_sessions-list(){
