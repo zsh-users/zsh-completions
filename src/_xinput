@@ -114,7 +114,7 @@ _xinput(){
 		[[ -n "$i" ]] || continue
 		xinput_devices_id+=($i)
 		name="$(xinput list --name-only $i)"
-		xinput_devices_name+=($name)
+		xinput_devices_name+=(${name//:/\\:})
 		xinput_devices+=($i\:$name)
 	done
 	xinput_devices+=($xinput_devices_name)
