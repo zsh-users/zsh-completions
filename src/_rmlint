@@ -1,4 +1,4 @@
-#compdef rmlint
+#compdef rmlint rmlint.sh -P rmlint.*.sh
 
 # Copyright (c) 2021 Github zsh-users - http://github.com/zsh-users
 #
@@ -284,6 +284,21 @@ _rmlint_files_or_separator() {
 }
 
 _rmlint() {
+  if [[ $service = *.sh ]]; then
+    _arguments -s : \
+      '(-)-h[show help message]' \
+      '-d[do not ask before running]' \
+      '-x[keep rmlint.sh; do not autodelete it]' \
+      '-p[recheck that files are still identical before removing duplicates]' \
+      '-r[allow deduplication of files on read-only btrfs snapshots (requires sudo)]' \
+      '(-d -x)-n[do not perform any modifications, just print what would be done (implies -d and -x)]' \
+      '-c[clean up empty directories while deleting duplicates]' \
+      '-q[do not show progress]' \
+      '-k[keep the timestamp of directories when removing duplicates]' \
+      '-i[ask before deleting each file]'
+    return
+  fi
+
   local curcontext="$curcontext" state state_descr
   local -a line
   local -i ret=1
