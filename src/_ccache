@@ -310,7 +310,7 @@ elif [[ $words[2] == -* ]]; then
     '(-z --zero-stats)'{-z,--zero-stats}'[zero statistics counters]' \
     '(-c --cleanup)'{-c,--cleanup}'[delete old files and recalculate size counters]' \
     '(-C --clear)'{-C,--clear}'[clear the cache completely (except configuration)]' \
-    '(-p --print-config)'{-p,--print-config}'[print current configuration options]' \
+    '(-p --show-config)'{-p,--show-config}'[show current configuration options]' \
     '(-s --show-stats)'{-s,--show-stats}'[show statistics summary]' \
     '(-F --max-files=)'{-F,--max-files=}'[set maximum number of files in cache]:number of files in cache: ' \
     '(-M --max-size=)'{-M,--max-size=}'[set maximum size of cache]:cache size: '
