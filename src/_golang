@@ -80,7 +80,7 @@ __go_runtimedebug() {
     'scavenge[enable debugging mode of heap scavenger]:boolean:(1 0)'
     'scavtrace[emit scavenger work information (memory returned and memory utilization)]:boolean:(1 0)'
     'scheddetail[emit detailed states of scheduler, processors, threads, goroutines]:boolean:(1 0)'
-    'schedtrace[emmit scheduler state every N ms to stderr]:int'
+    'schedtrace[emit scheduler state every N ms to stderr]:int'
     'tracebackancestors[set ancestor goroutines to be printed in goroutine creation stacks]:int'
     'asyncpreemptoff[disable signal-based asynchronous goroutine preemption.]:boolean:(1 0)'
   )

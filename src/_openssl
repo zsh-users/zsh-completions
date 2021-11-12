@@ -685,7 +685,7 @@ _openssl_ocsp() {
     '-reqout[write DER encoded OCSP request to "file"]:file:_files' \
     '-respout[write DER encoded OCSP response to "file"]:file:_files' \
     '-reqin[read DER encoded OCSP request from "file"]:file:_files' \
-    '-respin[read DER encoded OCSP reponse from "file"]:file:_files' \
+    '-respin[read DER encoded OCSP response from "file"]:file:_files' \
     '-nonce[add OCSP nonce to request]' \
     "-no_nonce[don't add OCSP nonce to request]" \
     '-url[OCSP responder URL]:URL: ' \
@@ -713,7 +713,7 @@ _openssl_ocsp() {
     "-resp_no_certs[don't include any certificates in response]" \
     '-nmin[number of minutes before next update]:minutes: ' \
     '-ndays[number of days before next update]:days: ' \
-    '-resp_key_id[identify reponse by signing certificate key ID]' \
+    '-resp_key_id[identify response by signing certificate key ID]' \
     '-nrequest[number of requests to accept (default unlimited)]:limit: ' \
     '-dss1[use specified digest in the request]' \
     '-md4[use specified digest in the request]' \

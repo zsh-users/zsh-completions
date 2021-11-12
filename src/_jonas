@@ -70,7 +70,7 @@ case "$state" in
           '-username[set the username when authentication is required]: :_users' \
           '-password[set the password when authentication is required]:password' \
           '-registry[set the registry URL]: :_urls' \
-          '-protocol[set the protocol name]:protocol:((jrmp\:JRE\ implementation\ of\ RMI\ on\ the\ JRMP\ protocol\ \(default\) iiop\:JacORB\ implementation\ of\ RMI\ over\ the\ IIOP\ protocol irmi\:Oracle\ JRE\ independant\ implementation\ of\ RMI))' \
+          '-protocol[set the protocol name]:protocol:((jrmp\:JRE\ implementation\ of\ RMI\ on\ the\ JRMP\ protocol\ \(default\) iiop\:JacORB\ implementation\ of\ RMI\ over\ the\ IIOP\ protocol irmi\:Oracle\ JRE\ independent\ implementation\ of\ RMI))' \
           '-a[deploy an application from a given filepath on the current server, or on another target in the domain if the current server is a master]:Java application archive:_files -g "*.(j|w|r|e)ar"' \
           '-r[undeploy a previously deployed application from the current server or from the specified target if the current server is a master]:Java application archive:_files -g "*.(j|w|r|e)ar"' \
           '-gc[run the garbage collector on the current JOnAS server]' \

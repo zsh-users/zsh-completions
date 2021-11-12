@@ -79,9 +79,9 @@ case $state in
       '(variable-get)'{variable-get,vget}'[Get a list of some or all site variables and values.]' \
       '(variable-set)'{variable-set,vset}'[Set a variable.]' \
       '(pm-list)'{pm-list,pml}'[Show a list of available extensions (modules and themes).]' \
-      '(pm-disable)'{pm-disable,dis}'[Disable one or more extensions (modules or themes). Disable dependant extensions as well.]' \
+      '(pm-disable)'{pm-disable,dis}'[Disable one or more extensions (modules or themes). Disable dependent extensions as well.]' \
       '(pm-download)'{pm-download,dl}'[Download projects from drupal.org or other sources.]' \
-      '(pm-enable)'{pm-enable,en}'[Enable one or more extensions (modules or themes). Enable dependant extensions as well.]' \
+      '(pm-enable)'{pm-enable,en}'[Enable one or more extensions (modules or themes). Enable dependent extensions as well.]' \
       'pm-uninstall[Uninstall one or more modules.]' \
       'pm-update[Update Drupal core and contrib projects and apply any pending database updates (Same as pm-updatecode + updatedb).]' \
       '(sql-cli)'{sql-cli,sqlc}'[Open a SQL command-line interface using Drupals credentials.]' \
