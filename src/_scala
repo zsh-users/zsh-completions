@@ -155,7 +155,7 @@ Y_opts=(
   "-Yinfer-argument-types[Infer types for arguments of overridden methods]"
   "-Yinline[Perform inlining when possible]"
   "-Yinline-handlers[Perform exception handler inlining when possible]"
-  "-Yinline-warnings[Emit inlining warnings (normally surpressed due to high volume)]"
+  "-Yinline-warnings[Emit inlining warnings (normally suppressed due to high volume)]"
   "-Yinvalidate+[Invalidate classpath entry before run]:classpath entry"
   "-Ylinearizer\:-[Linearizer to use (default\: rpo)]:linearizer:(normal dfs rpo dump)"
   "-Ylog-classpath[Output information about what classpath is being applied]"

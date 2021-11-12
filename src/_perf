@@ -614,7 +614,7 @@ _perf() {
             '--log-fd[log output to fd, instead of stderr]' \
             '--pre[pre measurement hook]: :_command_names -e' \
             '--post[post measurement hook]: :_command_names -e' \
-            '(-I --interval-print)'{-I,--interval-print=}'[print count deltas every millseconds]:msec:' \
+            '(-I --interval-print)'{-I,--interval-print=}'[print count deltas every milliseconds]:msec:' \
             '--interval-count[print count delta for fixed number of times]:times:' \
             '--interval-clear[clear the screen before next interval]' \
             '--timeout[stop the perf stat session and print count after milliseconds]:msec:' \

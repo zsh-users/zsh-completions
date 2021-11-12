@@ -145,7 +145,7 @@ _udisksctl() {
                 power-off)
                     _arguments \
                         {-p,--object-path}'[object path for ATA device]:object path:_paths' \
-                        {-b,--block-device}'[device file for ATA devic]:block device:_paths' \
+                        {-b,--block-device}'[device file for ATA device]:block device:_paths' \
                         "(--no-user-interaction)--no-user-interaction[don't authenticate the user if needed]" && ret=0
                 ;;
                 smart-simulate)

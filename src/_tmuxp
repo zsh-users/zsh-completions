@@ -93,7 +93,7 @@ __tmuxp_load() {
     '-2[Force tmux to assume the terminal supports 256 colors]' \
     '-8[Like -2, but indicates that the terminal supports 88 colors]'
 
-  # Cant get the options to be recognized when there are sessions that has
+  # Can't get the options to be recognized when there are sessions that has
   # a dash.
 
   case $state in

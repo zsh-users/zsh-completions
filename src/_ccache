@@ -210,7 +210,7 @@ __ccache_config_keys() {
   'read_only:treat cache as read-only'
   'read_only_direct:retrieve from read-only cache in direct mode'
   'recache:use cache in write-only mode'
-  'run_second_cpp:pass originial rather than preprocessed source code to compiler'
+  'run_second_cpp:pass original rather than preprocessed source code to compiler'
   'stats:update statistics counters'
   'unify:normalise sources prior to processing'
   'base_dir:specify relative to which top level paths are hashed'
