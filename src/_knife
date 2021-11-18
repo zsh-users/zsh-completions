@@ -72,7 +72,7 @@ _knife() {
 
   case $state in
   knifecmd)
-    compadd -Q "$@" bootstrap client configure cookbook "cookbook site" "data bag" diff exec environment index node recipe role search solo ssh status upload vault windows $cloudproviders
+    compadd -Q "$@" bootstrap client configure cookbook "cookbook site" "data bag" diff exec environment user index node recipe role search solo ssh status upload vault windows $cloudproviders
     ;;
   knifesubcmd)
     case $words[2] in
@@ -93,6 +93,9 @@ _knife() {
       ;;
     environment)
       compadd -Q "$@" list create delete edit show "from file"
+      ;;
+    user)
+      compadd -Q "$@" create delete edit list reregister show
       ;;
     node)
       compadd -Q "$@" "from file" create show edit delete list run_list "bulk delete"
@@ -263,6 +266,10 @@ _chef_environments_remote() {
   (knife environment list | awk '{print $1}')
 }
 
+_chef_users_remote() {
+  (knife user list | awk '{print $1}')
+}
+
 # The chef_x_local functions use the knife config to find the paths of relevant objects x to be uploaded to the server
 _chef_cookbooks_local() {
   if [ $KNIFE_RELATIVE_PATH ]; then
@@ -272,7 +279,7 @@ _chef_cookbooks_local() {
     if [ -f ./.chef/knife.rb ]; then
       knife_rb="./.chef/knife.rb"
     fi
-    local cookbook_path=${KNIFE_COOKBOOK_PATH:-$(grep cookbook_path $knife_rb | awk 'BEGIN {FS = "[" }; {print $2}' | sed 's/\,//g' | sed "s/'//g" | sed 's/\(.*\)]/\1/')}
+    local cookbook_path=${KNIFE_COOKBOOK_PATH:-$(grep cookbook_path $knife_rb | awk 'BEGIN {FS = "[" }; {print $2}' | sed 's/\,//g' | sed "s/'//g" | sed 's/\(.*\)]/\1/' | cut -d '"' -f2)}
   fi
   (for i in $cookbook_path; do ls $i; done)
 }
