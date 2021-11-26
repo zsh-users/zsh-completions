@@ -26,7 +26,7 @@
 #
 #  Completion script for Chef's knife (http://www.opscode.com/chef).
 #
-#  Source: https://github.com/robbyrussell/oh-my-zsh/tree/master/plugins/knife
+#  Source: https://github.com/ohmyzsh/ohmyzsh/blob/22fed4f/plugins/knife/_knife
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -46,9 +46,6 @@
 # KNIFE_RELATIVE_PATH=true
 # Read around where these are used for more detail.
 
-# These flags should be available everywhere according to man knife
-knife_general_flags=(--help --server-url --key --config --editor --format --log_level --logfile --no-editor --user --print-after --version --yes)
-
 # knife has a very special syntax, some example calls are:
 # knife status
 # knife cookbook list
@@ -59,9 +56,12 @@ knife_general_flags=(--help --server-url --key --config --editor --format --log_
 
 # The -Q switch in compadd allow for completions of things like "data bag" without having to go through two rounds of completion and avoids zsh inserting a \ for escaping spaces
 _knife() {
+  # These flags should be available everywhere according to man knife
+  local -a knife_general_flags; knife_general_flags=(--help --server-url --key --config --editor --format --log_level --logfile --no-editor --user --print-after --version --yes)
+
   local curcontext="$curcontext" state line
   typeset -A opt_args
-  cloudproviders=(bluebox ec2 rackspace slicehost terremark)
+  local -a cloudproviders; cloudproviders=(bluebox ec2 rackspace slicehost terremark)
   _arguments \
     '1: :->knifecmd' \
     '2: :->knifesubcmd' \
@@ -72,7 +72,7 @@ _knife() {
 
   case $state in
   knifecmd)
-    compadd -Q "$@" bootstrap client configure cookbook "cookbook site" "data bag" diff exec environment user index node recipe role search solo ssh status upload vault windows $cloudproviders
+    compadd -Q "$@" bootstrap client configure cookbook "cookbook site" "data bag" diff exec environment user index node recipe role search solo ssh status upload vault windows "$cloudproviders[@]"
     ;;
   knifesubcmd)
     case $words[2] in
@@ -135,10 +135,10 @@ _knife() {
       compadd "$@" vendor show share search download list unshare
       ;;
     show|delete|edit)
-      _arguments '3:Subsubcommands:($(_chef_$words[2]s_remote))'
+      _arguments '3:Subsubcommands:($(_knife_list_remote "$words[2]"))'
       ;;
     upload|test)
-      _arguments '3:Subsubcommands:($(_chef_$words[2]s_local) --all)'
+      _arguments '3:Subsubcommands:($(_call_function - "_knife_list_local_$words[2]s") --all)'
       ;;
     list)
       compadd -a "$@" knife_general_flags
@@ -158,12 +158,12 @@ _knife() {
     esac
     ;;
   knifesubcmd3)
-    case $words[3] in
+    case "$words[3]" in
     show)
-      case $words[2] in
+      case "$words[2]" in
       cookbook)
         versioncomp=1
-        _arguments '4:Cookbookversions:($(_cookbook_versions) latest)'
+        _arguments '4:Cookbookversions:($(_knife_cookbook_versions) latest)'
         ;;
       node|client|role)
         compadd "$@" --attribute
@@ -171,20 +171,20 @@ _knife() {
       esac
       ;;
     esac
-    case $words[4] in
+    case "$words[4]" in
     show|edit)
-      _arguments '4:Subsubsubcommands:($(_chef_$words[2]_$words[3]s_remote))'
+      _arguments '4:Subsubsubcommands:($(_knife_list_remote "$words[2]" "$words[3]"))'
       ;;
     file)
-      case $words[2] in
+      case "$words[2]" in
       environment)
-        _arguments '*:files:_path_files -g "*.(rb|json)" -W "$(_chef_root)/environments"'
+        _arguments '*:files:_path_files -g "*.(rb|json)" -W "$(_knife_root)/environments"'
         ;;
       node)
-        _arguments '*:files:_path_files -g "*.(rb|json)" -W "$(_chef_root)/nodes"'
+        _arguments '*:files:_path_files -g "*.(rb|json)" -W "$(_knife_root)/nodes"'
         ;;
       role)
-        _arguments '*:files:_path_files -g "*.(rb|json)" -W "$(_chef_root)/roles"'
+        _arguments '*:files:_path_files -g "*.(rb|json)" -W "$(_knife_root)/roles"'
         ;;
       *)
         _arguments '*:Subsubcommands:($(_knife_options3))'
@@ -203,18 +203,18 @@ _knife() {
     if ((versioncomp > 0)); then
       compadd "$@" attributes definitions files libraries providers recipes resources templates
     else
-      case $words[5] in
+      case "$words[5]" in
       file)
-        _arguments '*:directory:_path_files -/ -W "$(_chef_root)/data_bags" -qS \ '
+        _arguments '*:directory:_path_files -/ -W "$(_knife_root)/data_bags" -qS \ '
         ;;
       *) _arguments '*:Subsubcommands:($(_knife_options2))' ;;
       esac
     fi
     ;;
   knifesubcmd5)
-    case $words[5] in
+    case "$words[5]" in
     file)
-      _arguments '*:files:_path_files -g "*.json" -W "$(_chef_root)/data_bags/$words[6]"'
+      _arguments '*:files:_path_files -g "*.json" -W "$(_knife_root)/data_bags/$words[6]"'
       ;;
     *)
       _arguments '*:Subsubcommands:($(_knife_options3))'
@@ -226,73 +226,74 @@ _knife() {
 
 # Helper functions to provide the argument completion for several depths of commands
 _knife_options1() {
-  (for line in $(knife $words[2] --help | grep -v "^knife"); do echo $line | grep "\-\-"; done)
+  local line
+  for line in $(_call_program commands knife "$words[2]" --help | grep -v "^knife"); do
+    echo $line | grep "\-\-"
+  done
 }
 
 _knife_options2() {
-  (for line in $(knife $words[2] $words[3] --help | grep -v "^knife"); do echo $line | grep "\-\-"; done)
+  local line
+  for line in $(_call_program commands knife "$words[2]" "$words[3]" --help | grep -v "^knife"); do
+    echo $line | grep "\-\-"
+  done
 }
 
 _knife_options3() {
-  (for line in $(knife $words[2] $words[3] $words[4] --help | grep -v "^knife"); do echo $line | grep "\-\-"; done)
+  local line
+  for line in $(_call_program commands knife "$words[2]" "$words[3]" "$words[4]" --help | grep -v "^knife"); do
+    echo $line | grep "\-\-"
+  done
 }
 
-# The chef_x_remote functions use knife to get a list of objects of type x on the server
-_chef_roles_remote() {
-  (knife role list --format json | grep \" | awk '{print $1}' | awk -F"," '{print $1}' | awk -F"\"" '{print $2}')
-}
+# get a list of objects of type x on the server
+_knife_list_remote() {
+  case "$*" in
+    role|client|node|cookbook|"cookbook site"|"data bag"|environment|user)
+      ;;
+    *)
+      return
+      ;;
+  esac
 
-_chef_clients_remote() {
-  (knife client list --format json | grep \" | awk '{print $1}' | awk -F"," '{print $1}' | awk -F"\"" '{print $2}')
-}
-
-_chef_nodes_remote() {
-  (knife node list --format json | grep \" | awk '{print $1}' | awk -F"," '{print $1}' | awk -F"\"" '{print $2}')
-}
-
-_chef_cookbooks_remote() {
-  (knife cookbook list --format json | grep \" | awk '{print $1}' | awk -F"," '{print $1}' | awk -F"\"" '{print $2}')
-}
-
-_chef_sitecookbooks_remote() {
-  (knife cookbook site list --format json | grep \" | awk '{print $1}' | awk -F"," '{print $1}' | awk -F"\"" '{print $2}')
-}
-
-_chef_data_bags_remote() {
-  (knife data bag list --format json | grep \" | awk '{print $1}' | awk -F"," '{print $1}' | awk -F"\"" '{print $2}')
-}
-
-_chef_environments_remote() {
-  (knife environment list | awk '{print $1}')
-}
-
-_chef_users_remote() {
-  (knife user list | awk '{print $1}')
+  _call_program commands knife "$@" list --format json \
+    | grep \" \
+    | awk '{print $1}' \
+    | awk -F"," '{print $1}' \
+    | awk -F"\"" '{print $2}'
 }
 
 # The chef_x_local functions use the knife config to find the paths of relevant objects x to be uploaded to the server
-_chef_cookbooks_local() {
+_knife_list_local_cookbooks() {
   if [ $KNIFE_RELATIVE_PATH ]; then
-    local cookbook_path="$(_chef_root)/cookbooks"
+    local cookbook_path="$(_knife_root)/cookbooks"
   else
-    local knife_rb=${KNIFE_CONF_PATH:-${HOME}/.chef/knife.rb}
+    local knife_rb="${KNIFE_CONF_PATH:-${HOME}/.chef/knife.rb}"
     if [ -f ./.chef/knife.rb ]; then
       knife_rb="./.chef/knife.rb"
     fi
-    local cookbook_path=${KNIFE_COOKBOOK_PATH:-$(grep cookbook_path $knife_rb | awk 'BEGIN {FS = "[" }; {print $2}' | sed 's/\,//g' | sed "s/'//g" | sed 's/\(.*\)]/\1/' | cut -d '"' -f2)}
+    local cookbook_path="${KNIFE_COOKBOOK_PATH:-$(grep -s cookbook_path "$knife_rb" | awk 'BEGIN {FS = "[" }; {print $2}' | sed 's/\,//g' | sed "s/'//g" | sed 's/\(.*\)]/\1/' | cut -d '"' -f2)}"
   fi
-  (for i in $cookbook_path; do ls $i; done)
+
+  local i
+  for i in $cookbook_path; do
+    ls $i
+  done
 }
 
 # This function extracts the available cookbook versions on the chef server
-_cookbook_versions() {
-  (knife cookbook show $words[4] | grep -v $words[4] | grep -v -E '\]|\[|\{|\}' | sed 's/ //g' | sed 's/"//g')
+_knife_cookbook_versions() {
+  _call_program commands knife cookbook show "$words[4]" \
+    | grep -v "$words[4]" \
+    | grep -v -E '\]|\[|\{|\}' \
+    | sed 's/ //g' \
+    | sed 's/"//g'
 }
 
 # Searches up from current directory to find the closest folder that has a .chef folder
 # Useful for the knife upload/from file commands
-_chef_root() {
-  directory="$PWD"
+_knife_root() {
+  local directory="$PWD"
   while [ $directory != '/' ]; do
     test -e "$directory/.chef" && echo "$directory" && return
     directory="${directory:h}"
