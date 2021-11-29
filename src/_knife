@@ -134,7 +134,7 @@ _knife() {
     site)
       compadd "$@" vendor show share search download list unshare
       ;;
-    show|delete|edit)
+    show|delete|edit|update)
       _arguments '3:Subsubcommands:($(_knife_list_remote "$words[2]"))'
       ;;
     upload|test)
@@ -167,6 +167,16 @@ _knife() {
         ;;
       node|client|role)
         compadd "$@" --attribute
+        ;;
+      vault)
+        _arguments '4:Keys:($(_knife_list_remote "$words[2]" "$words[4]"))'
+        ;;
+      esac
+      ;;
+    update)
+      case "$words[2]" in
+      vault)
+        _arguments '4:Keys:($(_knife_list_remote "$words[2]" "$words[4]"))'
         ;;
       esac
       ;;
@@ -249,18 +259,21 @@ _knife_options3() {
 # get a list of objects of type x on the server
 _knife_list_remote() {
   case "$*" in
-    role|client|node|cookbook|"cookbook site"|"data bag"|environment|user)
+    role|client|node|cookbook|"cookbook site"|"data bag"|environment|user|vault)
+      _call_program commands knife "$@" list --format json \
+        | grep \" \
+        | awk '{print $1}' \
+        | awk -F"," '{print $1}' \
+        | awk -F"\"" '{print $2}'
       ;;
-    *)
-      return
+    "vault "*)
+      _call_program commands knife vault show "$2" --format json \
+        | grep \" \
+        | awk '{print $1}' \
+        | awk -F"," '{print $1}' \
+        | awk -F"\"" '{print $2}'
       ;;
   esac
-
-  _call_program commands knife "$@" list --format json \
-    | grep \" \
-    | awk '{print $1}' \
-    | awk -F"," '{print $1}' \
-    | awk -F"\"" '{print $2}'
 }
 
 # The chef_x_local functions use the knife config to find the paths of relevant objects x to be uploaded to the server
