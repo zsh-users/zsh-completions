@@ -137,7 +137,13 @@ _yarn_add_files() {
 }
 
 _yarn_workspaces() {
-  local -a workspaces=(${(@f)$(yarn workspaces list --json | sed -n 's|.*"name":"\([^"]*\)"}|\1|p')})
+  local version=$(yarn --version |sed -n 's|\([0-9]*\).*|\1|p')
+  local -a workspaces
+  if [[ $version == "1" ]]; then
+    workspaces=(${(@f)$(yarn workspaces info |sed -n -e 's/^  "\([^"]*\)": {/\1/p')})
+  else
+    workspaces=(${(@f)$(yarn workspaces list --json | sed -n 's|.*"name":"\([^"]*\)"}|\1|p')})
+  fi
   _describe 'workspace' workspaces
 }
 
