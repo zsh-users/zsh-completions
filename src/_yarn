@@ -137,7 +137,7 @@ _yarn_add_files() {
 }
 
 _yarn_workspaces() {
-  local -a workspaces=(${(@f)$(yarn workspaces info |sed -n -e 's/^  "\([^"]*\)": {/\1/p')})
+  local -a workspaces=(${(@f)$(yarn workspaces list --json | sed -n 's|.*"name":"\([^"]*\)"}|\1|p')})
   _describe 'workspace' workspaces
 }
 
