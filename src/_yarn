@@ -100,22 +100,24 @@ _yarn_commands_scripts() {
 }
 
 _yarn_scripts() {
-  local -a binaries scriptNames scriptCommands scripts
+  local -a binaries scripts
   local -a commands
 
   if [[ -n $_yarn_run_cwd ]]; then
-    scriptNames=($(cd $opt_args[--cwd] && cat package.json | perl -0777 -MJSON::PP -n -E '%r=%{decode_json($_)->{scripts}}; printf qq($_:$r{$_}\n) for sort keys %r'))
-    scriptCommands=("${(@f)$(cd $opt_args[--cwd] && cat package.json | perl -0777 -MJSON::PP -n -E '%r=%{decode_json($_)->{scripts}}; printf "$r{$_}\n" for sort keys %r')}")
-    binaries=($(cd $opt_args[--cwd] && echo node_modules/.bin/*(x:t)))
+    scripts=("${(@f)$(cd $_yarn_run_cwd && cat package.json | perl -0777 -MJSON::PP -n -E '%r=%{decode_json($_)->{scripts}}; printf "$_:$r{$_}\n" for sort keys %r')}")
+    if [[ -d "${_yarn_run_cwd}/node_modules" ]]; then
+      binaries=($(cd $_yarn_run_cwd && echo node_modules/.bin/*(x:t)))
+    else
+      binaries=($(cd $_yarn_run_cwd && yarn bin | perl -wln -e 'm{^[^:]+: (\S+)$} and print $1'))
+    fi
   else
-    scriptNames=($(cat package.json | perl -0777 -MJSON::PP -n -E '%r=%{decode_json($_)->{scripts}}; printf "$_\n" for sort keys %r'))
-    scriptCommands=("${(@f)$(cat package.json | perl -0777 -MJSON::PP -n -E '%r=%{decode_json($_)->{scripts}}; printf "$r{$_}\n" for sort keys %r')}")
-    binaries=($(echo node_modules/.bin/*(x:t)))
+    scripts=("${(@f)$(cat package.json | perl -0777 -MJSON::PP -n -E '%r=%{decode_json($_)->{scripts}}; printf "$_:$r{$_}\n" for sort keys %r')}")
+    if [[ -d node_modules ]]; then
+      binaries=($(echo node_modules/.bin/*(x:t)))
+    else
+      binaries=($(yarn bin | perl -wln -e 'm{^[^:]+: (\S+)$} and print $1'))
+    fi
   fi
-
-  for (( i=1; i <= $#scriptNames; i++ )); do
-    scripts+=("${scriptNames[$i]}:${scriptCommands[$i]}")
-  done
 
   commands=('env' $scripts $binaries)
   _describe 'command' commands
