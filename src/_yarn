@@ -85,15 +85,38 @@ _global_commands=(
   'upgrade-interactive:Interactively upgrade packages'
 )
 
+_yarn_find_package_json() {
+  local dir=$(cd "$1" && pwd)
+
+  while true
+  do
+    if [[ -e "${dir}/package.json" ]]; then
+      echo "${dir}/package.json"
+      return
+    fi
+
+    if [[ $dir == '/' ]]; then
+      break
+    fi
+
+    dir=$(dirname $dir)
+  done
+}
+
 _yarn_commands_scripts() {
   local -a scripts binaries
+  local packageJson
 
   if [[ -n $opt_args[--cwd] ]]; then
-    scripts=($(cd $opt_args[--cwd] && cat package.json | perl -0777 -MJSON::PP -n -E '$r=decode_json($_); say for sort keys %{$r->{scripts}}'))
+    packageJson=$(_yarn_find_package_json $opt_args[--cwd])
     binaries=($(cd $opt_args[--cwd] && echo node_modules/.bin/*(x:t)))
   else
-    scripts=($(cat package.json | perl -0777 -MJSON::PP -n -E '%r=decode_json($_); say for sort keys %{$r->{scripts}}'))
+    packageJson=$(_yarn_find_package_json $pwd)
     binaries=($(echo node_modules/.bin/*(x:t)))
+  fi
+
+  if [[ -n $packageJson ]]; then
+    scripts=($(cat "$packageJson" | perl -0777 -MJSON::PP -n -E '%r=decode_json($_); say for sort keys %{$r->{scripts}}'))
   fi
 
   _describe 'command or script' _commands -- _global_commands -- scripts -- binaries
@@ -102,21 +125,26 @@ _yarn_commands_scripts() {
 _yarn_scripts() {
   local -a binaries scripts
   local -a commands
+  local packageJson
 
   if [[ -n $_yarn_run_cwd ]]; then
-    scripts=("${(@f)$(cd $_yarn_run_cwd && cat package.json | perl -0777 -MJSON::PP -n -E '%r=%{decode_json($_)->{scripts}}; printf "$_:$r{$_}\n" for sort keys %r')}")
+    packageJson=$(_yarn_find_package_json $_yarn_run_cwd)
     if [[ -d "${_yarn_run_cwd}/node_modules" ]]; then
       binaries=($(cd $_yarn_run_cwd && echo node_modules/.bin/*(x:t)))
     else
       binaries=($(cd $_yarn_run_cwd && yarn bin | perl -wln -e 'm{^[^:]+: (\S+)$} and print $1'))
     fi
   else
-    scripts=("${(@f)$(cat package.json | perl -0777 -MJSON::PP -n -E '%r=%{decode_json($_)->{scripts}}; printf "$_:$r{$_}\n" for sort keys %r')}")
+    packageJson=$(_yarn_find_package_json $pwd)
     if [[ -d node_modules ]]; then
       binaries=($(echo node_modules/.bin/*(x:t)))
     else
       binaries=($(yarn bin | perl -wln -e 'm{^[^:]+: (\S+)$} and print $1'))
     fi
+  fi
+
+  if [[ -n $packageJson ]]; then
+    scripts=("${(@f)$(cat ${packageJson} | perl -0777 -MJSON::PP -n -E '%r=%{decode_json($_)->{scripts}}; printf "$_:$r{$_}\n" for sort keys %r')}")
   fi
 
   commands=('env' $scripts $binaries)
