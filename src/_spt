@@ -1,4 +1,18 @@
 #compdef spt
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for the spt (spotify-tui) command (Revision 12)
+#  (https://github.com/Rigellute/spotify-tui)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Abhishek Keshri <iam2kabhishek@gmail.com>
+#
+# ------------------------------------------------------------------------------
 
 autoload -U is-at-least
 
@@ -260,91 +274,91 @@ _spt_commands() {
 (( $+functions[_spt__help_commands] )) ||
 _spt__help_commands() {
     local commands; commands=(
-        
+
     )
     _describe -t commands 'spt help commands' commands "$@"
 }
 (( $+functions[_l_commands] )) ||
 _l_commands() {
     local commands; commands=(
-        
+
     )
     _describe -t commands 'l commands' commands "$@"
 }
 (( $+functions[_spt__l_commands] )) ||
 _spt__l_commands() {
     local commands; commands=(
-        
+
     )
     _describe -t commands 'spt l commands' commands "$@"
 }
 (( $+functions[_spt__list_commands] )) ||
 _spt__list_commands() {
     local commands; commands=(
-        
+
     )
     _describe -t commands 'spt list commands' commands "$@"
 }
 (( $+functions[_p_commands] )) ||
 _p_commands() {
     local commands; commands=(
-        
+
     )
     _describe -t commands 'p commands' commands "$@"
 }
 (( $+functions[_spt__p_commands] )) ||
 _spt__p_commands() {
     local commands; commands=(
-        
+
     )
     _describe -t commands 'spt p commands' commands "$@"
 }
 (( $+functions[_pb_commands] )) ||
 _pb_commands() {
     local commands; commands=(
-        
+
     )
     _describe -t commands 'pb commands' commands "$@"
 }
 (( $+functions[_spt__pb_commands] )) ||
 _spt__pb_commands() {
     local commands; commands=(
-        
+
     )
     _describe -t commands 'spt pb commands' commands "$@"
 }
 (( $+functions[_spt__play_commands] )) ||
 _spt__play_commands() {
     local commands; commands=(
-        
+
     )
     _describe -t commands 'spt play commands' commands "$@"
 }
 (( $+functions[_spt__playback_commands] )) ||
 _spt__playback_commands() {
     local commands; commands=(
-        
+
     )
     _describe -t commands 'spt playback commands' commands "$@"
 }
 (( $+functions[_s_commands] )) ||
 _s_commands() {
     local commands; commands=(
-        
+
     )
     _describe -t commands 's commands' commands "$@"
 }
 (( $+functions[_spt__s_commands] )) ||
 _spt__s_commands() {
     local commands; commands=(
-        
+
     )
     _describe -t commands 'spt s commands' commands "$@"
 }
 (( $+functions[_spt__search_commands] )) ||
 _spt__search_commands() {
     local commands; commands=(
-        
+
     )
     _describe -t commands 'spt search commands' commands "$@"
 }
