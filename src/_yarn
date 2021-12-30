@@ -116,7 +116,7 @@ _yarn_commands_scripts() {
   fi
 
   if [[ -n $packageJson ]]; then
-    scripts=($(cat "$packageJson" | perl -0777 -MJSON::PP -n -E '%r=decode_json($_); say for sort keys %{$r->{scripts}}'))
+    scripts=($(cat "$packageJson" | perl -0777 -MJSON::PP -n -E '$r=decode_json($_); say for sort keys %{$r->{scripts}}'))
   fi
 
   _describe 'command or script' _commands -- _global_commands -- scripts -- binaries
