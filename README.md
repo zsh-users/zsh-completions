@@ -37,10 +37,9 @@ Add `antigen bundle zsh-users/zsh-completions` to your `~/.zshrc`.
 
         git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:=~/.oh-my-zsh/custom}/plugins/zsh-completions
 
-* Enable it in your `.zshrc` by adding it to your plugin list and reloading the completion:
+* Enable it in your `.zshrc` by adding it to your plugin list:
 
         plugins=(… zsh-completions)
-        autoload -U compinit && compinit
 
 ### Manual installation
 
