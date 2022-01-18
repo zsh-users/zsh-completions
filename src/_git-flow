@@ -1,4 +1,5 @@
 #compdef git-flow
+#description Git Flow branching model
 # ------------------------------------------------------------------------------
 # Copyright (c) 2010-2015 Justin Hileman
 #
