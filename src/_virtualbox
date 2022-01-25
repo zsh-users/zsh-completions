@@ -1,4 +1,4 @@
-#compdef VBoxManage=vboxmanage VBoxHeadless=vboxheadless
+#compdef VBoxManage=vboxmanage VBoxHeadless=vboxheadless vboxmanage=vboxmanage
 # ------------------------------------------------------------------------------
 # Description
 # -----------
@@ -19,6 +19,12 @@ _vboxmachines() {
 	VBoxManage list vms | egrep -o '^"[^"]+"' 2>/dev/null | sed -e 's|"||g' | while read machine; do
 		_wanted 'machine' expl 'machine' compadd $machine
 	done
+}
+
+_vboxnatnets() {
+  vboxmanage list natnetworks | awk -F: '/NetworkName:/{print $2}'| while read natnet; do
+    _wanted 'natnet' expl 'natnet' compadd $natnet
+  done
 }
 
 # Roughly guess command options
@@ -127,6 +133,7 @@ _vboxmanage() {
 		'hostonlyif:change the IP configuration of a host-only network interface'
 		'dhcpserver:control the DHCP server that is built into VirtualBox'
 		'extpack:add or remove VirtualBox extension packs'
+		'natnetwork:add,modify,remove or start NatNetworks'
 	)
 
 	local context state line expl
@@ -143,7 +150,7 @@ _vboxmanage() {
 		list)
 			_arguments \
 				'--long' \
-				':list option:(vms runningvms ostypes hostdvds hostfloppies bridgedifs hostonlyifs dhcpservers hostinfo hostcpuids hddbackends hdds dvds floppies usbhost usbfilters systemproperties extpacks)'
+				':list option:(vms runningvms ostypes hostdvds hostfloppies bridgedifs hostonlyifs dhcpservers hostinfo hostcpuids hddbackends hdds dvds floppies usbhost usbfilters systemproperties natnetworks extpacks)'
 		;;
 		showvminfo)
 			_arguments \
@@ -266,6 +273,16 @@ _vboxmanage() {
 				'--readonly' \
 				'--automount'
 		;;
+    natnetwork)
+      _arguments \
+        ':action:(add modify remove start stop)' \
+        '--netname:natnet:_vboxnatnets' \
+        '--dhcp:bool:(on off)' \
+        '--ipv6:bool:(on off)' \
+        '--enable' \
+        '--disable'
+      ;;
+
 	esac
 	return 1
 }
