@@ -1,4 +1,4 @@
-#compdef VBoxManage=vboxmanage VBoxHeadless=vboxheadless
+#compdef VBoxManage=vboxmanage VBoxHeadless=vboxheadless vboxmanage=vboxmanage
 # ------------------------------------------------------------------------------
 # Description
 # -----------
