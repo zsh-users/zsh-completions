@@ -274,6 +274,16 @@ _vboxmanage() {
 				'--readonly' \
 				'--automount'
 		;;
+    natnetwork)
+      _arguments \
+        ':action:(add modify remove start stop)' \
+        '--netname:natnet:_vboxnatnets' \
+        '--dhcp:bool:(on off)' \
+        '--ipv6:bool:(on off)' \
+        '--enable' \
+        '--disable'
+      ;;
+
 	esac
 	return 1
 }
