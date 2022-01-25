@@ -21,6 +21,14 @@ _vboxmachines() {
 	done
 }
 
+# Get natnetworks
+_vboxnatnets() {
+  vboxmanage list natnetworks | awk -F: '/NetworkName:/{print $2}'| while read natnet; do
+    _wanted 'natnet' expl 'natnet' compadd $natnet
+  done
+}
+
+
 # Roughly guess command options
 _vboxcommandoptions() {
 	cmd="$1"
