@@ -35,7 +35,7 @@ Add `antigen bundle zsh-users/zsh-completions` to your `~/.zshrc`.
 
 * Clone the repository inside your oh-my-zsh repo:
 
-        git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:=~/.oh-my-zsh/custom}/plugins/zsh-completions
+        git clone --depth 1 https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:=~/.oh-my-zsh/custom}/plugins/zsh-completions
 
 * Enable it in your `.zshrc` by adding it to your plugin list and reloading the completion:
 
@@ -46,7 +46,7 @@ Add `antigen bundle zsh-users/zsh-completions` to your `~/.zshrc`.
 
 * Clone the repository:
 
-        git clone git://github.com/zsh-users/zsh-completions.git
+        git clone --depth 1 git://github.com/zsh-users/zsh-completions.git
 
 * Include the directory in your `$fpath`, for example by adding in `~/.zshrc`:
 
