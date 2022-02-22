@@ -147,7 +147,7 @@ _cmake_presets() {
 
   # TODO: Problems with quotes need eval
   # would need a way to exec the array
-  local list_presets; list_presets=(${(f)"$(eval "${invoke[@]} 2> /dev/null" | sed -n 's,^[[:space:]]*"\([^"]*\)"[[:space:]]*-[[:space:]]*\(.*\),\1:\2,p' )"})
+  local list_presets; list_presets=(${(f)"$(eval "${invoke[@]} 2> /dev/null" | grep -Po '(?<=\").*(?=")' )"})
 
   _describe 'presets' list_presets
 }
