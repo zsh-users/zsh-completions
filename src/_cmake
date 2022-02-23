@@ -141,13 +141,21 @@ _cmake_generator_options() {
 # --------------
 (( $+functions[_cmake_presets] )) ||
 _cmake_presets() {
-  local invoke; invoke=(${words[@]})
-  # TODO: remove all arguments -* except -S
-  invoke[$CURRENT]=--list-presets
+
+  local parse_presets; parse_presets='
+import json    
+import os    
+try:    
+    with open("CMakePresets.json") as preset_file:    
+        print(os.linesep.join([ x["name"] + ":" + x.get("description", "") for x in json.load(preset_file)["configurePresets"]]))
+except:    
+    pass    
+
+'
 
   # TODO: Problems with quotes need eval
   # would need a way to exec the array
-  local list_presets; list_presets=(${(f)"$(eval "${invoke[@]} 2> /dev/null" | grep -Po '(?<=\").*(?=")' )"})
+  local list_presets; list_presets=(${(f)"$(eval python <<< $parse_presets)"})
 
   _describe 'presets' list_presets
 }
