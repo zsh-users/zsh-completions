@@ -141,13 +141,14 @@ _cmake_generator_options() {
 # --------------
 (( $+functions[_cmake_presets] )) ||
 _cmake_presets() {
-  local invoke; invoke=(${words[@]})
-  # TODO: remove all arguments -* except -S
-  invoke[$CURRENT]=--list-presets
-
   # TODO: Problems with quotes need eval
   # would need a way to exec the array
-  local list_presets; list_presets=(${(f)"$(eval "${invoke[@]} 2> /dev/null" | sed -n 's,^[[:space:]]*"\([^"]*\)"[[:space:]]*-[[:space:]]*\(.*\),\1:\2,p' )"})
+  local -a list_presets;
+
+  if [[ -e CMakePresets.json ]]; then
+    # some old projects uses BOM in json file. strip UTF-8 BOM and then parse JSON
+    list_presets=("${(@f)$(sed '1s/^\xEF\xBB\xBF//' < CMakePresets.json | perl -0777 -MJSON::PP -nE 'do{$k=$_;($e=$k)=~s/:/\\:/g; printf "$_->{name}:$_->{description}\n"} for @{decode_json($_)->{configurePresets}}' 2>/dev/null)}")
+  fi
 
   _describe 'presets' list_presets
 }
