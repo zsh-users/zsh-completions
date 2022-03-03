@@ -17,14 +17,22 @@
 
 __git-revise_commits() {
   local -a commits
-  commits=(${(f)"$(git log -20 --pretty=format:'%h:%d %s' | sed 's/: /:/')"})
-  _describe -V 'commit' commits
+  if git rev-parse --is-inside-work-tree 1>/dev/null 2>/dev/null; then
+    commits=(${(f)"$(git log -20 --pretty=format:'%h:%d %s' | sed 's/: /:/')"})
+    _describe -V 'commit' commits
+  else
+    _message 'not a git repository'
+  fi
 }
 
 __git-revise_branches() {
   local -a branches
-  branches=(${(f)"$(git for-each-ref --format='%(refname:short)' refs/heads/)"})
-  _describe 'branch' branches
+  if git rev-parse --is-inside-work-tree 1>/dev/null 2>/dev/null; then
+    branches=(${(f)"$(git for-each-ref --format='%(refname:short)' refs/heads/)"})
+    _describe 'branch' branches
+  else
+    _message 'not a git repository'
+  fi
 }
 
 _git-revise() {
@@ -50,3 +58,10 @@ _git-revise() {
 
 _git-revise "$@"
 
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
