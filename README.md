@@ -43,6 +43,10 @@ Add `antigen bundle zsh-users/zsh-completions` to your `~/.zshrc`.
 
 Note: adding it as a regular Oh My ZSH! plugin will not work properly (see [#603](https://github.com/zsh-users/zsh-completions/issues/603)).
 
+#### [zinit](https://github.com/zdharma-continuum/zinit)
+
+Add `zinit light zsh-users/zsh-completions` to your `~/.zshrc`.
+
 ### Manual installation
 
 * Clone the repository:
