@@ -79,8 +79,10 @@ _arguments -C \
   '--enable-fips[enable FIPS crypto at startup]' \
   '--enable-source-maps[source map support]' \
   '--es-module-specifier-resolution=[extension resolution algorithm for es modules]:resolution algorithm:(explicit none)' \
+  '--experimental-global-webcrypto[expose experimental Web Crypto API on the global scope]' \
   '--experimental-import-meta-resolve[experimental ES Module import.meta.resolve() support]' \
   '(--loader --experimental-loader)'{--loader,--experimental-loader}'=[Specify the module of a custom ECMAScript Module loader]: :_files' \
+  '--experimental-network-imports[experimental https support for the ES Module loader]' \
   '--experimental-policy=[security policy file]: :_files' \
   '--experimental-vm-modules[experimental ES Module support in vm module]' \
   '--experimental-wasi-unstable-preview1[experimental WASI support]' \
@@ -107,6 +109,7 @@ _arguments -C \
   '--napi-modules[load N-API modules (no-op - option kept for compatibility)]' \
   '--no-addons[disable loading native addons]' \
   '--no-deprecation[silence deprecation warnings]' \
+  '--no-experimental-fetch[disable experimental Fetch API]' \
   '--no-experimental-repl-await[disable experimental await keyword support in REPL]' \
   '--no-force-async-hooks-checks[disable checks for async_hooks]' \
   '--no-global-search-paths[disable global module search paths]' \
@@ -143,11 +146,11 @@ _arguments -C \
   '--trace-deprecation[show stack traces on deprecations]' \
   '--trace-event-categories[comma separated list of trace event categories to record]: :{_values -s , categories node node.async_hooks node.bootstrap node.perf node.perf.usertiming node.perf.timerify node.fs.sync node.vm.script v8}' \
   '--trace-event-file-pattern[Template string specifying the filepath for the trace-events data, it supports ${rotation} and ${pid} log-rotation id. %2$u is the pid.]:template string' \
-  '--trace-events-enabled[track trace events]' \
   '--trace-exit[show stack trace when an environment exits]' \
   '--trace-sigint[prints a stack trace on SIGINT]' \
   '--trace-sync-io[show stack trace when use of sync IO is detected after the first tick]' \
   '--trace-tls[prints TLS packet trace information to stderr]' \
+  '--trace-uncaught[show stack traces for the throw behind uncaught exceptions]' \
   '--trace-warnings[show stack traces on process warnings]' \
   '--track-heap-objects[track heap object allocations for heap snapshots]' \
   '--unhandled-rejections=[define unhandled rejections behavior]:rejection behavior:(strict warn none)' \
