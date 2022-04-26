@@ -51,7 +51,7 @@ Add `zinit light zsh-users/zsh-completions` to your `~/.zshrc`.
 
 * Clone the repository:
 
-        git clone git://github.com/zsh-users/zsh-completions.git
+        git clone https://github.com/zsh-users/zsh-completions.git
 
 * Include the directory in your `$fpath`, for example by adding in `~/.zshrc`:
 
