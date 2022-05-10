@@ -54,6 +54,8 @@ case $state in
 			"package[Package the .gem files required by your application]" \
 			"exec[Execute a script in the context of the current bundle]" \
 			"config[Specify and read configuration options for bundler]" \
+			"add[Add the named gem to the Gemfile and run bundle install]" \
+			"binstubs[Generate binstubs for executables in a gem]" \
 			"check[Determine whether the requirements for your application are installed]" \
 			"list[Show all of the gems in the current bundle]" \
 			"show[Show the source location of a particular gem in the bundle]" \
@@ -64,13 +66,16 @@ case $state in
 			"gem[Create a simple gem, suitable for development with bundler]" \
 			"help[Describe available tasks or one specific task]" \
 			"platform[Displays platform compatibility information]" \
+			"clean[Clean up unused gems in your Bundler directory]" \
+			"doctor[Display warnings about common problems]" \
+			"remove[Removes gems from the Gemfile]" \
 			"outdated[Show all of the outdated gems in the current bundle]"
 		ret=0
 		;;
 	args)
 		case $line[1] in
 			help)
-				_values 'commands' 'install' 'update' 'package' 'exec' 'config' 'check' 'list' 'show' 'console' 'open' 'viz' 'init' 'gem' 'help' 'platform' 'outdated' && ret=0
+				_values 'commands' 'install' 'update' 'package' 'exec' 'config' 'add' 'binstubs' 'check' 'list' 'show' 'console' 'open' 'viz' 'init' 'gem' 'help' 'platform' 'clean' 'doctor' 'remove' 'outdated' && ret=0
 				;;
 			install)
 				_policies=('HighSecurity' 'MediumSecurity' 'LowSecurity' 'AlmostNoSecurity' 'NoSecurity')
