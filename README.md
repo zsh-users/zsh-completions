@@ -47,14 +47,6 @@ Note: adding it as a regular Oh My ZSH! plugin will not work properly (see [#603
 
 Add `zinit light zsh-users/zsh-completions` to your `~/.zshrc`.
 
-### Using Fig
-
-[Fig](https://fig.io) adds apps, shortcuts, and autocomplete to your existing terminal.
-
-Install `zsh-completions` in just one click.
-
-<a href="https://fig.io/plugins/other/zsh-completions" target="_blank"><img src="https://fig.io/badges/install-with-fig.svg" /></a>
-
 ### Manual installation
 
 * Clone the repository:
