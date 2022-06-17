@@ -408,8 +408,8 @@ case $state in
           '-i[remove corresponding installed archive or binary]' \
           '-r[apply clean recursively on all dependencies]' \
           '-cache[remove the entire go build cache]' \
-          '-testcache[expire all test results in thego build cache]' \
-          '-modcache[clean to remove the entire moduledownload cach]' \
+          '-testcache[expire all test results in the go build cache]' \
+          '-modcache[clean to remove the entire module download cache]' \
           '-fuzzcache[remove files stored in the Go build cache for fuzz testing]' \
           ${build_flags[@]} \
           ${mod_flags[@]} \
