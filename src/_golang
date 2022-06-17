@@ -30,7 +30,7 @@
 # Description
 # -----------
 #
-#  Completion script for go 1.14 (http://golang.org).
+#  Completion script for go 1.18 (http://golang.org).
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -192,6 +192,7 @@ commands=(
 'install:compile and install packages and dependencies'
 'list:list packages or modules'
 'mod:module maintenance'
+'work:workspace maintenance'
 'run:compile and run Go program'
 'test:test packages'
 'tool:run specified go tool'
@@ -336,11 +337,13 @@ case $state in
     '-p[number of builds that can be run in parallel]:number'
     '-race[enable data race detection]'
     '-msan[enable interoperation with memory sanitizer]'
+    '-asan[enable interoperation with address sanitizer]'
     '-v[print the names of packages as they are compiled]'
     '-work[print temporary work directory and keep it]'
     '-x[print the commands]'
     '-asmflags[arguments for each go tool asm invocation]:flags'
     '-buildmode[build mode to use]:mode:__go_buildmodes'
+    '-buildvcs[stamp binaries with version control information]:mode:(internal external auto)'
     '-compiler[name of compiler to use]:name'
     '-gccgoflags[arguments for gccgo]:args'
     '*-gcflags=[arguments for each go tool compile invocation]:args:__go_gcflags'
@@ -357,6 +360,17 @@ case $state in
     '-mod=[module download mode to use]:download mode:(readonly vendor mod)'
     '-modcacherw[leave newly-created directories in the module cache read-write]'
     '-modfile=[read an alternate go.mod file]:modfile: _files -g "*.mod"'
+    )
+
+    edit_flags=(
+    '-fmt[reformats the go.mod/work file without making other changes]' \
+    '*-require=[add a requirement on the given module path and version]:require' \
+    '*-droprequire=[drop a requirement on the given module path and version]:droprequire' \
+    '-go[sets the expected Go language version]:goversion' \
+    '*-replace=[add a replacement of the given module path and version]:replace' \
+    '*-dropreplace=[drop a replacement of the given module path and version]:dropreplace' \
+    '-json[prints the final go.mod/work file in JSON format]' \
+    '-print[prints the final go.mod/work in its text format]' \
     )
 
     __go_packages() {
@@ -393,6 +407,10 @@ case $state in
         _arguments \
           '-i[remove corresponding installed archive or binary]' \
           '-r[apply clean recursively on all dependencies]' \
+          '-cache[remove the entire go build cache]' \
+          '-testcache[expire all test results in the go build cache]' \
+          '-modcache[clean to remove the entire module download cache]' \
+          '-fuzzcache[remove files stored in the Go build cache for fuzz testing]' \
           ${build_flags[@]} \
           ${mod_flags[@]} \
           '*:importpaths:__go_packages'
@@ -400,8 +418,11 @@ case $state in
 
       doc)
         _arguments \
+          '-all[show all the documentation for the package]' \
           '-c[respect case when matching symbols]' \
           '-cmd[treat a command (package main) like a regular package]' \
+          '-short[one-line representation for each symbol]' \
+          '-src[show the full source code for the symbol]' \
           '-u[show docs for unexported and exported symbols and methods]'
           ;;
 
@@ -452,7 +473,7 @@ case $state in
           "GOMIPS[mips instruction set]:mips instruction set"
           "GOMIPS64[mips64 instruction set]:mips64 instruction set"
           "GOWASM[web assembly features]:comma separated web assembly features"
-          "GCCGOTOOLDIR[directory of gccgo tools]:gccgo tool director"
+          "GCCGOTOOLDIR[directory of gccgo tools]:gccgo tool directory"
           "GOROOT_FINAL[root of the go tree]:go root"
           "GO_EXTLINK_ENABLED[enable external linking mode]:boolean"
           "GIT_ALLOW_PROTOCOL[schemes allowed to fetch]:colon separated git schemes"
@@ -565,24 +586,21 @@ case $state in
             case $words[1] in
               download)
                 _arguments \
-                  '-json[print a sequance of JSON objects to standard output]'
+                  '-json[print a sequance of JSON objects to standard output]' \
+                  '-x[print the commands download executes]'
                 ;;
 
               edit)
                 _arguments \
-                  '-fmt[reformats the go.mod file without making other changes]' \
+                  ${edit_flags[@]} \
                   "-module[change the module's path]" \
-                  '*-require=[add a requirement on the given module path and version]:require' \
-                  '*-droprequire=[drop a requirement on the given module path and version]:droprequire' \
                   '*-exclude=[add an exclusion for the given module path and version]:exclude' \
                   '*-dropexclude=[drop an exclusion for the given module path and version]:dropexclude' \
-                  '*-replace=[add a replacement of the given module path and version]:replace' \
-                  '*-dropreplace=[drop a replacement of the given module path and version]:dropreplace' \
-                  '-json[prints the final go.mod file in JSON format]' \
-                  '-print[prints the final go.mod in its text format]' \
                   ':go.mod:_path_files -g "go.mod"'
                 ;;
               graph)
+                _arguments \
+                  '-go[report the module graph as loaded by the given Go version]:goversion'
                 ;;
               init)
                 # Use go packages as module name suggestion
@@ -592,12 +610,15 @@ case $state in
               tidy)
                 _arguments \
                   '-v[print information about removed modules to standard error]' \
-                  '-e[attempt to proceed despite errors encountered while loading packages]'
+                  '-e[attempt to proceed despite errors encountered while loading packages]' \
+                  '-go[update the go directive in the go.mod file to the given version]:goversion' \
+                  '-compat[preserves additional checksums needed for the indicated Go version]'
                 ;;
               vendor)
                 _arguments \
                   '-v[print the names of vendored modules and packages to standard error]' \
-                  '-e[attempt to proceed despite errors encountered while loading packages]'
+                  '-e[attempt to proceed despite errors encountered while loading packages]' \
+                  '-o[create the vendor directory at the given path instead of "vendor"]:directory:_path_files -/'
                 ;;
               verify)
                 ;;
@@ -990,16 +1011,69 @@ case $state in
         esac
         ;;
 
+      version)
+        _arguments \
+          '-m[print each executable embedded module version information]' \
+          '-v[report unrecognized files]' \
+          '*:files:_files'
+        ;;
+
+
       vet)
         _arguments \
           '-n[print commands that would be executed]' \
           '-x[prints commands as they are executed]' \
           ${build_flags[@]} \
           '*:importpaths:__go_packages'
-          ;;
+        ;;
+
+      work)
+        local -a work_commands
+        work_commands=(
+        'edit:edit go.work from tools or scripts'
+        'init:initialize workspace file'
+        'sync:sync workspace build list to modules'
+        'use:add modules to workspace file'
+        )
+
+        _arguments \
+          "1: :{_describe 'command' work_commands}" \
+          '*:: :->args'
+
+        case $state in
+          args)
+            case $words[1] in
+              edit)
+                _arguments \
+                  ${edit_flags[@]} \
+                  '*-use[add use directive from the go.work set of module directories]' \
+                  '*-dropuse[drop use directive from the go.work set of module directories]' \
+                  ':go.work:_path_files -g "go.work"'
+                ;;
+
+              init)
+                  _arguments \
+                    '*:directory: _path_files -/'
+                ;;
+
+              sync)
+                ;;
+
+              use)
+                _arguments \
+                  '-r[searches recursively for modules in the argumentdirectories]' \
+                  '*:directory: _path_files -/'
+                ;;
+            esac
+            ;;
+        esac
+        ;;
+
+
       help)
         local -a topics
         topics=(
+        'buildconstraint:build constraints'
         'buildmode:build modes'
         'c:calling between Go and C'
         'cache:build and test caching'
@@ -1013,10 +1087,11 @@ case $state in
         'modules:modules, module versions, and more'
         'module-get:module-aware go get'
         'module-auth:module authentication using go.sum'
-        'module-private:module configuration for non-public modules'
         'packages:package lists and patterns'
+        'private:configuration for downloading non-public code'
         'testflag:testing flags'
         'testfunc:testing functions'
+        'vcs:controlling version control with GOVCS'
         )
 
         _arguments "1: :{_describe 'command' commands -- topics}"
