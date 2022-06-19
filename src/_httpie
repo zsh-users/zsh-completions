@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for httpie 0.7.2  (http://httpie.org)
+#  Completion script for httpie 3.2.1  (https://httpie.io/)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -151,12 +151,21 @@ integer NORMARG
 _arguments -n -C -s \
   '(-j --json -f)'{-j,--json}'[Data items from the command line are serialized as a JSON object.]' \
   '(-f --form -j)'{-f,--form}'[Data items from the command line are serialized as form fields.]' \
+  '--multipart[Similar to --form, but always sends a multipart/form-data request]' \
+  '--boundary=[Specify a custom boundary string for multipart/form-data requests]' \
+  '--raw=[This option allows you to pass raw request data without extra processing]' \
   '(-x --compress)'{-x,--compress}'[Content compressed with Deflate algorithm]' \
   '--pretty=[Controls output processing.]:output format:(all colors format none)' \
   '(-s --style)'{-s,--style}'=[Output coloring style]:STYLE:(autumn borland bw colorful default emacs friendly fruity manni monokai murphy native pastie perldoc ttr solarized tango trac vim vs)' \
+  '--unsorted[Disables all sorting while formatting output]' \
+  '--sorted[Re-enables all sorting options while formatting output]' \
+  '--response-charset=[Override the response encoding for terminal display purposes]' \
+  '--response-mime=[Override the response mime type for coloring and formatting for the terminal]' \
+  '--format-options=[Controls output formatting]' \
   '(-p --print)'{-p,--print}'=[String specifying what the output should contain]:print flags:_httpie_printflags' \
   '(-v --verbose)'{-v,--verbose}'[Print the whole request as well as the response.]' \
   '(-p -h --headers)'{-h,--headers}'[Print only the response headers.]' \
+  '(-p -m --meta)'{-m,--meta}'[Print only the response metadata]' \
   '(-p -b --body)'{-b,--body}'[Print only the response body.]' \
   '--all[By default, only the final request/response is shown]' \
   '(--P --history-print)'{-P,--history-print}'=[The same as --print but applies only to intermediary requests/response]:print flags:_httpie_printflags' \
@@ -164,6 +173,7 @@ _arguments -n -C -s \
   '(-o --output)'{-o,--output}'=[Save output to FILE.]:output file:_files' \
   '(-d --download)'{-d,--download}'=[Do not print the response body to stdout.]' \
   '(-c --continue)'{-c,--continue}'[Resume an interrupted download.]' \
+  '(-q --quiet)'{-q,--quiet}'[Do not print to stdout or stderr, except for errors and warnings when provided once]' \
   '(--session-read-only)--session=[Create, or reuse and update a session.]:session name (or path)' \
   '(--session)--session-read-only=[Create or read a session without updating it form the request/response exchange.]:session name (or path)' \
   '(-a --auth)'{-a,--auth}'=[If only the username is provided (-a username)]:USER\:PASS' \
@@ -176,14 +186,17 @@ _arguments -n -C -s \
   '--max-headers=[The maximum number of response headers to be read]:number:' \
   "--verify=[Enable or disable verification of ssl certificates.]:verify certificate:(yes no)" \
   '--ssl=[The desired protocol version to use]:ssl version:(ssl2.3 tls1 tls1.1 tls1.2)' \
+  '--ciphers=[A string in the OpenSSL cipher list format]' \
   '--cert=[Specify a local cert to use as client side SSL certificate]:cert:_files' \
   '--cert-key=[Specify the private to key to use with SSL]:cert key:_files' \
-  '--allow-redirects[Set this flag if full redirects are allowed (e.g. re-POST-ing of data at new ``Location``)]' \
+  '--cert-key-pass=[The passphrase to be used to with the given private key]' \
   '--timeout=[Float describes the timeout of the request (Use socket.setdefaulttimeout() as fallback).]:timeout (seconds)' \
   '--check-status[This flag instructs HTTPie to also check the HTTP status code and exit with an error if the status indicates one.]' \
   '--path-as-is[Bypass dot segment URL squashing]' \
+  '--chunked[Enable streaming via chunked transfer encoding]' \
   '(-I --ignore-stdin)'{-I,--ignore-stdin}'[Do not attempt to read stdin.]' \
   '(- *)--help[show help message.]' \
+  '(- *)--manual[show the full manual]' \
   "(- *)--version[show program's version number and exit.]" \
   '--traceback[Prints exception traceback should one occur.]' \
   '--default-scheme=[The default scheme to use if not specified in the URL]:scheme:' \
