@@ -435,8 +435,8 @@ case $state in
           "GOCACHE[directory to store cached information]:go build cache dir"
           "GODEBUG[enable runtime debug facilities]:runtime debug settings"
           "GOENV[location of the go environment configuration file]:configuration file"
-          "GOFLAGS[default go command line flags]:space sparated default command line flags"
-          "GOINSECURE[module prefixes that are feched insecurely]:comma separated module prefixes"
+          "GOFLAGS[default go command line flags]:space separated default command line flags"
+          "GOINSECURE[module prefixes that are fetched insecurely]:comma separated module prefixes"
           "GOOS[target operating system]:operating system"
           "GOPATH[path to resolve import statements]:import path"
           "GOPROXY[URL of go module proxy]:proxy url"
@@ -586,7 +586,7 @@ case $state in
             case $words[1] in
               download)
                 _arguments \
-                  '-json[print a sequance of JSON objects to standard output]' \
+                  '-json[print a sequence of JSON objects to standard output]' \
                   '-x[print the commands download executes]'
                 ;;
 
@@ -654,14 +654,22 @@ case $state in
             '-test.cpuprofile[write a cpu profile to file]:file:_files' \
             '-test.failfast[do not start new tests after the first test failure]' \
             '-test.list[list tests, examples, and benchmarks matching regexp then exit]:regexp' \
+            '-test.fuzz[run the fuzz test matching regexp]:regexp' \
+            '-test.fuzzcachedir[directory where interesting fuzzing inputs are stored]:dir:_path_files -/' \
+            '-test.fuzzminimizetime[time to spend minimizing a value after finding a failing input (default 1m0s)]:t' \
+            '-test.fuzztime[time to spend fuzzing; default is to run indefinitely]:t' \
+            '-test.fuzzworker[coordinate with the parent process to fuzz random values (for use only by cmd/go)]' \
+            '-test.list[list tests, examples, and benchmarks matching regexp then exit]:regexp' \
             '-test.memprofile[write an allocation profile to file]:file:_files' \
             '-test.memprofilerate[set memory allocation profiling rate (see runtime.MemProfileRate)]:rate' \
             '-test.mutexprofile[write a mutex contention profile to the named file after execution]:string' \
             '-test.mutexprofilefraction[if >= 0, calls runtime.SetMutexProfileFraction() (default 1)]:int' \
             '-test.outputdir[write profiles to dir]:dir:_path_files -/' \
+            '-test.paniconexit0[panic on call to os.Exit(0)]' \
             '-test.parallel[run at most n tests in parallel (default 4)]:n' \
             '-test.run[run only tests and examples matching regexp]:regexp' \
             '-test.short[run smaller test suite to save time]' \
+            '-test.shuffle[randomize the execution order of tests and benchmarks (default "off")]:string' \
             '-test.testlogfile[write test action log to file (for use only by cmd/go)]:file' \
             '-test.timeout[panic test binary after duration d (default 0, timeout disabled)]:d' \
             '-test.trace[write an execution trace to file]:file' \
@@ -682,16 +690,25 @@ case $state in
             '-coverprofile[write a coverage profile to file]:cover' \
             '-cpu[specify a list of GOMAXPROCS values]:cpus' \
             '-cpuprofile[write a CPU profile to the specified file]:profile' \
+            '-failtest[do not start new tests after the first test failure]' \
+            '-fuzz[run the fuzz test matching the regular expression]:regexp' \
+            '-fuzztime[run enough iterations of the fuzz target during fuzzing]:t' \
+            '-fuzzminimizetime[run enough iterations of the fuzz target during each minimization attempt]:t' \
+            '-json[log verbose output and test results in JSON]' \
+            '-list[list tests, benchmarks, fuzz tests, or examples matching the regular expression]:regexp' \
             '-memprofile[write a memory profile to file]:mem' \
             '-memprofilerate[enable more precise memory profiles]:n' \
+            '-mutexprofile[write a mutex contention profile to the specified file]:file:_files' \
             '-outputdir[place output files from profiling in output dir]:dir' \
             '-parallel[allow parallel execution of test functions]:n' \
             '-run[run tests and examples matching the regular expression]:regexp' \
             '-short[tell long-running tests to shorten their run time]' \
+            '-shuffle[randomize the execution order of tests and benchmarks]:type:(off on)' \
             '-test.-[specify options for test running]:test running options:' \
             '-timeout[timeout long running tests]:t' \
             '-trace[write an execution trace to the specified file]:trace' \
             '-v[verbose output]' \
+            '-vet[configure the invocation of "go vet" during "go test" to use the comma-separated list of vet checks]:list' \
             ${build_flags[@]} \
             '-exec[run test binary using xprog]:xprog' \
             '-o[compile test binary to named file]:file:_files' \
