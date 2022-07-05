@@ -59,6 +59,7 @@ _arguments -s -S -C \
   '(-% --stateflags)'{-%,--stateflags}'[show some states in the title bar]' \
   '(-_ --minibar -U --quickblank)'{-_,--minibar}'[suppress the title bar and show information at the bottom of the screen]' \
   '(-! --magic)'{-\!,--magic}'[try libmagic to determine applicable syntax]' \
+  '(-0 --zero)'{-0,--zero}'[Hide all bars, use whole terminal]' \
   '(-t -q)*: :->args' && ret=0
 
 if [[ -n $state ]]; then
