@@ -30,7 +30,7 @@
 # Description
 # -----------
 #
-#  Completion script for go 1.18 (http://golang.org).
+#  Completion script for go 1.19 (http://golang.org).
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -144,7 +144,6 @@ __go_gcflags() {
   '-goversion=[required version of the runtime]:string' \
   '-h[halt on error]' \
   '-importcfg=[read import configuration from file]:file' \
-  '-importmap=[add definition of the form source=actual to import map]:definition' \
   '-installsuffix=[set pkg directory suffix]:suffix' \
   '-j[debug runtime-initialized variables]' \
   '-json=[version,destination for JSON compiler/optimizer logging]:string' \
@@ -811,7 +810,6 @@ case $state in
                   '-g[debug code generation]' \
                   '-h[halt on error]' \
                   '-i[debug line number stack]' \
-                  '-importmap[add definition of the form source=actual to import map]:definition' \
                   '-installsuffix[set pkg directory suffix]:suffix' \
                   '-j[debug runtime-initialized variables]' \
                   '-l[disable inlining]' \
