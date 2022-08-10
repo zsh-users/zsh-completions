@@ -253,12 +253,12 @@ __go_envvarvals() {
       ;&
     GOOS)
       # from https://golang.org/doc/install/source#environment
-      _values 'operating system' aix android darwin dragonfly freebsd illumos js linux netbsd openbsd plan9 solaris windows
+      _values 'operating system' aix android darwin dragonfly freebsd illumos ios js linux netbsd openbsd plan9 solaris windows
       ;;
     GOHOSTARCH)
       ;&
     GOARCH)
-      _values 'architecture' amd64 386 arm ppc64
+      _values 'architecture' amd64 386 arm64 arm ppc64 ppc64le mips mipsle mips64 mips64le riscv64 s390x wasm
       ;;
     CGO_ENABLED)
       _values 'enable/disable cgo' 0 1
@@ -272,8 +272,14 @@ __go_envvarvals() {
     GO386)
       _values 'x86 floating point instruction set' 387 sse2
       ;;
+    GOAMD64)
+      _values 'amd64 instruction set' v1 v2 v3 v4
+      ;;
     GOMIPS*)
       _values 'mips floating point instructions' hardfloat softfloat
+      ;;
+    GOPPC64)
+      _values 'powerpc64 instruction set' power8 power9
       ;;
     GOWASM)
       _values 'web assembly features' -s ',' satconv signext
@@ -469,8 +475,10 @@ case $state in
           "PKG_CONFIG[Path to pkg-config tool.]:path to pkg-config"
           "GOARM[arm architecture]:arm architecture"
           "GO386[x86 instruction set]:x86 instruction set"
+          "GOAMD64[amd64 instruction set]:amd64 instruction set"
           "GOMIPS[mips instruction set]:mips instruction set"
           "GOMIPS64[mips64 instruction set]:mips64 instruction set"
+          "GOPPC64[powerpc64 instruction set]:powerpc64 instruction set"
           "GOWASM[web assembly features]:comma separated web assembly features"
           "GCCGOTOOLDIR[directory of gccgo tools]:gccgo tool directory"
           "GOROOT_FINAL[root of the go tree]:go root"
