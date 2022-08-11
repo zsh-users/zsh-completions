@@ -79,6 +79,7 @@ local cmake_build_options;cmake_build_options=(
     '-E[CMake command mode]:command:_cmake_command_help'
 
     '-L-[List cache variables]::_values "options" "[non-advanced cache variables]" "A[advanced cache variables]" "H[non-advanced cached variables with help]" "AH[advanced cache variables with help]"'
+    '--fresh[Configure a fresh build tree, removing any existing cache file]'
 
     '--build[Build a CMake-generated project binary tree]:project directory:_path_files -/'
     '--install[Install a CMake-generated project binary tree]:project directory:_path_files -/'
@@ -109,6 +110,7 @@ local cmake_build_options;cmake_build_options=(
     '--no-warn-unused-cli[Do not warn about command line options]'
     '--warn-unused-vars[Warn about unused variables]'
     '--check-system-vars[Find problems with variable usage in system files]'
+    '--compile-no-warning-as-error[Ignore COMPILE_WARNING_AS_ERROR property and CMAKE_COMPILE_WARNING_AS_ERROR variable]'
 
     '--profiling-format[Output data for profiling CMake scripts]:profiling format:(google-trace)'
     '--profiling-output[Select an output path for the profiling data]:filename:_files'
