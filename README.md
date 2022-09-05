@@ -47,6 +47,10 @@ Note: adding it as a regular Oh My ZSH! plugin will not work properly (see [#603
 
 Add `zinit light zsh-users/zsh-completions` to your `~/.zshrc`.
 
+### Using [Fig](https://fig.io)
+
+Click [here](https://fig.io/plugins/other/zsh-completions) to 1-click install `zsh-completions`
+
 ### Manual installation
 
 * Clone the repository:
