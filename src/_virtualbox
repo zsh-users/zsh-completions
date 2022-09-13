@@ -16,7 +16,7 @@
 
 
 _vboxmachines() {
-	VBoxManage list vms | egrep -o '^"[^"]+"' 2>/dev/null | sed -e 's|"||g' | while read machine; do
+	VBoxManage list vms | grep -Eo '^"[^"]+"' 2>/dev/null | sed -e 's|"||g' | while read machine; do
 		_wanted 'machine' expl 'machine' compadd $machine
 	done
 }
@@ -35,7 +35,7 @@ _vboxcommandoptions() {
 	optcount=0
 	option=""
 	optlines=()
-	echo "$cmdoutput" | egrep -o '  [\[A-Za-z0-9\-\<].*' | while read line; do
+	echo "$cmdoutput" | grep -Eo '  [\[A-Za-z0-9\-\<].*' | while read line; do
 		option="${option}${line}"
 		if [[ $line[-1] != '|' ]]; then
 			optcount=$(($optcount+1))
@@ -46,7 +46,7 @@ _vboxcommandoptions() {
 
 	# optionals ([abc])
 	for line in $optlines; do
-		echo "$line" | egrep -o '\[[^]]+\]' | while read option; do
+		echo "$line" | grep -Eo '\[[^]]+\]' | while read option; do
 			option=$(echo $option | sed 's|[]\[]||g' | cut -d ' ' -f 1)
 			_options=(${(s:|:)option})
 			for option in $_options; do

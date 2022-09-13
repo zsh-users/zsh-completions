@@ -156,7 +156,7 @@ __vm_list ()
     then
       _vagrant_vms=( $(_call_program path-all "vagrant status | \
                        awk '{print \$1}' | \
-                       egrep -v '^$|^(Current|This|above|VM,)$'" ) )
+                       grep -Ev '^$|^(Current|This|above|VM,)$'" ) )
       _store_cache VAGRANT_VMS _vagrant_vms
     fi
 
