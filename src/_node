@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Node.js v10.4.1 (https://nodejs.org)
+#  Completion script for Node.js v19.0.0 (https://nodejs.org)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -80,7 +80,6 @@ _arguments -C \
   '--enable-fips[enable FIPS crypto at startup]' \
   '--enable-source-maps[source map support]' \
   '--es-module-specifier-resolution=[extension resolution algorithm for es modules]:resolution algorithm:(explicit none)' \
-  '--experimental-global-webcrypto[expose experimental Web Crypto API on the global scope]' \
   '--experimental-import-meta-resolve[experimental ES Module import.meta.resolve() support]' \
   '(--loader --experimental-loader)'{--loader,--experimental-loader}'=[Specify the module of a custom ECMAScript Module loader]: :_files' \
   '--experimental-network-imports[experimental https support for the ES Module loader]' \
@@ -111,7 +110,10 @@ _arguments -C \
   '--no-addons[disable loading native addons]' \
   '--no-deprecation[silence deprecation warnings]' \
   '--no-experimental-fetch[disable experimental Fetch API]' \
+  '--no-experimental-global-customevent[expose experimental CustomEvent on the global scope]' \
+  '--no-experimental-global-webscrypto[expose experimental Web Crypto API on the global scope]' \
   '--no-experimental-repl-await[disable experimental await keyword support in REPL]' \
+  '--no-experimental-info-on-fatal-exception[hide extra information on fatal exception that causes exit]' \
   '--no-force-async-hooks-checks[disable checks for async_hooks]' \
   '--no-global-search-paths[disable global module search paths]' \
   '--no-warnings[silence all process warnings]' \
@@ -137,6 +139,7 @@ _arguments -C \
   '--secure-heap-min=[minimum allocation size from the OpenSSL secure heap]' \
   '--snapshot-blob=[path to the snapshot blob that is used to restore the application state]:snapshot:_files' \
   '--test[launch test runner on startup]' \
+  '--test-name-pattern=[run tests whose name matches this regular expression]:pattern' \
   '--test-only[run tests with "only" option set]' \
   '--throw-deprecation[throw an exception on deprecations]' \
   '--title=[the process title to use on startup]:process title' \
@@ -166,6 +169,8 @@ _arguments -C \
   "--use-openssl-ca[use OpenSSL's default CA store]" \
   '(- 1 *)--v8-options[print v8 command line options]' \
   "--v8-pool-size=[set v8's thread pool size]:number" \
+  "--watch[run in watch mode]" \
+  "--watch-path=[path to watch]: :_node_files" \
   '--zero-fill-buffers[automatically zero-fill all newly allocated Buffer and SlowBuffer instances]' \
   {-c,--check}'[syntax check script without executing]' \
   '(- 1 *)'{-e,--eval}'[evaluate script]:inline JavaScript' \
