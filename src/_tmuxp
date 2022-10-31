@@ -1,7 +1,7 @@
 #compdef tmuxp
 
 # ------------------------------------------------------------------------------
-# Copyright (c) 2017 Github zsh-users - http://github.com/zsh-users
+# Copyright (c) 2017 Github zsh-users - https://github.com/zsh-users
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@
 # Description
 # -----------
 #
-#  Completion script for tmuxp (https://tmuxp.git-pull.com/en/latest/)
+#  Completion script for tmuxp (https://github.com/tmux-python/tmuxp)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -47,17 +47,22 @@ _tmuxp() {
   _arguments -C \
     ":command:->command" \
     "*::options:->options" \
-    "--log_level:log level:(DEBUG INFO WARNING ERROR CRITICAL)" \
-    "--help[display usage information]"
+    "--log-level[log level(default info)]: :(debug info warning error critical)" \
+    '(- *)'{-h,--help}'[display usage information]' \
+    '(- *)'{-V,--version}'[show version number and exit]'
 
     case $state in
       (command)
         local -a subcommands
         subcommands=(
-        'convert:Convert a tmuxp config between JSON and YAML.'
-        'freeze:Snapshot a session into a config.'
-        'import:Import a teamocil/tmuxinator config.'
-        'load:Load tmuxp workspaces.'
+          'load:Load tmuxp workspaces'
+          'shell:launch python shell for tmux server, session, window and pane'
+          'import:Import a teamocil/tmuxinator config'
+          'convert:Convert a tmuxp config between JSON and YAML'
+          'debug-info:print out all diagnostic info'
+          'ls:list sessions in config directory'
+          'edit: run $EDITOR on config'
+          'freeze:Snapshot a session into a config'
         )
         _describe -t commands 'commands' subcommands
         ;;
@@ -72,10 +77,48 @@ _tmuxp() {
           (freeze)
             local sessions="$(__tmux_sessions)"
             _arguments -C \
+             '(- *)'{-h,--help}'[show  help message and exit]' \
+             '-S[pass-through for tmux -S]: :_files' \
+             '-L[pass-through for tmux -L]: :' \
+             '(-f --config-format)'{-f,--config-format}'[format to save in]: :(yaml json)' \
+             '(-o --save-to)'{-o,--save-to}'[file to save to]: :_files' \
+             '(-y --yes)'{-y,--yes}'[always answer yes]' \
+             '(-q --quiet)'{-q,--quiet}"[don't prompt for confirmation]" \
+             '--force[overwrite the config file]'\
               "1::session name:compadd $sessions"
             ;;
           (convert)
             _arguments -C \
+              '1:: :_files -g "*.(json|yaml|yml)"'
+            ;;
+          (shell)
+            local sessions="$(__tmux_sessions)"
+            local windows="$(__tmux_windows)"
+            _arguments -C \
+             '(- *)'{-h,--help}'[show  help message and exit]' \
+             '-S[pass-through for tmux -S]: :_files' \
+             '-L[pass-through for tmux -L]: :' \
+             '--best[use best shell available in site packages]' \
+             '--pdb[use plain pdb]' \
+             "--code[use stdlib's code.interact()]" \
+             '--ptipython[use ptpython + ipython]' \
+             '--ptpython[use ptpython]' \
+             '--ipython[use ipython]' \
+             '--bpython[use bpython]' \
+             (--no-startup)'--use-pythonrc[load PYTHONSTARTUP env var and ~/.pythonrc.py script in --code]' \
+             (--use-pythonrc)'--no-startup[do not load PYTHONSTARTUP env var and ~/.pythonrc.py script in --code]' \
+             (--no-vi-mode)'--use-vi-mode[use vi-mode in ptpython/ptipython]' \
+             (--vi-mode)'--no-vi-mode[do not use vi-mode in ptpython/ptipython]' \
+              "1::session name:compadd $sessions" \
+              "2::window name:compadd $windows"
+            ;;
+          (ls|debug-info)
+            _arguments -C \
+              '(- *)'{-h,--help}'[show help message and exit]'
+            ;;
+          (edit)
+            _arguments -C \
+              '(- *)'{-h,--help}'[show help message and exit]' \
               '1:: :_files -g "*.(json|yaml|yml)"'
             ;;
         esac
@@ -130,5 +173,19 @@ __tmux_sessions () {
   echo $tmux_sessions
 }
 
+__tmux_windows () {
+  local tmux_windows
+  tmux_windows=($(_call_program tmux_sessions 'tmux ls -F "#{window_name}"'))
+  echo $tmux_windows
+}
+
 _tmuxp "$@"
 
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
