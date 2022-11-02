@@ -467,23 +467,8 @@ _cmake_define_property_values() {
   return ret
 }
 
-local _cmake_generator_list
-_cmake_generator_list=(
-  'Green Hills MULTI'
-  'Unix Makefiles'
-  'Ninja'
-  'Ninja Multi-Config'
-  'CodeBlocks - Ninja'
-  'CodeBlocks - Unix Makefiles'
-  'CodeLite - Ninja'
-  'CodeLite - Unix Makefiles'
-  'Eclipse CDT4 - Ninja'
-  'Eclipse CDT4 - Unix Makefiles'
-  'Kate - Ninja'
-  'Kate - Unix Makefiless'
-  'Sublime Text 2 - Ninja'
-  'Sublime Text 2 - Unix Makefiles'
-)
+local -a _cmake_generator_list
+_cmake_generator_list=(${(f)"$(cmake --help | awk '/^Generators/{flag=1} flag && /^[* ] [^ ]/ {sub(/^[* ] /, ""); sub(/=.*$/, ""); sub(/\[arch\]/, ""); sub(/ *$/, ""); print}')"})
 
 # -----------------
 # _cmake_generators
