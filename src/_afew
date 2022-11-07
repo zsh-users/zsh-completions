@@ -1,6 +1,6 @@
 #compdef afew
 # ------------------------------------------------------------------------------
-# Copyright (c) 2016 Github zsh-users - http://github.com/zsh-users
+# Copyright (c) 2016 Github zsh-users - https://github.com/zsh-users
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,8 @@
 # Description
 # -----------
 #
-#  Completion script for afew an initial tagging script for notmuch mail. (https://github.com/teythoon/afew)
+#  Completion script for afew(version 3.0.1) an initial tagging script for notmuch mail.
+#  (https://github.com/teythoon/afew)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -39,14 +40,11 @@
 # ------------------------------------------------------------------------------
 
 _arguments \
-  '(- 1 *)-h[display usage information]' \
-  "(-c --classify -l --learn= -t --tag -u --update -U --update-reference -m --move-mails)"{-w,--watch}"[continuously monitor the mailbox for new messages matching the given query]" \
-  "(-c --classify -l --learn= -u --update -U --update-reference -m --move-mails -w --watch)"{-t,--tag}"[run the tag filters]" \
-  "(-c --classify -t --tag -u --update -U --update-reference -m --move-mails -w --watch)"{-l,--learn=}"[train category with the messages matching query]" \
-  "(-c --classify -l --learn= -t --tag -U --update-reference -m --move-mails -w --watch)"{-u,--update}"[update the categories (requires no query)]" \
-  "(-c --classify -l --learn= -t --tag -u --update -m --move-mails -w --watch)"{-U,--update-reference}"[update the reference category (takes quite some time) (requires no query)]" \
-  "(-l --learn= -t --tag -u --update -U --update-reference -m --move-mails -w --watch)"{-c,--classify}"[classify each message matching the iven query]" \
-  "(-c --classify -l --learn= -t --tag -u --update -U --update-reference -w --watch)"{-m,--move-mails}"[move mail files between maildir folders]" \
+  '(- 1 *)'{-h,--help}'[display usage information]' \
+  '(- 1 *)'{-V,--version}"[show program's version number and exit]" \
+  "(-t --tag -m --move-mails)"{-w,--watch}"[continuously monitor the mailbox for new messages matching the given query]" \
+  "(-m --move-mails -w --watch)"{-t,--tag}"[run the tag filters]" \
+  "(-w --watch -m --move-mails)"{-m,--move-mails}"[move mail files between maildir folders]" \
   "(-n --all)"{-a,--all}"[operate on all email]" \
   "(-a --new)"{-n,--new}"[operate on all new email]" \
   {-C,--notmuch-config=}"[specify path to notmuch configuration file]:files:_files" \
@@ -54,7 +52,8 @@ _arguments \
   {-d,--dry-run}"[don't change the DB]" \
   {-R,--reference-set-size=}"[specify size of the reference set]:size [1000]" \
   {-T,--reference-set-timeframe-days=}"[don't use emails older than specified age]:age (days) [30]" \
-  {--verbose,-v}"[be more verbose]" \
+  {-N,--notmuch-args=}"[arguments for nutmuch new(in move mode)]:notmuch arg" \
+  {-v,--verbose}"[be more verbose]" \
   '*: :_guard "^-*" query'
 
 # Local Variables:
