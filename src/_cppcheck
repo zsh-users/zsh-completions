@@ -1,6 +1,6 @@
 #compdef cppcheck
 # ------------------------------------------------------------------------------
-# Copyright (c) 2019 Github zsh-users - http://github.com/zsh-users
+# Copyright (c) 2019 Github zsh-users - https://github.com/zsh-users
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@
 # Notes
 # -----
 #
-#  Created for Cppcheck version 1.90.
+#  Created for Cppcheck version 2.9
 #
 # ------------------------------------------------------------------------------
 
@@ -54,9 +54,11 @@ _cppcheck() {
 
   _arguments -C \
     "--addon=[Execute addon]" \
+    "--addon-python=[Specify the python interpreter]: :_files" \
     "--cppcheck-build-dir=[Analysis output directory]:directory:_files -/" \
     "--check-config[Check cppcheck configuration]" \
     "--check-library[Show information when library files have incomplete info]" \
+    "--clang=[Use clang parser instead of the builtin Cppcheck parser]: :_files" \
     "--config-exclude=[Path to be excluded from configuration checking]:directory:_files -/" \
     "--config-exclude-files=[A file that contains a list of config-excludes]:file:_files" \
     "--doc[Print a list of all available checks]" \
@@ -68,38 +70,38 @@ _cppcheck() {
     "--error-exitcode=[Integer to return if errors are found]" \
     "--errorlist[Print a list of all the error messages in XML format]" \
     "--exitcode-suppressions=[Used when certain messages should be displayed but should not cause a non-zero exitcode]:_files" \
+    "*--file-filter=[Analyze only those files matching the given filter str]:filter" \
     "--file-list=[Specify the files to check in a text file]:_files" \
-    {-f,--force}"[Force checking of all configurations in files]" \
-    {-h,--help}"[Print this help]" \
+    '(-f --force)'{-f,--force}"[Force checking of all configurations in files]" \
+    '(- 1 *)'{-h,--help}"[Print this help]" \
     "-I[A file that contains a list of config-excludes]:directory:_files -/" \
     "--include-file=[Specify directory paths to search for included header files in a text file]:file:_files" \
     "--include=[Force inclusion of a file before the checked file]:file:_files" \
     "-i[Give a source file or source file directory to exclude from the check]:directory or file:_files" \
     "--inconclusive[Report even though the analysis is inconclusive]" \
     "--inline-suppr[Enable inline suppressions]" \
-    "-j[Number of threads to do the checking simultaneously]" \
-    "-l[No new threads should be started if the load average is exceeds this value]" \
+    "-j[Number of threads to do the checking simultaneously]::num" \
+    "-l[No new threads should be started if the load average is exceeds this value]::load_avg" \
     {-x,--language=}"[Forces cppcheck to check all files as the given language]:language:(c c++)" \
-    "--cfg=[Load file that contains information about types and functions]" \
-    "--max-ctu-depth=[Maximum depth in whole program analysis]" \
-    "--output-file=[File to save results]:file:_files" \
-    "--project=[Run Cppcheck on project]:file:_files" \
     "--max-configs=[Maximum number of configurations to check in a file]" \
-    "--platform=[Set platform specific types and sizes]:platforms:(unix32 unix64 win32A win32W win64 native unspecified)" \
+    "--max-ctu-depth=[Maximum depth in whole program analysis]:num" \
+    "--output-file=[File to save results]:file:_files" \
     "--plist-output=[Generate Clang-plist output files in folder]:_files" \
-    {-q,--quiet}"[Do not show progress reports]" \
-    {-rp,--relative-paths}"[Use relative paths in output]" \
+    "--project=[Run Cppcheck on project]:file:_files" \
+    "--project-configuration=[Limit the configuration cppcheck should check]:configuration" \
+    "--platform=[Set platform specific types and sizes]:platforms:(unix32 unix64 win32A win32W win64 avr8 elbrus-e1cp pic8 pic8-enhanced pic16 mips32 native unspecified)" \
+    '(-q --quiet)'{-q,--quiet}"[Do not show progress reports]" \
     {-rp,--relative-paths}"=[Use relative paths in output (separated with ;)]:_files" \
     "--report-progress[Report progress messages while checking a file]" \
     "--std=[Set standard]:std:(c89 c99 c11 c++03 c++11 c++14 c++17 c++20)" \
     "--suppress=[Suppress warnings (format: \[error id\]:\[filename\]:\[line\])]" \
     "--suppressions-list=[Suppress warnings listed in the file]:_files" \
+    "--suppress-xml=[Suppress warnings listed in a xml file]:_files" \
     "--template=[Format the error messages]" \
-    "--template=[Format the error message location]" \
-    {-v,--verbose}"[Output more detailed error information]" \
+    "--template-location=[Format the error message location]" \
+    "(-v --verbose)"{-v,--verbose}"[Output more detailed error information]" \
     "--version[Print out version number]" \
     "--xml[Write results in xml format to stderr]" \
-    "--xml-version=[Select the XML file version]" \
     '*: :_cppcheck_files'
 }
 
@@ -112,4 +114,3 @@ _cppcheck "$@"
 # sh-basic-offset: 2
 # End:
 # vim: ft=zsh sw=2 ts=2 et
-
