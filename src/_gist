@@ -1,6 +1,6 @@
 #compdef gist
 # ------------------------------------------------------------------------------
-# Copyright (c) 2017 Github zsh-users - http://github.com/zsh-users
+# Copyright (c) 2017 Github zsh-users - https://github.com/zsh-users
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -39,9 +39,6 @@
 #  * Shivam Mehta <https://github.com/maniac-en>
 #
 # ------------------------------------------------------------------------------
-# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
-# vim: ft=zsh sw=2 ts=2 et
-# ------------------------------------------------------------------------------
 
 local curcontext="$curcontext" state line ret=1
 typeset -A opt_args
@@ -50,17 +47,18 @@ _arguments -C \
   '(--login)--login[Authenticate gist on this computer.]' \
   '(-f --filename)'{-f,--filename}'[Sets the filename and syntax type.]:NAME' \
   '(-t --type)'{-t,--type}'[Sets the file extension and syntax type.]:EXT' \
-  '(-p --private)'{-p,--private}'[Makes your gist private.]' \
-  '(--no-private)'--no-private'[Makes your gist no private.]' \
+  '(-p --private --no-private)'{-p,--private}'[Makes your gist private.]' \
+  '(--no-private -p --private)'--no-private'[Makes your gist no private.]' \
   '(-d --description)'{-d,--description}'[Adds a description to your gist.]:DESCRIPTION' \
   '(-s --shorten)'{-s,--shorten}'[Shorten the gist URL using git.io.]' \
   '(-u --update)'{-u,--update}'[Update an existing gist.]:URL ID:user_gists' \
-  '(-a --anonymous)'{-a,--anonymous}'[Create an anonymous gist.]' \
   '(-c --copy)'{-c,--copy}'[Copy the resulting URL to the clipboard]' \
   '(-e --embed)'{-e,--embed}'[Copy the embed code for the gist to the clipboard]' \
-  '(-o --open)'{-o,--open}'[Open the resulting URL in a browser]' \
-  '(--no-open)'--no-open'[No open the resulting URL in a browser]' \
+  '(-o --open --no-open)'{-o,--open}'[Open the resulting URL in a browser]' \
+  '(--no-open -o --open)'--no-open'[No open the resulting URL in a browser]' \
   '(-P --paste)'{-P,--paste}'[Paste from the clipboard to gist]' \
+  '(-R --raw)'{-R,--raw}'[Display raw URL of the new gist]' \
+  '(-l --list)'{-l,--list}'[List all gists for user ]::user' \
   '(-h --help)'{-h,--help}'[print options help]' \
   '(-v --version)'{-v,--version}'[print version]' \
   '(-r --read)'{-r,--read}'[Read a gist and print out the contents]:user gists:user_gists' \
@@ -103,7 +101,7 @@ user_gists() {
     echo "$_gists" | while read -r line; do
       # Splitting the gist -l output
       url="$(echo "$line" | cut -d " " -f 1 | cut -d "/" -f 4)"
-      # gists w/o descriptions can have only one column in the output, those 
+      # gists w/o descriptions can have only one column in the output, those
       # have their description set to an empty string
       description="$(echo "$line" | awk '{if(NF > 1){$1=""; print $0}}')"
 
@@ -118,3 +116,11 @@ user_gists() {
 }
 
 return ret
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
