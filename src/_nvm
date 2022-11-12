@@ -1,6 +1,6 @@
 #compdef nvm
 # ------------------------------------------------------------------------------
-# Copyright (c) 2011 Github zsh-users - http://github.com/zsh-users
+# Copyright (c) 2011 Github zsh-users - https://github.com/zsh-users
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,78 +28,203 @@
 # Description
 # -----------
 #
-#  Completion script for nvm (https://github.com/creationix/nvm).
+#  Completion script for nvm v0.39.2 (https://github.com/nvm-sh/nvm).
 #
 # ------------------------------------------------------------------------------
 # Authors
 # -------
 #
 #  * Changwoo Park (https://github.com/pismute)
+#  * Shohei Yoshida (https://github.com/syohex)
 #
 # ------------------------------------------------------------------------------
 
-local curcontext="$curcontext" state line  ret=1
+__nvm() {
+  typeset -A opt_args
+  local context state line
 
-local -a _1st_arguments
-_1st_arguments=(
-  'help:Show this message'
-  'install:Download and install a <version>'
-  'uninstall:Uninstall a <version>'
-  'use:Modify PATH to use <version>'
-  'run:Run <version> with <args> as arguments'
-  'ls:List installed [versions]'
-  'ls-remote:List remote versions available for install'
-  'deactivate:Undo effects of NVM on current shell'
-  'alias:Set an alias named <name> pointing to <version>. Show all aliases beginning with [<pattern>].'
-  'unalias:Deletes the alias named <name>'
-  'copy-packages:Install global NPM packages contained in <version> to current version'
-  'clear-cache:Clear cache'
-  'version:Show current node version'
-)
+  local curcontext="$curcontext"
+  local ret=1
 
-_arguments -C \
-  '1: :->cmds' \
-  '*: :->args' && ret=0
+  _arguments -C \
+    '--help[show help message]' \
+    '--no-color[suppress colored output]' \
+    '--version[print out the installed version of nvm]' \
+    '1: :__nvm_subcommands' \
+    '*::arg:->args' && ret=0
 
-__nvm_aliases(){
+  case "$state" in
+    args)
+      case $words[1] in
+        (install)
+          _arguments -C \
+            '-s[Skip binary download, install from source only]' \
+            '-b[Skip source download, install from binary only]' \
+            '--reinstall-packages-from=[When installing, reinstall packages installed in node]:version' \
+            '--lts=[When installing, only select from LTS versions]::lts_name' \
+            '--skip-default-packages[When installing, skip the default-packages file if it exists]' \
+            '--latest-npm[After installing, attempt to upgrade to the latest working npm on the given node version]' \
+            '--no-progress[Disable the progress bar on any downloads]' \
+            '--alias=[After installing, set the alias specified to the version specified]' \
+            '--default[After installing, set default alias to the version specified]' \
+            '1::version:__nvm_versions' \
+            && ret=0
+          ;;
+        (uninstall)
+          _arguments -C \
+            '--lts=[When installing, only select from LTS versions]::lts_name' \
+            '1: :__nvm_installed_versions' \
+            && ret=0
+          ;;
+        (use)
+          _arguments -C \
+            '--silent[Silences stdout/stderr output]' \
+            '--lts=[When installing, only select from LTS versions]::lts_name' \
+            '1: :__nvm_installed_versions' \
+            '*: :_normal' \
+            && ret=0
+          ;;
+        (exec)
+          _arguments -C \
+            '--silent[Silences stdout/stderr output]' \
+            '--lts=[When installing, only select from LTS versions]::lts_name' \
+            '1: :__nvm_installed_versions' \
+            '*: :_normal' \
+            && ret=0
+          ;;
+        (run)
+          _arguments -C \
+            '--silent[Silences stdout/stderr output]' \
+            '--lts=[When installing, only select from LTS versions]::lts_name' \
+            '1: :__nvm_installed_versions' \
+            '*: :_normal' \
+            && ret=0
+          ;;
+        (ls)
+          _arguments -C \
+            '--no-colors[Suppress colored output]' \
+            '--no-alias[Suppress `nvm alias` output]' \
+            && ret=0
+          ;;
+        (ls-remote)
+          _arguments -C \
+            '--silent[Silences stdout/stderr output]' \
+            '--lts=[When installing, only select from LTS versions]::lts_name' \
+            '--no-colors[Suppress colored output]' \
+            && ret=0
+          ;;
+        (version-remote)
+          _arguments -C \
+            '--lts=[When installing, only select from LTS versions]::lts_name' \
+            '1: :__nvm_versions' \
+            && ret=0
+          ;;
+        (deactivate)
+          _arguments -C \
+            '--silent=[Silences stdout/stderr output]' \
+            && ret=0
+          ;;
+        (alias)
+          _arguments -C \
+            '1:name' \
+            '2:version:__nvm_installed_versions' \
+            && ret=0
+          ;;
+        (unalias)
+          _arguments -C \
+            '1:version:__nvm_installed_versions' \
+            && ret=0
+          ;;
+        (reinstall-package)
+          _arguments -C \
+            '--silent=[Silences stdout/stderr output]' \
+            '1: :__nvm_installed_versions' \
+            && ret=0
+          ;;
+        (which)
+          _arguments -C \
+            '1: : _alternative "version:version:__nvm_installed_versions" "current: :(current)"' \
+            && ret=0
+          ;;
+        (cache)
+          _arguments -C \
+            '1: :__nvm_cache_subcommands' \
+            && ret=0
+          ;;
+        *)
+          (( ret )) && _message 'no more arguments'
+          ;;
+      esac
+      ;;
+  esac
+
+  return ret
+}
+
+__nvm_subcommands() {
+  local -a commands=(
+    'help:Show this message'
+    'install:Download and install a <version>'
+    'uninstall:Uninstall a <version>'
+    'use:Modify PATH to use <version>'
+    'exec: Run <command> on <version>'
+    'run:Run <version> with <args> as arguments'
+    'current:Display currently activated version of Node'
+    'ls:List installed [versions]'
+    'ls-remote:List remote versions available for install'
+    'version:Show current node version'
+    'version-remote:Resolve the given description to a single remote version'
+    'deactivate:Undo effects of NVM on current shell'
+    'alias:Set an alias named <name> pointing to <version>. Show all aliases beginning with [<pattern>].'
+    'unalias:Deletes the alias named <name>'
+    'install-latest-npm:Attempt to upgrade to the latest working npm on the current node version'
+    'reinstall-packages:Reinstall global npm packages contained in <version> to current version'
+    'unload:Unload `nvm` from shell'
+    'which:Display path to installed node version'
+    'cache:Show cache directory/Clear cache'
+    'set-colors:Set five text colors using format "yMeBg"'
+  )
+
+  _describe -t commands 'command' commands "$@"
+}
+
+__nvm_aliases() {
   local aliases
-  aliases=""
-  if [ -d $NVM_DIR/alias ]; then
-    aliases="`cd $NVM_DIR/alias && ls`"
+  if [[ -d $NVM_DIR/alias ]]; then
+    aliases=$(echo $NVM_DIR/alias/*(:t))
   fi
-  echo "${aliases}"
+  echo "$aliases"
 }
 
-__nvm_versions(){
-  echo "$(nvm_ls) $(__nvm_aliases)"
+__nvm_versions() {
+  # nvm ls-remote is slow
+  if [[ ${#__nvm_node_version_cache[@]} == 0 ]]; then
+    __nvm_node_version_cache=(${(@f)"$(nvm ls-remote --no-colors | awk '{print $1}')"})
+  fi
+
+  _describe -t versions 'version' __nvm_node_version_cache "$@"
 }
 
-case $state in
-  cmds)
-    _describe -t commands 'nvm command' _1st_arguments && ret=0
-    ;;
+__nvm_installed_versions() {
+  local -a versions
 
-  args)
-    case $words[2] in
-      (use|run|ls|list|install|uninstall|copy-packages)
+  if (( $+functions[nvm_ls] )); then
+    versions=(${(f)"$(nvm_ls)"})
+  fi
 
-        _values 'version' $(__nvm_versions) && ret=0
-        ;;
+  versions=($versions $(__nvm_aliases))
+  _describe -t versions 'version' versions "$@"
+}
 
-      (alias|unalias)
+__nvm_cache_subcommands() {
+  local -a commands=(
+    'dir:Display path to the cache directory for nvm'
+    'clear:Empty cache directory for nvm'
+  )
+  _describe -t commands 'command' commands "$@"
+}
 
-        _values 'aliases' $(__nvm_aliases) && ret=0
-        ;;
-
-      *)
-        (( ret )) && _message 'no more arguments'
-        ;;
-
-    esac
-    ;;
-esac
-
-return ret
+__nvm "$@"
 
 # Local Variables:
 # mode: Shell-Script
