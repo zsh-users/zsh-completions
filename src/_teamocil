@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Teamocil 0.4.5 (https://github.com/remiprev/teamocil).
+#  Completion script for Teamocil 1.4.2 (https://github.com/remiprev/teamocil).
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -44,4 +44,13 @@ _arguments \
     '--layout [use a specific layout file, instead of \`~/.teamocil/<layout>.yml\`]' \
     '--list[list all available layouts in \`~/.teamocil/\`]' \
     '--show[show the content of the layout file instead of executing it]' \
+    '--debug[show the commands Teamocil will execute instead of actually executing them]' \
     '*:teamocil layouts:_files -W ~/.teamocil -g "*.yml(:r)"'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
