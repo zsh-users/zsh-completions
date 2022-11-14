@@ -1,6 +1,6 @@
 #compdef rubocop
 # ------------------------------------------------------------------------------
-# Copyright (c) 2015 Github zsh-users - http://github.com/zsh-users
+# Copyright (c) 2015 Github zsh-users - https://github.com/zsh-users
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,56 +28,93 @@
 # Description
 # -----------
 #
-#  Completion script for rubocop (https://github.com/bbatsov/rubocop)
+#  Completion script for rubocop 1.38 (https://github.com/rubocop/rubocop)
 #
 # ------------------------------------------------------------------------------
 # Authors
 # -------
 #
 #  * Akira Maeda <https://github.com/glidenote>
+#  * Shohei Yoshida <https://github.com/syohex>
 #
-# ------------------------------------------------------------------------------
-# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
-# vim: ft=zsh sw=2 ts=2 et
 # ------------------------------------------------------------------------------
 
 local curcontext="$curcontext" state line ret=1
 typeset -A opt_args
 
 _rubocop_format_params() {
-  _values \
-    'FORMATTER' \
-    'progress' \
-    'simple' \
-    'clang' \
-    'disabled' \
-    'fuubar' \
-    'emacs' \
-    'json' \
-    'files' \
-    'offenses'
+  local -a formatter=(
+    "autogenconf" "clang" "emacs" "files" "fuubar" "github" "html" "json" "junit"
+    "markdown" "offenses" "pacman" "progress" "quiet" "simple" "tap" "worst"
+  )
+
+  _values 'formatter' $formatter
 }
 
 _arguments -C \
-  '(--only)--only[Run only the given cop(s)]' \
-  '(-c --config)'{-c,--config}'[Specify configuration file]' \
-  '(--auto-gen-config)--auto-gen-config[Generate a configuration file acting as a TODO list]' \
-  '(--force-exclusion)--force-exclusion[Force excluding files specified in the configuration `Exclude` even if they are explicitly passed as arguments]' \
-  '(-f --format)'{-f,--format}'[Choose an output formatter.]:FORMATTER:_rubocop_format_params' \
-  '(-o --out)'{-o,--out}'[Write output to a file instead of STDOUT]' \
-  '(-r --require)'{-r,--require}'[Require Ruby file.]' \
-  '(--fail-level)--fail-level[Minimum severity for exit with error code.]' \
-  '(--show-cops)--show-cops[Shows the given cops, or all cops by default, and their configurations for the current directory.]' \
-  '(-F --fail-fast)'{-f,--fail-fast}'[Inspect files in order of modification time ant stop after the first file containing offenses]' \
+  '(-l --lint)'{-l,--lint}'[Run only lint cops]' \
+  '(-x --fix-layout)'{-x,--fix-layout}'[Run only layout cops, with autocorrect on]' \
+  '--safe[Run only safe cops]' \
+  '*--except[Exclude the given cops]:cops' \
+  '*--only[Run only the given cops]:cops' \
+  '--only-guide-cops[Run only cops for rules that link to a style guide]' \
+  '(-F --fail-fast)'{-f,--fail-fast}'[Inspect files in order of modification time and stop after the first file containing offenses]' \
+  '--disable-pending-cops[Run without pending cops]' \
+  '--enable-pending-cops[Run with pending cops]' \
+  '--ignore-disable-comments[Run cops even when they are disabled locally by a `rubocop:disable` directive]' \
+  '--force-exclusion[Any files excluded by `Exclude` in configuration files will be excluded, even if given explicitly as arguments]' \
+  '(-s --stdin)'{-s,--stdin}'[Pipe source from STDIN, using FILE in offense reports]: :_files' \
+  '(-P --parallel --no-parallel)'{-p,--parallel}'[Use available CPUs to execute inspection in parallel]' \
+  '(-P --parallel --no-parallel)--no-parallel[Execute not parallel]' \
+  '--raise-cop-error[Raise cop-related errors with cause and location]' \
+  '--fail-level[Minimum severity for exit with error code]:severity:(autocorrect info refactor convention warning error fatal)' \
+  '(-C --cache)'{-C,--cache}'[Use result caching or not]: :(TRUE FALSE)' \
+  '--cache-root[Set the cache root directory]: :_files -/' \
+  '--server[If a server process has not been started yet start the server process and execute inspection with server]' \
+  '--restart-server[Restart server process]' \
+  '--start-server[Start server process]' \
+  '--stop-server[Stop server process]' \
+  '--server-status[Show server status]' \
+  '(-f --format)'{-f,--format}'[Choose an output formatter]:FORMATTER:_rubocop_format_params' \
+  '(-D --display-cop-names)'{-D,--display-cop-names}'[Display cop names in offense messages]' \
+  '(-E --extra-details)'{-E,--extra-details}'[Display extra details in offense messages]' \
+  '(-S --display-style-guide)'{-S,--display-style-guide}'[Display style guide URLs in offense messages]' \
+  '(-o --out)'{-o,--out}'[Write output to a file instead of STDOUT]: :_files' \
+  '--stderr[Write all output to stderr except for the autocorrected source]' \
+  '--display-time[Display elapsed time in seconds]' \
+  '--display-only-failed[Only output offense messages]' \
+  '--display-only-fail-level-offenses[Only output offense messages at the specified --fail-level or above]' \
+  '--display-only-correctable[Only output correctable offense messages]' \
+  '--display-only-safe-correctable[Only output safe-correctable offense messages with combined with --display-only-correctable]' \
+  '(-a --autocorrect)'{-a,--autocorrect}"[Auto-correct offenses(only when it's safe)]" \
+  '(-A --autocorrect-all)'{-A,--autocorrect-all}'[Autocorrect offenses(safe and unsafe)]' \
+  '--auto-gen-config[Generate a configuration file acting as a TODO list]' \
+  '--regenerate-todo[Regenerate the TODO configuration file using the last configuration]' \
+  '(--no-exclude-limit)--exclude-limit[Set the limit for how many files to explicitly exclude]:count' \
+  '(--exclude-limit)--no-exclude-limit[Do not set the limit for how many files to exclude]' \
+  '--offense-counts[Include offense counts in configuration file generated by --auto-gen-config]' \
+  '--auto-gen-only-exclude[Generate only Exclude parameters and not Max when running --auto-gen-config]' \
+  '--auto-gen-timestamp[Include the data and time when the --auto-gen-config was run in the file it generates]' \
+  '(-L --list-target-files)'{-L,--list-target-files}'[List all files RuboCop will inspect]' \
+  '*--show-cops[Show the given cops or all cops]::cops' \
+  '--show-docs-url[Display url to documentation for the given cops or base url by default]::cops' \
+  '--init[Generate a .rubocop.yml file in the current directory]' \
+  '(-c --config)'{-c,--config}'[Specify configuration file]: :_files' \
   '(-d --debug)'{-d,--debug}'[Display debug info]' \
-  '(-D --display-cop-names)'{-D,--display-cop-names}'[Display cop names in offense messages.]' \
-  '(-R --rails)'{-R,--rails}'[Run extra Rails cops.]' \
-  '(-l --lint)'{-l,--lint}'[Run only lint cops.]' \
-  '(-a --auto-correct)'{-a,--auto-correct}'[Auto-correct offenses.]' \
-  '(-n --no-color)'{-n,--no-color}'[Disable color output.]' \
-  '(-v --version)'{-v,--version}'[Disable version.]' \
-  '(-V --verbose-version)'{-V,--verbose-version}'[Disable verbose version.]' \
-  '(-h --help)'{-h,--help}'[Show help.]' \
+  '(-r --require)'{-r,--require}'[Require Ruby file]: :_files' \
+  '(--no-color --color)--color[Force color output on]' \
+  '(--no-color --color)--no-color[Force color output off]' \
+  '(-v --version -V --verbose-version)'{-v,--version}'[Display version]' \
+  '(-V --verbose-version -v --version)'{-V,--verbose-version}'[Display verbose version]' \
+  '(- *)'{-h,--help}'[Show help]' \
   '*: :_files' && ret=0
 
 return ret
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
