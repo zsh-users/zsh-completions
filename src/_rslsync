@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for resilio sync (https://getsync.com/).
+#  Completion script for resilio sync 2.7.3 (https://www.resilio.com/individuals/).
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -42,20 +42,31 @@ _rslsync(){
   integer ret=1
   local -a args
   args+=(
-    '(-)--help[Print help]'
-    '(--help)--config[Use a configuration file]:file:_files'
-    '(--help)--dump-sample-config[Print a sample configuration file]'
-    '(--help)--generate-secret[Generate a read/write key]::version:(2)'
-    '(--help)--get-ro-secret[Get the read-only key associated to a read/write key]:key:'
-    '(--help)--identity[Creates user identity]:name:'
-    '(--help)--license[Apply owner license]:file:_files'
-    '(--help)--log[Set log file]:file:_files'
-    '(--help)--nodaemon[Do not daemonize]'
-    '(--help)--storage[Storage path for identity and license]:path:_files -/'
+    '(- *)--help[Print help]'
+    '--config[Use a configuration file]:file:_files'
+    '--storage[Storage path for identity and license]:path:_files -/'
+    '--identity[Creates user identity]:name:'
+    '--license[Apply owner license]:file:_files'
+    '--decrypt[Decrypt encrypted folder]:'
+    '--upgradedb[Upgrade databases in specified storage or upgrade a single db]:db:_files'
+    '--nodaemon[Do not daemonize]'
+    '--dump-sample-config[Print a sample configuration file]'
+    '--log[Set log file]:file:_files'
     '(--help)--webui.listen[Set the webui listening interface]:ip\:port:'
+    '--generate-secret[Generate a read/write key]::version:(2)'
+    '--get-ro-secret[Get the read-only key associated to a read/write key]:key:'
+    '--server[Set Management Console address]:ip\:port:'
   )
   _arguments $args[@] && ret=0
   return ret
 }
 
 _rslsync
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
