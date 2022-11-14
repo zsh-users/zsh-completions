@@ -78,11 +78,8 @@ _bundle_gems() {
 }
 
 _bundle_groups() {
-  setopt extendedglob
-
-  local gemdir=$(echo (../)#Gemfile(:h))
-  if [[ -n $gemdir ]]; then
-    local -a groups=($(cd "$gemdir" && awk '/^ *group *:/{sub(/^ *group *:/, ""); print $1}' Gemfile))
+  if [[ -e Gemfile ]]; then
+    local -a groups=(${(@f)"$(awk '/^ *group *:/{sub(/^ *group *:/, ""); print $1}' Gemfile)"})
     _values 'groups' $groups
   fi
 }
