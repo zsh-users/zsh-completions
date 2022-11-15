@@ -1,6 +1,6 @@
 #compdef glances
 # ------------------------------------------------------------------------------
-# Copyright (c) 2011 Github zsh-users - http://github.com/zsh-users
+# Copyright (c) 2011 Github zsh-users - https://github.com/zsh-users
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,48 +28,98 @@
 # Description
 # -----------
 #
-#  Completion script for glances (http://nicolargo.github.com/glances/).
+#  Completion script for glances (https://nicolargo.github.io/glances/).
 #
 # ------------------------------------------------------------------------------
 # Authors
 # -------
 #
 #  * loranger (https://github.com/loranger)
+#  * Shohei Yoshida (https://github.com/syohex)
 #
 # ------------------------------------------------------------------------------
 
 _glances() {
-
-    _arguments \
-        "-0[Divide task CPU usage by the total number of CPUs]" \
-        "-1[Start Glances in per CPU mode]" \
-        "-2[Disable left sidebar]" \
-        "-3[Disable quick look module]" \
-        "-4[Disable all but quick look and load]" \
-        "-5[Disable top menu]" \
-        "-6[Start Glances in mean GPU mode]" \
-        "-b[Display network rate in Byte per second]" \
-        "-B[Bind server to the given IP or host NAME]:host:_hosts" \
-        "-c[Connect to a Glances server]:host:_hosts" \
-        "-C[Path to the configuration file]:configuration path:_files -/" \
-        "-d[Enable debug mode]" \
-        "-h[Display the syntax and exit]" \
-        "-o[Define additional output (available: HTML or CSV)]:output type:(HTML CSV)" \
-        "-p[Define the client or server TCP port (default: 61209)]:port:_ports" \
-        "-q[Disable the curses interface]" \
-        "-s[Run Glances in server mode]" \
-        "-t[Set the refresh time in seconds (default: 3)]:seconds:" \
-        "-V[Display the version and exit]" \
-        "-w[Run Glances in web server mode]" \
-        "-z[Do not use the bold color attribute]" \
-        "--browser[Start the client browser]" \
-        "--disable-bg[Disable background colors in the terminal]" \
-        "--disable-bold[Disable bold mode in the terminal]" \
-        "--hide-kernel-threads[Hide kernel threads in process list]" \
-        "--password[Define a client/server password]" \
-        "--theme-white[Optimize display colors for white background]" \
-        "--tree[Display processes as tree]" \
-        "--username[Define a client/server username]" \
+  _arguments \
+    '(- *)'{-h,--help}'[show this help message and exit]' \
+    '(- *)'{-V,--version}"[show program's version number and exit]" \
+    '(-C,--config)'{-C,--config}'[path to the configuration file]: :_files' \
+    '(--modules-list --module-list)'{--modules-list,--module-list}'[display modules list and exit]' \
+    '(--disable-plugin --disable-plugins)'{--disable-plugin,--disable-plugins}'[disable plugin(comma separated list or all)]:plugin' \
+    '(--enable-plugin --enable-plugins)'{--enable-plugin,--enable-plugins}'[enable plugin(comma separated list)]:plugin' \
+    '--disable-process[disable process module]' \
+    '--disable-webui[disable the Web Interface]' \
+    '(--light --enable-light)'{--light,--enable-light}'[light mode for Curses UI]' \
+    '(-0 --disable-irix)'{-0,--disable-irix}"[task's cpu usage will be divided by the total number of CPUs]" \
+    '(-1 --percpu)'{-1,--percpu}'[start Clances in per CPU mode]' \
+    '(-2 --disable-left-sidebar)'{-2,--disable-left-sidebar}'[disable network, disk I/O, FS and sensors modules]' \
+    '(-3 --disable-quicklook)'{-3,--disable-quicklook}'[disable quick look module]' \
+    '(-4 --full-quicklook)'{-4,--full-quicklook}'[disable all but quick look and load]' \
+    '(-5 --disable-top)'{-5,--disable-top}'[disable top menu(QL, CPU, MEM, SWAP and LOAD)]' \
+    '(-6 --menugpu)'{-6,--menugpu}'[start Glances in mean GPU mode]' \
+    '--disable-history[disable stats history]' \
+    '--disable-bold[disable bold mode in the terminal]' \
+    '--disable-bg[disable background colors in the terminal]' \
+    '--enable-irq[enable IRQ mode]' \
+    '--enable-process-extended[enable extended stats on top process]' \
+    '(--separator --enable-separator)'{--separator,--enable-separator}'[enable separator in the UI]' \
+    '--sort-process[sort processes]: :(cpu_percent memory_percent username cpu_times io_counters name)' \
+    '(--programs --program)'{--programs,--program}'[Accumulate processes by program]' \
+    '--export[enable export module]:module' \
+    '--export-csv-file[file path for CSV exporter]: :_files' \
+    '--export-csv-overwrite[overwrite existing CSV file]' \
+    '--export-json-file[file path for JSON exporter]: :_files' \
+    '--export-graph-path[Folder for Graph exporter]: :_files -/' \
+    '(-c --client)'{-c,--client}'[connect to a Glances server]:host:_hosts' \
+    '(-s --server)'{-s,--server}'[run Glances in server mode]' \
+    '--browser[start the client browser]' \
+    '--disable-autodiscover[disable autodiscover feature]' \
+    '(-p --port)'{-p,--port}'[define the client/server TCP port]' \
+    '(-B --bind)'{-B,--bind}'[bind server to the given IPv4/IPv6 address or hostname]:host:_hosts' \
+    '--username[define a client/server username]' \
+    '--password[define a client/server password]' \
+    '-u[use the given client/server username]:user_name' \
+    '--snmp-community[SNMP community]:community' \
+    '--snmp-port[SNMP community]:port' \
+    '--snmp-version[SNMP version]:version:(1 2c 3)' \
+    '--snmp-user[SNMP user]:user' \
+    '--snmp-auth[SNMP auth]:auth' \
+    '--snmp-force[force SNMP mode]' \
+    '(-t --time)'{-t,--time}'[set minimum refresh rate in seconds(default: 2 sec)]:seconds' \
+    '(-w --webserver)'{-w,--webserver}'[run Glances in web server mode]' \
+    '--cached-time[set the server cache time(default: 1 sec)]:seconds' \
+    '--stop-after[stop Glances after n fresh]:' \
+    '--open-web-browser[try to open the Web UI in the default browser]' \
+    '(-q --quiet)'{-q,--quiet}'[do not display the curses interface]' \
+    '(-f --process-filter)'{-f,--process-filter}'[set the process filter pattern]:regexp' \
+    '--process-short-name[force short name for processes name]' \
+    '--process-long-name[force long name for processes name]' \
+    '--stdout[display stats to stdout one stat per line]:stats' \
+    '--stdout-json[display stats to stdout, JSON format]:stats' \
+    '--stdout-csv[display stats to CSV, JSON format]:stats' \
+    '--issue[test all plugins and exit]' \
+    '--trace-malloc[trace memory allocation and display it at the end of the process]' \
+    '--memory-leak[test memory leak]' \
+    '--api-doc[display fields descriptions]'\
+    '--hide-kernel-threads[hide kernel threads in process list]' \
+    '(-b --byte)'{-b,--byte}'[display network rate in byte per second]' \
+    '--diskio-show-ramfs[show RAM Fs in the DiskIO plugin]' \
+    '--diskio-iops[show IO per second in the DiskIO plugin]' \
+    '--fahrenheit[display temperature in Fahrenheit]' \
+    '--fs-free-space[display FS free space instead of used]' \
+    '--sparkline[display sparklines instead of bar in the curses interface]' \
+    '--disable-unicode[disable unicode characters in the curses interface]' \
+    '--theme-white[optimize display colors for white background ]' \
+    '--disable-check-update[disable online Glances version check]' \
+    '--strftime[strftime format string for displaying current date in standalone mode]' \
 }
 
 _glances "$@"
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
