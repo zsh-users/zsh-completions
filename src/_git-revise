@@ -4,7 +4,7 @@
 # Description
 # -----------
 #
-#  Completion script for git-revise 0.5.1
+#  Completion script for git-revise 0.7.0
 #  (https://github.com/mystor/git-revise/).
 #
 # ------------------------------------------------------------------------------
@@ -40,6 +40,7 @@ _git-revise() {
 
   _arguments -s \
     '(- :)'{-h,--help}'[show help message and exit]' \
+    '--root[revise starting at the root commit]' \
     '--ref=[reference to update]: :__git-revise_branches' \
     '--reauthor[reset the author of the targeted commit]' \
     '(- :)--version[show version number and exit]' \
@@ -48,9 +49,12 @@ _git-revise() {
     '(--autosquash)--no-autosquash[force disable revise.autoSquash behaviour]' \
     '(--all -a)--no-index[ignore the index while rewriting history]' \
     '(--no-index --all -a)'{--all,-a}'[stage all tracked files before running]' \
-    '(--interactive -i --message -m --cut -c)'{--interactive,-i}'[interactively edit commit stack]' \
-    '(--interactive -i --message -m --cut -c)'{--message,-m}'[specify commit message on command line]:MESSAGE:()' \
-    '(--interactive -i --message -m --cut -c)'{--cut,-c}'[interactively cut a commit into two smaller commits]' \
+    '(--interactive -i --message -m --cut -c --patch -p)'{--patch,-p}'[interactively stage hunks before running]' \
+    '(--interactive -i --message -m --cut -c --patch -p)'{--interactive,-i}'[interactively edit commit stack]' \
+    '(--interactive -i --message -m --cut -c --patch -p)'{--message,-m}'[specify commit message on command line]:MESSAGE:()' \
+    '(--interactive -i --message -m --cut -c --patch -p)'{--cut,-c}'[interactively cut a commit into two smaller commits]' \
+    '(--gpg-sign -S --no-gpg-sign)'{--gpg-sign,-S}'[GPG sign commits]' \
+    '(--gpg-sign -S --no-gpg-sign)--no-gpg-sign[do not GPG sign commits]' \
     '1: :__git-revise_commits' && ret=0
 
   return $ret
