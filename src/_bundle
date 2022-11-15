@@ -323,7 +323,7 @@ case $state in
       clean)
         _arguments \
           '--dry-run[print the changes, but do not clean the unused gems]' \
-          '--force[force a clean even if system gem is used]' \
+          '--force[forces cleaning up unused gems even if Bundler is configured to use globally installed gems]' \
           && ret=0
         ;;
       doctor)
