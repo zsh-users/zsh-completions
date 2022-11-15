@@ -167,7 +167,7 @@ __nvm_subcommands() {
     'install:Download and install a <version>'
     'uninstall:Uninstall a <version>'
     'use:Modify PATH to use <version>'
-    'exec: Run <command> on <version>'
+    'exec:Run <command> on <version>'
     'run:Run <version> with <args> as arguments'
     'current:Display currently activated version of Node'
     'ls:List installed [versions]'
