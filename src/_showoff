@@ -1,6 +1,6 @@
 #compdef showoff
 # ------------------------------------------------------------------------------
-# Copyright (c) 2016 Github zsh-users - http://github.com/zsh-users
+# Copyright (c) 2016 Github zsh-users - https://github.com/zsh-users
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,77 +28,131 @@
 # Description
 # -----------
 #
-#  Completion script for Showoff (https://github.com/schacon/showoff).
+#  Completion script for Showoff 0.20.3 (https://github.com/puppetlabs/showoff).
 #
 # ------------------------------------------------------------------------------
 # Authors
 # -------
 #
 #  * Bruno Michel (https://github.com/nono)
+#  * Shoehi Yoshida (https://github.com/nono)
 #
 # ------------------------------------------------------------------------------
 
+_showoff_subcommands() {
+  local -a commands=(
+    "add:Add a new slide at the end in a given dir"
+    "new:Add a new slide at the end in a given dir"
+    "create:Create new showoff presentation"
+    "init:Create new showoff presentation"
+    "github:Puts your showoff presentation into a gh-pages branch"
+    "help:Shows a list of commands or help for one command"
+    "heroku:Setup your presentation to serve on Heroku"
+    "info:Display information about a Showoff presentation"
+    "pdf:Generate PDF version of presentation"
+    "serve:Serves the showoff presentation in the specified (or current) directory"
+    "skeleton:Build a showoff presentation from a showoff.json outline"
+    "static:Generate static version of presentation"
+    "validate:Validate the consistency of your presentation"
+  )
 
-local curcontext="$curcontext" state line cmds ret=1
+  _describe -t commands 'showoff command' commands
+}
 
-_arguments -C \
-	'1: :->cmds' \
-	'*: :->args' && ret=0
+_showoff_help() {
+  local -a commands=(${(@f)"$(showoff help -c 2>/dev/null)"})
+  _values 'commands' $commands
+}
 
-case $state in
-	cmds)
-		cmds=(
-		'add:Add a new slide at the end in a given dir'
-		'new:Add a new slide at the end in a given dir'
-		'create:Create new showoff presentation'
-		'init:Create new showoff presentation'
-		'help:Shows list of commands or help for one command'
-		'heroku:Setup your presentation to serve on Heroku'
-		'serve:Serves the showoff presentation in the current directory'
-		'static:Generate static version of presentation'
-		)
-		_describe -t commands 'showoff command' cmds && ret=0
-		;;
-	args)
-		case $line[1] in
-			(add|new)
-				_arguments \
-					'(-d --dir)'{-d,--dir}'=[Slide dir (where to put a new slide file)]:directory:_files' \
-					'(-n --name)'{-n,--name}'=[Slide name (name of the new slide file)]:basename' \
-					{-s,--source}'=[Include code from the given file as the slide body]:file:_files' \
-					'(-t --style --type)'{-t,--style,--type}'=[Slide Type/Style (default: title)]:style' \
-					'(-u --no-number)'{-u,--no-number}'[Don'\''t number the slide, use the given name verbatim]' \
-					'1:title' && ret=0
-				;;
-			(create|init)
-				_arguments \
-					'(-d --slidedir)'{-d,--slidedir}'=[Sample slide directory name (default: one)]:arg' \
-					'(-n --nosamples)'{-n,--nosamples}'=[Don'\''t create sample slides]' \
-					'1:dir_name' && ret=0
-				;;
-			help)
-				_values 'commands' add new create init help heroku serve static && ret=0
-				;;
-			heroku)
-				_message 'please enter an heroku_name' && ret=0
-				;;
-			serve)
-				_arguments \
-					'(-h --host)'{-h,--host}'=[Host or ip to run on (default: localhost)]:host' \
-					'(-p --port)'{-p,--port}'=[Port on which to run (default: 9090)]:port' \
-					'1:title' && ret=0
-				;;
-			static)
-				_message 'please enter a name' && ret=0
-				;;
-			*)
-				(( ret )) && _message 'no more arguments'
-				;;
-		esac
-		;;
-esac
+_showoff() {
+  local curcontext="$curcontext" state line ret=1
 
-return ret
+  _arguments -C \
+    '--debug[Show application backtraces on crash]' \
+    '--dev[Use the next-gen development version of Showoff]' \
+    '(- *)--help[Show help message]' \
+    '(- *)--version[Display the program version]' \
+    '1: :_showoff_subcommands' \
+    '*:: :->args' \
+      && ret=0
+
+    case $state in
+      (args)
+        case $line[1] in
+          (add|new)
+            _arguments \
+              '(-d --dir)'{-d,--dir}='[Slide dir (where to put a new slide file)]:directory:_files -/' \
+              '(-n --name)'{-n,--name}='[Slide name (name of the new slide file)]:basename' \
+              {-s,--source}='[Include code from the given file as the slide body]:file:_files' \
+              '(-t --style --type)'{-t,--style,--type}='[Slide Type/Style (default: title)]:style' \
+              '(-u --nonumber)'{-u,--nonumber}"[Don't number the slide, use the given name verbatim]" \
+              '1:title' && ret=0
+            ;;
+          (create|init)
+            _arguments \
+              '(-d --slidedir)'{-d,--slidedir}='[Sample slide directory name (default: one)]:arg' \
+              '(-n --nosamples)'{-n,--nosamples}="[Don't create sample slides]" \
+              '1:dir_name' && ret=0
+            ;;
+          (help)
+            _arguments \
+              '-c[List commands one per line, to assist with shell completion]' \
+              '1: :_showoff_help' && ret=0
+            ;;
+          (heroku)
+            _arguments \
+              '(-f --force)'{-f,--force}'[force overwrite of existing Gemfile, .gems and config.ru files if they exist]' \
+              '(-p --password)'{-p,--password}='[add password protection to your heroku site(default: none)]' \
+              '1:heroku_name' && ret=0
+            ;;
+          (info)
+            _arguments \
+              '(-f --file)'{-f,--file}='[alternate json filename]: :_files -g "*.json"' \
+              '(-j --json)'{-j,--json}'[render output as json]' \
+              && ret=0
+            ;;
+          (pdf|static)
+            _arguments \
+              '(-f --file --pres_file)'{-f,--file,--pres_file}='[JSON file used to describe presentation(default: showoff.json)]: :_files -g "*.json"' \
+              '(-l --lang --language --locale)'{-l,--lang,--language,--locale}'[Language code to generate(default: none)]' \
+              '1:name' \
+              && ret=0
+            ;;
+          (serve)
+            _arguments \
+              '(-S --standalone)'{-S,--standalone}'[Run in standalone mode with no audience interaction]' \
+              '(-f --file --pres_file)'{-f,--file,--pres_file}='[JSON file used to describe presentation(default: showoff.json)]: :_files -g "*.json"' \
+              '--git_branch=[Branch of git repository to use(default: none)]:branch' \
+              '--git_path=[Path of the presentation within the git repository(default: none)]:path' \
+              '(-h --host)'{-h,--host}='[Host or ip to run on(default: 0.0.0.0)]' \
+              '--nocache[Disable content caching]'\
+              '--nosleep[Prevent the computer from sleeping during your presentation]' \
+              '(-p --port)'{-p,--port}='[Port on which to run(default: 9090)]' \
+              '(-r --review)'{-r,--review}'[Enable code review]'\
+              '(-s --ssl)'{-s,--ssl}'[Run via HTTPS]' \
+              '--ssl_certificate=[Path to SSL certificate]: :_files' \
+              '--ssl_private_key=[Path to SSL private key]: :_files' \
+              '(-u --url --git_url)'{-u,--url,--git_url}='[GIT URL to a repository containing the presentation]:url' \
+              '(-v --verbose)'{-v,--verbose}'[Show verbose messaging]' \
+              '(-x --execute --executecode)'{-x,--execute,--executecode}'[Enable remote code execution]' \
+              '1: :_files -/' && ret=0
+            ;;
+          (skeleton|validate)
+            _arguments \
+              '(-f --file)'{-f,--file}'=[alternate json filename(default: none)]: :_files -g "*.json"' \
+              && ret=0
+            ;;
+          *)
+            (( ret )) && _message 'no more arguments'
+            ;;
+        esac
+        ;;
+    esac
+
+  return ret
+}
+
+_showoff "$@"
 
 # Local Variables:
 # mode: Shell-Script
