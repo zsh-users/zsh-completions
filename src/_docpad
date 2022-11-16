@@ -1,6 +1,6 @@
 #compdef docpad
 # ------------------------------------------------------------------------------
-# Copyright (c) 2011 Github zsh-users - http://github.com/zsh-users
+# Copyright (c) 2011 Github zsh-users - https://github.com/zsh-users
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,51 +28,58 @@
 # Description
 # -----------
 #
-#  Completion script for docpad (https://github.com/bevry/docpad).
+#  Completion script for docpad v6.38.2 (https://github.com/bevry/docpad).
 #
 # ------------------------------------------------------------------------------
 # Authors
 # -------
 #
 #  * Changwoo Park (https://github.com/pismute)
+#  * Shohei Yoshida (https://github.com/syohex)
 #
 # ------------------------------------------------------------------------------
 
-local curcontext="$curcontext" state line  ret=1
+_docpad_subcommands() {
+  local -a commands=(
+    "run:run docpad on your project"
+    "init:initialize your project"
+    "generate:(re)generates your project"
+    "render:render the file at <path> and output its results to stdout"
+    "watch:watches your project for changes, and (re)generates whenever a change is made"
+    "clean:ensure everything is cleaned correctly (will remove your out directory)"
+    "update:update your local DocPad and plugin installations to their latest compatible version"
+    "upgrade:update your local DocPad and plugin installations to their latest compatible version"
+    "install:install plugins"
+    "uninstall:uninstall a plugin"
+    "info:display the information about your docpad instance"
+  )
 
-local -a _1st_arguments
-_1st_arguments=(
-  'run: run [options], does everything - skeleton, generate, watch, server'
-  'server: server [options], creates a server for your generated project'
-  'skeleton: skeleton [options], will create a new project in your cwd based off an existing skeleton'
-  'render: render [path], render the file at <path> and output its results to stdout:path:_files'
-  'generate: (re)generates your project'
-  'watch: watches your project for changes, and (re)generates whenever a change is made'
-  'install: ensure everything is installed correctly'
-  'clean: ensure everything is cleaned correctly'
-  'info: display the information about your docpad instance'
-  'help: output the help'
-)
+  _describe -t commands 'command' commands "$@"
+}
 
-_arguments -C \
-  '(-h --help)'{-h,--help}'[output usage information]'\
-  '(-V --version)'{-V,--version}'[output the version number]'\
-  '(-o --out)'{-o,--out}'[where to output the rendered directory or files]:path:_files'\
-  '(-c --config)'{-c,--config}'[a custom configuration file to load in]:path:_files'\
-  '(-e --env)'{-e,--env}'[the environment name to use for this instance, multiple names can be separated with a comma]'\
-  '(-d --debug)'{-d,--debug}'+[the level of debug messages you would like to display, if specified defaults to 7, otherwise 6]:number'\
-  '(-f --force)'{-f,--force}'[force a re-install of all modules]'\
-  '1: :->cmds'\
-  '*: :_files'&& ret=0
+_docpad() {
+  local ret=1
 
-case $state in
-  cmds)
-    _describe -t commands 'docpad command' _1st_arguments && ret=0
-    ;;
+  _arguments \
+    '--outpath[a custom directory to place the rendered project]: :_files -/' \
+    '--config[a custom configuration file to load in]: :_files' \
+    '--env[the environment name to use for this instance, multiple names can be separated with a comma]' \
+    '--log[the rfc log level to display]:level' \
+    '(-v --verbose)'{-v,--verbose}'[set log level to 7]' \
+    '(-d --debug)'{-d,--debug}'[output a log file]' \
+    '--global[whether or not we should just fire global installation of docpad]' \
+    '(--color --colour)'{--color,--colour}'[use color terminal output(default: true)]' \
+    '--silent[do not write anything that is not essential]' \
+    '--progress[output the progress as it occurs(default: true)]' \
+    '--version[show version]' \
+    '(- *)'{-h,--help}'[output usage information]'\
+    '1: :_docpad_subcommands'\
+    '*:: :_files' && ret=0
 
-esac
+  return ret
+}
 
-return ret
+_docpad "$@"
 
 # Local Variables:
 # mode: Shell-Script
