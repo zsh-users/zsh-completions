@@ -10,24 +10,67 @@
 # -------
 #
 #  * Julien Nicoulaud <julien.nicoulaud@gmail.com>
+#  * Shohei Yoshida <https://github.com/syohex>
 #
 # ------------------------------------------------------------------------------
 
+_subliminal() {
+  typeset -A opt_args
+  local context state line
+  local curcontext="$curcontext"
+  local ret=1
 
-_arguments \
-  '(- : *)'{-h,--help}'[show help message and exit]' \
-  '(- : *)--version[show version number and exit]' \
-  '*'{-l,--language}'[wanted language]: :_language_codes ISO-639-1' \
-  '*'{-p,--plugin}'[plugin to use]:plugin name:((OpenSubtitles BierDopje TheSubDB SubsWiki Subtitulos))' \
-  '(-m --multi)'{-m,--multi}'[download multiple subtitle languages]' \
-  '(-f --force)'{-f,--force}'[replace existing subtitle file]' \
-  '(-w --workers)'{-w,--workers}'[number of threads to use]:number' \
-  '(-c --compatibility)'{-c,--compatibility}'[try not to use unicode]' \
-  '(-q --quiet -v --verbose)'{-q,--quiet}'[disable output]' \
-  '(-v --verbose -q --quiet)'{-v,--verbose}'[verbose output]' \
-  '(--no-cache-dir)--cache-dir[cache directory to use]: :_files -/' \
-  '(--cache-dir)--no-cache-dir[do not use cache directory]' \
-  '*: :_files'
+  _arguments -C \
+    '--addic7ed[Addic7ed configuration]:user name:' \
+    '--legendastv[LegendasTV configuration]:user name:' \
+    '--opensubtitles[OpenSubtitles configuration]:user name:' \
+    '--omdb[OMDB API key]:key' \
+    '--cache-dir[Path to the cache directory]: :_files -/' \
+    '--debug[Print useful information for debugging]' \
+    '(- : *)--version[show version number and exit]' \
+    '(- : *)--help[show help message and exit]' \
+    '1: :(cache download)' \
+    '*::arg:->command' \
+    && ret=0
+
+  case "$state" in
+    (command)
+      case $words[1] in
+        (cache)
+          _arguments -C \
+           '(- *)--help[Show help message and exit]' \
+           "--clear-subliminal[Clear subliminal's cache]" \
+           '*: :_files' \
+            && ret=0
+          ;;
+        (download)
+          _arguments -C \
+            '(-l --language)'{-l,--language}'[Language as IETF code]:lang' \
+            \*{-p,--provider}'[Provider to use]: :(argenteam legendastv opensubtitles opensubtitlesvip podnapisi shooter thesubdb tvsubtit)' \
+            \*{-r,--refiner}'[Refiner to use]: :(hash metadata omdb tvdb)' \
+            '(-a --age)'{-a,--age}'[Filter videos newer than AGE]:age' \
+            '(-d --directory)'{-d,--directory}'[Directory where to save subtitles]: :_files -/' \
+            '(-e --encoding)'{-e,--encoding}'[Subtitle file encoding]:encoding' \
+            '(-s --single)'{-s,--single}'[Save subtitle without language code in the file name]' \
+            '(-f --force)'{-f,--force}'[Force download even if a subtitle already exist]' \
+            '(-hi,--hearing-impaired)'{-hi,--hearing-impaired}'[Prefer hearing impaired subtitles]' \
+            '(-m --min-score)'{-m,--min-score}'[Minimum score for a subtitle to be downloaded]:integer range:' \
+            '(-w --max-worked)'{-w,--max-workers}'[Maximum number of threads to use]:integer range:' \
+            '(-z --archives -Z --no-archives)'{-z,--archives}'[Scan archives for videos]' \
+            '(-z --archives -Z --no-archives)'{-Z,--no-archives}'[Scan archives for videos]' \
+            '--verbose[Increase verbosity]' \
+            '(- *)--help[Show help message and exit]' \
+            '*: :_files' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return ret
+}
+
+_subliminal "$@"
 
 # Local Variables:
 # mode: Shell-Script
