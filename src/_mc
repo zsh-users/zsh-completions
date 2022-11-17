@@ -21,6 +21,12 @@
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 # ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for Midnight Commander 4.8.28 (https://midnight-commander.org/)
+#
+# ------------------------------------------------------------------------------
 # Authors
 # -------
 #
@@ -49,7 +55,7 @@ opts=(
   {-k,--resetsoft}'[resets soft keys on HP terminals]'
   {-K,--keymap=}'[load definitions of key bindings from specified file]:file:_files'
   {-l,--ftplog=}'[log ftp dialog to specified file]:file:_files'
-  --nokeymap'[dont load definitions of key bindings from file, use defaults]'
+  --nokeymap"[don't load key bindings from any file, use default hardcoded keys]"
   {-P,--printwd=}'[print last working directory to specified file]:file:_files'
   {-s,--slow}'[to run on slow terminals]'
   {-S,--skin=}'[show mc with specified skin]:skin:'
