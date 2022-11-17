@@ -1,6 +1,6 @@
 #compdef lunchy
 # ------------------------------------------------------------------------------
-# Copyright (c) 2011 Github zsh-users - http://github.com/zsh-users
+# Copyright (c) 2011 Github zsh-users - https://github.com/zsh-users
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,47 +28,111 @@
 # Description
 # -----------
 #
-#  Completion script for lunchy (https://github.com/mperham/lunchy).
-#
+#  Completion script for lunchy 0.10.4 (https://github.com/mperham/lunchy).
 #
 # ------------------------------------------------------------------------------
 # Authors
 # -------
 #
 #  * Blake Walters (https://github.com/markupboy)
+#  * Shohei Yoshida (https://github.com/syohex)
 #
 # ------------------------------------------------------------------------------
 
-local state line cmds ret=1
+_lunchy() {
+  local state line cmds ret=1
 
-_arguments -C '1: :->cmds' '*: :->args'
+  _arguments -C \
+    '1: :->cmds' \
+    '*::arg:->args' && ret=0
 
-case $state in
-  cmds)
-    local -a cmds
-    cmds=(
-      'ls:list available agents'
-      'start:start an agent'
-      'stop:stop an agent'
-      'restart:restart an agent'
-      'status:get the status of agent[s]'
-      'install:install an agents plist file'
-      'edit:edit an agent'
-    )
-    _describe -t commands 'lunchy command' cmds && ret=0
-    ;;
-  args)
-    case $line[1] in
-      (install)
-        ;;
-      (restart|stop)
-        _values 'items' `lunchy status | awk '{print $3}' ` 2>/dev/null && ret=0
-        ;;
-      *)
-        _values 'items' `lunchy ls` 2>/dev/null && ret=0
-        ;;
-    esac
-    ;;
-esac
+  case $state in
+    cmds)
+      local -a cmds
+      cmds=(
+        'ls:Show the list of installed agents, with optional filter'
+        'list:Show the list of installed agents, with optional filter'
+        'start:Start the first agent matching pattern'
+        'stop:Stop the first agent matching pattern'
+        'restart:Stop and start the first agent matching pattern'
+        'status:Show the PID and label for all agents, with optional filter'
+        'install:Install an agents plist file to ~/Library/LaunchAgents or /Library/LaunchAgents'
+        'uninstall:Uninstall name from ~/Library/LaunchAgents or /Library/LaunchAgents'
+        'show:Show the contents of the launchctl daemon file'
+        'edit:Open the launchctl daemon file in the default editor(EDITOR environment variable)'
+      )
+      _describe -t commands 'lunchy command' cmds && ret=0
+      ;;
+    args)
+      local -a cmd_args
+      case $line[1] in
+        (ls|list)
+          cmd_args=(
+            '-l[display absolute paths of the launchctl daemon files when showing list of installed agents]'
+            '1:: :_lunchy_installed_agents'
+          )
+          ;;
+        (start)
+          cmd_args=(
+            '-w[persist the start command, the agent will load on startup]'
+            '-F[force start agents]'
+            '1: :_lunchy_installed_agents'
+          )
+          ;;
+        (stop)
+          cmd_args=(
+            '-w[persist the stop command, the agent will never load]'
+            '1: :_lunchy_agents'
+          )
+          ;;
+        (restart)
+          cmd_args=(
+            '1: :_lunchy_agents'
+          )
+          ;;
+        (install)
+          cmd_args=(
+            '-s[use a symlink for installation]'
+            '1: :_files'
+          )
+          ;;
+        (uninstall)
+          cmd_args=(
+            '1: :_lunchy_agents'
+          )
+          ;;
+        (*)
+          cmd_args=(
+            '1: :_lunchy_installed_agents'
+          )
+          ;;
+      esac
 
-return ret
+      _arguments -s -S "$cmd_args[@]" && ret=0
+      ;;
+  esac
+
+  return ret
+}
+
+(( $+functions[_lunchy_agents] )) ||
+_lunchy_agents() {
+  local -a agents=(${(@f)"$(lunchy status | awk 'NR>=2{print $3}')"})
+  _values 'agents' $agents
+}
+
+(( $+functions[_lunchy_installed_agents] )) ||
+_lunchy_installed_agents() {
+  local -a agents=(${(@f)"$(lunchy ls)"})
+  _values 'agents' $agents
+}
+
+_lunchy "$@"
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
