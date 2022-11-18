@@ -28,7 +28,10 @@
 # Description
 # -----------
 #
-#  Completion script for scrub. A utility which iteratively writes patterns on files or disk devices to make retrieving the data more difficult. (http://linux.die.net/man/1/scrub).
+#  Completion script for scrub 2.6.1 (http://linux.die.net/man/1/scrub).
+#
+#  A utility which iteratively writes patterns on files or disk devices
+#  to make retrieving the data more difficult.
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -38,29 +41,53 @@
 #
 # ------------------------------------------------------------------------------
 
+_scrub_patterns() {
+  local patterns=(
+    'nnsa:4-pass NNSA Policy Letter NAP-14.1-C (XVI-8)'
+    'dod:4-pass DoD 5220.22-M section 8-306 procedure'
+    'bsi:9-pass method recommended by the German Center of Security in Information Technologies'
+    "gutmann:The canonical 35-pass sequence described in Gutmann's paper cited below"
+    'schneier:7-pass method described by Bruce Schneier in "Applied  Cryptography"'
+    "pfitzner7:Roy Pfitzner's 7-random-pass method"
+    "pfitzner33:Roy Pfitzner's 33-random-pass method"
+    "usarmy:US  Army AR380-19 method"
+    "fillzero:1-pass pattern\: 0x00"
+    "fillff:1-pass pattern\: 0xff"
+    "random:1-pass pattern\: random(x1)"
+    "random2:2-pass pattern: random(x2)"
+    "old:6-pass pre-version 1.7 scrub method"
+    "fastold:5-pass pattern\: 0x00, 0xff, 0xaa, 0x55, verify"
+    'custom=:1-pass custom pattern'
+  )
+
+  _describe 'pattern' patterns
+}
 
 _scrub() {
-
-local patterns
-patterns="nnsa dod bsi gutmann schneier pfitzner7 pfitzner33 usarmy fillzero fillff random random2 old fastold"
-
-_arguments -C \
-   "(- 1 *)"{-v,--version}"[Print scrub version and exit.]" \
-   {-r,--remove}"[Remove the file after scrubbing.]" \
-   {-p,--pattern}"[Select  the  patterns to write.]:pattern:($patterns)" \
-   {-b,--blocksize}"[Perform read and write calls using the specified blocksize (in bytes).]:block size:" \
-   {-f,--force}"[Scrub even if target contains signature indicating it has already been scrubbed.]" \
-   {-S,--no-signature}"[Do not write scrub signature.]" \
-   {-X,--freespace}"[Create  specified directory and fill it with files until write returns ENOSPC (file sys‐tem full), then scrub the files as usual.]:directory name:" \
-   {-D,--dirent}"[After scrubbing the file, scrub its name in the directory entry, then rename it  to  the new name.]:new name:" \
-   {-s,--device-size}"[Override the device size (in bytes).]:size:" \
-   {-L,--no-link}"[If file is a symbolic link, do not scrub the link target.]" \
-   {-R,--no-hwrand}"[Don't use a hardware random number generator even if one is available.]" \
-   {-t,--no-threads}"[Don't generate random data in parallel with I/O.]" \
-   {-n,--dry-run}"[Do everything but write to targets.]" \
-   {-h,--help}"[Print a summary of command line options on stderr.]" \
-   '*:files:_files' \
+  _arguments -s -S \
+    "(- 1 *)"{-v,--version}"[Print scrub version and exit]" \
+    {-r,--remove}"[Remove the file after scrubbing]" \
+    {-p,--pattern}"[Select  the  patterns to write]:pattern:_scrub_patterns" \
+    {-b,--blocksize}"[Perform read and write calls using the specified blocksize (in bytes)]:block size:" \
+    {-f,--force}"[Scrub even if target contains signature indicating it has already been scrubbed]" \
+    {-S,--no-signature}"[Do not write scrub signature]" \
+    {-X,--freespace}"[Create  specified directory and fill it with files until write returns ENOSPC (file sys‐tem full), then scrub the files as us]:directory name:" \
+    {-D,--dirent}"[After scrubbing the file, scrub its name in the directory entry, then rename it  to  the new name]:new name:" \
+    {-s,--device-size}"[Override the device size (in bytes)]:size:" \
+    {-L,--no-link}"[If file is a symbolic link, do not scrub the link target]" \
+    {-R,--no-hwrand}"[Don't use a hardware random number generator even if one is available]" \
+    {-t,--no-threads}"[Don't generate random data in parallel with I/O]" \
+    {-n,--dry-run}"[Do everything but write to targets]" \
+    {-h,--help}"[Print a summary of command line options on stderr]" \
+    '*:files:_files'
 }
 
 _scrub
 
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
