@@ -1,6 +1,6 @@
 #compdef svm
 # ------------------------------------------------------------------------------
-# Copyright (c) 2011 Github zsh-users - http://github.com/zsh-users
+# Copyright (c) 2011 Github zsh-users - https://github.com/zsh-users
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -54,13 +54,14 @@ _1st_arguments=(
   'update-latest:install or update nightly build scala version'
   'latest:setup to use nightly build scala version'
   'stable:setup to use stable(x.x.x.final) scala version'
+  'self-update:update svm itself'
 )
 
 _arguments -C \
   '(-)-h[show this usage information]' \
   '-c[show the currently use scala version]' \
   "-l[show the scala version installed in svm_path(default is ${HOME}/.svm)]" \
-  '-v[show the abalabe scala version not installed]' \
+  '-v[show the available scala version not installed]' \
   '-i[install specific scala version]: :_svm_completion_not_installed_scala_versions' \
   '-r[uninstall specific scala version and remove their sources]: :_svm_completion_installed_scala_versions' \
   '(-s -u)'{-s,-u}'[setup to use a specific scala version]: :_svm_completion_not_selected_scala_versions' \
@@ -132,26 +133,29 @@ case $state in
   args)
     # scala version number
     case $words[1] in
-      install)
+      (install)
         # install not installed version
         _arguments \
           '1: :_svm_completion_not_installed_scala_versions' \
-          '--docs[with install, update-latest download scala-devel-docs.]' \
-          '--sources[with install, update-latest download scala-sources.]' && ret=0
+          '--docs[download scala-devel-docs]' \
+          '--sources[download scala-sources]' && ret=0
         ;;
-
-      remove|uninstall)
+      (update-latest)
+        # update nightly build scala version
+        _arguments \
+          '--docs[download scala-devel-docs]' \
+          '--sources[download scala-sources]' && ret=0
+        ;;
+      (remove|uninstall)
         # remove installed version
         _arguments \
           '1: :_svm_completion_installed_scala_versions' && ret=0
         ;;
-
-      switch|use)
+      (switch|use)
         # use installed version
         _arguments \
           '1: :_svm_completion_not_selected_scala_versions' && ret=0
         ;;
-
     esac
 
     ;;  # end args
@@ -166,4 +170,3 @@ return ret
 # sh-basic-offset: 2
 # End:
 # vim: ft=zsh sw=2 ts=2 et
-
