@@ -1,6 +1,6 @@
 #compdef ibus
 # ------------------------------------------------------------------------------
-# Copyright (c) 2017 Github zsh-users - http://github.com/zsh-users
+# Copyright (c) 2017 Github zsh-users - https://github.com/zsh-users
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for ibus (https://github.com/ibus/ibus).
+#  Completion script for ibus 1.5.27 (https://github.com/ibus/ibus).
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -53,28 +53,45 @@ _arguments -C \
 case $state in
   args)
     case $line[1] in
-      engine)
+      (engine)
         _arguments \
           ":engine:(($(ibus list-engine|sed -ne 's/:/\\\\:/g' -e 's/^  \(\S\+\) - \(.*\)$/"\1:\2"/p')))" \
           && return
         ;;
-      read-cache)
+      (start|restart)
+        _arguments \
+          '--type=[start or restart daemon type with direct or systemd type]: :(direct systemd)' \
+          '--file=[start or restart daemon with SYSTEMD_SERVICE file]: :_files' \
+          '--verbose[Show debug message]' \
+          '(- *)--help[Show help message]' \
+          && return
+        ;;
+      (read-cache)
         _arguments \
           '--system[show the content of the system registry cache]' \
           '--file=[custom registry cache to show]:registry cache:_files' \
+          '(- *)--help[Show help message]' \
           && return
         ;;
-      write-cache)
+      (write-cache)
         _arguments \
           '--system[save the system registry cache]' \
           '--file=[custom registry cache to save]:registry cache:_files' \
+          '(- *)--help[Show help message]' \
           && return
         ;;
-      emoji)
+      (emoji)
         _arguments \
           '--font=[emoji font]:emoji font: ' \
           '--lang=[language of emoji annotations]:language:_language_codes ISO-639-1' \
           '--partial-match[match annotations with a partial string]' \
+          '(- *)--help[Show help message]' \
+          && return
+        ;;
+      (im-module)
+        _arguments \
+          '--type=[Set im-module TYPE]: :(gtk2 gtk3 gtk4)' \
+          '(- *)--help[Show help message]' \
           && return
         ;;
     esac
@@ -82,3 +99,11 @@ case $state in
 esac
 
 return 1
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
