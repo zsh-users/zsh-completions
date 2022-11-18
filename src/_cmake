@@ -1,6 +1,6 @@
 #compdef cmake -value-,CMAKE_GENERATOR,-default-
 # ------------------------------------------------------------------------------
-# Copyright (c) 2017 Github zsh-users - http://github.com/zsh-users
+# Copyright (c) 2017 Github zsh-users - https://github.com/zsh-users
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for CMake (http://www.cmake.org).
+#  Completion script for CMake 3.25.0 (https://cmake.org).
 #
 # -------------------------------------------------------------------------
 # Authors
@@ -53,69 +53,71 @@
 
 local context state line curcontext="$curcontext" cmake_args
 
-local cmake_build_options;cmake_build_options=(
-    '-S[Explicitly specify a source directory]:source directory:_path_files -/'
-    '-B[Explicitly specify a build directory]:build directory:_path_files -/'
-    '-C[Pre-load a script to populate the cache]:initial cache:_files'
-    '*-D-[Create a cmake cache entry]:property:_cmake_define_property'
-    '*-U[Remove matching entries from CMake cache]:globbing expression'
-    '-G[Specify a makefile generator]:generator:_cmake_generators'
-    '-T[Specify toolset name if supported by generator]:toolset name'
-    '-A[Specify platform name if supported by generator]:platform name'
+local -a cmake_build_options=(
+  '-S[Explicitly specify a source directory]:source directory:_path_files -/'
+  '-B[Explicitly specify a build directory]:build directory:_path_files -/'
+  '-C[Pre-load a script to populate the cache]:initial cache:_files'
+  '*-D-[Create a cmake cache entry]:property:_cmake_define_property'
+  '*-U[Remove matching entries from CMake cache]:globbing expression'
+  '-G[Specify a makefile generator]:generator:_cmake_generators'
+  '-T[Specify toolset name if supported by generator]:toolset name'
+  '-A[Specify platform name if supported by generator]:platform name'
+  '--toolchain[Specify toolchain file]: :_files'
+  '--install-prefix[Specify install directory]: :_path_files -/'
 
-    # Warnings
-    '(-Wdev)-Wno-dev[Suppress/Enable developer warnings]'
-    '(-Wno-dev)-Wdev[Suppress/Enable developer warnings]'
-    '(-Wdeprecated)-Wno-deprecated[Suppress/Enable deprecation warnings]'
-    '(-Wno-deprecated)-Wdeprecated[Suppress/Enable deprecation warnings]'
-    '(-Werror=dev)-Wno-error=dev[Make developer warnings (not) errors]'
-    '(-Wno-error=dev)-Werror=dev[Make developer warnings (not) errors]'
-    '(-Wno-error=deprecated)-Werror=deprecated[Make deprecated macro and function warnings (not) errors]'
-    '(-Werror=deprecated)-Wno-error=deprecated[Make deprecated macro and function warnings (not) errors]'
+  # Warnings
+  '(-Wdev)-Wno-dev[Suppress/Enable developer warnings]'
+  '(-Wno-dev)-Wdev[Suppress/Enable developer warnings]'
+  '(-Wdeprecated)-Wno-deprecated[Suppress/Enable deprecation warnings]'
+  '(-Wno-deprecated)-Wdeprecated[Suppress/Enable deprecation warnings]'
+  '(-Werror=dev)-Wno-error=dev[Make developer warnings (not) errors]'
+  '(-Wno-error=dev)-Werror=dev[Make developer warnings (not) errors]'
+  '(-Wno-error=deprecated)-Werror=deprecated[Make deprecated macro and function warnings (not) errors]'
+  '(-Werror=deprecated)-Wno-error=deprecated[Make deprecated macro and function warnings (not) errors]'
 
-    '--preset=[Specify a configure preset]:preset:_cmake_presets'
-    '--list-presets[List available presets]'
+  '--preset=[Specify a configure preset]:preset:_cmake_presets'
+  '--list-presets[List available presets]'
 
-    '-E[CMake command mode]:command:_cmake_command_help'
+  '-E[CMake command mode]:command:_cmake_command_help'
 
-    '-L-[List cache variables]::_values "options" "[non-advanced cache variables]" "A[advanced cache variables]" "H[non-advanced cached variables with help]" "AH[advanced cache variables with help]"'
-    '--fresh[Configure a fresh build tree, removing any existing cache file]'
+  '-L-[List cache variables]::_values "options" "[non-advanced cache variables]" "A[advanced cache variables]" "H[non-advanced cached variables with help]" "AH[advanced cache variables with help]"'
+  '--fresh[Configure a fresh build tree, removing any existing cache file]'
 
-    '--build[Build a CMake-generated project binary tree]:project directory:_path_files -/'
-    '--install[Install a CMake-generated project binary tree]:project directory:_path_files -/'
-    '--open[Open generated project in the associated application]:project directory:_path_files -/'
+  '--build[Build a CMake-generated project binary tree]:project directory:_path_files -/'
+  '--install[Install a CMake-generated project binary tree]:project directory:_path_files -/'
+  '--open[Open generated project in the associated application]:project directory:_path_files -/'
 
-    '-N[View mode only]'
-    '-P[Process script mode]:script:_files'
+  '-N[View mode only]'
+  '-P[Process script mode]:script:_files'
 
-    '--find-package[Legacy pkg-config like mode. Do not use]'
+  '--find-package[Legacy pkg-config like mode. Do not use]'
 
-    '--graphviz=[Generate graphviz of dependencies, see CMakeGraphVizOptions.cmake for more]:graphviz output:_files'
-    '--system-information[Dump information about this system]::system information output:_files'
+  '--graphviz=[Generate graphviz of dependencies, see CMakeGraphVizOptions.cmake for more]:graphviz output:_files'
+  '--system-information[Dump information about this system]::system information output:_files'
 
-    '--log-level=[Set the verbosity of messages from CMake files]:log level:(ERROR WARNING NOTICE STATUS VERBOSE DEBUG TRACE)'
-    '--log-context[Prepend log messages with context, if given]'
+  '--log-level=[Set the verbosity of messages from CMake files]:log level:(ERROR WARNING NOTICE STATUS VERBOSE DEBUG TRACE)'
+  '--log-context[Prepend log messages with context, if given]'
 
-    '--debug-trycompile[Do not delete the try_compile build tree. Only useful on one try_compile at a time]'
-    '--debug-output[Put cmake in a debug mode]'
-    '--debug-find[Put cmake find in a debug mode]'
+  '--debug-trycompile[Do not delete the try_compile build tree. Only useful on one try_compile at a time]'
+  '--debug-output[Put cmake in a debug mode]'
+  '--debug-find[Put cmake find in a debug mode]'
 
-    '(--trace-expand)--trace[Put cmake in trace mode]'
-    '(--trace)--trace-expand[Put cmake in trace mode with variable expansion]'
-    '--trace-format=[Set the output format of the trace]:trace format:(human json-v1)'
-    '*--trace-source[Trace only this CMake file/module. Multiple options allowed]:filename:_files'
-    '--trace-redirect[Redirect trace output to a file instead of stderr]:trace output:_files'
+  '(--trace-expand)--trace[Put cmake in trace mode]'
+  '(--trace)--trace-expand[Put cmake in trace mode with variable expansion]'
+  '--trace-format=[Set the output format of the trace]:trace format:(human json-v1)'
+  '*--trace-source[Trace only this CMake file/module. Multiple options allowed]:filename:_files'
+  '--trace-redirect[Redirect trace output to a file instead of stderr]:trace output:_files'
 
-    '--warn-uninitialized[Warn about uninitialized values]'
-    '--no-warn-unused-cli[Do not warn about command line options]'
-    '--warn-unused-vars[Warn about unused variables]'
-    '--check-system-vars[Find problems with variable usage in system files]'
-    '--compile-no-warning-as-error[Ignore COMPILE_WARNING_AS_ERROR property and CMAKE_COMPILE_WARNING_AS_ERROR variable]'
+  '--warn-uninitialized[Warn about uninitialized values]'
+  '--no-warn-unused-cli[Do not warn about command line options]'
+  '--warn-unused-vars[Warn about unused variables]'
+  '--check-system-vars[Find problems with variable usage in system files]'
+  '--compile-no-warning-as-error[Ignore COMPILE_WARNING_AS_ERROR property and CMAKE_COMPILE_WARNING_AS_ERROR variable]'
 
-    '--profiling-format[Output data for profiling CMake scripts]:profiling format:(google-trace)'
-    '--profiling-output[Select an output path for the profiling data]:filename:_files'
+  '--profiling-format[Output data for profiling CMake scripts]:profiling format:(google-trace)'
+  '--profiling-output[Select an output path for the profiling data]:filename:_files'
 
-    ':cmake project:_path_files -/'
+  ':cmake project:_path_files -/'
 )
 
 # ------------------------
@@ -313,27 +315,27 @@ _cmake_on_install() {
   fi
 }
 
-local cmake_help_actions;cmake_help_actions=(
-    '(- 1)'{--help,-help,-usage,-h,-H}'[Print usage information and exit]'
-    '(- 1)'{--version,-version}'[Print version number and exit]'
-    '(- 1)--help-full[Print all help manuals and exit]'
-    '(- 1)--help-manual[Print one help manual and exit]:module-name: _cmake_list_names --help-manual-list "manual name"'
-    '(- 1)--help-manual-list[List help manuals available and exit]'
-    '(- 1)--help-command[Print help for one command and exit]:command-name: _cmake_list_names --help-command-list "command name"'
-    '(- 1)--help-command-list[List commands with help available and exit]'
-    '(- 1)--help-commands[Print cmake-commands manual and exit]'
-    '(- 1)--help-module[Print help for one module and exit]:module-name: _cmake_list_names --help-module-list "module name"'
-    '(- 1)--help-module-list[List modules with help available and exit]'
-    '(- 1)--help-modules[Print cmake-modules manual and exit]'
-    '(- 1)--help-policy[Print help for one policy and exit]:policy-name: _cmake_list_names --help-policy-list "policy name"'
-    '(- 1)--help-policy-list[List policies with help available and exit]'
-    '(- 1)--help-policies[Print cmake-policies manual and exit]'
-    '(- 1)--help-property[Print help for one property and exit]:property-name: _cmake_list_names --help-property-list "property name" brakremove'
-    '(- 1)--help-property-list[List properties with help available and exit]'
-    '(- 1)--help-properties[Print cmake-properties manual and exit]'
-    '(- 1)--help-variable[Print help for one variable and exit]:variable-name: _cmake_list_names --help-variable-list "variable name" brakremove'
-    '(- 1)--help-variable-list[List variables with help available and exit]'
-    '(- 1)--help-variables[Print cmake-variables manual and exit]'
+local -a cmake_help_actions=(
+  '(- 1)'{--help,-help,-usage,-h,-H}'[Print usage information and exit]'
+  '(- 1)'{--version,-version}'[Print version number and exit]'
+  '(- 1)--help-full[Print all help manuals and exit]'
+  '(- 1)--help-manual[Print one help manual and exit]:module-name: _cmake_list_names --help-manual-list "manual name"'
+  '(- 1)--help-manual-list[List help manuals available and exit]'
+  '(- 1)--help-command[Print help for one command and exit]:command-name: _cmake_list_names --help-command-list "command name"'
+  '(- 1)--help-command-list[List commands with help available and exit]'
+  '(- 1)--help-commands[Print cmake-commands manual and exit]'
+  '(- 1)--help-module[Print help for one module and exit]:module-name: _cmake_list_names --help-module-list "module name"'
+  '(- 1)--help-module-list[List modules with help available and exit]'
+  '(- 1)--help-modules[Print cmake-modules manual and exit]'
+  '(- 1)--help-policy[Print help for one policy and exit]:policy-name: _cmake_list_names --help-policy-list "policy name"'
+  '(- 1)--help-policy-list[List policies with help available and exit]'
+  '(- 1)--help-policies[Print cmake-policies manual and exit]'
+  '(- 1)--help-property[Print help for one property and exit]:property-name: _cmake_list_names --help-property-list "property name" brakremove'
+  '(- 1)--help-property-list[List properties with help available and exit]'
+  '(- 1)--help-properties[Print cmake-properties manual and exit]'
+  '(- 1)--help-variable[Print help for one variable and exit]:variable-name: _cmake_list_names --help-variable-list "variable name" brakremove'
+  '(- 1)--help-variable-list[List variables with help available and exit]'
+  '(- 1)--help-variables[Print cmake-variables manual and exit]'
 )
 _cmake_help() {
   _arguments -C -s - help "$cmake_help_actions[@]"
@@ -467,8 +469,7 @@ _cmake_define_property_values() {
   return ret
 }
 
-local -a _cmake_generator_list
-_cmake_generator_list=(${(f)"$(cmake --help | awk '/^Generators/{flag=1} flag && /^[* ] [^ ]/ {sub(/^[* ] /, ""); sub(/=.*$/, ""); sub(/\[arch\]/, ""); sub(/ *$/, ""); print}')"})
+local -a _cmake_generator_list=(${(f)"$(cmake --help | awk '/^Generators/{flag=1} flag && /^[* ] [^ ]/ {sub(/^[* ] /, ""); sub(/=.*$/, ""); sub(/\[arch\]/, ""); sub(/ *$/, ""); print}')"})
 
 # -----------------
 # _cmake_generators
@@ -485,7 +486,6 @@ _cmake_generators() {
 _cmake_toolchain_files() {
   _files -g '*\.cmake*'
 }
-
 
 local _cmake_booleans=(_describe -t booleans 'boolean' 'YES' 'NO')
 
@@ -510,7 +510,7 @@ _cmake_launchers() {
   _command_names -e
 }
 
-local _cmake_commands=(
+local -a _cmake_commands=(
   'capabilities:Report capabilities built into cmake in JSON format' \
   'cat:concat the files and print them to the standard output' \
   'chdir:run command in a given directory' \
@@ -582,3 +582,11 @@ elif [[ $words[2] == -E ]]; then
 else
   _arguments "$cmake_build_options[@]"
 fi
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
