@@ -1,23 +1,23 @@
 #compdef ccache -P -value-,CCACHE_*,-default-
 
-# zsh completion script for ccache
+# zsh completion script for ccache 4.6.1
 
 # Copyright 2018 CERN for the benefit of the LHCb Collaboration.
 
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
-# 
+#
 # * Redistributions of source code must retain the above copyright notice, this
 #   list of conditions and the following disclaimer.
-# 
+#
 # * Redistributions in binary form must reproduce the above copyright notice,
 #   this list of conditions and the following disclaimer in the documentation
 #   and/or other materials provided with the distribution.
-# 
+#
 # * Neither the name of the copyright holder nor the names of its
 #   contributors may be used to endorse or promote products derived from
 #   this software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 # IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -307,13 +307,30 @@ elif [[ $words[2] == -* ]]; then
     '*'{-o,--set-config=}"[set configuration key]:keys:__ccache_config_keys" \
     '(: -)'{-h,--help}'[show help message]' \
     '(: -)'{-V,--version}'[print version and copyright information]' \
-    '(-z --zero-stats)'{-z,--zero-stats}'[zero statistics counters]' \
     '(-c --cleanup)'{-c,--cleanup}'[delete old files and recalculate size counters]' \
     '(-C --clear)'{-C,--clear}'[clear the cache completely (except configuration)]' \
-    '(-p --show-config)'{-p,--show-config}'[show current configuration options]' \
-    '(-s --show-stats)'{-s,--show-stats}'[show statistics summary]' \
+    '--config-path[operate on configuration file PATH instead of the default]: :_files' \
+    '(-d --dir)'{-d,--dir}'[operate on cache directory PATH instead of the default]: :_files -/' \
+    '--evict-namespace[remove file created in namespace NAMESPACE]:namespace' \
+    '--evict-older-than[remove files older than AGE]:age' \
     '(-F --max-files=)'{-F,--max-files=}'[set maximum number of files in cache]:number of files in cache: ' \
-    '(-M --max-size=)'{-M,--max-size=}'[set maximum size of cache]:cache size: '
+    '(-M --max-size=)'{-M,--max-size=}'[set maximum size of cache]:cache size: ' \
+    '(-X --recompress)'{-X,--recompress}'[recompress the cache to level LEVEL]:level' \
+    \*{-o,--set-config}'[set configuration item KEY to value VAL]:key_val' \
+    '(-p --show-config)'{-p,--show-config}'[show current configuration options]' \
+    '--show-log-stats[print statistics counters from the stas log in human-readable format]' \
+    '(-s --show-stats)'{-s,--show-stats}'[show statistics summary]' \
+    '(-v --verbose)'{-v,--verbose}'[increase verbosity]' \
+    '(-z --zero-stats)'{-z,--zero-stats}'[zero statistics counters]' \
+    '--trim-dir[remove old files from directory _PATH_]: :_files -/'  \
+    '--trim-max-size[specify the maximum size for --trim-dir]:size' \
+    '--trim-method[specify the method for --trim-dir]: :(atime mtime)' \
+    '--checksum-file[print the checksum of the file at PATH]: :_files' \
+    '--extract-result[extract file data stored in result file at PATH to the current working directory]' \
+    '(-k --get-config)'{-k,--get-config}'[print the value of configuration key]:key' \
+    '--hash-file[print the hash of the file at PATH]: :_files' \
+    '--inspect[print result/manifest file at PATH in human-readable format]' \
+    '--print-stats[print statistics counter IDs and corresponding values in machine-parsable format]'
 elif [[ $CURRENT -eq 2 ]]; then
   _ccache_compilers
 else
@@ -323,3 +340,11 @@ else
   shift words
   _normal
 fi
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
