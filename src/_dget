@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for dget
+#  Completion script for dget 2.22.2
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -40,23 +40,24 @@
 # ------------------------------------------------------------------------------
 
 _dget() {
-    local context state line expl
-    local -A opt_args
+  local context state line expl
+  local -A opt_args
 
-    _arguments -A "-*" \
-        '(--no-conf -h --help)'{-h,--help}'[Show help message]' \
-        '(--no-conf -V --version)'{-v,--version}'[Print license, copyright, and version information and exit]' \
-        '(--no-conf -b --backup)'{-b,--backup}'[Move files that would be overwritten to ./backup]' \
-        '(--no-conf -q --quiet)'{-q,--quiet}'[Suppress wget/curl output]' \
-        '(--no-conf -x --extract -d --download-only --build)'{-d,--download-only}'[Do not extract downloaded source]' \
-        '(--no-conf -x --extract -d --download-only --build)'{-x,--extract}'[Unpack downloaded source]' \
-        '(--no-conf -x --extract -d --download-only --build)--build[Build package with dpkg-buildpackage after download]' \
-        '(--no-conf -u --allow-unauthenticated)'{-u,--allow-unauthenticated}'[Make no attempt to verify source package signature]' \
-        '(--no-conf)--path[Check this directory in addition to the apt archive]:DIR:_files -/' \
-        '(--no-conf --insecure)--insecure[Do not check SSL certificates when downloading]' \
-        '(--no-conf --no-cache)--no-cache[Disable server-side HTTP cache]' \
-        "(--no-conf)--no-conf[Don't read devscripts config files]" \
-        '(-)*:debian package or URL: _alternative "_deb_packages available" "_urls"'
+  _arguments -A "-*" \
+    '(- *)'{-h,--help}'[Show help message]' \
+    '(- *)'{-v,--version}'[Print license, copyright, and version information and exit]' \
+    '(-a --all)'{-a,--all}'[Package is a source package; download all binary packages]' \
+    '(--no-conf -b --backup)'{-b,--backup}'[Move files that would be overwritten to ./backup]' \
+    '(--no-conf -q --quiet)'{-q,--quiet}'[Suppress wget/curl output]' \
+    '(--no-conf -x --extract -d --download-only --build)'{-d,--download-only}'[Do not extract downloaded source]' \
+    '(--no-conf -x --extract -d --download-only --build)'{-x,--extract}'[Unpack downloaded source]' \
+    '(--no-conf -u --allow-unauthenticated)'{-u,--allow-unauthenticated}'[Make no attempt to verify source package signature]' \
+    '(--no-conf -x --extract -d --download-only --build)--build[Build package with dpkg-buildpackage after download]' \
+    '(--no-conf)--path[Check this directory in addition to the apt archive]:DIR:_files -/' \
+    '(--no-conf --insecure)--insecure[Do not check SSL certificates when downloading]' \
+    '(--no-conf --no-cache)--no-cache[Disable server-side HTTP cache]' \
+    "(--no-conf)--no-conf[Don't read devscripts config files]" \
+    '(-)*:debian package or URL: _alternative "_deb_packages available" "_urls"'
 }
 
 _dget "$@"
