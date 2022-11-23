@@ -23,7 +23,7 @@
 # Description
 # -----------
 #
-#  Completion script for Phing (http://phing.info).
+#  Completion script for Phing (https://www.phing.info/).
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -38,7 +38,7 @@ _phing() {
   integer NORMARG
   typeset -A opt_args
 
-  # Follow http://phing.info/docs/stable/webhelp/sec.commandlineargs.html for more information
+  # Follow https://www.phing.info/guide/chunkhtml/sec.commandlineargs.html for more information
   _arguments \
     '(-h -help)'{-h,-help}'[display the help screen]' \
     '(-v -version)'{-v,-version}'[print version information and exit]' \

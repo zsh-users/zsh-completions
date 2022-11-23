@@ -49,7 +49,7 @@ fi
   # Cache invalidates after 30 seconds
   #
   # Reference:
-  #   http://zsh.sourceforge.net/Doc/Release/Expansion.html#index-globbing_002c-qualifiers
+  #   https://zsh.sourceforge.net/Doc/Release/Expansion.html#index-globbing_002c-qualifiers
   local -a oldp
   oldp=( "$1"(ms+30) )
   (( $#oldp ))
@@ -104,5 +104,5 @@ fi
 _describe 'command' instances
 
 # Reference:
-#   http://zsh.sourceforge.net/Doc/Release/Completion-System.html
+#   https://zsh.sourceforge.net/Doc/Release/Completion-System.html
 #   https://github.com/zsh-users/zsh-completions/blob/master/zsh-completions-howto.org

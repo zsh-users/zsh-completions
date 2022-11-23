@@ -23,7 +23,7 @@
 # Description
 # -----------
 #
-#  Completion script for setup.py (http://docs.python.org/distutils/).
+#  Completion script for setup.py (https://docs.python.org/distutils/).
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -342,8 +342,8 @@ _setuppy_sdist() {
 (( $+functions[_setuppy_register] )) ||
 _setuppy_register() {
   _arguments -s \
-    "--repository=[url of repository \[default: http://pypi.python.org/pypi\]]" \
-    "-r[url of repository \[default: http://pypi.python.org/pypi\]]" \
+    "--repository=[url of repository \[default: https://pypi.python.org/pypi\]]" \
+    "-r[url of repository \[default: https://pypi.python.org/pypi\]]" \
     "--show-response[display full response text from server]" \
     "--list-classifiers[list the valid Trove classifiers]" \
     "--strict[Will stop the registering if the meta-data are not fully compliant]" \
@@ -469,8 +469,8 @@ _setuppy_bdist_wininst() {
 (( $+functions[_setuppy_upload] )) ||
 _setuppy_upload() {
   _arguments -s \
-    "--repository=[url of repository \[default: http://pypi.python.org/pypi\]]" \
-    "-r[url of repository \[default: http://pypi.python.org/pypi\]]" \
+    "--repository=[url of repository \[default: https://pypi.python.org/pypi\]]" \
+    "-r[url of repository \[default: https://pypi.python.org/pypi\]]" \
     "--show-response[display full response text from server]" \
     "--sign[sign files to upload using gpg]" \
     "-s[sign files to upload using gpg]" \
@@ -697,8 +697,8 @@ _setuppy_install_egg_info() {
 (( $+functions[_setuppy_upload_docs] )) ||
 _setuppy_upload_docs() {
   _arguments -s \
-    "--repository=[url of repository \[default: http://pypi.python.org/pypi\]]" \
-    "-r[url of repository \[default: http://pypi.python.org/pypi\]]" \
+    "--repository=[url of repository \[default: https://pypi.python.org/pypi\]]" \
+    "-r[url of repository \[default: https://pypi.python.org/pypi\]]" \
     "--show-response[display full response text from server]" \
     "--upload-dir=[directory to upload]" \
     "*::setup.py commands:_setup.py"

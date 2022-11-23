@@ -1,8 +1,8 @@
 #compdef go -P -value-,GO*,-default- -P -value-,CGO*,-default-
 # ------------------------------------------------------------------------------
-# Copyright (c) 2016 Github zsh-users - http://github.com/zsh-users
+# Copyright (c) 2016 Github zsh-users - https://github.com/zsh-users
 # Copyright (c) 2013-2015 Robby Russell and contributors (see
-# https://github.com/robbyrussell/oh-my-zsh/contributors)
+# https://github.com/ohmyzsh/ohmyzsh/graphs/contributors)
 # Copyright (c) 2010-2014 Go authors
 #
 # Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,7 @@
 # Description
 # -----------
 #
-#  Completion script for go 1.19 (http://golang.org).
+#  Completion script for go 1.19 (https://go.dev/).
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -39,7 +39,7 @@
 #  * Mikkel Oscar Lyderik Larsen <mikkeloscar@gmail.com>
 #  * Paul Seyfert <pseyfert.mathphys@gmail.com>
 #  * oh-my-zsh authors:
-#        https://github.com/robbyrussell/oh-my-zsh/blob/master/plugins/golang/golang.plugin.zsh
+#        https://github.com/ohmyzsh/ohmyzsh/blob/master/plugins/golang/golang.plugin.zsh
 #  * Go authors
 #
 # ------------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 #compdef sbt
 # ------------------------------------------------------------------------------
-# Copyright (c) 2013 Github zsh-users - http://github.com/zsh-users
+# Copyright (c) 2013 Github zsh-users - https://github.com/zsh-users
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for sbt 0.12+ (http://scala-sbt.org).
+#  Completion script for sbt 0.12+ (https://www.scala-sbt.org).
 #
 # ------------------------------------------------------------------------------
 # Authors

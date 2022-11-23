@@ -1,6 +1,6 @@
 #compdef rmlint rmlint.sh -P rmlint.*.sh
 
-# Copyright (c) 2021 Github zsh-users - http://github.com/zsh-users
+# Copyright (c) 2021 Github zsh-users - https://github.com/zsh-users
 #
 # Permission is hereby granted, without written agreement and without
 # licence or royalty fees, to use, copy, modify, and distribute this

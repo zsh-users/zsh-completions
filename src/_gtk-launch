@@ -1,6 +1,6 @@
 #compdef gtk-launch
 # ------------------------------------------------------------------------------
-# Copyright (c) 2011 Github zsh-users - http://github.com/zsh-users
+# Copyright (c) 2011 Github zsh-users - https://github.com/zsh-users
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for gtk-launch on gtk+-3.14.8 (http://www.gtk.org/).
+#  Completion script for gtk-launch on gtk+-3.14.8 (https://www.gtk.org/).
 #
 # ------------------------------------------------------------------------------
 # Authors

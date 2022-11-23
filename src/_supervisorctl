@@ -1,6 +1,6 @@
 #compdef supervisorctl
 # ------------------------------------------------------------------------------
-# Copyright (c) 2015 Github zsh-users - http://github.com/zsh-users
+# Copyright (c) 2015 Github zsh-users - https://github.com/zsh-users
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,7 @@
 #  Completion script for supervisorctl from Supervisord (http://supervisord.org)
 #
 #  Sources:
-#  https://github.com/robbyrussell/oh-my-zsh/tree/master/plugins/supervisor
+#  https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/supervisor
 #  https://github.com/zsh-users/zsh-completions/blob/master/src/_brew
 #
 # ------------------------------------------------------------------------------

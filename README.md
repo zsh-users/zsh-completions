@@ -1,7 +1,7 @@
 zsh-completions ![GitHub release](https://img.shields.io/github/release/zsh-users/zsh-completions.svg) ![GitHub contributors](https://img.shields.io/github/contributors/zsh-users/zsh-completions.svg) [![IRC](https://img.shields.io/badge/IRC-%23zsh--completions-yellow.svg)](irc://irc.freenode.net/#zsh-completions) [![Gitter](https://badges.gitter.im/zsh-users/zsh-completions.svg)](https://gitter.im/zsh-users/zsh-completions?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 =============
 
-**Additional completion definitions for [Zsh](http://www.zsh.org).**
+**Additional completion definitions for [Zsh](https://www.zsh.org/).**
 
 *This projects aims at gathering/developing new completion scripts that are not available in Zsh yet. The scripts may be contributed to the Zsh project when stable enough.*
 
@@ -16,12 +16,12 @@ zsh-completions ![GitHub release](https://img.shields.io/github/release/zsh-user
 | Fedora / CentOS / RHEL / Scientific Linux | [zsh-completions OBS repository](https://software.opensuse.org/download.html?project=shells%3Azsh-users%3Azsh-completions&package=zsh-completions) |
 | OpenSUSE / SLE | [zsh-completions OBS repository](https://software.opensuse.org/download.html?project=shells%3Azsh-users%3Azsh-completions&package=zsh-completions) |
 | Arch Linux / Manjaro / Antergos / Hyperbola | [zsh-completions](https://www.archlinux.org/packages/zsh-completions), [zsh-completions-git](https://aur.archlinux.org/packages/zsh-completions-git) |
-| Gentoo / Funtoo | [app-shells/zsh-completions](http://packages.gentoo.org/package/app-shells/zsh-completions)  |
+| Gentoo / Funtoo | [app-shells/zsh-completions](https://packages.gentoo.org/packages/app-shells/zsh-completions)  |
 | NixOS | [zsh-completions](https://github.com/NixOS/nixpkgs/blob/master/pkgs/shells/zsh/zsh-completions/default.nix) |
 | Void Linux | [zsh-completions](https://github.com/void-linux/void-packages/blob/master/srcpkgs/zsh-completions/template) |
 | Slackware | [Slackbuilds](https://slackbuilds.org/repository/14.2/system/zsh-completions/) |
 | macOS | [homebrew](https://github.com/Homebrew/homebrew-core/blob/master/Formula/zsh-completions.rb), [MacPorts](https://github.com/macports/macports-ports/blob/master/sysutils/zsh-completions/Portfile)  |
-| NetBSD | [pkgsrc](http://ftp.netbsd.org/pub/pkgsrc/current/pkgsrc/shells/zsh-completions/README.html)  |
+| NetBSD | [pkgsrc](https://ftp.netbsd.org/pub/pkgsrc/current/pkgsrc/shells/zsh-completions/README.html)  |
 | FreeBSD | [shells/zsh-completions](https://www.freshports.org/shells/zsh-completions)  |
 
 
@@ -31,7 +31,7 @@ zsh-completions ![GitHub release](https://img.shields.io/github/release/zsh-user
 
 Add `antigen bundle zsh-users/zsh-completions` to your `~/.zshrc`.
 
-#### [oh-my-zsh](http://github.com/robbyrussell/oh-my-zsh)
+#### [oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh)
 
 * Clone the repository inside your oh-my-zsh repo:
 

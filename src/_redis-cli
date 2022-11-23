@@ -1,7 +1,7 @@
 #compdef redis-cli rec
 # ------------------------------------------------------------------------------
 # Copyright (c) 2009-2015 Robby Russell and contributors (see
-# https://github.com/robbyrussell/oh-my-zsh/contributors)
+# https://github.com/ohmyzsh/ohmyzsh/graphs/contributors)
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -24,9 +24,9 @@
 # Description
 # -----------
 #
-#  Completion script for Redis (http://redis.io).
+#  Completion script for Redis (https://redis.io/).
 #
-#  Source: https://github.com/robbyrussell/oh-my-zsh/blob/master/plugins/redis-cli
+#  Source: https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/redis-cli
 #
 # ------------------------------------------------------------------------------
 # Authors
