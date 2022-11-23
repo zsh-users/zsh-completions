@@ -1,7 +1,7 @@
 #compdef rfkill
 # ------------------------------------------------------------------------------
 # Copyright (c) 2014 Vincent Bernat <bernat@luffy.cx>
-# Copyright (c) 2014 Github zsh-users - http://github.com/zsh-users
+# Copyright (c) 2014 Github zsh-users - https://github.com/zsh-users
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -18,7 +18,7 @@
 # Description
 # -----------
 #
-# Completion script for rfkill (http://wireless.kernel.org/en/users/Documentation/rfkill)
+# Completion script for rfkill (https://wireless.wiki.kernel.org/en/users/Documentation/rfkill)
 #
 # ------------------------------------------------------------------------------
 # Authors

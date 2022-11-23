@@ -1,6 +1,6 @@
 #compdef ghc ghci ghc-pkg
 # ------------------------------------------------------------------------------
-# Copyright (c) 2014 Github zsh-users - http://github.com/zsh-users
+# Copyright (c) 2014 Github zsh-users - https://github.com/zsh-users
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-# Completion script for ghc (http://www.haskell.org/ghc/)
+# Completion script for ghc (https://www.haskell.org/ghc/)
 #
 # ------------------------------------------------------------------------------
 # Authors

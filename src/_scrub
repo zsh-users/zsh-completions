@@ -1,6 +1,6 @@
 #compdef scrub
 # ------------------------------------------------------------------------------
-# Copyright (c) 2016 Github zsh-users - http://github.com/zsh-users
+# Copyright (c) 2016 Github zsh-users - https://github.com/zsh-users
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for scrub 2.6.1 (http://linux.die.net/man/1/scrub).
+#  Completion script for scrub 2.6.1 (https://linux.die.net/man/1/scrub).
 #
 #  A utility which iteratively writes patterns on files or disk devices
 #  to make retrieving the data more difficult.

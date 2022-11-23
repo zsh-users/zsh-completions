@@ -1,6 +1,6 @@
 #compdef psql pg_dump pg_dumpall pg_restore createdb dropdb vacuumdb createuser dropuser initdb
 # ------------------------------------------------------------------------------
-# Copyright (c) 2016 Github zsh-users - http://github.com/zsh-users, Dominic Mitchell, Johann 'Myrkraverk' Oskarsson, Daniel Serodio, J Smith
+# Copyright (c) 2016 Github zsh-users - https://github.com/zsh-users, Dominic Mitchell, Johann 'Myrkraverk' Oskarsson, Daniel Serodio, J Smith
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,9 +28,9 @@
 # Description
 # -----------
 #
-#  Completion script for PostgreSQL utils (http://postgresql.org).
+#  Completion script for PostgreSQL utils (https://www.postgresql.org/).
 #
-#  Source: http://www.zsh.org/mla/users/2004/msg01006.html
+#  Source: https://www.zsh.org/mla/users/2004/msg01006.html
 #
 # ------------------------------------------------------------------------------
 # Authors

@@ -1,6 +1,6 @@
 #compdef rails
 # ------------------------------------------------------------------------------
-# Copyright (c) 2016 Github zsh-users - http://github.com/zsh-users
+# Copyright (c) 2016 Github zsh-users - https://github.com/zsh-users
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Ruby on Rails (http://rubyonrails.org/).
+#  Completion script for Ruby on Rails (https://rubyonrails.org/).
 #
 # ------------------------------------------------------------------------------
 # Authors

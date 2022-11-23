@@ -1,6 +1,6 @@
 #compdef xsel
 # ------------------------------------------------------------------------------
-# Copyright (c) 2017 Github zsh-users - http://github.com/zsh-users
+# Copyright (c) 2017 Github zsh-users - https://github.com/zsh-users
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for xsel (http://www.vergenet.net/~conrad/software/xsel/).
+#  Completion script for xsel (https://www.vergenet.net/~conrad/software/xsel/).
 #
 # ------------------------------------------------------------------------------
 # Authors

@@ -1,7 +1,7 @@
 #compdef knife
 # ------------------------------------------------------------------------------
 # Copyright (c) 2009-2015 Robby Russell and contributors (see
-# https://github.com/robbyrussell/oh-my-zsh/contributors)
+# https://github.com/ohmyzsh/ohmyzsh/graphs/contributors)
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@
 # Description
 # -----------
 #
-#  Completion script for Chef's knife (http://www.opscode.com/chef).
+#  Completion script for Chef's knife (https://www.chef.io/).
 #
 #  Source: https://github.com/ohmyzsh/ohmyzsh/blob/22fed4f/plugins/knife/_knife
 #

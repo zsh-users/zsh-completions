@@ -1,6 +1,6 @@
 #compdef drush
 # ------------------------------------------------------------------------------
-# Copyright (c) 2014 Github zsh-users - http://github.com/zsh-users
+# Copyright (c) 2014 Github zsh-users - https://github.com/zsh-users
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Drush (http://drush.ws).
+#  Completion script for Drush (https://drushcommands.com/).
 #
 # ------------------------------------------------------------------------------
 # Authors
