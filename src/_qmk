@@ -28,8 +28,8 @@
 # Description
 # -----------
 #
-#  Completion script for QMK CLI (https://beta.docs.qmk.fm/cli).
-#  version: 0.0.48 (Jun 23 2021)
+#  Completion script for QMK CLI (https://qmk.fm/).
+#  version: 1.1.1
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -37,204 +37,368 @@
 #
 #  * precondition (https://github.com/precondition)
 #  * undg (https://github.com/undg)
+#  * Shohei Yoshida(https://github.com/syohex)
 #
 # ------------------------------------------------------------------------------
 
+_qmk() {
+  local curcontext="$curcontext" state line ret=1
+  typeset -A opt_args
 
+  _arguments -C \
+    '(- *)'{-h,--help}"[Print help text.]" \
+    '(- *)'{-V,--version}"[Prints version information]" \
+    '(-v --verbose)'{-v,--verbose}"[Make the logging more verbose]" \
+    '--datetime-fmt[Format string for datetimes]:DATETIME_FMT' \
+    '--log-fmt[Format string for printed log output]:LOG_FMT' \
+    '--log-file-fmt[Format string for log file.]:LOG_FILE_FMT' \
+    '--log-file-level[Logging level for log file]:(debug,info,warning,error,critical)' \
+    '--log-file[File to write log messages to]:filename:_files' \
+    '(--no-color --color)--color[Enable color in output]' \
+    '(--no-color --color)--no-color[Disable color in output]' \
+    '(--no-unicode --unicode)--unicode[Enable unicode loglevels]' \
+    '(--no-unicode --unicode)--no-unicode[Disable unicode loglevels]' \
+    '--interactive[Force interactive mode even when stdout is not a tty]' \
+    '--config-file[The location for the configuration file]:filename:_files' \
+    '1:commands:_qmk_commands' \
+    '*::qmk commands:->args' && ret=0
+
+  case "$state" in
+    (args)
+      if (( $+functions[_qmk_${words[1]}] )); then
+        _qmk_${words[1]} && ret=0
+      else
+        ret=0
+      fi
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_qmk_commands] )) ||
+_qmk_commands() {
+  local -a commands=(
+    'config:Read and write configuration settings'
+    'clone:Clone a qmk_firmware fork'
+    'console:Acquire debugging information from usb hid devices'
+    'env:Prints environment information.'
+    'setup:Setup your computer for qmk_firmware'
+    'c2json:Creates a keymap.json from a keymap.c file'
+    'cd:Go to QMK Home'
+    'chibios-confmigrate:Generates a migrated ChibiOS configuration file, as a result of comparing the input against a reference'
+    'clean:Clean the QMK firmware folder of build artifacts'
+    'compile:Compile a QMK Firmware'
+    'doctor:Basic QMK environment checks'
+    'flash:QMK Flash'
+    'generate-compilation-database:Create a compilation database'
+    'generate-rgb-breathe-table:Generates an RGB Light breathing table header'
+    'import-kbfirmware:Import kbfirmware json export'
+    'import-keyboard:Import data driven keyboard'
+    'import-keymap:Import data-driven keymap'
+    'info:Keyboard information'
+    'json2c:Creates a keymap.c from a QMK Configurator export'
+    'lint:Check keyboard and keymap for common mistakes'
+    'list-keyboards:List the keyboards currently defined within QMK'
+    'list-keymaps:List the keymaps for a specific keyboard'
+    'list-layouts:List the layouts for a specific keyboard'
+    'new-keyboard:Create a new keyboard directory'
+    'new-keymap:Creates a new keymap for the keyboard of your choosing'
+    'painter-convert-graphics:Converts an input image to something QMK understands'
+    'painter-make-font-image:Converts an input font to something QMK understands'
+    'painter-convert-font-image:Converts an input font image to something QMK firmware understands'
+    'via2json:Convert a VIA backup json to keymap.json format'
+  )
+
+  _describe -t commands 'qmk commands' commands
+}
+
+(( $+functions[_qmk_config] )) ||
+_qmk_config() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '(-ro --read-only)'{-ro,--read-only}'[Operate in read-only mode]' \
+    '(-a --all)'{-a,--all}'[Show all configuration options]'
+}
+
+(( $+functions[_qmk_clone] )) ||
+_qmk_clone() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '(-b --branch)'{-b,--branch}'[The branch to clone]:branch' \
+    '--baseurl[The URL all git operations start from]:baseurl' \
+    '1:fork:_files' \
+    '*::destination:_files -/'
+}
+
+(( $+functions[_qmk_console] )) ||
+_qmk_console() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '(-w --wait)'{-w,--wait}'[How many seconds to wait between check]:seconds' \
+    '(-t --timestamp)'{-t,--timestamp}'[Print the timestamp for received messages as well]' \
+    '(-n --numeric)'{-n,--numeric}'[Show VID/PID instead of names]' \
+    '(-l --list)'{-l,--list}'[List available hid_listen devices]' \
+    '(-d --device)'{-d,--device}'[Device to select]' \
+    '(--bootloaders --no-bootloaders)--bootloaders[Enable displaying bootloaders]' \
+    '(--bootloaders --no-bootloaders)--no-bootloaders[Enable displaying bootloaders]'
+}
+
+(( $+functions[_qmk_env] )) ||
+_qmk_env() {
+  _arguments \
+    '(-h --help)'{-h,--help}'[show help message and exit]'
+}
+
+(( $+functions[_qmk_setup] )) ||
+_qmk_setup() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '(-H --home)'{-H,--home}'[The location for QMK Firmware]: :_files -/' \
+    '(-b --branch)'{-b,--branch}'[The branch to clone]:branch' \
+    '--baseurl[The URL all git operations start from]:baseurl' \
+    '(-y --yes -n --no)'{-y,--yes}'[Answer yes to all questions]' \
+    '(-y --yes -n --no)'{-n,--no}'[Answer no to all questions]' \
+    '*:: :_files'
+}
+
+(( $+functions[_qmk_c2json] )) ||
 _qmk_c2json(){
-    _arguments \
-        {-h,--help}"[show this help message and exit]" \
-        {-km,--keymap}"[KEYMAP The keymap's name]" \
-        {-kb,--keyboard}"[KEYBOARD The keyboard's name]" \
-        {-q,--quiet}"[Quiet mode, only output error messages]" \
-        {-o,--output}"[File to write to]:output_file:_files" \
-        "--no-cpp[Do not use 'cpp' on keymap.c]" \
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '(-km --keymap)'{-km,--keymap}"[The keymap's name]:keymap" \
+    '(-kb --keyboard)'{-kb,--keyboard}"[The keyboard's name]:keyboard" \
+    '(-q --quiet)'{-q,--quiet}'[Quiet mode, only output error messages]' \
+    '(-o --output)'{-o,--output}'[File to write to]: :_files' \
+    "--no-cpp[Do not use 'cpp' keymap.c]" \
+    '*: :_files'
 }
 
-_qmk_chibios-confmigrate(){
-    _arguments \
-        {-h,--help}"[Print help text.]" \
-        {-f,--force}"[Re-migrates an already migrated file, even if it doesn't detect a full ChibiOS config.]" \
-        {-d,--delete}"[If the file has no overrides, migration will delete the input file.]" \
-        {-o,--overwrite}"[Overwrites the input file during migration.]" \
-        {-r,--reference}"[REFERENCE Specify the reference file to compare against]" \
-        {-i,--input}"[INPUT Specify input config file.]" \
+(( $+functions[_qmk_cd] )) ||
+_qmk_cd() {
+  _arguments \
+    '(-h --help)'{-h,--help}'[show help message and exit]'
 }
 
-_qmk_clean(){
-    _arguments \
-        {-h,--help}"[Print help text.]" \
-        {-a,--all}"[Remove *.hex and *.bin files in the QMK root as well.]" \
+(( $+functions[_qmk_chibios-confmigrate] )) ||
+_qmk_chibios-confmigrate() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '(-f --force)'{-f,--force}'[Re-migrates an already migrated file, even if it does not detect a full ChibiOS config]' \
+    '(-d --delete)'{-d,--delete}'[If the file has no overrides, migration will delete the input file]' \
+    '(-o --overwrite)'{-o,--overwrite}'[Overwrites the input file during migration]' \
+    '(-r,--reference)'{-r,--reference}'[Specify the reference file to compare against]:reference' \
+    '(-i --input)'{-i,--input}'[Specify input config file]: :_files'
 }
 
-_qmk_clone(){
-    _arguments \
-        {-h,--help}"[show this help message and exit]" \
-        {-km,--keymap}"[KEYMAP The keymap's name]" \
-        {-kb,--keyboard}"[KEYBOARD The keyboard's name]" \
-        {-q,--quiet}"[Quiet mode, only output error messages]" \
-        {-o,--output}"[File to write to]:output_file:_files" \
-        "--no-cpp[Do not use 'cpp' on keymap.c]"
+(( $+functions[_qmk_clean] )) ||
+_qmk_clean() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '(-a --all)'{-a,--all}'[Remove *.hex and *.bin files in the QMK root as well]'
 }
 
-_qmk_compile(){
-    _arguments \
-        {-h,--help}"[Print help text.]" \
-        {-n,--dry-run}"[Don't actually build, just show the make command to be run.]::_qmk_compile" \
-        {-km,--keymap}"[The keymap to build a firmware for. Ignored when a configurator export is supplied.]::_qmk_compile" \
-        {-kb,--keyboard}"[The keyboard to build a firmware for. Ignored when a configurator export is supplied.]::_qmk_compile" \
-        "*::configuratorExport:_files -g '*.json'" \
+(( $+functions[_qmk_compile] )) ||
+_qmk_compile() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '(-c --clean)'{-c,--clean}'[Remove object files before compiling]' \
+    \*{-e,--env}'[Set a variable to be passed to make]:env' \
+    '(-j --parallel)'{-j,--parallel}'[Set the number of parallel make jobs; 0 means unlimited]' \
+    '(-n --dry-run)'{-d,--dry-run}"[Don't actually build, just show the make command to be run]" \
+    '(-km --keymap)'{-km,--keymap}'[The keymap to build a firmware for]:keymap' \
+    '(-kb --keyboard)'{-kb,--keyboard}'[The keyboard to build a firmware for]:keyboard' \
+    '*: :_files'
 }
 
-_qmk_config(){
-    _arguments \
-        {-h,--help}"[Print help text.]" \
-        {-ro,--read-only}"[Operate in read-only mode.]" \
+(( $+functions[_qmk_doctor] )) ||
+_qmk_doctor() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '(-n --no -y --yes)'{-n,--no}'[Answer no to all questions]' \
+    '(-n --no -y --yes)'{-y,--yes}'[Answer yes to all questions]'
 }
 
-_qmk_doctor(){
-    _arguments \
-        {-h,--help}"[Print help text.]" \
-        {-n,--no}"[Answer no to all questions.]" \
-        {-y,--yes}"[Answer yes to all questions.]" \
+(( $+functions[_qmk_flash] )) ||
+_qmk_flash() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '(-c --clean)'{-c,--clean}'[Remove object files before compiling]' \
+    \*{-e,--env}'[Set a variable to be passed to make]:env' \
+    '(-j --parallel)'{-j,--parallel}'[Set the number of parallel make jobs; 0 means unlimited]' \
+    '(-n --dry-run)'{-d,--dry-run}"[Don't actually build, just show the make command to be run]" \
+    '(-km --keymap)'{-km,--keymap}'[The keymap to build a firmware for]:keymap' \
+    '(-kb --keyboard)'{-kb,--keyboard}'[The keyboard to build a firmware for]:keyboard' \
+    '(-m --mcu)'{-m,--mcu}'[The MCS name]:mcu' \
+    '(-bl --bootloader)'{-bl,--bootloader}"[The flash command, corresponding to qmk's make options of bootloaders]:bootloader" \
+    '(-b --bootloaders)'{-b,--bootloaders}'[List the available bootloaders]' \
+    '*: :_files'
 }
 
-_qmk_env(){
-    _arguments \
-        {-h,--help}"[Print help text.]" \
+(( $+functions[_qmk_generate-compilation-database] )) ||
+_qmk_generate-compilation-database() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '(-km --keymap)'{-km,--keymap}'[The keymap to build a firmware for]:keymap' \
+    '(-kb --keyboard)'{-kb,--keyboard}'[The keyboard to build a firmware for]:keyboard'
 }
 
-_qmk_flash(){
-    _arguments \
-        {-bl,--bootloader}"[The flash command, corresponding to qmk's make options of bootloaders.]::_qmk_flash" \
-        {-b,--bootloaders}"[List the available bootloaders.]::_qmk_flash" \
-        {-c,--clean}"[Remove object files before compiling]" \
-        {-n,--dry-run}"[Don't actually build, just show the make command to be run.]::_qmk_flash" \
-        {-e,--env}"[Set a variable to be passed to make. May be passed multiple times.]" \
-        {-h,--help}"[Print help text.]" \
-        {-kb,--keyboard}"[The keyboard to build a firmware for. Ignored when a configurator export is supplied.]::_qmk_flash" \
-        {-km,--keymap}"[The keymap to build a firmware for. Ignored when a configurator export is supplied.]::_qmk_flash" \
-        {-j,--parallel}"[Set the number of parallel make jobs to run.]" \
-        "*::configuratorExport:_files -g '*.json'" \
-}
-
+(( $+functions[_qmk_generate-rgb-breathe-table] )) ||
 _qmk_generate-rgb-breathe-table(){
-    _arguments \
-        {-h,--help}"[Print help text.]" \
-        {-q,--quiet}"[Quiet mode, only output error messages]" \
-        {-o,--output}"[File to write to]:output_file:_files" \
-        {-m,--max}"[MAX The breathing maximum value, from 0 to 255. Default: 255]" \
-        {-c,--center}"[CENTER The breathing center value, from 1 to 2.7. Default: 1.85]" \
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '(-q --quiet)'{-q,--quiet}'[Quiet mode, only output error messages]' \
+    '(-o --output)'{-o,--output}'[File to write to]: :_files' \
+    '(-m --max)'{-m,--max}'[The breathing maximum value, from 0 to 255]:num' \
+    '(-c --center)'{-c,--center}'[The breathing center value, from 1 to 2.7]:num'
 }
 
-_qmk_info(){
-    _arguments \
-        {-h,--help}"[Print help text.]" \
-        {-f,--format}"[Format to display the data in (friendly, text, json)(Default: friendly).]: :(friendly text json)" \
-        {-m,--matrix}"[Render the layouts with matrix information.]" \
-        {-l,--layouts}"[Render the layouts.]" \
-        {-km,--keymap}"[Show the layers for a JSON keymap too.]" \
-        {-kb,--keyboard}"[Keyboard to show info for.]" \
-        "--ascii[Render layout box drawings in ASCII only.]" \
+(( $+functions[_qmk_import-kbfirmware] )) ||
+_qmk_import-kbfirmware() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '*: :_files'
 }
 
+(( $+functions[_qmk_import-keyboard] )) ||
+_qmk_import-keyboard() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '*: :_files'
+}
+
+(( $+functions[_qmk_import-keymap] )) ||
+_qmk_import-keymap() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '*: :_files'
+}
+
+(( $+functions[_qmk_info] )) ||
+_qmk_info() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '(-r --rules-mk)'{-r,--rules-mk}"[Render the parsed values of the keyboard's rules.mk file]" \
+    '--ascii[Render layout box drawings in ASCII only]' \
+    '(-f --format)'{-f,--format}'[Format to display the data]: :(friendly text json)' \
+    '(-m --matrix)'{-m,--matrix}'[Render the layouts with matrix information]'\
+    '(-l --layouts)'{-l,--layouts}'[Render the layouts]' \
+    '(-km --keymap)'{-km,--keymap}'[Keymap to show info for(Optional)]:keymap' \
+    '(-kb --keyboard)'{-kb,--keyboard}'[Keyboard to show info for]:keyboard'
+}
+
+(( $+functions[_qmk_json2c] )) ||
 _qmk_json2c(){
-    _arguments \
-        {-h,--help}"[Print help text.]" \
-        {-q,--quiet}"[Quiet mode, only output error messages]" \
-        {-o,--output}"[File to write to]:output_file:_files" \
-        "*::configuratorExport:_files -g '*.json'"
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '(-q --quiet)'{-q,--quiet}'[Quiet mode, only output error messages]' \
+    '(-o --output)'{-o,--output}'[File to write to]: :_files' \
+    '*: :_files'
 }
 
+(( $+functions[_qmk_lint] )) ||
 _qmk_lint(){
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '--all-km[Check all keymaps]' \
+    '--all-kb[Check all keyboards]' \
+    '(-km --keymap)'{-km,--keymap}'[The keymap to check]:keymap' \
+    '(-kb --keyboard)'{-kb,--keyboard}'[Comma separated list of keyboards to check]:keyboards' \
+    '--strict[Treat warnings as errors]'
+}
+
+(( $+functions[_qmk_list-keyboards] )) ||
+_qmk_list-keyboards() {
     _arguments \
-        {-h,--help}"[Print help text.]" \
-        {-km,--keymap}"[KEYMAP The keymap to check.]" \
-        {-kb,--keyboard}"[KEYBOARD The keyboard to check.]" \
-        "--strict[Treat warnings as errors.]" \
+      '(- *)'{-h,--help}'[show help message and exit]'
 }
 
-_qmk_list-keyboards(){
-    _arguments \
-        {-h,--help}"[Print help text.]" \
+(( $+functions[_qmk_list-keymaps] )) ||
+_qmk_list-keymaps() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '(-kb --keyboard)'{-kb,--keyboard}'[Specify keyboard name]:keyboard'
 }
 
-_qmk_list-keymaps(){
-    _arguments \
-        {-h,--help}"[Print help text.]" \
-        {-kb,--keyboard}"[Specify keyboard name. Example: 1upkeyboards/1up60hse]::_qmk_new-keymap" \
+(( $+functions[_qmk_list-layouts] )) ||
+_qmk_list-layouts() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '(-kb --keyboard)'{-kb,--keyboard}'[Specify keyboard name]:keyboard'
 }
 
-_qmk_new-keymap(){
-    _arguments \
-        {-h,--help}"[Print help text.]" \
-        {-km,--keymap}"[Specify the name for the new keymap directory]::_qmk_new-keymap" \
-        {-kb,--keyboard}"[Specify keyboard name. Example: 1upkeyboards/1up60hse]::_qmk_new-keymap" \
+(( $+functions[_qmk_new-keyboard] )) ||
+_qmk_new-keyboard() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '(-n --realname)'{-n,--realname}'[Specify your real name if you want to use that]:real_name' \
+    '(-u --username)'{-u,--username}'[Specify your user name]:user_name' \
+    '(-t --type)'{-t,--type}'[Specify the keyboard MCU type]:type' \
+    '(-l --layout)'{-l,--layout}'[Community layout to bootstrap with]:layout' \
+    '(-kb --keyboard)'{-kb,--keyboard}'[Specify the name for the new keyboard directory]:keyboard'
 }
 
-_qmk_setup(){
-    _arguments \
-        {-h,--help}"[Print help text.]" \
-        {-H,--home}"[The location for QMK Firmware. Defaults to $HOME/qmk_firmware]" \
-        {-b,--branch}"[The branch to clone]" \
-        {-y,--yes}"[Answer yes to all questions.]" \
-        {-n,--no}"[Answer no to all questions.]" \
-        "--baseurl[The URL all git operations start from]" \
+(( $+functions[_qmk_new-keymap] )) ||
+_qmk_new-keymap() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '(-km --keymap)'{-km,--keymap}'[Specify the name for the keymap directory]:keymap' \
+    '(-kb --keyboard)'{-kb,--keyboard}'[Specify keyboard name]:keyboard'
 }
 
-_qmk_command(){
-    local -a _qmk_cmds
-    _qmk_cmds=(
-        "c2json: Creates a keymap.json from a keymap.c file." \
-        "chibios-confmigrate: Generates a migrated ChibiOS configuration file, as a result of comparing the input against a reference" \
-        "clean: Clean the QMK firmware folder of build artifacts." \
-        "clone: Clone a qmk_firmware fork." \
-        "compile: Compile a QMK Firmware." \
-        "config: Read and write configuration settings." \
-        "doctor: Basic QMK environment checks" \
-        "env: Prints environment information." \
-        "flash: QMK Flash." \
-        "generate-rgb-breathe-table: Generates an RGB Light breathing table header." \
-        "info: Keyboard information." \
-        "json2c: Creates a keymap.c from a QMK Configurator export." \
-        "lint: Check keyboard and keymap for common mistakes." \
-        "list-keyboards: List the keyboards currently defined within QMK" \
-        "list-keymaps: List the keymaps for a specific keyboard" \
-        "new-keymap: Creates a new keymap for the keyboard of your choosing" \
-        "setup: Setup your computer for qmk_firmware." \
-    )
-
-    if ((CURRENT == 1)); then
-        _describe -t commands 'qmk commands' _qmk_cmds
-    else
-        local curcontext="$curcontext"
-        cmd="${${_qmk_cmds[(r)$words[1]:*]%%:*}}"
-        if (($#cmd)); then
-            if (( $+functions[_qmk_$cmd] )); then
-                _qmk_$cmd
-            else
-                _message "no options for $cmd"
-            fi
-        else
-            _message "no more options"
-        fi
-    fi
+(( $+functions[_qmk_painter-convert-graphics] )) ||
+_qmk_painter-convert-graphics() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '(-d --no-deltas)'{-d,--no-deltas}'[Disable the use of delta frames when encoding animations]' \
+    '(-r --no-rle)'{-r,--no-rle}'[Disables the use of RLE when encoding images]' \
+    '(-f --format)'{-f,--format}'[Output format]: :(pal256 pal16 pal4 pal2 mono256 mono16 mono4 mono2)' \
+    '(-o --output)'{-o,--output}'[Specify output directory]: :_files -/' \
+    '(-i --input)'{-i,--input}'[Specify input graphic file]: :_files' \
+    '(-v --verbose)'{-v,--verbose}'[Turns on verbose output]'
 }
 
+(( $+functions[_qmk_painter-make-font-image] )) ||
+_qmk_painter-make-font-image() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '(-a --no-aa)'{-a,--no-aa}'[Disable anti-aliasing on fonts]' \
+    '(-u --unicode-glyphs)'{-u,--unicode-glyphs}'[Also generate the specified unicode glyphs]:unicode_glyphs' \
+    '(-n --no-ascii)'{-n,--no-ascii}'[Disable output of the full ASCII character set, exporting only the glyphs specified]' \
+    '(-s --size)'{-s,--size}'[Specify font size]:font_size' \
+    '(-o --output)'{-o,--output}'[Specify output image path]: :_files' \
+    '(-f --font)'{-f,--font}'[Specify input font file]: :_files'
+}
 
-_arguments \
-    {-h,--help}"[Print help text.]" \
-    {-V,--version}"[Prints version information]" \
-    {-v,--verbose}"[Make the logging more verbose]" \
-    "--datetime-fmt[Format string for datetimes]:DATETIME_FMT:()" \
-    "--log-fmt[Format string for printed log output]:LOG_FMT:()" \
-    "--log-file-fmt[Format string for log file.]:LOG_FILE_FMT:()" \
-    "--log-file-level[Logging level for log file]:debug,info,warning,error,critical" \
-    "--log-file[File to write log messages to]:filename:_files" \
-    "--color[Enable color in output]" \
-    "--no-color[Disable color in output]" \
-    "--unicode[Enable unicode loglevels]" \
-    "--no-unicode[Disable unicode loglevels]" \
-    "--config-file[The location for the configuration file]:filename:_files" \
-    "*::qmk commands:_qmk_command" \
+(( $+functions[_qmk_painter-convert-font-image] )) ||
+_qmk_painter-convert-font-image() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '(-r --no-rle)'{-r,--no-rle}'[Disables the use of RLE when encoding images]' \
+    '(-f --format)'{-f,--format}'[Output format]: :(pal256 pal16 pal4 pal2 mono256 mono16 mono4 mono2)' \
+    '(-u --unicode-glyphs)'{-u,--unicode-glyphs}'[Also generate the specified unicode glyphs]:unicode_glyphs' \
+    '(-n --no-ascii)'{-n,--no-ascii}'[Disable output of the full ASCII character set, exporting only the glyphs specified]' \
+    '(-o --output)'{-o,--output}'[Specify output directory]: :_files -/' \
+    '(-i --input)'{-i,--input}'[Specify input graphic file]: :_files'
+}
 
+(( $+functions[_qmk_via2json] )) ||
+_qmk_via2json() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '(-l --layout)'{-l,--layout}"[The keymap's layout]" \
+    '(-km --keymap)'{-km,--keymap}"[The keymap's name]" \
+    '(-kb --keyboard)'{-kb,--keyboard}"[The keyboard's name]" \
+    '(-q --quiet)'{-q,--quiet}'[Quiet mode, only output error message]' \
+    '(-o --output)'{-o,--output}'[File to write to]: :_files'
+}
+
+_qmk "$@"
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
