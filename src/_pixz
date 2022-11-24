@@ -28,7 +28,9 @@
 # Description
 # -----------
 #
-#  Completion script for pixz a parallel, indexing version of xz. (https://github.com/vasi/pixz).
+#  Completion script for pixz 1.0.7 (https://github.com/vasi/pixz).
+#
+#  a parallel, indexing version of xz
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -38,63 +40,42 @@
 #
 # ------------------------------------------------------------------------------
 
-local -a files index
-files=()
-index=()
-
-_pixz_compressed_files() {
-    files=("${(f)$(ls -l | grep '.tpxz$\|.xz$' | rev | cut -d' ' -f1 | rev)}")
-}
-
-_pixz_load_file_index() {
-    index=("${(f)$(pixz -l $1)}")
+(( $+functions[_pixz_cpus] )) ||
+_pixz_cpus() {
+  if [[ -n $commands[nproc] ]]; then
+    local -a cpus=({1..$(nproc)})
+    _values cpus $cpus
+  fi
 }
 
 _pixz() {
+  local compress_opts="-0 -1 -2 -3 -4 -5 -6 -7 -8 -9 -e"
 
-    _arguments -C \
-      '(- 1 *)'-h"[Show help and exit]" \
-      '(- 1 *)'-l"[List tarball contents very fast]:file:->xzfiles" \
-      '(- 1 *)'-x"[Extract one file very fast]:filepath:->filepath" \
-      '(- 1 *)'-d"[Decompress]:file:->xzfiles" \
-      "-i[Input]:file:->files" \
-      "-o[Output]:output:->outputxz" \
-      "-p[Use a maximum of NUM CPU-intensive threads]:cpu:->cpus" \
-      "-t[Don't assume input is in tar format]" \
-      "-k[Keep original input (do not remove it)]" \
-      "-e[Use "extreme" compression, which is much slower]" \
-      "-f[Set the size of each compression block, relative to the LZMA dictionary size (default is 2.0)]:num" \
-      "-q[Set the number of blocks to allocate for the compression queue (default is 1.3 * cores + 2)]:num" \
-      '1:inputfile:->files' \
-      '2:outputfile' \
-      '*: : :->args' \
-
-    case "$state" in
-      (cmds)
-            _describe -t commands 'commands' commands
-      ;;
-      (xzfiles)
-            _pixz_compressed_files
-            _describe -t files 'files' files
-      ;;
-      (files)
-          _files
-      ;;
-      (cpus)
-          local num_cpus cores
-          num_cpus=$(nproc)
-          cores=()
-          for i in {1..$num_cpus}; do
-              cores+=($i)
-          done
-          _describe -t cores 'cores' cores
-      ;;
-      (filepath)
-      ;;
-      (*)
-      ;;
-    esac
+  _arguments \
+    '(- 1 *)'-h"[Show help and exit]" \
+    '(- 1 *)-l[List tarball contents very fast]:file:_files -g "*.(tpxz|xz)"' \
+    '(- 1 *)-x[Extract one file very fast]:filepath' \
+    '(- 1 *)-d[Decompress]:file:_files -g "*.(tpxz|xz)' \
+    '-i[Input]:file:_files' \
+    '-o[Output]:output:_files' \
+    '-p[Use a maximum of NUM CPU-intensive threads]:cpu:_pixz_cpus' \
+    "-t[Don't assume input is in tar format]" \
+    '-k[Keep original input (do not remove it)]' \
+    "($compress_opts)"'-e[Use "extreme" compression, which is much slower]' \
+    '-f[Set the size of each compression block, relative to the LZMA dictionary size (default is 2.0)]:num' \
+    '-q[Set the number of blocks to allocate for the compression queue (default is 1.3 * cores + 2)]:num' \
+    "($compress_opts)"-{0,1,2,3,4,5,6,7,8,9}'[Set compression level(highest compression, slowest)]' \
+    '1:inputfile:_files' \
+    '2:outputfile:_files' \
+    '*: :_files'
 }
 
 _pixz
 
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
