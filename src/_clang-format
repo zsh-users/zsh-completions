@@ -1,0 +1,70 @@
+#compdef clang-format
+# ------------------------------------------------------------------------------
+# Copyright (c) 2022 Github zsh-users - https://github.com/zsh-users
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for clang-format v15.0.2 (https://clang.llvm.org/docs/ClangFormat.html)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei Yoshida (https://github.com/syohex) <syohex@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+local -a styles=(LLVM GNU Google Chromium Microsoft)
+
+_arguments \
+  '(- *)--help[Display available options]' \
+  '(- *)--help-hidden[Display available more options]' \
+  '(- *)--help-list[Display list of available options]' \
+  '(- *)--help-list-hidden[Display list of more available options]' \
+  '--Werror=[If set, changes formatting warnings to errors]' \
+  '*--Wno-error=[If set, do not error out on the specified warning type]:warn' \
+  '--assume-filename=[Set filename used to determine the language and to find .clang-format file]: :_files' \
+  '--cursor=[The position of the cursor when invoking clang-format from an editor integration]:pos' \
+  '(-n --dry-run)'{-n,--dry-run}'[If set, do not actually make the formatting changes]' \
+  '--dump-config[Dump configuration options to stdout and exit]' \
+  '--fallback-style=[The name of the predefined style used as a fallback]: :'"($styles)" \
+  '--ferror-limit=[Set the maximum number of clang-format errors to emit before stopping]:limit' \
+  '*--files=[Provide a list of files to run clang-format]: :_files' \
+  '-i[Inplace edit files, if specified]' \
+  '--length=[Format a range of this length(in bytes)]:bytes' \
+  '--lines=[format a range of lines]:format' \
+  '--offset=[Format a range starting at this byte offset]' \
+  '--output-replacements-xml[Output replacements as XML]' \
+  '--qualifier-alignment=[If set, overrides the qualifier alignment style determined by the QualifierAlignment style flag]' \
+  '--sort-includes[If set, overrides the include sorting behavior determined by the SortIncludes style flag]' \
+  '--style=[Set coding style]: :'"($styles)" \
+  '--verbose[If set, show the list of processed files]' \
+  '*: :_files'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
