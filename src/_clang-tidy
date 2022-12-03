@@ -1,0 +1,76 @@
+#compdef clang-tidy
+# ------------------------------------------------------------------------------
+# Copyright (c) 2022 Github zsh-users - https://github.com/zsh-users
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for clang-tidy v15.0.2 (https://clang.llvm.org/extra/clang-tidy/)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei Yoshida (https://github.com/syohex) <syohex@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+local -a styles=(LLVM GNU Google Chromium Microsoft)
+
+_arguments \
+  '(- *)--help[Display available options]' \
+  '(- *)--help-hidden[Display available more options]' \
+  '(- *)--help-list[Display list of available options]' \
+  '(- *)--help-list-hidden[Display list of more available options]' \
+  '--checks=[Comma-separated list of globs with optional "-" prefix]:checks' \
+  '--config=[Specifies a configuration in YAML/JSON format]:conf' \
+  '--config-file=[Specify the path of .clang-tidy or custom config-file]: :_files' \
+  '--dump-config[Dumps configuration in the YAML format to stdout]' \
+  '--enable-check-profile[Enable per-check timing profiles, and print a report to stderr]' \
+  '--explain-config[For each enabled check explains, where it is enabled]' \
+  '--export-fixes=[YAML file to store suggested fixes in]: :_files' \
+  '*--extra-arg[Additional argument to append to the compiler command line]:arg' \
+  '*--extra-arg-before[Additional argument to prepend to the compiler command line]:arg' \
+  '--fix[Apply suggested fixes]' \
+  '--fix-errors[Apply suggested fixes even if compilation errors were found]' \
+  '--fix-notes[If a warning has no fix, but a single fix can be found through an associated diagnostic node, apply the fix]' \
+  '--format-style=[Style for formatting code around applied fixes]: :(llvm google webkit mozilla)' \
+  '--header-filter=[Regular expression matching the names of the headers to output diagnostics from]:regexp' \
+  '(- *)--list-checks[List all enabled checks and exit]' \
+  '--load=[Load the specified plugin]: :_files' \
+  '-p[Build directory where compile_commands.json is]: :_files -/' \
+  '--quiet[Run clang-tidy in quiet mode]' \
+  '--store-check-profile=[These per-TU profiles are instead stored as JSON]:prefix' \
+  '--system-headers[Display the errors from system headers]' \
+  '--use-color[Use colors in diagnostics]' \
+  '--verify-config[Check the config files to ensure each check and option is recognized]' \
+  '--vfsoverlay=[Overlay the virtual filesystem described by file over the real file system]: :_files' \
+  '--warnings-as-errors=[Upgrades warning to errors]:check' \
+  '*: :_files'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
