@@ -452,17 +452,17 @@ _cmake_define_property_values() {
     (CMAKE_CXX_STANDARD) _wanted cxx-standards expl 'cxx standard' _values 'cxx standard' ${_cmake_cxx_standards[@]} && ret=0;;
     (CMAKE_C_STANDARD) _wanted c-standards expl 'c standard' _values 'c standard' ${_cmake_c_standards[@]} && ret=0;;
     (CMAKE_TOOLCHAIN_FILE) _wanted toolchain-files expl 'file' _cmake_toolchain_files && ret=0;;
-    (CMAKE_COLOR_MAKEFILE) _wanted booleans expl 'boolean' ${_cmake_booleans[@]} && ret=0;;
-    (CMAKE_RULE_MESSAGES)  _wanted booleans expl 'boolean' ${_cmake_booleans[@]} && ret=0;;
-    (CMAKE_VERBOSE_MAKEFILE) _wanted booleans expl 'boolean' ${_cmake_booleans[@]} && ret=0;;
-    (CMAKE_UNITY_BUILD) _wanted booleans expl 'boolean' ${_cmake_booleans[@]} && ret=0;;
+    (CMAKE_COLOR_MAKEFILE) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
+    (CMAKE_RULE_MESSAGES)  _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
+    (CMAKE_VERBOSE_MAKEFILE) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
+    (CMAKE_UNITY_BUILD) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
     (CMAKE_INSTALL_PREFIX) _files -/ && ret=0;;
-    (CMAKE_EXPORT_COMPILE_COMMANDS) _wanted booleans expl 'boolean' ${_cmake_booleans[@]} && ret=0;;
+    (CMAKE_EXPORT_COMPILE_COMMANDS) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
     (CMAKE_*_COMPILER)     _wanted compilers expl 'compiler' _cmake_compilers && ret=0;;
     (CMAKE_*_COMPILER_LAUNCHER) _wanted compilers expl 'compiler launcher' _cmake_launchers && ret=0;;
     (CMAKE_*_FLAGS(|_?*))  _message -e compiler-flags 'compiler flags' && _dispatch $service -value-,CPPFLAGS,-default- && ret=0;;
-    (CMAKE_*_STANDARD_REQUIRED) _wanted booleans expl 'boolean' ${_cmake_booleans[@]} && ret=0;;
-    (CMAKE_*_EXTENSIONS) _wanted booleans expl 'boolean' ${_cmake_booleans[@]} && ret=0;;
+    (CMAKE_*_STANDARD_REQUIRED) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
+    (CMAKE_*_EXTENSIONS) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
     (*)                    _files && ret=0;;
   esac
 
@@ -487,7 +487,10 @@ _cmake_toolchain_files() {
   _files -g '*\.cmake*'
 }
 
-local _cmake_booleans=(_describe -t booleans 'boolean' 'YES' 'NO')
+(( $+functions[_cmake_booleans] )) ||
+_cmake_booleans() {
+  _values booleans 'YES' 'NO'
+}
 
 # ---------------
 # _cmake_compilers
