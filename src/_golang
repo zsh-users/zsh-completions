@@ -30,7 +30,7 @@
 # Description
 # -----------
 #
-#  Completion script for go 1.19 (https://go.dev/).
+#  Completion script for go 1.20 (https://go.dev/).
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -176,6 +176,11 @@ __go_gcflags() {
   '-wb[enable write barrier (default true)]' \
 }
 
+__go_pgo() {
+  _alternative \
+    "name:name:(all off)" \
+    "file:file:_files"
+}
 
 local -a commands build_flags
 commands=(
@@ -337,6 +342,7 @@ _arguments \
 case $state in
   args)
     build_flags=(
+    '-C[change to directory before running the command]: :_files -/'
     '-a[force rebuilding of packages that are already up-to-date]'
     '-n[print the commands but do not run them]'
     '-p[number of builds that can be run in parallel]:number'
@@ -356,6 +362,7 @@ case $state in
     '-ldflags[arguments to pass on each go tool link invocation.]:flags'
     '-linkshared[link against shared libraries]'
     '-overlay[read a JSON config file that provides an overlay for build operations]:file:_files -g "*.json"'
+    '-pgo[specify the file path of a profile for profile-guided optimization]: :__go_pgo'
     '-pkgdir[install and load all packages from dir]:dir'
     '-tags[list of build tags to consider satisfied]:tags'
     '-trimpath[remove all file system paths from the resulting executable]'
@@ -402,7 +409,6 @@ case $state in
       build)
         _arguments \
           '-o[force build to write to named output file or directory]:file or directory:_files' \
-          '-i[installs the packages that are dependencies of the target]' \
           ${build_flags[@]} \
           ${mod_flags[@]} \
           '*:importpaths:__go_packages'
@@ -502,6 +508,7 @@ case $state in
         # the ^ parameter expansion appends ": __go_envvarvals" to every element of goenvvars
         # the :# parameter expansion removes all elements matching GOENV*
         [[ $words[2] != '-w' ]] && _arguments \
+          '-C[change to directory before running the command]: :_files -/' \
           '-json[print the environment in JSON format]' \
           '-u[unset environment variables]' \
           '-w[change the default setting of environment variables]' \
@@ -510,11 +517,14 @@ case $state in
         ;;
 
       fix)
-        _arguments '*:importpaths:__go_packages'
+        _arguments \
+          '-C[change to directory before running the command]: :_files -/' \
+          '*:importpaths:__go_packages'
         ;;
 
       fmt)
         _arguments \
+          '-C[change to directory before running the command]: :_files -/' \
           '-n[prints commands that would be executed]' \
           '-x[prints commands as they are executed]' \
           '*:importpaths:__go_packages'
@@ -522,6 +532,7 @@ case $state in
 
       generate)
         _arguments \
+          '-C[change to directory before running the command]: :_files -/' \
           '-run=[specifies a regular expression to select directives]:regex' \
           '-x[print the commands]' \
           '-n[print the commands but do not run them]' \
@@ -684,7 +695,6 @@ case $state in
         else
           _arguments \
             "-c[compile but don't run test]" \
-            '-i[install dependencies of the test]' \
             '-bench[run benchmarks matching the regular expression]:regexp' \
             '-benchmem[print memory allocation statistics for benchmarks]' \
             '-benchtime[run benchmarks for t rime]:t' \
