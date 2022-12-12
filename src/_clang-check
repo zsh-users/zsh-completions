@@ -1,0 +1,62 @@
+#compdef clang-check
+# ------------------------------------------------------------------------------
+# Copyright (c) 2022 Github zsh-users - https://github.com/zsh-users
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for clang-check v15.0.2 (https://clang.llvm.org/docs/ClangCheck.html)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei Yoshida (https://github.com/syohex) <syohex@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+_arguments \
+  '(- *)--help[Display available options]' \
+  '(- *)--help-hidden[Display available more options]' \
+  '(- *)--version[Display the version of this program]' \
+  '--analyze[Run static analysis engine]' \
+  '--analyzer-output-path=[Write output to file]: :_files' \
+  '--ast-dump[Build ASTs and then debug dump them]' \
+  '--ast-dump-filter=[Use with -ast-dump or -ast-print to dump/print only AST declaration nodes having a certain substring]:string' \
+  '--ast-list[Build ASTs and print the list of declaration node qualified names]' \
+  '--ast-print[Build ASTs and then pretty-print them]' \
+  '*--extra-arg=[Additional argument to append to the compiler command line]:arg' \
+  '*--extra-arg-before=[Additional argument to prepend to the compiler command line]:arg' \
+  '--fix-what-you-can[Apply fix-it advice even in the presence of unfixable errors]' \
+  '--fixit[Apply fix-it advice to the input source]' \
+  '-p[Build directory where compile_commands.json is]: :_files -/' \
+  '--syntax-tree-dump[dump the syntax tree]' \
+  '--tokens-dump[dump the preprocessed tokens]' \
+  '*: :_files'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
