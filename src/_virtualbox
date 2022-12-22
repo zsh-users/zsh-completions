@@ -285,7 +285,10 @@ _virtualbox() {
             # TODO
             ;;
           (setproperty)
-            # TODO
+            _arguments \
+              '1: :(autostartdbpath defaultfrontend hwvirtexclusive launguage logginglevel loghistorycount machinefolder proxymode proxyurl vrdeauthlibrary vrdeextpack websrvauthlibrary)' \
+              '2:value:_vboxmanage_setproperty_value' \
+              && ret=0
             ;;
           (usbfilter)
             # TODO
@@ -450,11 +453,26 @@ _vboxmachines() {
   _values 'machines' $machines
 }
 
-# List available os types
 (( $+functions[_vboxostypes] )) ||
 _vboxostypes() {
   local -a os=(${(@f)"$(vboxmanage list ostypes | awk '/^ID:/{ print $2 }')"})
   _values 'machines' $os
+}
+
+(( $+functions[_vboxmanage_setproperty_value] )) ||
+_vboxmanage_setproperty_value() {
+  case $words[2] in
+    (autostartdbpath)
+      _arguments '*: :_files'
+      ;;
+    (machinefolder)
+      _arguments '*: :_files -/'
+      ;;
+    (proxymode)
+      local -a mode=(manual noproxy system)
+      _values 'proxymode' $mode
+      ;;
+  esac
 }
 
 _virtualbox "$@"
