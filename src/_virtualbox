@@ -101,7 +101,7 @@ _vboxmanage() {
           _vboxmanage_encryptvm && ret=0
           ;;
         (cloud)
-          # TODO
+          _vboxmanage_cloud && ret=0
           ;;
         (cloudprofile)
           _vboxmanage_cloudprofile && ret=0
@@ -453,6 +453,202 @@ _vboxmanage_encryptvm_addpassword() {
   _arguments \
     '--new-password[specify the new password for encryption of the VM]: :_files' \
     '--new-password-id[specify the new ID for the password for encryption of the VM]:id'
+}
+
+(( $+functions[_vboxmanage_cloud] )) ||
+_vboxmanage_cloud() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(list instance image network)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      local subcommand=$words[1]
+      if (( $+functions[_vboxmanage_cloud_${subcommand}] )); then
+          _vboxmanage_cloud_${subcommand} && ret=0
+      fi
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_cloud_list] )) ||
+_vboxmanage_cloud_list() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(instances images)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      local -a state
+      if [[ $words[1] == "instances" ]]; then
+        state=(running paused terminated)
+      else
+        state=(available disabled deleted)
+      fi
+
+      _arguments \
+        '--provider=[Short cloud provider name]:provider' \
+        '--profile=[Cloud profile name]:profile' \
+        '--state=[The state of cloud instance]: :'"($state)" \
+        '--compartment-id[A compartment is the logical container used]'
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_cloud_instance] )) ||
+_vboxmanage_cloud_instance() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(create info termination start pause  images)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (create)
+          _arguments \
+            '--provider=[Short cloud provider name]:provider' \
+            '--profile=[Cloud profile name]:profile' \
+            '--domain-name=[Cloud domain where new instance is created]:name' \
+            '--image-id=[Unique identifier which fully identifies a custom image in the Cloud]:id' \
+            '--boot-volume-id=[Unique identifier which fully identifies a boot volume in the Cloud]:id' \
+            '--display-name=[Name for new instance in the Cloud]:name' \
+            '--shape=[The shape of instance, defines the number of CPUs and RAM memory]:shape' \
+            '--subnet=[Unique identifier which fully identifies an existing subnet]:subnet' \
+            '--boot-disk-size=[The size of bootable image in GB]:size' \
+            '--publicip=[Whether the instance will have a public IP or not]: :(true false)' \
+            '--privateip=[Private IP address for the created instance]:ip' \
+            '--public-ssh-key=[Public SSH key used to connect to the instance via SSH]:key' \
+            '--launch-mode=[launch mode]: :(EMULATED NATIVE PARAVIRTUALIZED)' \
+            '--cloud-init-script-path=[Absolute path to the user cloud-init script]: :_files' \
+            && ret=0
+          ;;
+        (*)
+          _arguments \
+            '--provider=[Short cloud provider name]:provider' \
+            '--profile=[Cloud profile name]:profile' \
+            '--id=[Unique identifier which fully identify the instance in the Cloud]:id' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_cloud_image] )) ||
+_vboxmanage_cloud_image() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(create info delete import export)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (create)
+          _arguments \
+            '--provider=[Short cloud provider name]:provider' \
+            '--profile=[Cloud profile name]:profile' \
+            '--display-name=[Name for new image in the Cloud]:name' \
+            '--bucket-name=[Cloud bucket name where an object is located]:name' \
+            '--object-name=[Name of object in the bucket]:name' \
+            '--instance-id=[Unique identifier which fully identifies the instance in the Cloud]:id' \
+            && ret=0
+          ;;
+        (import)
+          _arguments \
+            '--provider=[Short cloud provider name]:provider' \
+            '--profile=[Cloud profile name]:profile' \
+            '--bucket-name=[Cloud bucket name where an object is located]:name' \
+            '--object-name=[Name of object in the bucket]:name' \
+            && ret=0
+          ;;
+        (export)
+          _arguments \
+            '--provider=[Short cloud provider name]:provider' \
+            '--profile=[Cloud profile name]:profile' \
+            '--display-name=[Name for new image in the Cloud]:name' \
+            '--bucket-name=[Cloud bucket name where an object is located]:name' \
+            '--object-name=[Name of object in the bucket]:name' \
+            && ret=0
+          ;;
+        (*)
+          _arguments \
+            '--provider=[Short cloud provider name]:provider' \
+            '--profile=[Cloud profile name]:profile' \
+            '--id=[Unique identifier which fully identify the instance in the Cloud]:id' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_cloud_network] )) ||
+_vboxmanage_cloud_network() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(setup create update delete info)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (setup)
+          _arguments \
+            '--provider=[Short cloud provider name]:provider' \
+            '--profile=[Cloud profile name]:profile' \
+            '--gateway-os-name=[The name of OS to use for a cloud gateway]:os_name' \
+            '--gateway-os-version=[The version of OS to use for a cloud gateway]:version' \
+            '--gateway-shape=[The instance shape to use for a cloud gateway]:shape' \
+            '--tunnel-network-name=[The name of VCN/subnet to use for tunneling]:name' \
+            '--tunnel-network-range=[The IP address range to use for tunneling]:range' \
+            '--proxy=[The proxy URL to be used in local gateway installation]:proxy' \
+            '--compartment-id=[The compartment to create the tunnel network in]:id' \
+            && ret=0
+          ;;
+        (create|update)
+          _arguments \
+            '--provider=[Short cloud provider name]:provider' \
+            '--profile=[Cloud profile name]:profile' \
+            '--name=[The name of an existing cloud network descriptor]:name' \
+            '--network-id=[The unique identifier of an existing subnet in the cloud]:id' \
+            '(--enable --disable)--enable[Enable the network descriptor]' \
+            '(--enable --disable)--disable[Disable the network descriptor]' \
+            && ret=0
+          ;;
+        (delete|info)
+          _arguments \
+            '--provider=[Short cloud provider name]:provider' \
+            '--profile=[Cloud profile name]:profile' \
+            '--name=[The name of an existing cloud network descriptor]:name' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
 }
 
 (( $+functions[_vboxmanage_cloudprofile] )) ||
