@@ -156,7 +156,7 @@ _vboxmanage() {
             && ret=0
           ;;
         (unattended)
-          # TODO
+          _vboxmanage_unattended
           ;;
         (adoptstate)
           _arguments \
@@ -483,6 +483,59 @@ _vboxmanage_cloudprofile() {
           _arguments \
             '--provider=[Short cloud provider name]:provider' \
             '--profile=[Cloud profile name]:profile'
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_unattended] )) ||
+_vboxmanage_unattended() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(detect install)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (detect)
+          _arguments \
+            '--iso=[The installation ISO to run the detection on]: :_files' \
+            '--machine-readable[Produce output that is simpler to parse from a script]' \
+            && ret=0
+          ;;
+        (install)
+          _arguments \
+            '--iso=[The installation ISO to run the detection on]: :_files' \
+            '--user=[The login name]:user' \
+            '--password=[The login password]:password' \
+            '--full-user-name=[The full user name]:full_name' \
+            '--key=[The guest OS product key]:key' \
+            '--install-additions[Install the VirtualBox guest additions]' \
+            '--additions-iso=[Path to the VirtualBox guest additions ISO]: :_files' \
+            '--install-txs[Whether to install the test execution service from the VirtualBox ValidationKit]' \
+            '--validation-kit-iso=[Path to the VirtualBox ValidationKit ISO]: :_files' \
+            '--locale=[The base locale specification for the guest]:locale' \
+            '--country=[The two letter country code]:country' \
+            '--time-zone=[The time zone to set up the guest OS with]:timezone' \
+            '--hostname=[The fully qualified domain name of the guest machine]:hostname' \
+            '--package-selection-adjustment=[Adjustments to the guest OS packages/components selection]:adjustment' \
+            '--dry-run[Do not create any files or make any changes to the VM configuration]' \
+            '--start-vm=[Start the VM using the front end given by session-type]:session_type' \
+            '--auxiliary-base-path=[The path prefix to the media related files generated for the installation]: :_files' \
+            '--image-index=[Windows installation image index]:index' \
+            '--script-template=[The unattended installation script template]: :_files' \
+            '--post-install-template=[The post installation script template]: :_files' \
+            '--post-install-command=[A single command to run after the installation is completed]:command' \
+            '--extra-install-kernel-parameter=[List of extra linux kernel parameters to use during the installation]:param' \
+            '--language=[Specifies the UI language for a Windows installation]:language' \
+            '1:machine:_vboxmachines' \
+            && ret=0
           ;;
       esac
       ;;
