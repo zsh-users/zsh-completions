@@ -104,7 +104,7 @@ _vboxmanage() {
           # TODO
           ;;
         (cloudprofile)
-          # TODO
+          _vboxmanage_cloudprofile && ret=0
           ;;
         (import)
           _arguments \
@@ -441,7 +441,7 @@ _vboxmanage_encryptvm() {
 
 (( $+functions[_vboxmanage_encryptvm_setencryption] )) ||
 _vboxmanage_encryptvm_setencryption() {
-  _arguments -C \
+  _arguments \
     '--cipher[specify the new cipher for encryption of the VM]: :(AES-128 AES-256)' \
     '--new-password[specify the new password for encryption of the VM]: :_files' \
     '--new-password-id[specify the new ID for the password for encryption of the VM]:id' \
@@ -453,6 +453,42 @@ _vboxmanage_encryptvm_addpassword() {
   _arguments \
     '--new-password[specify the new password for encryption of the VM]: :_files' \
     '--new-password-id[specify the new ID for the password for encryption of the VM]:id'
+}
+
+(( $+functions[_vboxmanage_cloudprofile] )) ||
+_vboxmanage_cloudprofile() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(add update delete show)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (add|update)
+          _arguments \
+            '--provider=[Short cloud provider name]:provider' \
+            '--profile=[Cloud profile name]:profile' \
+            '--clouduser=[The name which fully identifies the user in the specified cloud provider]:user' \
+            '--fingerprint=[Fingerprint for the key pair being used]:finger_print' \
+            '--keyfile=[Full path and filename of the private key]: :_files' \
+            '--passphrase=[Passphrase used for the key, if it is encrypted]:pass' \
+            '--tenancy=[ID of your tenancy]:tenancy' \
+            '--compartment=[ID of your compartment]:compartment' \
+            '--region=[region name]:region' && ret=0
+          ;;
+        (*)
+          _arguments \
+            '--provider=[Short cloud provider name]:provider' \
+            '--profile=[Cloud profile name]:profile'
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
 }
 
 (( $+functions[_vboxmanage_bandwidthctl] )) ||
