@@ -218,7 +218,7 @@ _vboxmanage() {
             && ret=0
           ;;
         (bandwidthctl)
-          # TODO
+          _vboxmanage_bandwidthctl
           ;;
         (showmediuminfo)
           _arguments \
@@ -453,6 +453,50 @@ _vboxmanage_encryptvm_addpassword() {
   _arguments \
     '--new-password[specify the new password for encryption of the VM]: :_files' \
     '--new-password-id[specify the new ID for the password for encryption of the VM]:id'
+}
+
+(( $+functions[_vboxmanage_bandwidthctl] )) ||
+_vboxmanage_bandwidthctl() {
+  local ret=1
+
+  _arguments -C \
+    '1: :_vboxmachines' \
+    '2: :(add list remove set)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      local subcommand=$words[2]
+      if (( $+functions[_vboxmanage_bandwidthctl_${subcommand}] )); then
+        compset -n 2
+        _vboxmanage_bandwidthctl_${subcommand} && ret=0
+      else
+        _arguments '*: :_files' && ret=0
+      fi
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_bandwidthctl_add] )) ||
+_vboxmanage_bandwidthctl_add() {
+  _arguments \
+    '--limit=[Specifies the bandwidth limit for a bandwidth group]:limit' \
+    '--type=[Specifies the type of the bandwidth group]: :(disk network)'
+}
+
+(( $+functions[_vboxmanage_bandwidthctl_list] )) ||
+_vboxmanage_bandwidthctl_list() {
+  _arguments \
+    '--machinereadable[Outputs the information about the bandwidth groups in name-value pairs]'
+}
+
+(( $+functions[_vboxmanage_bandwidthctl_set] )) ||
+_vboxmanage_bandwidthctl_set() {
+  _arguments \
+    '--limit=[Specifies the bandwidth limit for a bandwidth group]:limit'
 }
 
 (( $+functions[_vboxheadless] )) ||
