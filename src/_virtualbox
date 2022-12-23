@@ -165,7 +165,7 @@ _vboxmanage() {
             && ret=0
           ;;
         (snapshot)
-          # TODO
+          _vboxmanage_snapshot
           ;;
         (closemedium)
           _arguments \
@@ -535,6 +535,48 @@ _vboxmanage_unattended() {
             '--extra-install-kernel-parameter=[List of extra linux kernel parameters to use during the installation]:param' \
             '--language=[Specifies the UI language for a Windows installation]:language' \
             '1:machine:_vboxmachines' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_snapshot] )) ||
+_vboxmanage_snapshot() {
+  local ret=1
+
+  _arguments -C \
+    '1: :_vboxmachines' \
+    '2: :(take delete restore restorecurrent edit list showvminfo)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      local subcommand=$words[2]
+      compset -n 2
+      case $words[1] in
+        (take)
+          _arguments \
+            '--description=[Specifies a description of the snapshot]:description' \
+            '--live[Specifies that the VM is not stopped while you create the snapshot]' \
+            '--uniquename=[unique name]' \
+            && ret=0
+          ;;
+        (edit)
+          _arguments \
+            '--current[Specifies that you update the current version of the snapshot]' \
+            '--description=[Specifies a new description for the snapshot]:description' \
+            '--name=[Specifies a new name for the snapshot]:name' \
+            && ret=0
+          ;;
+        (list)
+          _arguments \
+            '--details[Specifies that the output shows detailed information about the snapshot]' \
+            '--machinereadable[Specifies that the output is shown in a machine-readable format]' \
             && ret=0
           ;;
       esac
