@@ -282,7 +282,7 @@ _vboxmanage() {
             && ret=0
           ;;
         (mediumio)
-          # TODO
+          _vboxmanage_mediumio
           ;;
         (setproperty)
           _arguments \
@@ -497,6 +497,62 @@ _vboxmanage_bandwidthctl_list() {
 _vboxmanage_bandwidthctl_set() {
   _arguments \
     '--limit=[Specifies the bandwidth limit for a bandwidth group]:limit'
+}
+
+(( $+functions[_vboxmanage_mediumio] )) ||
+_vboxmanage_mediumio() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(formatfat cat stream)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      local subcommand=$words[1]
+      if (( $+functions[_vboxmanage_mediumio_${subcommand}] )); then
+        _vboxmanage_mediumio_${subcommand} && ret=0
+      fi
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_mediumio_formatfat] )) ||
+_vboxmanage_mediumio_formatfat() {
+  _arguments \
+    '--disk=[Either the UUID or filename of a harddisk image]: :_files' \
+    '--dvd=[Either the UUID or filename of a DVD image]: :_files' \
+    '--floppy=[Either the UUID or filename of a floppy image]: :_files'  \
+    '--password-file=[The name of a file containing the medium encryption password]: :_files' \
+    '--quick[Quickformat the medium]'
+}
+
+(( $+functions[_vboxmanage_mediumio_cat] )) ||
+_vboxmanage_mediumio_cat() {
+  _arguments \
+    '--disk=[Either the UUID or filename of a harddisk image]: :_files' \
+    '--dvd=[Either the UUID or filename of a DVD image]: :_files' \
+    '--floppy=[Either the UUID or filename of a floppy image]: :_files'  \
+    '--password-file=[The name of a file containing the medium encryption password]: :_files' \
+    '--hex[Dump as hex bytes]' \
+    '--offset=[The byte offset in the medium to start]:offset' \
+    '--size=[The number of bytes to dump]:size' \
+    '--output=[The output filename]: :_files'
+}
+
+(( $+functions[_vboxmanage_mediumio_stream] )) ||
+_vboxmanage_mediumio_stream() {
+  _arguments \
+    '--disk=[Either the UUID or filename of a harddisk image]: :_files' \
+    '--dvd=[Either the UUID or filename of a DVD image]: :_files' \
+    '--floppy=[Either the UUID or filename of a floppy image]: :_files'  \
+    '--password-file=[The name of a file containing the medium encryption password]: :_files' \
+    '--format=[The format of the destination image]:format' \
+    '--variant=[The medium variant for the destination]:variant' \
+    '--output=[The output filename]: :_files'
 }
 
 (( $+functions[_vboxheadless] )) ||
