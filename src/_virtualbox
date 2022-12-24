@@ -294,10 +294,10 @@ _vboxmanage() {
           _vboxmanage_usbfilter && ret=0
           ;;
         (sharedfolder)
-          # TODO
+          _vboxmanage_sharedfolder && ret=0
           ;;
         (guestproperty)
-          _vboxmanage_guestproperty
+          _vboxmanage_guestproperty && ret=0
           ;;
         (guestcontrol)
           # TODO
@@ -912,6 +912,43 @@ _vboxmanage_usbfilter() {
         (remove)
           _arguments \
             '--target=[Specifies the VM that the filter is attached to]: :_vboxmachines' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_sharedfolder] )) ||
+_vboxmanage_sharedfolder() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(add remove)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (add)
+          _arguments \
+            '--name=[Specifies the name of the share]:name' \
+            '--hostpath=[Specifies the absolute path of the folder or directory on the host OS]: :_files -/' \
+            '--readonly[Specifies that the share has only read-only access to files at the host path]' \
+            '--transient[Specifies that the share is transient]' \
+            '--automount[Specifies that the share is automatically mounted]' \
+            '--auto-mount-point=[Specifies the mount point of the share]: :_files -/' \
+            '1: :_vboxmachines' \
+            && ret=0
+          ;;
+        (remove)
+          _arguments \
+            '--name=[Specifies the name of the share]:name' \
+            '--transient[Specifies that the share is transient]' \
+            '1: :_vboxmachines' \
             && ret=0
           ;;
       esac
