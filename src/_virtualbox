@@ -330,7 +330,7 @@ _vboxmanage() {
           _vboxmanage_updatecheck
           ;;
         (modifynvram)
-          # TODO
+          _vboxmanage_modifynvram
           ;;
         (discardstate|getextradata|setextradata)
           _arguments \
@@ -994,6 +994,51 @@ _vboxmanage_updatecheck() {
             '--proxy-mode=[Specifies the proxy mode to use]: :(system manual none)' \
             '--proxy-url=[Specifies the proxy address to use]:proxy' \
             '1: :_vboxmachines' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_modifynvram] )) ||
+_vboxmanage_modifynvram() {
+  local ret=1
+
+  _arguments -C \
+    '1: :_vboxmachines' \
+    '2: :(inituefivarstore enrollmssignatures enrollorclpk enrollpk listvars queryvar deletevar changevar)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      compset -n 2
+      case $words[1] in
+        (enrollpk)
+          _arguments \
+            '--platform-key=[The platform key provided as a DER encoded X]: :_files' \
+            '--owner-uuid=[The UUID identifying the owner of the platform key]:uuid' \
+            && ret=0
+          ;;
+        (queryvar)
+          _arguments \
+            '--name=[UEFI variable name to query]:name' \
+            '--filename=[Where to store the content of the variable upon success]: :_files' \
+            && ret=0
+          ;;
+        (deletevar)
+          _arguments \
+            '--name=[UEFI variable name to query]:name' \
+            '--owner-uuid=[The UUID identifying the owner of the variable to delete]:uuid' \
+            && ret=0
+          ;;
+        (queryvar)
+          _arguments \
+            '--name=[UEFI variable name to change the data for]:name' \
+            '--filename=[The file to read the data from]: :_files' \
             && ret=0
           ;;
       esac
