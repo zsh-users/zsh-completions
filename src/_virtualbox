@@ -291,7 +291,7 @@ _vboxmanage() {
             && ret=0
           ;;
         (usbfilter)
-          # TODO
+          _vboxmanage_usbfilter && ret=0
           ;;
         (sharedfolder)
           # TODO
@@ -879,6 +879,46 @@ _vboxmanage_mediumio_stream() {
     '--format=[The format of the destination image]:format' \
     '--variant=[The medium variant for the destination]:variant' \
     '--output=[The output filename]: :_files'
+}
+
+(( $+functions[_vboxmanage_usbfilter] )) ||
+_vboxmanage_usbfilter() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(add modify remove)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (add|modify)
+          _arguments \
+            '--action=[Specifies whether to permit VMs access to devices]: :(ignore hold)' \
+            '--active=[Specifies whether the USB filter is active or temporarily disabled]: :(yes no)' \
+            '--manufacturer=[Specifies a manufacturer ID filter as a string]:manufacturer' \
+            '--maskedinterfaces=[Specifies a masked interface filter]:interfaces' \
+            '--name=[Specifies the name of the filter]:filter' \
+            '--product=[Specifies a product ID filter as a string]:product' \
+            '--productid=[Specifies a product ID filter]:product_id' \
+            '--remote=[Specifies a remote or not]: :(yes no)' \
+            '--revision=[Specifies a revision ID filter]:revision' \
+            '--serialnumber=[Specifies a serial number filter as a string]:serial' \
+            '--target=[Specifies the VM that the filter is attached to]: :_vboxmachines' \
+            '--vendorid=[Specifies a vendor ID filter]:vendor_id' \
+            && ret=0
+          ;;
+        (remove)
+          _arguments \
+            '--target=[Specifies the VM that the filter is attached to]: :_vboxmachines' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
 }
 
 (( $+functions[_vboxmanage_guestproperty] )) ||
