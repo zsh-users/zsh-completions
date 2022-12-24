@@ -297,7 +297,7 @@ _vboxmanage() {
           # TODO
           ;;
         (guestproperty)
-          # TODO
+          _vboxmanage_guestproperty
           ;;
         (guestcontrol)
           # TODO
@@ -752,7 +752,6 @@ _vboxmanage_snapshot() {
 
   case $state in
     (arg)
-      local subcommand=$words[2]
       compset -n 2
       case $words[1] in
         (take)
@@ -880,6 +879,51 @@ _vboxmanage_mediumio_stream() {
     '--format=[The format of the destination image]:format' \
     '--variant=[The medium variant for the destination]:variant' \
     '--output=[The output filename]: :_files'
+}
+
+(( $+functions[_vboxmanage_guestproperty] )) ||
+_vboxmanage_guestproperty() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(get enumerate set unset wait)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (enumerate)
+          _arguments \
+            '--relative[Display the timestamp relative to current time]' \
+            '--no-timestamp[Do not display the timestamp of the last update]' \
+            '--no-flags[Do not display the flags]' \
+            '--old-format[Use the output format from VirtualBox 6]' \
+            '1: :_vboxmachines' \
+            && ret=0
+          ;;
+        (get)
+          _arguments \
+            '--verbose[Provides the property value, timestamp, and any specified value attributes]' \
+            '1: :_vboxmachines' \
+            && ret=0
+          ;;
+        (set)
+          _arguments \
+            '--flags=[Specify the additional attributes of the value]: :(TRANSIENT TRANSRESET RDONLYGUEST RDONLYHOST READONLY)' \
+            '1: :_vboxmachines' \
+            && ret=0
+          ;;
+        (wait)
+          _arguments \
+            '1: :_vboxmachines' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
 }
 
 (( $+functions[_vboxheadless] )) ||
