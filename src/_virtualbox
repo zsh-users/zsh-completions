@@ -327,7 +327,7 @@ _vboxmanage() {
           # TODO
           ;;
         (updatecheck)
-          # TODO
+          _vboxmanage_updatecheck
           ;;
         (modifynvram)
           # TODO
@@ -956,6 +956,43 @@ _vboxmanage_guestproperty() {
           ;;
         (wait)
           _arguments \
+            '1: :_vboxmachines' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+
+(( $+functions[_vboxmanage_updatecheck] )) ||
+_vboxmanage_updatecheck() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(perform list modify)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (perform|list)
+          _arguments \
+            '--machine-readable[Machine readable output]' \
+            && ret=0
+          ;;
+        (modify)
+          _arguments \
+            '--verbose[Provides the property value, timestamp, and any specified value attributes]' \
+            '(--enable --disable)--enable[Enable the update check service]' \
+            '(--enable --disable)--disable[Disable the update check service]' \
+            '--channel=[The preferred release type]: :(stable withbetas all)' \
+            '--frequency=[Specifies how often in days to check for a newer version of VirtualBox]:days' \
+            '--proxy-mode=[Specifies the proxy mode to use]: :(system manual none)' \
+            '--proxy-url=[Specifies the proxy address to use]:proxy' \
             '1: :_vboxmachines' \
             && ret=0
           ;;
