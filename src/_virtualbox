@@ -324,13 +324,13 @@ _vboxmanage() {
           # TODO
           ;;
         (extpack)
-          # TODO
+          _vboxmanage_expack && ret=0
           ;;
         (updatecheck)
-          _vboxmanage_updatecheck
+          _vboxmanage_updatecheck && ret=0
           ;;
         (modifynvram)
-          _vboxmanage_modifynvram
+          _vboxmanage_modifynvram && ret=0
           ;;
         (discardstate|getextradata|setextradata)
           _arguments \
@@ -966,6 +966,36 @@ _vboxmanage_guestproperty() {
   return $ret
 }
 
+(( $+functions[_vboxmanage_expack] )) ||
+_vboxmanage_expack() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(install uninstall cleanup)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (install)
+          _arguments \
+            '--replace[Uninstall existing extension pack version]' \
+            '--accept-license=[Accept the license text with the given SHA-256 hash value]:sha256' \
+            '*: :_files' \
+            && ret=0
+          ;;
+        (uninstall)
+          _arguments \
+            '--force[Overrides most refusals to uninstall an extension pack]' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
 
 (( $+functions[_vboxmanage_updatecheck] )) ||
 _vboxmanage_updatecheck() {
