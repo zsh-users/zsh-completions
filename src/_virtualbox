@@ -321,7 +321,7 @@ _vboxmanage() {
           # TODO
           ;;
         (usbdevsource)
-          # TODO
+          _vboxmanage_usbdevsource && ret=0
           ;;
         (extpack)
           _vboxmanage_expack && ret=0
@@ -957,6 +957,32 @@ _vboxmanage_guestproperty() {
         (wait)
           _arguments \
             '1: :_vboxmachines' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_usbdevsource] )) ||
+_vboxmanage_usbdevsource() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(add remove)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (add)
+          _arguments \
+            '--address=[Specifies the address of the USB backend]:address' \
+            '--backend=[Specifies the USB proxy service backend to use]:backend' \
+            '*: :_files' \
             && ret=0
           ;;
       esac
