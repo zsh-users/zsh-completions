@@ -318,7 +318,7 @@ _vboxmanage() {
           _vboxmanage_hostonlynet && ret=0
           ;;
         (dhcpserver)
-          # TODO
+          _vboxmanage_dhcpserver && ret=0
           ;;
         (usbdevsource)
           _vboxmanage_usbdevsource && ret=0
@@ -1329,6 +1329,75 @@ _vboxmanage_hostonlynet() {
           _arguments \
             '--name=[The host-only network name]:name' \
             '--id=[The host-only network uuid]:netid' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_dhcpserver] )) ||
+_vboxmanage_dhcpserver() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(add modify remove start restart stop findlease)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (add|modify)
+          _arguments \
+            '--network=[The internal network name]:name' \
+            '--interface=[The host only interface name]:interface' \
+            '--server-ip=[The IP address the DHCP server should use]:server_ip' \
+            '--lower-ip-address=[The lower IP address range for the DHCP server to manage]:lower' \
+            '--upper-ip-address=[The upper IP address range for the DHCP server to manage]:upper' \
+            '--netmask=[The network mask]:netmask' \
+            '(--enable --disable)--enable[Enable the DHCP server]' \
+            '(--enable --disable)--disable[Disable the DHCP server]' \
+            '--global[Set the configuration scope to global]' \
+            '--vm=[Set the configuration scope to the first NIC of the specified VM]:_vboxmachines' \
+            '--nic=[Set the configuration scope to a NIC]:id' \
+            '--mac-address=[Set the configuration scope to the specified MAC address]:mac' \
+            '--group=[Set the configuration scope to the specified group]:group' \
+            '--set-opt=[Adds the specified DHCP option number (0-255) and value]:option' \
+            '--set-opt-hex=[Adds the specified DHCP option number (0-255) and value]:hex' \
+            '--force-opt=[Forces the specified DHCP option number (0-255)]:opt' \
+            '--suppress-opt=[Prevents the specified DHCP option number (0-255)]:opt' \
+            '--min-lease-time=[Sets the minimum lease time for the current scope in seconds]:sec' \
+            '--default-lease-time=[Sets the default lease time for the current scope in seconds]:sec' \
+            '--max-lease-time=[Sets the maximum lease time for the current scope in seconds]:sec' \
+            '--fixed-address=[Fixed address assignment for a --vm or --mac-address configuration scope]:address' \
+            '--incl-mac=[Include the specific MAC address in the group]:mac' \
+            '--excl-mac=[Exclude the specific MAC address from the group]:mac' \
+            '--incl-mac-wild=[Include the specific MAC address pattern in the group]:pattern' \
+            '--excl-mac-wild=[Exclude the specific MAC address pattern from the group]:pattern' \
+            '--incl-vendor=[Include the specific vendor class ID in the group]:vendor' \
+            '--excl-vendor=[Exclude the specific vendor class ID from the group]:vendor' \
+            '--incl-vendor-wild=[Include the specific vendor class ID pattern in the group]:pattern' \
+            '--excl-vendor-wild=[Exclude the specific vendor class ID pattern from the group]:pattern' \
+            '--incl-user=[Include the specific user class ID in the group]:user' \
+            '--excl-user=[Exclude the specific user class ID from the group]:user' \
+            '--incl-user-wild=[Include the specific user class ID pattern in the group]:pattern' \
+            '--excl-user-wild=[Exclude the specific user class ID pattern from the group]:pattern' \
+            && ret=0
+          ;;
+        (remove|start|restart|stop)
+          _arguments \
+            '--network=[The internal network name]:name' \
+            '--interface=[The host only interface name]:interface' \
+            && ret=0
+          ;;
+        (findlease)
+          _arguments \
+            '--network=[The internal network name]:name' \
+            '--interface=[The host only interface name]:interface' \
+            '--mac-address=[The MAC address to lookup in the lease database]:mac' \
             && ret=0
           ;;
       esac
