@@ -306,7 +306,7 @@ _vboxmanage() {
           _vboxmanage_debugvm && ret=0
           ;;
         (metrics)
-          # TODO
+          _vboxmanage_metrics && ret=0
           ;;
         (natnetwork)
           _vboxmanage_natnetwork && ret=0
@@ -1195,6 +1195,53 @@ _vboxmanage_debugvm() {
             '--sample-interval-us=[The interval in microseconds between guest samples]:us' \
             '--sample-time-us=[The amount of microseconds to take guest samples]:us' \
             '*:: :_files' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_metrics] )) ||
+_vboxmanage_metrics() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(collect disable enable list query setup)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (collect)
+          _arguments \
+            '--detach[Disables the collection of metric data, so no data is output]' \
+            '--list[Shows which metrics match the specified filter]' \
+            '--period=[Specifies the number of seconds to wait between collecting metric data samples]:sec' \
+            '--samples=[Specifies the number of metric data samples to save]' \
+            '1: :_vboxmachines' \
+            && ret=0
+          ;;
+        (disable)
+          _arguments \
+            '--list[Shows which metrics match the specified filter]' \
+            '1: :_vboxmachines' \
+            && ret=0
+          ;;
+        (setup)
+          _arguments \
+            '--list[Shows which metrics match the specified filter]' \
+            '--period=[Specifies the number of seconds to wait between collecting metric data samples]:sec' \
+            '--samples=[Specifies the number of metric data samples to save]' \
+            '1: :_vboxmachines' \
+            && ret=0
+          ;;
+        (*)
+          _arguments \
+            '1: :_vboxmachines' \
             && ret=0
           ;;
       esac
