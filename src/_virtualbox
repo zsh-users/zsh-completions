@@ -11,6 +11,7 @@
 #
 #  * Massimiliano Torromeo <massimiliano.torromeo@gmail.com>
 #  * Julien Nicoulaud <julien.nicoulaud@gmail.com>
+#  * Shohei YOSHIDA <https://github.com/syohex>
 #
 # ------------------------------------------------------------------------------
 
@@ -21,337 +22,340 @@ _virtualbox() {
 }
 
 (( $+functions[_vboxmanage] )) ||
-  _vboxmanage() {
-    local context state line expl
-    local -A opt_args
-    local ret=1
+_vboxmanage() {
+  local context state line expl
+  local -A opt_args
+  local ret=1
 
-    _arguments -C \
-      '1: :_vboxmanage_commands' \
-      '*:: :->subcmds' \
-      && ret=0
+  _arguments -C \
+    '1: :_vboxmanage_commands' \
+    '*:: :->subcmds' \
+    && ret=0
 
-    case $state in
-      (subcmds)
-        case "$words[1]" in
-          (list)
-            _arguments \
-              '--long[Show detailed information about each information]' \
-              '--sorted[Sorts the list of information entries alphabetically]' \
-              '1: :_vboxmanage_list_args' \
-              && ret=0
-            ;;
-          (showvminfo)
-            _arguments \
-              '--details[Includes detailed information about the VM]' \
-              '--machinereadable[Specifies that the VM information be in a machine-readable format]' \
-              '--password-id[Specifies password id of the VM if it is encrypted]:id' \
-              '--password[Specifies password of the VM if it is encrypted]: :_files' \
-              '--log=[Specifies a numerical index that identifies the log file]:id' \
-              '1:machine:_vboxmachines' \
-              && ret=0
-            ;;
-          (registervm)
-            _arguments \
-              '--password[Use the --password to supply the encryption password of the VM]: :_files' \
-              '1: :_files' \
-              && ret=0
-            ;;
-          (unregistervm)
-            _arguments \
-              '--delete[Deletes the following files related to the VM automatically]' \
-              '1:machine:_vboxmachines' \
-              && ret=0
-            ;;
-          (createvm)
-            _arguments \
-              '--name[Specifies a new name for the new VM]:name' \
-              '--basefolder=[Specifies the name of the folder in which to save the machine configuration file for the new VM]: :_files -/' \
-              '--default[Applies a default hardware configuration for the specified guest OS]' \
-              '--group=[Assigns the VM to the specified groups]:group_id' \
-              '--ostype=[Specifies the guest OS to run in the VM]:_vboxostypes' \
-              '--register[Registers the VM with your Oracle VM VirtualBox installation]' \
-              '--uuid=[Specifies the Universally Unique Identifier(UUID) of the VM]:uuid' \
-              '--ciper=[Specifies the cipher to use for encryption]: :(AES-128 AES-256)' \
-              '--password-id=[Specifies a new password identifier]:password_id' \
-              '--password=[Use the --password to supply the encryption password of the VM]: :_files' \
-              && ret=0
-            ;;
-          (clonevm)
-            _arguments \
-              '--basefolder=[Specifies the name of the folder in which to save the configuration for the new VM]: :_files -/' \
-              '--groups=[Assigns the clone to the specified group or groups]:group' \
-              '--mode=[Specifies which of the following cloning modes to use]: :(machine machineandchildren all)' \
-              '--name=[Specifies a new name for the new VM]:name' \
-              '--options=[Specifies how to create the new clone]' \
-              '--register[Automatically registers the new clone in this Oracle VM VirtualBox installation]' \
-              '--snapshot=[Specifies the snapshot on which to base the new VM]:name' \
-              '--uuid=[Specifies the UUID for the new VM]:uuid' \
-              '1:machine:_vboxmachines' \
-              && ret=0
-            ;;
-          (movevm)
-            _arguments \
-              '--type=[Specifies the type of the move operation]: :(basic)' \
-              '--folder=[Specifies a full path name or relative path name of the new location on the host file system]: :_files -/' \
-              '1:machine:_vboxmachines' \
-              && ret=0
-            ;;
-          (encryptvm)
-            # TODO
-            ;;
-          (cloud)
-            # TODO
-            ;;
-          (cloudprofile)
-            # TODO
-            ;;
-          (import)
-            _arguments \
-              '--dry-run[Performs a dry run of the VBoxManage import command]' \
-              '--options=[Enables you to fine tune the import operation]: :(keepallmacs keepnatmacs importtovdi)' \
-              '--ostype=[Specifies the guest operating system (OS) information for the VM]: :_vboxostypes' \
-              '--vmname=[Specifies the name of the VM to be used by Oracle VM VirtualBox]:name' \
-              '--basefolder=[Specifies the folder where the files of the imported VM are stored]: :_files -/' \
-              '--memory=[Specifies the memory size in Megabytes for the imported VM]:memory' \
-              '--cpus=[Specifies the number of CPUs for the imported VM]:cpus' \
-              '--description=[Specifies the description text]:desc' \
-              '--vsys=[Specifies the index selecting a specific VM within the appliance]:index' \
-              '--unit=[Specifies the index selecting a specific unit of a VM within the appliance]:index' \
-              '--settingsfile=[Specifies the name of the VM config file]: :_files' \
-              '--group=[Specifies the primary group of the imported VM]:group' \
-              '--eula=[Enables you to show or accept the license conditions]: :(show accept)' \
-              '--ignore[Ignores the current unit of an imported VM]' \
-              '--scsitype=[Enables you to select the type of the SCSI controller]: :(BusLogic LsiLogic)' \
-              '--cloud[Specifies that the import should be from the cloud]' \
-              '--cloudprofile=[Specifies the cloud profile]:profile' \
-              '--cloudinstanceid=[Specifies the ID of an existing instance in the cloud]:id' \
-              '--cloudbucket=[Specifies the bucket name in which to store the object created]:bucket' \
-              '1:ovf file:_files -g \*.{ovf,ova}' \
-              && ret=0
-            ;;
-          (signova)
-            _arguments \
-              '--certificate=[File containing the certificate that the OVA should be signed with]: :_files' \
-              '--private-key=[The file containing the private key]: :_files' \
-              '--private-key-password-file=[File containing the private key password]: :_files' \
-              '--digest-type=[Select the cryptographic digest algorithm to use in the signing]: :(SHA-256 SHA-512 SHA-1)' \
-              '(--pkcs7 --no-pkcs7)--pkcs7[Enables the creation of an additional PKCS#7/CMS signature]' \
-              '(--pkcs7 --no-pkcs7)--no-pkcs7[Disables the creation of an additional PKCS#7/CMS signature]' \
-              '--intermediate-cert=[File containing an intermediary certificate]: :_files' \
-              '--force[Overwrite existing signature if present]' \
-              '--dry-run[Do not actually modify the OVA, just test-run the signing operation]' \
-              '(--verbose --quiet)--verbose[Verbose the command execution]' \
-              '(--verbose --quiet)--quiet[Quiet the command execution]' \
-              '1:ova' \
-              && ret=0
-            ;;
-          (startvm)
-            _arguments \
-              '*--putenv=[Assigns a value to an environment variable as a name-value pair]:value' \
-              '--type=[Specifies the frontend used to start the VM]: :(gui headless sdl separate)' \
-              '--password[Use the --password to supply the encryption password]: :_files' \
-              '--password-id=[Use the --password-id option to specify the id]:id' \
-              '1:machine:_vboxmachines' \
-              && ret=0
-            ;;
-          (unattended)
-            # TODO
-            ;;
-          (adoptstate)
-            _arguments \
-              '1:machine:_vboxmachines' \
-              '*:sav file:_files -g "*.sav"' \
-              && ret=0
-            ;;
-          (snapshot)
-            # TODO
-            ;;
-          (closemedium)
-            _arguments \
-              '--delete[Deletes the image file]' \
-              '1:type:(disk dvd floppy)' \
-              '*:file:_files' \
-              && ret=0
-            ;;
-          (storageattach)
-            _arguments \
-              '--storagectl=[Specifies the name of the storage controller]:name' \
-              '--port=[Specifies the port number of the storage controller to modify]:port' \
-              "--device=[Specifies the port's device number to modify]:num" \
-              '--type=[Specifies the drive type to which the medium is associated]: :(dvddrive fdd hdd)' \
-              '--medium=[Specifies media]:media' \
-              '--mtype=[Specifies how this medium behaves]: :(normal writethrough immutable shareable readonly multiattach)' \
-              '--comment=[Specifies an optional description to store with the medium]:text' \
-              '--setuuid=[Modifies the UUID of a medium before attaching it to a VM]:uuid' \
-              '--setparentuuid=[Modifies the parent UUID of a medium before attaching it to a VM]:uuid' \
-              '--passthrough=[For a virtual DVD drive only]: :(on off)' \
-              '--tempeject=[For a virtual DVD drive only]: :(on off)' \
-              '--nonrotational=[Enables you to specify that the virtual hard disk is non-rotational]: :(on off)'\
-              '--discard=[Specifies whether to enable the auto-discard feature for a virtual hard disk]: :(on off)' \
-              '--bandwidthgroup=[Specifies the bandwidth group to use for the device]:name' \
-              '--forceunmount[For a virtual DVD or floppy drive only]' \
-              '--server=[Specifies the host name or IP address of the iSCSI target]:addr' \
-              '--target=[Specifies the target name string]:name' \
-              '--tport=[Specifies the TCP/IP port number of the iSCSI service on the target]:port' \
-              '--lun=[Specifies the logical unit number (LUN) of the target resource]:lun' \
-              '--encodedlun=[Specifies the hexadecimal-encoded of the target resource]:lun' \
-              '--username=[Specifies the user name to use for target authentication]:name' \
-              '--password=[Specifies the password used for target authentication]:password' \
-              '--passwordfile=[Specifies a file that contains the target authentication password as clear text]: :_files' \
-              '--iniitator=[Specifies the iSCSI initiator]:initiator' \
-              '--intnet[Specifies whether to connect to the iSCSI target that uses internal networking]' \
-              '1:machine:_vboxmachines' \
-              && ret=0
-            ;;
-          (storagectl)
-            _arguments \
-              '--name=[Specifies the name of the storage controller]:name' \
-              '--add=[Specifies the type of the system bus]: :(floppy ide pcie sas sata scsi usb)' \
-              '--controller=[Specifies the chipset type]: :(BusLogic I82078 ICH6 IntelAHCI LSILogic LSILogicSAS NVMe PIIX3 PIIX4 USB)' \
-              '--portcount=[Specifies the number of ports that the storage controller supports]:count' \
-              '--hostiocache=[Specifies whether to use the host I/O cache]: :(on off)' \
-              '--bootable=[Specifies whether this controller is bootable]: :(on off)' \
-              '--rename=[Specifies a new name for the storage controller]:name' \
-              '--remove[Removes a storage controller from the VM configuration]' \
-              '1:machine:_vboxmachines' \
-              && ret=0
-            ;;
-          (bandwidthctl)
-            # TODO
-            ;;
-          (showmediuminfo)
-            _arguments \
-              '1:medium:(disk dvd floppy)' \
-              '2:machine:_vboxmachines' \
-              && ret=0
-            ;;
-          (createmedium)
-            _arguments \
-              '--filename=[Specifies the absolute path name to a file on the host file system]: :_files'\
-              '--size=[Specifies the image capacity in one megabyte units]:size' \
-              '--sizebyte=[Specifies the image capacity in one byte units]:size' \
-              '--diffparent=[Specifies the UUID or absolute path name of parent file]:uuid_or_file' \
-              '--format=[Specifies the file format of the output file]: :(VDI VMDK VHD)' \
-              '--variant[Specifies the file format variant for the target medium]:variant' \
-              '*--property=[Specifies any required file format dependent parameters in key=value form]:value' \
-              '--property-file=[Specifies any propertyrequired file]: :_files' \
-              '1:medium:(disk dvd floppy)' \
-              && ret=0
-            ;;
-          (modifymedium)
-            _arguments \
-              '--autoreset=[Specifies whether to automatically reset]: :(on off)' \
-              '--compact[Compresses disk images by removing blocks that contain only zeroes]' \
-              '--description=[Specifies a text description of the medium]:desc' \
-              '--move=[Specifies a relative or absolute path to a medium on the host system]: :_files' \
-              '*--property=[Specifies any required file format dependent parameters in key=value form]:value' \
-              '--resize=[Specifes the new capacity of an existing image in MB]:size' \
-              '--resizebyte=[Specifes the new capacity of an existing image in bytes]:size' \
-              '--setlocation=[Specifies the new location of the medium]: :_files' \
-              '--type=[Specifies the new mode type of an existing image]: :(normal immutable writethrough multi-attach shareable readonly)' \
-              '1:medium:(disk dvd floppy)' \
-              '2:machine:_vboxmachines' \
-              && ret=0
-            ;;
-          (clonemedium)
-            _arguments \
-              '--existing[Performs the clone operation by overwriting an existing target medium]' \
-              '--format=[Specifies the file format of the target medium]: :(VDI VMDK VHD RAW)' \
-              '--variant=[Specifies the file format variant for the target medium]:variant' \
-              '1:medium:(disk dvd floppy)' \
-              '2:machine:_vboxmachines' \
-              '3:machine:_vboxmachines' \
-              && ret=0
-            ;;
-          (encryptmedium)
-            _arguments \
-              '--newpassword=[Specifies the new encryption password]:password' \
-              '--oldpassword=[Specifies the original encryption password]:password' \
-              '--cipher=[Specifies the cipher to use for encryption]: :(AES-XTS128-PLAIN64 AES-XTS256-PLAIN64)' \
-              '--newpasswordid=[Specifies a new password identifier]:password' \
-              '1:machine:_vboxmachines' \
-              && ret=0
-            ;;
-          (convertfromraw)
-            _arguments \
-              '--format=[Specifies the format of the disk image to create]: :(VDI VMDK VHD)' \
-              '--uuid=[Specifies the Universally Unique Identifier (UUID) of the output file]:uuid' \
-              '--variant=[Specifies any required file format variants for the output file]:variant' \
-              '*: :_files' \
-              && ret=0
-            ;;
-          (mediumio)
-            # TODO
-            ;;
-          (setproperty)
-            # TODO
-            ;;
-          (usbfilter)
-            # TODO
-            ;;
-          (sharedfolder)
-            # TODO
-            ;;
-          (guestproperty)
-            # TODO
-            ;;
-          (guestcontrol)
-            # TODO
-            ;;
-          (debugvm)
-            # TODO
-            ;;
-          (metrics)
-            # TODO
-            ;;
-          (natnetwork)
-            # TODO
-            ;;
-          (hostonlyif)
-            # TODO
-            ;;
-          (hostonlynet)
-            # TODO
-            ;;
-          (dhcpserver)
-            # TODO
-            ;;
-          (usbdevsource)
-            # TODO
-            ;;
-          (extpack)
-            # TODO
-            ;;
-          (updatecheck)
-            # TODO
-            ;;
-          (modifynvram)
-            # TODO
-            ;;
-          (discardstate|getextradata|setextradata)
-            _arguments \
-              '1:machine:_vboxmachines' \
-              && ret=0
-            ;;
-          (modifyvm|export)
-            local -a options=(${(@f)"$(vboxmanage $words[1] | perl -wln -e 'm{(--[a-zA-Z_-]+) [^]|]+} and print qq{$1:arg}')"})
-            _arguments \
-              $options \
-              ':machine:_vboxmachines'
-            ;;
-          (controlvm)
-            local -a subcommands=(${(@f)"$(vboxmanage $words[1] | perl -wln -e 'm{^\s+([a-z][a-z-]+)} and print $1')"})
-            _arguments \
-              '1:commands:'"($subcommands)" \
-              ':machine:_vboxmachines'
-            ;;
-        esac
-        ;;
-    esac
+  case $state in
+    (subcmds)
+      case "$words[1]" in
+        (list)
+          _arguments \
+            '--long[Show detailed information about each information]' \
+            '--sorted[Sorts the list of information entries alphabetically]' \
+            '1: :_vboxmanage_list_args' \
+            && ret=0
+          ;;
+        (showvminfo)
+          _arguments \
+            '--details[Includes detailed information about the VM]' \
+            '--machinereadable[Specifies that the VM information be in a machine-readable format]' \
+            '--password-id[Specifies password id of the VM if it is encrypted]:id' \
+            '--password[Specifies password of the VM if it is encrypted]: :_files' \
+            '--log=[Specifies a numerical index that identifies the log file]:id' \
+            '1:machine:_vboxmachines' \
+            && ret=0
+          ;;
+        (registervm)
+          _arguments \
+            '--password[Use the --password to supply the encryption password of the VM]: :_files' \
+            '1: :_files' \
+            && ret=0
+          ;;
+        (unregistervm)
+          _arguments \
+            '--delete[Deletes the following files related to the VM automatically]' \
+            '1:machine:_vboxmachines' \
+            && ret=0
+          ;;
+        (createvm)
+          _arguments \
+            '--name[Specifies a new name for the new VM]:name' \
+            '--basefolder=[Specifies the name of the folder in which to save the machine configuration file for the new VM]: :_files -/' \
+            '--default[Applies a default hardware configuration for the specified guest OS]' \
+            '--group=[Assigns the VM to the specified groups]:group_id' \
+            '--ostype=[Specifies the guest OS to run in the VM]:_vboxostypes' \
+            '--register[Registers the VM with your Oracle VM VirtualBox installation]' \
+            '--uuid=[Specifies the Universally Unique Identifier(UUID) of the VM]:uuid' \
+            '--ciper=[Specifies the cipher to use for encryption]: :(AES-128 AES-256)' \
+            '--password-id=[Specifies a new password identifier]:password_id' \
+            '--password=[Use the --password to supply the encryption password of the VM]: :_files' \
+            && ret=0
+          ;;
+        (clonevm)
+          _arguments \
+            '--basefolder=[Specifies the name of the folder in which to save the configuration for the new VM]: :_files -/' \
+            '--groups=[Assigns the clone to the specified group or groups]:group' \
+            '--mode=[Specifies which of the following cloning modes to use]: :(machine machineandchildren all)' \
+            '--name=[Specifies a new name for the new VM]:name' \
+            '--options=[Specifies how to create the new clone]' \
+            '--register[Automatically registers the new clone in this Oracle VM VirtualBox installation]' \
+            '--snapshot=[Specifies the snapshot on which to base the new VM]:name' \
+            '--uuid=[Specifies the UUID for the new VM]:uuid' \
+            '1:machine:_vboxmachines' \
+            && ret=0
+          ;;
+        (movevm)
+          _arguments \
+            '--type=[Specifies the type of the move operation]: :(basic)' \
+            '--folder=[Specifies a full path name or relative path name of the new location on the host file system]: :_files -/' \
+            '1:machine:_vboxmachines' \
+            && ret=0
+          ;;
+        (encryptvm)
+          _vboxmanage_encryptvm && ret=0
+          ;;
+        (cloud)
+          _vboxmanage_cloud && ret=0
+          ;;
+        (cloudprofile)
+          _vboxmanage_cloudprofile && ret=0
+          ;;
+        (import)
+          _arguments \
+            '--dry-run[Performs a dry run of the VBoxManage import command]' \
+            '--options=[Enables you to fine tune the import operation]: :(keepallmacs keepnatmacs importtovdi)' \
+            '--ostype=[Specifies the guest operating system (OS) information for the VM]: :_vboxostypes' \
+            '--vmname=[Specifies the name of the VM to be used by Oracle VM VirtualBox]:name' \
+            '--basefolder=[Specifies the folder where the files of the imported VM are stored]: :_files -/' \
+            '--memory=[Specifies the memory size in Megabytes for the imported VM]:memory' \
+            '--cpus=[Specifies the number of CPUs for the imported VM]:cpus' \
+            '--description=[Specifies the description text]:desc' \
+            '--vsys=[Specifies the index selecting a specific VM within the appliance]:index' \
+            '--unit=[Specifies the index selecting a specific unit of a VM within the appliance]:index' \
+            '--settingsfile=[Specifies the name of the VM config file]: :_files' \
+            '--group=[Specifies the primary group of the imported VM]:group' \
+            '--eula=[Enables you to show or accept the license conditions]: :(show accept)' \
+            '--ignore[Ignores the current unit of an imported VM]' \
+            '--scsitype=[Enables you to select the type of the SCSI controller]: :(BusLogic LsiLogic)' \
+            '--cloud[Specifies that the import should be from the cloud]' \
+            '--cloudprofile=[Specifies the cloud profile]:profile' \
+            '--cloudinstanceid=[Specifies the ID of an existing instance in the cloud]:id' \
+            '--cloudbucket=[Specifies the bucket name in which to store the object created]:bucket' \
+            '1:ovf file:_files -g \*.{ovf,ova}' \
+            && ret=0
+          ;;
+        (signova)
+          _arguments \
+            '--certificate=[File containing the certificate that the OVA should be signed with]: :_files' \
+            '--private-key=[The file containing the private key]: :_files' \
+            '--private-key-password-file=[File containing the private key password]: :_files' \
+            '--digest-type=[Select the cryptographic digest algorithm to use in the signing]: :(SHA-256 SHA-512 SHA-1)' \
+            '(--pkcs7 --no-pkcs7)--pkcs7[Enables the creation of an additional PKCS#7/CMS signature]' \
+            '(--pkcs7 --no-pkcs7)--no-pkcs7[Disables the creation of an additional PKCS#7/CMS signature]' \
+            '--intermediate-cert=[File containing an intermediary certificate]: :_files' \
+            '--force[Overwrite existing signature if present]' \
+            '--dry-run[Do not actually modify the OVA, just test-run the signing operation]' \
+            '(--verbose --quiet)--verbose[Verbose the command execution]' \
+            '(--verbose --quiet)--quiet[Quiet the command execution]' \
+            '1:ova' \
+            && ret=0
+          ;;
+        (startvm)
+          _arguments \
+            '*--putenv=[Assigns a value to an environment variable as a name-value pair]:value' \
+            '--type=[Specifies the frontend used to start the VM]: :(gui headless sdl separate)' \
+            '--password[Use the --password to supply the encryption password]: :_files' \
+            '--password-id=[Use the --password-id option to specify the id]:id' \
+            '1:machine:_vboxmachines' \
+            && ret=0
+          ;;
+        (unattended)
+          _vboxmanage_unattended
+          ;;
+        (adoptstate)
+          _arguments \
+            '1:machine:_vboxmachines' \
+            '*:sav file:_files -g "*.sav"' \
+            && ret=0
+          ;;
+        (snapshot)
+          _vboxmanage_snapshot
+          ;;
+        (closemedium)
+          _arguments \
+            '--delete[Deletes the image file]' \
+            '1:type:(disk dvd floppy)' \
+            '*:file:_files' \
+            && ret=0
+          ;;
+        (storageattach)
+          _arguments \
+            '--storagectl=[Specifies the name of the storage controller]:name' \
+            '--port=[Specifies the port number of the storage controller to modify]:port' \
+            "--device=[Specifies the port's device number to modify]:num" \
+            '--type=[Specifies the drive type to which the medium is associated]: :(dvddrive fdd hdd)' \
+            '--medium=[Specifies media]:media' \
+            '--mtype=[Specifies how this medium behaves]: :(normal writethrough immutable shareable readonly multiattach)' \
+            '--comment=[Specifies an optional description to store with the medium]:text' \
+            '--setuuid=[Modifies the UUID of a medium before attaching it to a VM]:uuid' \
+            '--setparentuuid=[Modifies the parent UUID of a medium before attaching it to a VM]:uuid' \
+            '--passthrough=[For a virtual DVD drive only]: :(on off)' \
+            '--tempeject=[For a virtual DVD drive only]: :(on off)' \
+            '--nonrotational=[Enables you to specify that the virtual hard disk is non-rotational]: :(on off)'\
+            '--discard=[Specifies whether to enable the auto-discard feature for a virtual hard disk]: :(on off)' \
+            '--bandwidthgroup=[Specifies the bandwidth group to use for the device]:name' \
+            '--forceunmount[For a virtual DVD or floppy drive only]' \
+            '--server=[Specifies the host name or IP address of the iSCSI target]:addr' \
+            '--target=[Specifies the target name string]:name' \
+            '--tport=[Specifies the TCP/IP port number of the iSCSI service on the target]:port' \
+            '--lun=[Specifies the logical unit number (LUN) of the target resource]:lun' \
+            '--encodedlun=[Specifies the hexadecimal-encoded of the target resource]:lun' \
+            '--username=[Specifies the user name to use for target authentication]:name' \
+            '--password=[Specifies the password used for target authentication]:password' \
+            '--passwordfile=[Specifies a file that contains the target authentication password as clear text]: :_files' \
+            '--iniitator=[Specifies the iSCSI initiator]:initiator' \
+            '--intnet[Specifies whether to connect to the iSCSI target that uses internal networking]' \
+            '1:machine:_vboxmachines' \
+            && ret=0
+          ;;
+        (storagectl)
+          _arguments \
+            '--name=[Specifies the name of the storage controller]:name' \
+            '--add=[Specifies the type of the system bus]: :(floppy ide pcie sas sata scsi usb)' \
+            '--controller=[Specifies the chipset type]: :(BusLogic I82078 ICH6 IntelAHCI LSILogic LSILogicSAS NVMe PIIX3 PIIX4 USB)' \
+            '--portcount=[Specifies the number of ports that the storage controller supports]:count' \
+            '--hostiocache=[Specifies whether to use the host I/O cache]: :(on off)' \
+            '--bootable=[Specifies whether this controller is bootable]: :(on off)' \
+            '--rename=[Specifies a new name for the storage controller]:name' \
+            '--remove[Removes a storage controller from the VM configuration]' \
+            '1:machine:_vboxmachines' \
+            && ret=0
+          ;;
+        (bandwidthctl)
+          _vboxmanage_bandwidthctl
+          ;;
+        (showmediuminfo)
+          _arguments \
+            '1:medium:(disk dvd floppy)' \
+            '2:machine:_vboxmachines' \
+            && ret=0
+          ;;
+        (createmedium)
+          _arguments \
+            '--filename=[Specifies the absolute path name to a file on the host file system]: :_files'\
+            '--size=[Specifies the image capacity in one megabyte units]:size' \
+            '--sizebyte=[Specifies the image capacity in one byte units]:size' \
+            '--diffparent=[Specifies the UUID or absolute path name of parent file]:uuid_or_file' \
+            '--format=[Specifies the file format of the output file]: :(VDI VMDK VHD)' \
+            '--variant[Specifies the file format variant for the target medium]:variant' \
+            '*--property=[Specifies any required file format dependent parameters in key=value form]:value' \
+            '--property-file=[Specifies any propertyrequired file]: :_files' \
+            '1:medium:(disk dvd floppy)' \
+            && ret=0
+          ;;
+        (modifymedium)
+          _arguments \
+            '--autoreset=[Specifies whether to automatically reset]: :(on off)' \
+            '--compact[Compresses disk images by removing blocks that contain only zeroes]' \
+            '--description=[Specifies a text description of the medium]:desc' \
+            '--move=[Specifies a relative or absolute path to a medium on the host system]: :_files' \
+            '*--property=[Specifies any required file format dependent parameters in key=value form]:value' \
+            '--resize=[Specifes the new capacity of an existing image in MB]:size' \
+            '--resizebyte=[Specifes the new capacity of an existing image in bytes]:size' \
+            '--setlocation=[Specifies the new location of the medium]: :_files' \
+            '--type=[Specifies the new mode type of an existing image]: :(normal immutable writethrough multi-attach shareable readonly)' \
+            '1:medium:(disk dvd floppy)' \
+            '2:machine:_vboxmachines' \
+            && ret=0
+          ;;
+        (clonemedium)
+          _arguments \
+            '--existing[Performs the clone operation by overwriting an existing target medium]' \
+            '--format=[Specifies the file format of the target medium]: :(VDI VMDK VHD RAW)' \
+            '--variant=[Specifies the file format variant for the target medium]:variant' \
+            '1:medium:(disk dvd floppy)' \
+            '2:machine:_vboxmachines' \
+            '3:machine:_vboxmachines' \
+            && ret=0
+          ;;
+        (encryptmedium)
+          _arguments \
+            '--newpassword=[Specifies the new encryption password]:password' \
+            '--oldpassword=[Specifies the original encryption password]:password' \
+            '--cipher=[Specifies the cipher to use for encryption]: :(AES-XTS128-PLAIN64 AES-XTS256-PLAIN64)' \
+            '--newpasswordid=[Specifies a new password identifier]:password' \
+            '1:machine:_vboxmachines' \
+            && ret=0
+          ;;
+        (convertfromraw)
+          _arguments \
+            '--format=[Specifies the format of the disk image to create]: :(VDI VMDK VHD)' \
+            '--uuid=[Specifies the Universally Unique Identifier (UUID) of the output file]:uuid' \
+            '--variant=[Specifies any required file format variants for the output file]:variant' \
+            '*: :_files' \
+            && ret=0
+          ;;
+        (mediumio)
+          _vboxmanage_mediumio && ret=0
+          ;;
+        (setproperty)
+          _arguments \
+            '1: :(autostartdbpath defaultfrontend hwvirtexclusive launguage logginglevel loghistorycount machinefolder proxymode proxyurl vrdeauthlibrary vrdeextpack websrvauthlibrary)' \
+            '2:value:_vboxmanage_setproperty_value' \
+            && ret=0
+          ;;
+        (usbfilter)
+          _vboxmanage_usbfilter && ret=0
+          ;;
+        (sharedfolder)
+          _vboxmanage_sharedfolder && ret=0
+          ;;
+        (guestproperty)
+          _vboxmanage_guestproperty && ret=0
+          ;;
+        (guestcontrol)
+          _vboxmanage_guestcontrol && ret=0
+          ;;
+        (debugvm)
+          _vboxmanage_debugvm && ret=0
+          ;;
+        (metrics)
+          _vboxmanage_metrics && ret=0
+          ;;
+        (natnetwork)
+          _vboxmanage_natnetwork && ret=0
+          ;;
+        (hostonlyif)
+          _vboxmanage_hostonlyif && ret=0
+          ;;
+        (hostonlynet)
+          _vboxmanage_hostonlynet && ret=0
+          ;;
+        (dhcpserver)
+          _vboxmanage_dhcpserver && ret=0
+          ;;
+        (usbdevsource)
+          _vboxmanage_usbdevsource && ret=0
+          ;;
+        (extpack)
+          _vboxmanage_expack && ret=0
+          ;;
+        (updatecheck)
+          _vboxmanage_updatecheck && ret=0
+          ;;
+        (modifynvram)
+          _vboxmanage_modifynvram && ret=0
+          ;;
+        (discardstate|getextradata|setextradata)
+          _arguments \
+            '1:machine:_vboxmachines' \
+            && ret=0
+          ;;
+        (modifyvm|export)
+          local -a options=(${(@f)"$(vboxmanage $words[1] | perl -wln -e 'm{(--[a-zA-Z_-]+) [^]|]+} and print qq{$1:arg}')"})
+          _arguments \
+            $options \
+            ':machine:_vboxmachines'
+          ;;
+        (controlvm)
+          local -a subcommands=(${(@f)"$(vboxmanage $words[1] | perl -wln -e 'm{^\s+([a-z][a-z-]+)} and print $1')"})
+          _arguments \
+            '1:commands:'"($subcommands)" \
+            ':machine:_vboxmachines'
+          ;;
+      esac
+      ;;
+  esac
 
-    return 0
-  }
+  return 0
+}
 
 (( $+functions[_vboxmanage_commands] )) ||
 _vboxmanage_commands() {
@@ -411,6 +415,1137 @@ _vboxmanage_commands() {
   _describe -t subcommands 'subcommand' commands
 }
 
+(( $+functions[_vboxmanage_encryptvm] )) ||
+_vboxmanage_encryptvm() {
+  local ret=1
+
+  _arguments -C \
+    '1: :_vboxmachines' \
+    '2: :(setencryption checkpassword addpassword removepassword)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      compset -n 2
+      case $words[1] in
+        (setencryption)
+          _arguments \
+            '--cipher[specify the new cipher for encryption of the VM]: :(AES-128 AES-256)' \
+            '--new-password[specify the new password for encryption of the VM]: :_files' \
+            '--new-password-id[specify the new ID for the password for encryption of the VM]:id' \
+            '--force[make the system to reencrypt the VM instead of the simple changing the password]' \
+            && ret=0
+          ;;
+        (addpassword)
+          _arguments \
+            '--new-password[specify the new password for encryption of the VM]: :_files' \
+            '--new-password-id[specify the new ID for the password for encryption of the VM]:id' \
+            && ret=0
+          ;;
+      esac
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_cloud] )) ||
+_vboxmanage_cloud() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(list instance image network)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      local subcommand=$words[1]
+      if (( $+functions[_vboxmanage_cloud_${subcommand}] )); then
+          _vboxmanage_cloud_${subcommand} && ret=0
+      fi
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_cloud_list] )) ||
+_vboxmanage_cloud_list() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(instances images)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      local -a state
+      if [[ $words[1] == "instances" ]]; then
+        state=(running paused terminated)
+      else
+        state=(available disabled deleted)
+      fi
+
+      _arguments \
+        '--provider=[Short cloud provider name]:provider' \
+        '--profile=[Cloud profile name]:profile' \
+        '--state=[The state of cloud instance]: :'"($state)" \
+        '--compartment-id[A compartment is the logical container used]'
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_cloud_instance] )) ||
+_vboxmanage_cloud_instance() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(create info termination start pause  images)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (create)
+          _arguments \
+            '--provider=[Short cloud provider name]:provider' \
+            '--profile=[Cloud profile name]:profile' \
+            '--domain-name=[Cloud domain where new instance is created]:name' \
+            '--image-id=[Unique identifier which fully identifies a custom image in the Cloud]:id' \
+            '--boot-volume-id=[Unique identifier which fully identifies a boot volume in the Cloud]:id' \
+            '--display-name=[Name for new instance in the Cloud]:name' \
+            '--shape=[The shape of instance, defines the number of CPUs and RAM memory]:shape' \
+            '--subnet=[Unique identifier which fully identifies an existing subnet]:subnet' \
+            '--boot-disk-size=[The size of bootable image in GB]:size' \
+            '--publicip=[Whether the instance will have a public IP or not]: :(true false)' \
+            '--privateip=[Private IP address for the created instance]:ip' \
+            '--public-ssh-key=[Public SSH key used to connect to the instance via SSH]:key' \
+            '--launch-mode=[launch mode]: :(EMULATED NATIVE PARAVIRTUALIZED)' \
+            '--cloud-init-script-path=[Absolute path to the user cloud-init script]: :_files' \
+            && ret=0
+          ;;
+        (*)
+          _arguments \
+            '--provider=[Short cloud provider name]:provider' \
+            '--profile=[Cloud profile name]:profile' \
+            '--id=[Unique identifier which fully identify the instance in the Cloud]:id' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_cloud_image] )) ||
+_vboxmanage_cloud_image() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(create info delete import export)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (create)
+          _arguments \
+            '--provider=[Short cloud provider name]:provider' \
+            '--profile=[Cloud profile name]:profile' \
+            '--display-name=[Name for new image in the Cloud]:name' \
+            '--bucket-name=[Cloud bucket name where an object is located]:name' \
+            '--object-name=[Name of object in the bucket]:name' \
+            '--instance-id=[Unique identifier which fully identifies the instance in the Cloud]:id' \
+            && ret=0
+          ;;
+        (import)
+          _arguments \
+            '--provider=[Short cloud provider name]:provider' \
+            '--profile=[Cloud profile name]:profile' \
+            '--bucket-name=[Cloud bucket name where an object is located]:name' \
+            '--object-name=[Name of object in the bucket]:name' \
+            && ret=0
+          ;;
+        (export)
+          _arguments \
+            '--provider=[Short cloud provider name]:provider' \
+            '--profile=[Cloud profile name]:profile' \
+            '--display-name=[Name for new image in the Cloud]:name' \
+            '--bucket-name=[Cloud bucket name where an object is located]:name' \
+            '--object-name=[Name of object in the bucket]:name' \
+            && ret=0
+          ;;
+        (*)
+          _arguments \
+            '--provider=[Short cloud provider name]:provider' \
+            '--profile=[Cloud profile name]:profile' \
+            '--id=[Unique identifier which fully identify the instance in the Cloud]:id' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_cloud_network] )) ||
+_vboxmanage_cloud_network() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(setup create update delete info)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (setup)
+          _arguments \
+            '--provider=[Short cloud provider name]:provider' \
+            '--profile=[Cloud profile name]:profile' \
+            '--gateway-os-name=[The name of OS to use for a cloud gateway]:os_name' \
+            '--gateway-os-version=[The version of OS to use for a cloud gateway]:version' \
+            '--gateway-shape=[The instance shape to use for a cloud gateway]:shape' \
+            '--tunnel-network-name=[The name of VCN/subnet to use for tunneling]:name' \
+            '--tunnel-network-range=[The IP address range to use for tunneling]:range' \
+            '--proxy=[The proxy URL to be used in local gateway installation]:proxy' \
+            '--compartment-id=[The compartment to create the tunnel network in]:id' \
+            && ret=0
+          ;;
+        (create|update)
+          _arguments \
+            '--provider=[Short cloud provider name]:provider' \
+            '--profile=[Cloud profile name]:profile' \
+            '--name=[The name of an existing cloud network descriptor]:name' \
+            '--network-id=[The unique identifier of an existing subnet in the cloud]:id' \
+            '(--enable --disable)--enable[Enable the network descriptor]' \
+            '(--enable --disable)--disable[Disable the network descriptor]' \
+            && ret=0
+          ;;
+        (delete|info)
+          _arguments \
+            '--provider=[Short cloud provider name]:provider' \
+            '--profile=[Cloud profile name]:profile' \
+            '--name=[The name of an existing cloud network descriptor]:name' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_cloudprofile] )) ||
+_vboxmanage_cloudprofile() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(add update delete show)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (add|update)
+          _arguments \
+            '--provider=[Short cloud provider name]:provider' \
+            '--profile=[Cloud profile name]:profile' \
+            '--clouduser=[The name which fully identifies the user in the specified cloud provider]:user' \
+            '--fingerprint=[Fingerprint for the key pair being used]:finger_print' \
+            '--keyfile=[Full path and filename of the private key]: :_files' \
+            '--passphrase=[Passphrase used for the key, if it is encrypted]:pass' \
+            '--tenancy=[ID of your tenancy]:tenancy' \
+            '--compartment=[ID of your compartment]:compartment' \
+            '--region=[region name]:region' && ret=0
+          ;;
+        (*)
+          _arguments \
+            '--provider=[Short cloud provider name]:provider' \
+            '--profile=[Cloud profile name]:profile'
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_unattended] )) ||
+_vboxmanage_unattended() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(detect install)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (detect)
+          _arguments \
+            '--iso=[The installation ISO to run the detection on]: :_files' \
+            '--machine-readable[Produce output that is simpler to parse from a script]' \
+            && ret=0
+          ;;
+        (install)
+          _arguments \
+            '--iso=[The installation ISO to run the detection on]: :_files' \
+            '--user=[The login name]:user' \
+            '--password=[The login password]:password' \
+            '--full-user-name=[The full user name]:full_name' \
+            '--key=[The guest OS product key]:key' \
+            '--install-additions[Install the VirtualBox guest additions]' \
+            '--additions-iso=[Path to the VirtualBox guest additions ISO]: :_files' \
+            '--install-txs[Whether to install the test execution service from the VirtualBox ValidationKit]' \
+            '--validation-kit-iso=[Path to the VirtualBox ValidationKit ISO]: :_files' \
+            '--locale=[The base locale specification for the guest]:locale' \
+            '--country=[The two letter country code]:country' \
+            '--time-zone=[The time zone to set up the guest OS with]:timezone' \
+            '--hostname=[The fully qualified domain name of the guest machine]:hostname' \
+            '--package-selection-adjustment=[Adjustments to the guest OS packages/components selection]:adjustment' \
+            '--dry-run[Do not create any files or make any changes to the VM configuration]' \
+            '--start-vm=[Start the VM using the front end given by session-type]:session_type' \
+            '--auxiliary-base-path=[The path prefix to the media related files generated for the installation]: :_files' \
+            '--image-index=[Windows installation image index]:index' \
+            '--script-template=[The unattended installation script template]: :_files' \
+            '--post-install-template=[The post installation script template]: :_files' \
+            '--post-install-command=[A single command to run after the installation is completed]:command' \
+            '--extra-install-kernel-parameter=[List of extra linux kernel parameters to use during the installation]:param' \
+            '--language=[Specifies the UI language for a Windows installation]:language' \
+            '1:machine:_vboxmachines' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_snapshot] )) ||
+_vboxmanage_snapshot() {
+  local ret=1
+
+  _arguments -C \
+    '1: :_vboxmachines' \
+    '2: :(take delete restore restorecurrent edit list showvminfo)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      compset -n 2
+      case $words[1] in
+        (take)
+          _arguments \
+            '--description=[Specifies a description of the snapshot]:description' \
+            '--live[Specifies that the VM is not stopped while you create the snapshot]' \
+            '--uniquename=[unique name]' \
+            && ret=0
+          ;;
+        (edit)
+          _arguments \
+            '--current[Specifies that you update the current version of the snapshot]' \
+            '--description=[Specifies a new description for the snapshot]:description' \
+            '--name=[Specifies a new name for the snapshot]:name' \
+            && ret=0
+          ;;
+        (list)
+          _arguments \
+            '--details[Specifies that the output shows detailed information about the snapshot]' \
+            '--machinereadable[Specifies that the output is shown in a machine-readable format]' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_bandwidthctl] )) ||
+_vboxmanage_bandwidthctl() {
+  local ret=1
+
+  _arguments -C \
+    '1: :_vboxmachines' \
+    '2: :(add list remove set)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      compset -n 2
+      case $words[1] in
+        (add)
+          _arguments \
+            '--limit=[Specifies the bandwidth limit for a bandwidth group]:limit' \
+            '--type=[Specifies the type of the bandwidth group]: :(disk network)' \
+            && ret=0
+          ;;
+        (list)
+          _arguments \
+            '--machinereadable[Outputs the information about the bandwidth groups in name-value pairs]' \
+            && ret=0
+          ;;
+        (set)
+          _arguments \
+            '--limit=[Specifies the bandwidth limit for a bandwidth group]:limit' \
+            && ret=0
+          ;;
+        (*)
+          _arguments '*: :_files' && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_mediumio] )) ||
+_vboxmanage_mediumio() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(formatfat cat stream)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (formatfat)
+          _arguments \
+            '--disk=[Either the UUID or filename of a harddisk image]: :_files' \
+            '--dvd=[Either the UUID or filename of a DVD image]: :_files' \
+            '--floppy=[Either the UUID or filename of a floppy image]: :_files'  \
+            '--password-file=[The name of a file containing the medium encryption password]: :_files' \
+            '--quick[Quickformat the medium]' \
+            && ret=0
+          ;;
+        (cat)
+          _arguments \
+            '--disk=[Either the UUID or filename of a harddisk image]: :_files' \
+            '--dvd=[Either the UUID or filename of a DVD image]: :_files' \
+            '--floppy=[Either the UUID or filename of a floppy image]: :_files'  \
+            '--password-file=[The name of a file containing the medium encryption password]: :_files' \
+            '--hex[Dump as hex bytes]' \
+            '--offset=[The byte offset in the medium to start]:offset' \
+            '--size=[The number of bytes to dump]:size' \
+            '--output=[The output filename]: :_files' \
+            && ret=0
+          ;;
+        (stream)
+          _arguments \
+            '--disk=[Either the UUID or filename of a harddisk image]: :_files' \
+            '--dvd=[Either the UUID or filename of a DVD image]: :_files' \
+            '--floppy=[Either the UUID or filename of a floppy image]: :_files'  \
+            '--password-file=[The name of a file containing the medium encryption password]: :_files' \
+            '--format=[The format of the destination image]:format' \
+            '--variant=[The medium variant for the destination]:variant' \
+            '--output=[The output filename]: :_files' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_usbfilter] )) ||
+_vboxmanage_usbfilter() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(add modify remove)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (add|modify)
+          _arguments \
+            '--action=[Specifies whether to permit VMs access to devices]: :(ignore hold)' \
+            '--active=[Specifies whether the USB filter is active or temporarily disabled]: :(yes no)' \
+            '--manufacturer=[Specifies a manufacturer ID filter as a string]:manufacturer' \
+            '--maskedinterfaces=[Specifies a masked interface filter]:interfaces' \
+            '--name=[Specifies the name of the filter]:filter' \
+            '--product=[Specifies a product ID filter as a string]:product' \
+            '--productid=[Specifies a product ID filter]:product_id' \
+            '--remote=[Specifies a remote or not]: :(yes no)' \
+            '--revision=[Specifies a revision ID filter]:revision' \
+            '--serialnumber=[Specifies a serial number filter as a string]:serial' \
+            '--target=[Specifies the VM that the filter is attached to]: :_vboxmachines' \
+            '--vendorid=[Specifies a vendor ID filter]:vendor_id' \
+            && ret=0
+          ;;
+        (remove)
+          _arguments \
+            '--target=[Specifies the VM that the filter is attached to]: :_vboxmachines' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_sharedfolder] )) ||
+_vboxmanage_sharedfolder() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(add remove)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (add)
+          _arguments \
+            '--name=[Specifies the name of the share]:name' \
+            '--hostpath=[Specifies the absolute path of the folder or directory on the host OS]: :_files -/' \
+            '--readonly[Specifies that the share has only read-only access to files at the host path]' \
+            '--transient[Specifies that the share is transient]' \
+            '--automount[Specifies that the share is automatically mounted]' \
+            '--auto-mount-point=[Specifies the mount point of the share]: :_files -/' \
+            '1: :_vboxmachines' \
+            && ret=0
+          ;;
+        (remove)
+          _arguments \
+            '--name=[Specifies the name of the share]:name' \
+            '--transient[Specifies that the share is transient]' \
+            '1: :_vboxmachines' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_guestproperty] )) ||
+_vboxmanage_guestproperty() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(get enumerate set unset wait)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (enumerate)
+          _arguments \
+            '--relative[Display the timestamp relative to current time]' \
+            '--no-timestamp[Do not display the timestamp of the last update]' \
+            '--no-flags[Do not display the flags]' \
+            '--old-format[Use the output format from VirtualBox 6]' \
+            '1: :_vboxmachines' \
+            && ret=0
+          ;;
+        (get)
+          _arguments \
+            '--verbose[Provides the property value, timestamp, and any specified value attributes]' \
+            '1: :_vboxmachines' \
+            && ret=0
+          ;;
+        (set)
+          _arguments \
+            '--flags=[Specify the additional attributes of the value]: :(TRANSIENT TRANSRESET RDONLYGUEST RDONLYHOST READONLY)' \
+            '1: :_vboxmachines' \
+            && ret=0
+          ;;
+        (wait)
+          _arguments \
+            '1: :_vboxmachines' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_guestcontrol] )) ||
+_vboxmanage_guestcontrol() {
+  local ret=1
+
+  _arguments -C \
+    '1: :_vboxmachines' \
+    '2: :(run start copyfrom copyto mkdir rmdir rm mv mktemp stat list closeprocess closesession updatega watch)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      compset -n 2
+      case $words[1] in
+        (add)
+          _arguments \
+            '--quiet[Specifies that the command produce quieter output]' \
+            '--verbose[Specifies that the command produce more detailed output]' \
+            '--exe=[Specifies the absolute path of the executable program to run on the guest VM]: :_files' \
+            '--timeout=[Specifies the maximum amount of time, in milliseconds]:msecs' \
+            '*--putenv=[Sets, modifies, and unsets environment variables]:env' \
+            '--unquoted-args[Disables the escaped double quoting of arguments]' \
+            '--ignore-orphaned-processes[Ignores orphaned processes]' \
+            '--profile[Uses a shell profile to specify the environment to use]' \
+            '--no-wait-stdout[Does not wait for the guest process to end]' \
+            '--wait-stdout[Waits for the guest process to end to receive its exit code]' \
+            '--no-wait-stderr[Does not wait for the guest process to end to receive its exit code]' \
+            '--wait-stderr[Waits for the guest process to end to receive its exit code]' \
+            '--dos2unix[Transform DOS or Windows guest output to UNIX or Linux output]' \
+            '--unix2doc[Transform UNIX or Linux guest output to DOS or Windows output]' \
+            '*:: :_files' \
+            && ret=0
+          ;;
+        (copyfrom|copyto)
+          _arguments \
+            '--quiet[Specifies that the command produce quieter output]' \
+            '--verbose[Specifies that the command produce more detailed output]' \
+            '--domain=[Specifies the user domain for Windows guest VMs]:domain' \
+            '--password=[Specifies the password for the specified user]:password' \
+            '--passwordfile=[Specifies the absolute path to a file on the guest OS]: :_files' \
+            '--username=[Specifies an existing user on the guest OS that runs the process]:user' \
+            '--follow[Enables following of symbolic links on the guest file system]' \
+            '--recursive[Recursively copies files and directories from the specified directory on the guest VM]' \
+            '--quiet[Specifies that the command produce quieter output]' \
+            '--target-directory=[Specifies the absolute path of the destination directory on the host system]: :_files -/' \
+            && ret=0
+            ;;
+        (mkdir)
+          _arguments \
+            '--quiet[Specifies that the command produce quieter output]' \
+            '--verbose[Specifies that the command produce more detailed output]' \
+            '--domain=[Specifies the user domain for Windows guest VMs]:domain' \
+            '--password=[Specifies the password for the specified user]:password' \
+            '--passwordfile=[Specifies the absolute path to a file on the guest OS]: :_files' \
+            '--username=[Specifies an existing user on the guest OS that runs the process]:user' \
+            '--parents[Creates any of the missing parent directories of the specified directory]' \
+            '--mode=[Specifies the permission mode to use for the specified directory]:mode' \
+            && ret=0
+            ;;
+        (rmdir)
+          _arguments \
+            '--quiet[Specifies that the command produce quieter output]' \
+            '--verbose[Specifies that the command produce more detailed output]' \
+            '--domain=[Specifies the user domain for Windows guest VMs]:domain' \
+            '--password=[Specifies the password for the specified user]:password' \
+            '--passwordfile=[Specifies the absolute path to a file on the guest OS]: :_files' \
+            '--username=[Specifies an existing user on the guest OS that runs the process]:user' \
+            '--recursive[Recursively removes directories from the specified from the guest VM]' \
+            && ret=0
+            ;;
+        (rmdir)
+          _arguments \
+            '--quiet[Specifies that the command produce quieter output]' \
+            '--verbose[Specifies that the command produce more detailed output]' \
+            '--domain=[Specifies the user domain for Windows guest VMs]:domain' \
+            '--password=[Specifies the password for the specified user]:password' \
+            '--passwordfile=[Specifies the absolute path to a file on the guest OS]: :_files' \
+            '--username=[Specifies an existing user on the guest OS that runs the process]:user' \
+            '--force[Forces the operation and overrides any confirmation requests]' \
+            && ret=0
+            ;;
+        (mktemp)
+          _arguments \
+            '--quiet[Specifies that the command produce quieter output]' \
+            '--verbose[Specifies that the command produce more detailed output]' \
+            '--domain=[Specifies the user domain for Windows guest VMs]:domain' \
+            '--password=[Specifies the password for the specified user]:password' \
+            '--passwordfile=[Specifies the absolute path to a file on the guest OS]: :_files' \
+            '--username=[Specifies an existing user on the guest OS that runs the process]:user' \
+            '--directory[Creates a temporary directory that is specified by the template operand]' \
+            '--secure[Enforces secure file and directory creation by setting the permission mode to 0755]' \
+            '--mode=[Specifies the permission mode to use for the specified directory]:mode' \
+            '--tmpdir=[Specifies the absolute path of the directory on the guest VM]: :_files -/' \
+            && ret=0
+            ;;
+        (closeprocess|closesession)
+          _arguments \
+            '--quiet[Specifies that the command produce quieter output]' \
+            '--verbose[Specifies that the command produce more detailed output]' \
+            '--session-id=[Specifies the ID of the guest session]:id' \
+            '--session-name=[Specifies the name of the guest session]:name' \
+            && ret=0
+            ;;
+        (updatega)
+          _arguments \
+            '--quiet[Specifies that the command produce quieter output]' \
+            '--verbose[Specifies that the command produce more detailed output]' \
+            '--source=[Specifies the absolute path of the Guest Additions update]: :_files' \
+            '--reboot[Automatically reboots the guest after a successful Guest Additions update]' \
+            '--timeout=[Sets the timeout (in ms) to wait for the overall Guest Additions update to complete]:ms' \
+            '--verify[Verifies whether the Guest Additions were updated successfully]' \
+            '--wait-ready[Waits for the current Guest Additions being ready to handle the Guest Additions update]' \
+            '--wait-start[Starts the VBoxManage update process on the guest VM and then waits for the Guest Additions update]' \
+            && ret=0
+        (start|start)
+          _arguments \
+            '--quiet[Specifies that the command produce quieter output]' \
+            '--verbose[Specifies that the command produce more detailed output]' \
+            '--domain=[Specifies the user domain for Windows guest VMs]:domain' \
+            '--password=[Specifies the password for the specified user]:password' \
+            '--passwordfile=[Specifies the absolute path to a file on the guest OS]: :_files' \
+            '--username=[Specifies an existing user on the guest OS that runs the process]:user' \
+            && ret=0
+          ;;
+        (*)
+          _arguments \
+            '--quiet[Specifies that the command produce quieter output]' \
+            '--verbose[Specifies that the command produce more detailed output]' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_debugvm] )) ||
+_vboxmanage_debugvm() {
+  local ret=1
+
+  _arguments -C \
+    '1: :_vboxmachines' \
+    '2: :(dumpvmcore info injectnmi log logdest logflags osdetect osinfo osdmesg getregisters setregisters show stack statistics guestsample)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      compset -n 2
+      case $words[1] in
+        (dumpvmcore)
+          _arguments \
+            '--filename=[The name of the output file]: :_files' \
+            && ret=0
+          ;;
+        (log|logdest|logflags)
+          _arguments \
+            '(--release --debug)--release[release flag]' \
+            '(--release --debug)--debug[debug flag]' \
+            && ret=0
+          ;;
+        (osdmesg)
+          _arguments \
+            '--lines=[Number of lines of the log to display]:line' \
+            && ret=0
+          ;;
+        (getregisters|setregisters|stack)
+          _arguments \
+            '--cpu=[Selects the CPU register set when specifying just a CPU register]:id' \
+            && ret=0
+          ;;
+        (show)
+          _arguments \
+            '--human-readable[Selects human readable output]' \
+            '--sh-export[Selects output format as bourne shell style export commands]' \
+            '--sh-eval[Selects output format as bourne shell style eval command input]' \
+            '--cmd-set[Selects output format as DOS style SET commands]' \
+            && ret=0
+          ;;
+        (statistics)
+          _arguments \
+            '--pattern=[DOS/NT-style wildcards patterns for selecting statistics]:pattern' \
+            '--reset[Select reset instead of display mode]' \
+            && ret=0
+          ;;
+        (guestsample)
+          _arguments \
+            '--filename=[The filename to dump the sample report to]: :_files' \
+            '--sample-interval-us=[The interval in microseconds between guest samples]:us' \
+            '--sample-time-us=[The amount of microseconds to take guest samples]:us' \
+            '*:: :_files' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_metrics] )) ||
+_vboxmanage_metrics() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(collect disable enable list query setup)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (collect)
+          _arguments \
+            '--detach[Disables the collection of metric data, so no data is output]' \
+            '--list[Shows which metrics match the specified filter]' \
+            '--period=[Specifies the number of seconds to wait between collecting metric data samples]:sec' \
+            '--samples=[Specifies the number of metric data samples to save]' \
+            '1: :_vboxmachines' \
+            && ret=0
+          ;;
+        (disable)
+          _arguments \
+            '--list[Shows which metrics match the specified filter]' \
+            '1: :_vboxmachines' \
+            && ret=0
+          ;;
+        (setup)
+          _arguments \
+            '--list[Shows which metrics match the specified filter]' \
+            '--period=[Specifies the number of seconds to wait between collecting metric data samples]:sec' \
+            '--samples=[Specifies the number of metric data samples to save]' \
+            '1: :_vboxmachines' \
+            && ret=0
+          ;;
+        (*)
+          _arguments \
+            '1: :_vboxmachines' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_natnetwork] )) ||
+_vboxmanage_natnetwork() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(add list modify remove start stop)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (add|modify)
+          _arguments \
+            '(--disable --enable)--disable[Disables the NAT network service]' \
+            '(--disable --enable)--enable[Enable the NAT network service]' \
+            '--natname=[Specifies the name of the new internal network interface on the host OS]:name' \
+            '--network=[Specifies the static or DHCP network address and mask of the NAT service interface]:network' \
+            '--dhcp=[Enables or disables the DHCP server]: :(on off)' \
+            '--ipv6=[Enables or disables IPv6]: :(on off)' \
+            '--loopback-4=[Enables an IPv4 loopback interface by using the specified rule]:rule' \
+            '--loopback-6=[Enables an IPv6 loopback interface by using the specified rule]:rule' \
+            '--port-forward-4=[Enables IPv4 port forwarding by using the rule specified by rule]' \
+            '--port-forward-6=[Enables IPv6 port forwarding by using the rule specified by rule]' \
+            '*: :_files' \
+            && ret=0
+          ;;
+        (remove|start|stop)
+          _arguments \
+            '--natname=[Specifies the name of the NAT]:name' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_hostonlyif] )) ||
+_vboxmanage_hostonlyif() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(ipconfig create remove)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (ipconfig)
+          _arguments \
+            '--dhcp[Uses DHCP for the network interface]' \
+            '--ip=[Specifies the IPv4 IP address for the network interface]:ipv4' \
+            '--netmask=[Specifies the IPv4 netmask of the network interface]:v4mask' \
+            '--ipv6=[Specifies the IPv6 IP address for the network interface]:ipv6' \
+            '--netmasklengthv6=[Specifies the length of the IPv6 network interface]:length' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_hostonlynet] )) ||
+_vboxmanage_hostonlynet() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(add modify remove)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (add|modify)
+          _arguments \
+            '--name=[The host-only network name]:name' \
+            '--id=[The host-only network uuid]:netid' \
+            '--netmask=[The network mask]:netmask' \
+            '--lower-ip=[The lower IP address range for handing out via DHCP]:lower' \
+            '--upper-ip=[The upper IP address range for handing out via DHCP]:upper' \
+            '(--enable --disable)--enable[Enable the host-only network]' \
+            '(--enable --disable)--disable[Disable the host-only network]' \
+            && ret=0
+          ;;
+        (remove)
+          _arguments \
+            '--name=[The host-only network name]:name' \
+            '--id=[The host-only network uuid]:netid' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_dhcpserver] )) ||
+_vboxmanage_dhcpserver() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(add modify remove start restart stop findlease)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (add|modify)
+          _arguments \
+            '--network=[The internal network name]:name' \
+            '--interface=[The host only interface name]:interface' \
+            '--server-ip=[The IP address the DHCP server should use]:server_ip' \
+            '--lower-ip-address=[The lower IP address range for the DHCP server to manage]:lower' \
+            '--upper-ip-address=[The upper IP address range for the DHCP server to manage]:upper' \
+            '--netmask=[The network mask]:netmask' \
+            '(--enable --disable)--enable[Enable the DHCP server]' \
+            '(--enable --disable)--disable[Disable the DHCP server]' \
+            '--global[Set the configuration scope to global]' \
+            '--vm=[Set the configuration scope to the first NIC of the specified VM]:_vboxmachines' \
+            '--nic=[Set the configuration scope to a NIC]:id' \
+            '--mac-address=[Set the configuration scope to the specified MAC address]:mac' \
+            '--group=[Set the configuration scope to the specified group]:group' \
+            '--set-opt=[Adds the specified DHCP option number (0-255) and value]:option' \
+            '--set-opt-hex=[Adds the specified DHCP option number (0-255) and value]:hex' \
+            '--force-opt=[Forces the specified DHCP option number (0-255)]:opt' \
+            '--suppress-opt=[Prevents the specified DHCP option number (0-255)]:opt' \
+            '--min-lease-time=[Sets the minimum lease time for the current scope in seconds]:sec' \
+            '--default-lease-time=[Sets the default lease time for the current scope in seconds]:sec' \
+            '--max-lease-time=[Sets the maximum lease time for the current scope in seconds]:sec' \
+            '--fixed-address=[Fixed address assignment for a --vm or --mac-address configuration scope]:address' \
+            '--incl-mac=[Include the specific MAC address in the group]:mac' \
+            '--excl-mac=[Exclude the specific MAC address from the group]:mac' \
+            '--incl-mac-wild=[Include the specific MAC address pattern in the group]:pattern' \
+            '--excl-mac-wild=[Exclude the specific MAC address pattern from the group]:pattern' \
+            '--incl-vendor=[Include the specific vendor class ID in the group]:vendor' \
+            '--excl-vendor=[Exclude the specific vendor class ID from the group]:vendor' \
+            '--incl-vendor-wild=[Include the specific vendor class ID pattern in the group]:pattern' \
+            '--excl-vendor-wild=[Exclude the specific vendor class ID pattern from the group]:pattern' \
+            '--incl-user=[Include the specific user class ID in the group]:user' \
+            '--excl-user=[Exclude the specific user class ID from the group]:user' \
+            '--incl-user-wild=[Include the specific user class ID pattern in the group]:pattern' \
+            '--excl-user-wild=[Exclude the specific user class ID pattern from the group]:pattern' \
+            && ret=0
+          ;;
+        (remove|start|restart|stop)
+          _arguments \
+            '--network=[The internal network name]:name' \
+            '--interface=[The host only interface name]:interface' \
+            && ret=0
+          ;;
+        (findlease)
+          _arguments \
+            '--network=[The internal network name]:name' \
+            '--interface=[The host only interface name]:interface' \
+            '--mac-address=[The MAC address to lookup in the lease database]:mac' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_usbdevsource] )) ||
+_vboxmanage_usbdevsource() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(add remove)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (add)
+          _arguments \
+            '--address=[Specifies the address of the USB backend]:address' \
+            '--backend=[Specifies the USB proxy service backend to use]:backend' \
+            '*: :_files' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_expack] )) ||
+_vboxmanage_expack() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(install uninstall cleanup)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (install)
+          _arguments \
+            '--replace[Uninstall existing extension pack version]' \
+            '--accept-license=[Accept the license text with the given SHA-256 hash value]:sha256' \
+            '*: :_files' \
+            && ret=0
+          ;;
+        (uninstall)
+          _arguments \
+            '--force[Overrides most refusals to uninstall an extension pack]' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_updatecheck] )) ||
+_vboxmanage_updatecheck() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(perform list modify)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (perform|list)
+          _arguments \
+            '--machine-readable[Machine readable output]' \
+            && ret=0
+          ;;
+        (modify)
+          _arguments \
+            '--verbose[Provides the property value, timestamp, and any specified value attributes]' \
+            '(--enable --disable)--enable[Enable the update check service]' \
+            '(--enable --disable)--disable[Disable the update check service]' \
+            '--channel=[The preferred release type]: :(stable withbetas all)' \
+            '--frequency=[Specifies how often in days to check for a newer version of VirtualBox]:days' \
+            '--proxy-mode=[Specifies the proxy mode to use]: :(system manual none)' \
+            '--proxy-url=[Specifies the proxy address to use]:proxy' \
+            '1: :_vboxmachines' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_modifynvram] )) ||
+_vboxmanage_modifynvram() {
+  local ret=1
+
+  _arguments -C \
+    '1: :_vboxmachines' \
+    '2: :(inituefivarstore enrollmssignatures enrollorclpk enrollpk listvars queryvar deletevar changevar)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      compset -n 2
+      case $words[1] in
+        (enrollpk)
+          _arguments \
+            '--platform-key=[The platform key provided as a DER encoded X]: :_files' \
+            '--owner-uuid=[The UUID identifying the owner of the platform key]:uuid' \
+            && ret=0
+          ;;
+        (queryvar)
+          _arguments \
+            '--name=[UEFI variable name to query]:name' \
+            '--filename=[Where to store the content of the variable upon success]: :_files' \
+            && ret=0
+          ;;
+        (deletevar)
+          _arguments \
+            '--name=[UEFI variable name to query]:name' \
+            '--owner-uuid=[The UUID identifying the owner of the variable to delete]:uuid' \
+            && ret=0
+          ;;
+        (queryvar)
+          _arguments \
+            '--name=[UEFI variable name to change the data for]:name' \
+            '--filename=[The file to read the data from]: :_files' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
 (( $+functions[_vboxheadless] )) ||
 _vboxheadless() {
   local ret=1
@@ -450,11 +1585,26 @@ _vboxmachines() {
   _values 'machines' $machines
 }
 
-# List available os types
 (( $+functions[_vboxostypes] )) ||
 _vboxostypes() {
   local -a os=(${(@f)"$(vboxmanage list ostypes | awk '/^ID:/{ print $2 }')"})
   _values 'machines' $os
+}
+
+(( $+functions[_vboxmanage_setproperty_value] )) ||
+_vboxmanage_setproperty_value() {
+  case $words[2] in
+    (autostartdbpath)
+      _arguments '*: :_files'
+      ;;
+    (machinefolder)
+      _arguments '*: :_files -/'
+      ;;
+    (proxymode)
+      local -a mode=(manual noproxy system)
+      _values 'proxymode' $mode
+      ;;
+  esac
 }
 
 _virtualbox "$@"
