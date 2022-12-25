@@ -300,7 +300,7 @@ _vboxmanage() {
           _vboxmanage_guestproperty && ret=0
           ;;
         (guestcontrol)
-          # TODO
+          _vboxmanage_guestcontrol && ret=0
           ;;
         (debugvm)
           # TODO
@@ -994,6 +994,143 @@ _vboxmanage_guestproperty() {
         (wait)
           _arguments \
             '1: :_vboxmachines' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_guestcontrol] )) ||
+_vboxmanage_guestcontrol() {
+  local ret=1
+
+  _arguments -C \
+    '1: :_vboxmachines' \
+    '2: :(run start copyfrom copyto mkdir rmdir rm mv mktemp stat list closeprocess closesession updatega watch)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      compset -n 2
+      case $words[1] in
+        (add)
+          _arguments \
+            '--quiet[Specifies that the command produce quieter output]' \
+            '--verbose[Specifies that the command produce more detailed output]' \
+            '--exe=[Specifies the absolute path of the executable program to run on the guest VM]: :_files' \
+            '--timeout=[Specifies the maximum amount of time, in milliseconds]:msecs' \
+            '*--putenv=[Sets, modifies, and unsets environment variables]:env' \
+            '--unquoted-args[Disables the escaped double quoting of arguments]' \
+            '--ignore-orphaned-processes[Ignores orphaned processes]' \
+            '--profile[Uses a shell profile to specify the environment to use]' \
+            '--no-wait-stdout[Does not wait for the guest process to end]' \
+            '--wait-stdout[Waits for the guest process to end to receive its exit code]' \
+            '--no-wait-stderr[Does not wait for the guest process to end to receive its exit code]' \
+            '--wait-stderr[Waits for the guest process to end to receive its exit code]' \
+            '--dos2unix[Transform DOS or Windows guest output to UNIX or Linux output]' \
+            '--unix2doc[Transform UNIX or Linux guest output to DOS or Windows output]' \
+            '*:: :_files' \
+            && ret=0
+          ;;
+        (copyfrom|copyto)
+          _arguments \
+            '--quiet[Specifies that the command produce quieter output]' \
+            '--verbose[Specifies that the command produce more detailed output]' \
+            '--domain=[Specifies the user domain for Windows guest VMs]:domain' \
+            '--password=[Specifies the password for the specified user]:password' \
+            '--passwordfile=[Specifies the absolute path to a file on the guest OS]: :_files' \
+            '--username=[Specifies an existing user on the guest OS that runs the process]:user' \
+            '--follow[Enables following of symbolic links on the guest file system]' \
+            '--recursive[Recursively copies files and directories from the specified directory on the guest VM]' \
+            '--quiet[Specifies that the command produce quieter output]' \
+            '--target-directory=[Specifies the absolute path of the destination directory on the host system]: :_files -/' \
+            && ret=0
+            ;;
+        (mkdir)
+          _arguments \
+            '--quiet[Specifies that the command produce quieter output]' \
+            '--verbose[Specifies that the command produce more detailed output]' \
+            '--domain=[Specifies the user domain for Windows guest VMs]:domain' \
+            '--password=[Specifies the password for the specified user]:password' \
+            '--passwordfile=[Specifies the absolute path to a file on the guest OS]: :_files' \
+            '--username=[Specifies an existing user on the guest OS that runs the process]:user' \
+            '--parents[Creates any of the missing parent directories of the specified directory]' \
+            '--mode=[Specifies the permission mode to use for the specified directory]:mode' \
+            && ret=0
+            ;;
+        (rmdir)
+          _arguments \
+            '--quiet[Specifies that the command produce quieter output]' \
+            '--verbose[Specifies that the command produce more detailed output]' \
+            '--domain=[Specifies the user domain for Windows guest VMs]:domain' \
+            '--password=[Specifies the password for the specified user]:password' \
+            '--passwordfile=[Specifies the absolute path to a file on the guest OS]: :_files' \
+            '--username=[Specifies an existing user on the guest OS that runs the process]:user' \
+            '--recursive[Recursively removes directories from the specified from the guest VM]' \
+            && ret=0
+            ;;
+        (rmdir)
+          _arguments \
+            '--quiet[Specifies that the command produce quieter output]' \
+            '--verbose[Specifies that the command produce more detailed output]' \
+            '--domain=[Specifies the user domain for Windows guest VMs]:domain' \
+            '--password=[Specifies the password for the specified user]:password' \
+            '--passwordfile=[Specifies the absolute path to a file on the guest OS]: :_files' \
+            '--username=[Specifies an existing user on the guest OS that runs the process]:user' \
+            '--force[Forces the operation and overrides any confirmation requests]' \
+            && ret=0
+            ;;
+        (mktemp)
+          _arguments \
+            '--quiet[Specifies that the command produce quieter output]' \
+            '--verbose[Specifies that the command produce more detailed output]' \
+            '--domain=[Specifies the user domain for Windows guest VMs]:domain' \
+            '--password=[Specifies the password for the specified user]:password' \
+            '--passwordfile=[Specifies the absolute path to a file on the guest OS]: :_files' \
+            '--username=[Specifies an existing user on the guest OS that runs the process]:user' \
+            '--directory[Creates a temporary directory that is specified by the template operand]' \
+            '--secure[Enforces secure file and directory creation by setting the permission mode to 0755]' \
+            '--mode=[Specifies the permission mode to use for the specified directory]:mode' \
+            '--tmpdir=[Specifies the absolute path of the directory on the guest VM]: :_files -/' \
+            && ret=0
+            ;;
+        (closeprocess|closesession)
+          _arguments \
+            '--quiet[Specifies that the command produce quieter output]' \
+            '--verbose[Specifies that the command produce more detailed output]' \
+            '--session-id=[Specifies the ID of the guest session]:id' \
+            '--session-name=[Specifies the name of the guest session]:name' \
+            && ret=0
+            ;;
+        (updatega)
+          _arguments \
+            '--quiet[Specifies that the command produce quieter output]' \
+            '--verbose[Specifies that the command produce more detailed output]' \
+            '--source=[Specifies the absolute path of the Guest Additions update]: :_files' \
+            '--reboot[Automatically reboots the guest after a successful Guest Additions update]' \
+            '--timeout=[Sets the timeout (in ms) to wait for the overall Guest Additions update to complete]:ms' \
+            '--verify[Verifies whether the Guest Additions were updated successfully]' \
+            '--wait-ready[Waits for the current Guest Additions being ready to handle the Guest Additions update]' \
+            '--wait-start[Starts the VBoxManage update process on the guest VM and then waits for the Guest Additions update]' \
+            && ret=0
+        (start|start)
+          _arguments \
+            '--quiet[Specifies that the command produce quieter output]' \
+            '--verbose[Specifies that the command produce more detailed output]' \
+            '--domain=[Specifies the user domain for Windows guest VMs]:domain' \
+            '--password=[Specifies the password for the specified user]:password' \
+            '--passwordfile=[Specifies the absolute path to a file on the guest OS]: :_files' \
+            '--username=[Specifies an existing user on the guest OS that runs the process]:user' \
+            && ret=0
+          ;;
+        (*)
+          _arguments \
+            '--quiet[Specifies that the command produce quieter output]' \
+            '--verbose[Specifies that the command produce more detailed output]' \
             && ret=0
           ;;
       esac
