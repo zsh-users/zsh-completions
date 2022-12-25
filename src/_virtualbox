@@ -309,7 +309,7 @@ _vboxmanage() {
           # TODO
           ;;
         (natnetwork)
-          # TODO
+          _vboxmanage_natnetwork && ret=0
           ;;
         (hostonlyif)
           # TODO
@@ -994,6 +994,45 @@ _vboxmanage_guestproperty() {
         (wait)
           _arguments \
             '1: :_vboxmachines' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_natnetwork] )) ||
+_vboxmanage_natnetwork() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(add list modify remove start stop)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (add|modify)
+          _arguments \
+            '(--disable --enable)--disable[Disables the NAT network service]' \
+            '(--disable --enable)--enable[Enable the NAT network service]' \
+            '--natname=[Specifies the name of the new internal network interface on the host OS]:name' \
+            '--network=[Specifies the static or DHCP network address and mask of the NAT service interface]:network' \
+            '--dhcp=[Enables or disables the DHCP server]: :(on off)' \
+            '--ipv6=[Enables or disables IPv6]: :(on off)' \
+            '--loopback-4=[Enables an IPv4 loopback interface by using the specified rule]:rule' \
+            '--loopback-6=[Enables an IPv6 loopback interface by using the specified rule]:rule' \
+            '--port-forward-4=[Enables IPv4 port forwarding by using the rule specified by rule]' \
+            '--port-forward-6=[Enables IPv6 port forwarding by using the rule specified by rule]' \
+            '*: :_files' \
+            && ret=0
+          ;;
+        (remove|start|stop)
+          _arguments \
+            '--natname=[Specifies the name of the NAT]:name' \
             && ret=0
           ;;
       esac
