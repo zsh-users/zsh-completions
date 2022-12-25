@@ -282,7 +282,7 @@ _vboxmanage() {
             && ret=0
           ;;
         (mediumio)
-          _vboxmanage_mediumio
+          _vboxmanage_mediumio && ret=0
           ;;
         (setproperty)
           _arguments \
@@ -426,33 +426,26 @@ _vboxmanage_encryptvm() {
 
   case $state in
     (arg)
-      local subcommand=$words[2]
-      if (( $+functions[_vboxmanage_encryptvm_${subcommand}] )); then
-        compset -n 2
-        _vboxmanage_encryptvm_${subcommand} && ret=0
-      else
-        _arguments '*: :_files' && ret=0
-      fi
-      ;;
+      compset -n 2
+      case $words[1] in
+        (setencryption)
+          _arguments \
+            '--cipher[specify the new cipher for encryption of the VM]: :(AES-128 AES-256)' \
+            '--new-password[specify the new password for encryption of the VM]: :_files' \
+            '--new-password-id[specify the new ID for the password for encryption of the VM]:id' \
+            '--force[make the system to reencrypt the VM instead of the simple changing the password]' \
+            && ret=0
+          ;;
+        (addpassword)
+          _arguments \
+            '--new-password[specify the new password for encryption of the VM]: :_files' \
+            '--new-password-id[specify the new ID for the password for encryption of the VM]:id' \
+            && ret=0
+          ;;
+      esac
   esac
 
   return $ret
-}
-
-(( $+functions[_vboxmanage_encryptvm_setencryption] )) ||
-_vboxmanage_encryptvm_setencryption() {
-  _arguments \
-    '--cipher[specify the new cipher for encryption of the VM]: :(AES-128 AES-256)' \
-    '--new-password[specify the new password for encryption of the VM]: :_files' \
-    '--new-password-id[specify the new ID for the password for encryption of the VM]:id' \
-    '--force[make the system to reencrypt the VM instead of the simple changing the password]'
-}
-
-(( $+functions[_vboxmanage_encryptvm_addpassword] )) ||
-_vboxmanage_encryptvm_addpassword() {
-  _arguments \
-    '--new-password[specify the new password for encryption of the VM]: :_files' \
-    '--new-password-id[specify the new ID for the password for encryption of the VM]:id'
 }
 
 (( $+functions[_vboxmanage_cloud] )) ||
@@ -793,36 +786,32 @@ _vboxmanage_bandwidthctl() {
 
   case $state in
     (arg)
-      local subcommand=$words[2]
-      if (( $+functions[_vboxmanage_bandwidthctl_${subcommand}] )); then
-        compset -n 2
-        _vboxmanage_bandwidthctl_${subcommand} && ret=0
-      else
-        _arguments '*: :_files' && ret=0
-      fi
+      compset -n 2
+      case $words[1] in
+        (add)
+          _arguments \
+            '--limit=[Specifies the bandwidth limit for a bandwidth group]:limit' \
+            '--type=[Specifies the type of the bandwidth group]: :(disk network)' \
+            && ret=0
+          ;;
+        (list)
+          _arguments \
+            '--machinereadable[Outputs the information about the bandwidth groups in name-value pairs]' \
+            && ret=0
+          ;;
+        (set)
+          _arguments \
+            '--limit=[Specifies the bandwidth limit for a bandwidth group]:limit' \
+            && ret=0
+          ;;
+        (*)
+          _arguments '*: :_files' && ret=0
+          ;;
+      esac
       ;;
   esac
 
   return $ret
-}
-
-(( $+functions[_vboxmanage_bandwidthctl_add] )) ||
-_vboxmanage_bandwidthctl_add() {
-  _arguments \
-    '--limit=[Specifies the bandwidth limit for a bandwidth group]:limit' \
-    '--type=[Specifies the type of the bandwidth group]: :(disk network)'
-}
-
-(( $+functions[_vboxmanage_bandwidthctl_list] )) ||
-_vboxmanage_bandwidthctl_list() {
-  _arguments \
-    '--machinereadable[Outputs the information about the bandwidth groups in name-value pairs]'
-}
-
-(( $+functions[_vboxmanage_bandwidthctl_set] )) ||
-_vboxmanage_bandwidthctl_set() {
-  _arguments \
-    '--limit=[Specifies the bandwidth limit for a bandwidth group]:limit'
 }
 
 (( $+functions[_vboxmanage_mediumio] )) ||
@@ -836,49 +825,44 @@ _vboxmanage_mediumio() {
 
   case $state in
     (arg)
-      local subcommand=$words[1]
-      if (( $+functions[_vboxmanage_mediumio_${subcommand}] )); then
-        _vboxmanage_mediumio_${subcommand} && ret=0
-      fi
+      case $words[1] in
+        (formatfat)
+          _arguments \
+            '--disk=[Either the UUID or filename of a harddisk image]: :_files' \
+            '--dvd=[Either the UUID or filename of a DVD image]: :_files' \
+            '--floppy=[Either the UUID or filename of a floppy image]: :_files'  \
+            '--password-file=[The name of a file containing the medium encryption password]: :_files' \
+            '--quick[Quickformat the medium]' \
+            && ret=0
+          ;;
+        (cat)
+          _arguments \
+            '--disk=[Either the UUID or filename of a harddisk image]: :_files' \
+            '--dvd=[Either the UUID or filename of a DVD image]: :_files' \
+            '--floppy=[Either the UUID or filename of a floppy image]: :_files'  \
+            '--password-file=[The name of a file containing the medium encryption password]: :_files' \
+            '--hex[Dump as hex bytes]' \
+            '--offset=[The byte offset in the medium to start]:offset' \
+            '--size=[The number of bytes to dump]:size' \
+            '--output=[The output filename]: :_files' \
+            && ret=0
+          ;;
+        (stream)
+          _arguments \
+            '--disk=[Either the UUID or filename of a harddisk image]: :_files' \
+            '--dvd=[Either the UUID or filename of a DVD image]: :_files' \
+            '--floppy=[Either the UUID or filename of a floppy image]: :_files'  \
+            '--password-file=[The name of a file containing the medium encryption password]: :_files' \
+            '--format=[The format of the destination image]:format' \
+            '--variant=[The medium variant for the destination]:variant' \
+            '--output=[The output filename]: :_files' \
+            && ret=0
+          ;;
+      esac
       ;;
   esac
 
   return $ret
-}
-
-(( $+functions[_vboxmanage_mediumio_formatfat] )) ||
-_vboxmanage_mediumio_formatfat() {
-  _arguments \
-    '--disk=[Either the UUID or filename of a harddisk image]: :_files' \
-    '--dvd=[Either the UUID or filename of a DVD image]: :_files' \
-    '--floppy=[Either the UUID or filename of a floppy image]: :_files'  \
-    '--password-file=[The name of a file containing the medium encryption password]: :_files' \
-    '--quick[Quickformat the medium]'
-}
-
-(( $+functions[_vboxmanage_mediumio_cat] )) ||
-_vboxmanage_mediumio_cat() {
-  _arguments \
-    '--disk=[Either the UUID or filename of a harddisk image]: :_files' \
-    '--dvd=[Either the UUID or filename of a DVD image]: :_files' \
-    '--floppy=[Either the UUID or filename of a floppy image]: :_files'  \
-    '--password-file=[The name of a file containing the medium encryption password]: :_files' \
-    '--hex[Dump as hex bytes]' \
-    '--offset=[The byte offset in the medium to start]:offset' \
-    '--size=[The number of bytes to dump]:size' \
-    '--output=[The output filename]: :_files'
-}
-
-(( $+functions[_vboxmanage_mediumio_stream] )) ||
-_vboxmanage_mediumio_stream() {
-  _arguments \
-    '--disk=[Either the UUID or filename of a harddisk image]: :_files' \
-    '--dvd=[Either the UUID or filename of a DVD image]: :_files' \
-    '--floppy=[Either the UUID or filename of a floppy image]: :_files'  \
-    '--password-file=[The name of a file containing the medium encryption password]: :_files' \
-    '--format=[The format of the destination image]:format' \
-    '--variant=[The medium variant for the destination]:variant' \
-    '--output=[The output filename]: :_files'
 }
 
 (( $+functions[_vboxmanage_usbfilter] )) ||
