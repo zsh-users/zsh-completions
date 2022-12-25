@@ -303,7 +303,7 @@ _vboxmanage() {
           _vboxmanage_guestcontrol && ret=0
           ;;
         (debugvm)
-          # TODO
+          _vboxmanage_debugvm && ret=0
           ;;
         (metrics)
           # TODO
@@ -1131,6 +1131,70 @@ _vboxmanage_guestcontrol() {
           _arguments \
             '--quiet[Specifies that the command produce quieter output]' \
             '--verbose[Specifies that the command produce more detailed output]' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_debugvm] )) ||
+_vboxmanage_debugvm() {
+  local ret=1
+
+  _arguments -C \
+    '1: :_vboxmachines' \
+    '2: :(dumpvmcore info injectnmi log logdest logflags osdetect osinfo osdmesg getregisters setregisters show stack statistics guestsample)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      compset -n 2
+      case $words[1] in
+        (dumpvmcore)
+          _arguments \
+            '--filename=[The name of the output file]: :_files' \
+            && ret=0
+          ;;
+        (log|logdest|logflags)
+          _arguments \
+            '(--release --debug)--release[release flag]' \
+            '(--release --debug)--debug[debug flag]' \
+            && ret=0
+          ;;
+        (osdmesg)
+          _arguments \
+            '--lines=[Number of lines of the log to display]:line' \
+            && ret=0
+          ;;
+        (getregisters|setregisters|stack)
+          _arguments \
+            '--cpu=[Selects the CPU register set when specifying just a CPU register]:id' \
+            && ret=0
+          ;;
+        (show)
+          _arguments \
+            '--human-readable[Selects human readable output]' \
+            '--sh-export[Selects output format as bourne shell style export commands]' \
+            '--sh-eval[Selects output format as bourne shell style eval command input]' \
+            '--cmd-set[Selects output format as DOS style SET commands]' \
+            && ret=0
+          ;;
+        (statistics)
+          _arguments \
+            '--pattern=[DOS/NT-style wildcards patterns for selecting statistics]:pattern' \
+            '--reset[Select reset instead of display mode]' \
+            && ret=0
+          ;;
+        (guestsample)
+          _arguments \
+            '--filename=[The filename to dump the sample report to]: :_files' \
+            '--sample-interval-us=[The interval in microseconds between guest samples]:us' \
+            '--sample-time-us=[The amount of microseconds to take guest samples]:us' \
+            '*:: :_files' \
             && ret=0
           ;;
       esac
