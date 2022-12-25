@@ -315,7 +315,7 @@ _vboxmanage() {
           _vboxmanage_hostonlyif && ret=0
           ;;
         (hostonlynet)
-          # TODO
+          _vboxmanage_hostonlynet && ret=0
           ;;
         (dhcpserver)
           # TODO
@@ -1309,6 +1309,42 @@ _vboxmanage_hostonlyif() {
             '--netmask=[Specifies the IPv4 netmask of the network interface]:v4mask' \
             '--ipv6=[Specifies the IPv6 IP address for the network interface]:ipv6' \
             '--netmasklengthv6=[Specifies the length of the IPv6 network interface]:length' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_hostonlynet] )) ||
+_vboxmanage_hostonlynet() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(add modify remove)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (add|modify)
+          _arguments \
+            '--name=[The host-only network name]:name' \
+            '--id=[The host-only network uuid]:netid' \
+            '--netmask=[The network mask]:netmask' \
+            '--lower-ip=[The lower IP address range for handing out via DHCP]:lower' \
+            '--upper-ip=[The upper IP address range for handing out via DHCP]:upper' \
+            '(--enable --disable)--enable[Enable the host-only network]' \
+            '(--enable --disable)--disable[Disable the host-only network]' \
+            && ret=0
+          ;;
+        (remove)
+          _arguments \
+            '--name=[The host-only network name]:name' \
+            '--id=[The host-only network uuid]:netid' \
             && ret=0
           ;;
       esac
