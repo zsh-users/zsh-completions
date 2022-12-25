@@ -312,7 +312,7 @@ _vboxmanage() {
           _vboxmanage_natnetwork && ret=0
           ;;
         (hostonlyif)
-          # TODO
+          _vboxmanage_hostonlyif && ret=0
           ;;
         (hostonlynet)
           # TODO
@@ -1281,6 +1281,34 @@ _vboxmanage_natnetwork() {
         (remove|start|stop)
           _arguments \
             '--natname=[Specifies the name of the NAT]:name' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_vboxmanage_hostonlyif] )) ||
+_vboxmanage_hostonlyif() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(ipconfig create remove)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (ipconfig)
+          _arguments \
+            '--dhcp[Uses DHCP for the network interface]' \
+            '--ip=[Specifies the IPv4 IP address for the network interface]:ipv4' \
+            '--netmask=[Specifies the IPv4 netmask of the network interface]:v4mask' \
+            '--ipv6=[Specifies the IPv6 IP address for the network interface]:ipv6' \
+            '--netmasklengthv6=[Specifies the length of the IPv6 network interface]:length' \
             && ret=0
           ;;
       esac
