@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Bundler 2.3.14 (https://bundler.io/).
+#  Completion script for Bundler 2.4.1 (https://bundler.io/).
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -304,10 +304,10 @@ case $state in
           '(--exe -b --bin --no-exe)--no-exe[do not create a binary]' \
           '(--no-coc)--coc[add a CODE_OF_CONDUCT.md to the root of the generated project]' \
           '(--coc)--no-coc[do not create a CODE_OF_CONDUCT.md]' \
-          '(--no-ext)--ext[add boilerplate for C extension code to the generated project]' \
-          '(--ext)--no-ext[do not add C extension code]' \
-          '(--no-mit)--mit[add an MIT license to a LICENSE.txt file in the root of the generated project]' \
-          '(--mit)--no-mit[do not create a LICENSE.txt]' \
+          '(--no-ext --ext)--ext=[add boilerplate for C or Rust extension code to the generated project]: :(c rust)' \
+          '(--ext --no-ext)--no-ext[do not add extension code]' \
+          '(--no-mit --mit)--mit[add an MIT license to a LICENSE.txt file in the root of the generated project]' \
+          '(--mit --no-mit)--no-mit[do not create a LICENSE.txt]' \
           '(-t --test)'{-t,--test}=-'[specify the test framework]: :(minitest rspec test-unit)' \
           '--ci=-[specify the continuous integration service]: :(github travis gitlab circle)' \
           '--linter=-[specify the linter and code formatter]: :(rubocop standard)' \
