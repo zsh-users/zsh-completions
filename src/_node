@@ -111,7 +111,7 @@ _arguments -C \
   '--no-deprecation[silence deprecation warnings]' \
   '--no-experimental-fetch[disable experimental Fetch API]' \
   '--no-experimental-global-customevent[expose experimental CustomEvent on the global scope]' \
-  '--no-experimental-global-webscrypto[expose experimental Web Crypto API on the global scope]' \
+  '--no-experimental-global-webcrypto[expose experimental Web Crypto API on the global scope]' \
   '--no-experimental-repl-await[disable experimental await keyword support in REPL]' \
   '--no-experimental-info-on-fatal-exception[hide extra information on fatal exception that causes exit]' \
   '--no-force-async-hooks-checks[disable checks for async_hooks]' \
