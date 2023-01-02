@@ -1,0 +1,78 @@
+#compdef screencapture
+# ------------------------------------------------------------------------------
+# Copyright (c) 2023 Github zsh-users - https://github.com/zsh-users
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for screencapture command
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei Yoshida (https://github.com/syohex)
+#
+# ------------------------------------------------------------------------------
+
+_arguments \
+  '-c[force screen capture to go to the clipboard]' \
+  '(-i -J -s -w -W)-b[capture touch bar only non interactive modes]' \
+  '(-b -i -J -s -w -W)-C[capture the cursor as well as the screen only in non interactive modes]' \
+  '-d[display errors to the user graphically]' \
+  '(-b -C)-i[capture screen interactively. ctrl clipboard, space toggle mode, escape cancel]' \
+  '-m[only capture the main monitor]' \
+  '-D[screen capture or record from the display specified]:display_number:' \
+  '(-b -s)-o[in window capture mode, do not capture the shadow of the window]' \
+  '-p[screen capture will use the default settings for capture]' \
+  '-M[screen capture output will go to a new Mail message]' \
+  '-P[screen capture output will open in Preview or QuickTime Player]' \
+  '-I[screen capture output will open in Messages]' \
+  '-B[screen capture output will open in app with bundle ID]:bundle_id:' \
+  '(-b -i -w -W)-s[only allow mouse selection mode]' \
+  '-S[in window capture mode, capture the screen not the window]' \
+  '-J+[sets the starting of interactive capture]:style:(selection window video)' \
+  '(-p)-t[image format to create default is png]:format:(png pdf jpg tiff gif)' \
+  '-T+[take the picture after a delay of seconds]:seconds:' \
+  '(-b -i -s -W)-w[only allow window selection mode]' \
+  '(-b -i -s -w)-W[start interaction in window selection mode]' \
+  '-x[do not play sounds]' \
+  '-a[do not include windows attached to selected windows]' \
+  '-r[do not add dpi meta data to image]' \
+  '-l[capture this windows ID]:window_id:' \
+  '(-b -i -s -w -W)-R[capture screen rect]:rect:' \
+  '(-b)-v[capture video recording of the screen]::->video' \
+  '-V+[limits video capture to specified seconds]:seconds:' \
+  '-g[captures audio during a video recording using default input]' \
+  '-G[captures audio during a video recording using audio ID specified]' \
+  '-k[show clicks in video recording mode]' \
+  '-U[Show interactive toolbar in interactive mode]' \
+  '-u[present UI after screencapture is complete]' \
+  '*:files:_files'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
