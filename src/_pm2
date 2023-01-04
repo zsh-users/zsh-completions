@@ -197,7 +197,7 @@ _pm2() {
           _arguments \
             '(- *)'{-h,--help}'[output usage information]' \
             '--port[specify port to listen to]:port' \
-            '--spa[always serving index.html on inexistant sub path]' \
+            '--spa[always serving index.html on inexistent sub path]' \
             '--basic-auth-username[set basic auth username]:username' \
             '--basic-auth-password[set basic auth password]:password' \
             '--monitor[frontend app monitoring]:app' \

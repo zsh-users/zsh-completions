@@ -431,7 +431,7 @@ _nft_table(){
     _describe -t families "family" families -J "family"
   fi
   if [[ "$1" =~ "-handle$" ]]; then
-    tables=("handle:adress the table by handle")
+    tables=("handle:address the table by handle")
     #remove -handle from $1 to be able to complete table names
     1="${1/-handle/}"
     _describe -t tables "table" tables -V "handle"
@@ -470,7 +470,7 @@ _nft_object(){
   local objects=( ${(f)"$(_call_program -p objects nft -a list table $1 $2 2>/dev/null\
       | grep ""\\s\*$3"" | sed 's/\s*'"$3"' // ;s/ { # \(.*\)/:(\1)/' )"} )
   if $4 ;then
-    objects+=( "handle:adress $3 by handle")
+    objects+=( "handle:address $3 by handle")
   fi
   _describe -t objects "$3" objects
 }

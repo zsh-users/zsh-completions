@@ -247,8 +247,8 @@ _vboxmanage() {
             '--description=[Specifies a text description of the medium]:desc' \
             '--move=[Specifies a relative or absolute path to a medium on the host system]: :_files' \
             '*--property=[Specifies any required file format dependent parameters in key=value form]:value' \
-            '--resize=[Specifes the new capacity of an existing image in MB]:size' \
-            '--resizebyte=[Specifes the new capacity of an existing image in bytes]:size' \
+            '--resize=[Specifies the new capacity of an existing image in MB]:size' \
+            '--resizebyte=[Specifies the new capacity of an existing image in bytes]:size' \
             '--setlocation=[Specifies the new location of the medium]: :_files' \
             '--type=[Specifies the new mode type of an existing image]: :(normal immutable writethrough multi-attach shareable readonly)' \
             '1:medium:(disk dvd floppy)' \
