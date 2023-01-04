@@ -88,7 +88,7 @@ _inxi() {
     '(-a --admin)'{-a,--admin}"[Admin extra data options]:admin option:->admin" \
     "--alt[Bypass a downloader option]:downloader:_inxi_alt" \
     '--bt-tool[Force use of given tool for bluetooth report]' \
-    '(--no-dig --dig)--dig[Overrides configration item NO_DIG]' \
+    '(--no-dig --dig)--dig[Overrides configuration item NO_DIG]' \
     "--display[Get display data out of X]:\:<integer>: " \
     "--dmidecode[Force use of dmidecode]" \
     "--downloader[Force inxi to use a specific downloader]:downloader:(curl fetch perl wget)" \

@@ -400,7 +400,7 @@ _createdb () {
         \
         --maintenance-db=':alternate maintenance database:_pgsql_databases' \
         {-q,--quiet}'[non verbose mode]' \
-        --location=':database location (unsupported since PostgrSQL 8.0):_directories' \
+        --location=':database location (unsupported since PostgreSQL 8.0):_directories' \
         ':PostgreSQL database:' \
         ':comment:'
 }
@@ -415,7 +415,7 @@ _dropdb () {
         {-f,--force}'[try to terminate other connections before dropping]' \
         {-i,--interactive}'[confirm before drop]' \
         {-V,--version}'[output version information, then exit]' \
-        --if-exists'[don'\''t treport error if database does'\''t exist]' \
+        --if-exists'[don'\''t report error if database does'\''t exist]' \
         --maintenance-db=':alternate maintenance database:_pgsql_databases' \
         {-q,--quiet}'[non verbose mode]' \
         ':PostgreSQL database:_pgsql_databases'

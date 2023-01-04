@@ -338,7 +338,7 @@ _conan_create_args() {
     '(-v --verify)'{-v,--verify}'[Verify dependencies manifests against stored ones]:verify' \
     '(-b --build)'{-b,--build}'[Optional, specify which packages to build from source]:build' \
     '(-r --remote)'{-r,--remote}'[Look in the specified remote server]:remote' \
-    '(-u --update)'{-u,--update}'[Look in the specified remote server and it will install thoses in the local cache]' \
+    '(-u --update)'{-u,--update}'[Look in the specified remote server and it will install those in the local cache]' \
     '(-l --lockfile)'{-l,--lockfile}'[Path to a lockfile]: :_files' \
     '--lockfile-out[Filename of the updated lockfile]' \
     \*{-e,--env}'[Environment variables that will be set during the package build(host machine)]: :_conan_environment_variables' \
@@ -557,7 +557,7 @@ _conan_workspace_install_args() {
     '(- : *)'{-h,--help}'[display help information]' \
     '(-b --build)'{-b,--build}'[Optional, specify which packages to build from source]:build' \
     '(-r --remote)'{-r,--remote}'[Look in the specified remote server]:remote' \
-    '(-u --update)'{-u,--update}'[Will check the remote and it will install thoses in the local cache]' \
+    '(-u --update)'{-u,--update}'[Will check the remote and it will install those in the local cache]' \
     '(-l --lockfile)'{-l,--lockfile}'[Path to a lockfile]: :_files' \
     '--lockfile-out[Filename of the updated lockfile]' \
     \*{-e,--env}'[Environment variables that will be set during the package build(host machine)]: :_conan_environment_variables' \
@@ -943,7 +943,7 @@ _conan_lock_create_args() {
     '--base[Lock only recipe versions and revisions]' \
     '--lockfile-out[Filename of the updated lockfile]: :_files' \
     '(-r --remote)'{-r,--remote}'[Look in the specified remote server]:remote' \
-    '(-u --update)'{-u,--update}'[Will check the remote and it will install thoses in the local cache]' \    \*{-e,--env}'[Environment variables that will be set during the package build(host machine)]:env' \
+    '(-u --update)'{-u,--update}'[Will check the remote and it will install those in the local cache]' \    \*{-e,--env}'[Environment variables that will be set during the package build(host machine)]:env' \
     \*{'-e\:b','--env\:build'}'[Environment variables that will be set during the package build(build machine)]:env' \
     \*{'-e\:h','--env\:host'}'[Environment variables that will be set during the package build(host machine)]:env' \
     \*{-o,--options}'[Define options values(host machine)]:option' \

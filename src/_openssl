@@ -93,7 +93,7 @@ _openssl_asn1parse() {
 _openssl_ca() {
   # written for openssl 1.0.1k
   _arguments -C \
-    '-verbose[talk alot while doing things]' \
+    '-verbose[talk a lot while doing things]' \
     '-config[a config file]:file:_files' \
     '-name[the particular CA definition to use]:section: ' \
     '-gencrl[generate a new CRL]' \
