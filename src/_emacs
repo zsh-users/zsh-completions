@@ -1,0 +1,105 @@
+#compdef emacs
+# ------------------------------------------------------------------------------
+# Copyright (c) 2022 Github zsh-users - https://github.com/zsh-users
+# All rights reserved.
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for emacs 29. (https://www.gnu.org/software/emacs/)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei YOSHIDA (https://github.com/syohex)
+#
+# ------------------------------------------------------------------------------
+
+_arguments \
+  '--batch[do not do interactive display, implies -q]' \
+  '--chdir[change to directory]: :_files -/' \
+  '(--daemon --bg-daemon --fg-daemon)--daemon[start a server in the background]' \
+  '(--daemon --bg-daemon --fg-daemon)--bg-daemon=-[start a named server in the background]::name' \
+  '(--daemon --bg-daemon --fg-daemon)--fg-daemon=-[start a named server in the foreground]' \
+  '--debug-init[enable Emacs Lisp debugger for init file]' \
+  '(-d --display)'{-d,--display}'[use X server DISPLAY]:display' \
+  '--module-assertions[assert behavior of dynamic modules]' \
+  '--dump-file[read dumped state from FILE]: :_files' \
+  '(- *)--fingerprint[output fingerprint and exit]' \
+  '--seccomp=[read Seccomp BPF filter from FILE]: :_files' \
+  '--no-build-details[do not add build details such as time stamps]' \
+  '--no-desktop[do not load a saved desktop]' \
+  '(-q --no-init-file)'{-q,--no-init-file}'[loader neither ~/.emacs nor default.el]' \
+  '(-nl --no-loadup)'{-nl,--no-loadup}'[do not load loadup.el]' \
+  '--no-site-file[do not load site-start.el]' \
+  '--no-x-resources[do not load X resources]' \
+  '(-nsl --no-site-lisp)'{-nsl,--no-site-lisp}'[do not add site-lisp directories to load-path]' \
+  '--no-splash[do not display a splash screen on startup]' \
+  '(-nw --no-window-system)'{-nw,--no-window-system}'[do not communicate with X, ignoring $DISPLAY]' \
+  '--init-directory=[use DIR when looking for the Emacs init files]: :_files -/' \
+  '(-Q --quick)'{-Q,--quick}'[equivalent to -q --no-site-file --no-site-lisp --no-splash --no-x-resources]' \
+  '--script[run FILE as an Emacs Lisp script]: :_files' \
+  '(-t --terminal)'{-t,--terminal}'[use DEVICE for terminal IO]: :_files' \
+  '(-u --user)'{-u,--user}'[load ~USER/.emacs instead of your own]' \
+  \*{-L,--directory}'[prepend DIR to load-path(with :DIR, append DIR)]: :_files -/' \
+  {--eval,--execute}'[evaluate Emacs Lisp expression EXPR]:expr' \
+  \*{--file,--find-file,--visit}'[visit FILE]: :_files' \
+  \*{-f,--funcall}'[call Emacs Lisp function FUNC with no arguments]:func' \
+  '--kill[exit without asking for confirmation]' \
+  \*{-l,--load}'[load Emacs Lisp FILE using the load function]: :_files' \
+  '(-bg --background-color)'{-bg,--background-color}'[window background color]:color' \
+  '(-D --basic-display)'{-D,--basic-display}'[disable many display features]' \
+  '(-bg --border-color)'{-bg,--border-color}'[main border color]:color' \
+  '(-bw --border-width)'{-bw,--border-width}'[width of main border]' \
+  '--color=-[override color mode for character terminals]:: :(auto never always ansi8)' \
+  '(-cr --cursor-color)'{-cr,--cursor-color}'[color of the Emacs cursor indicating point]:color' \
+  '(-fn --font)'{-fn,--font}'[default font, must be fixed-width]:font' \
+  '(-fg --foreground)'{-fg,--foreground}'[window foreground color]:color' \
+  '(-fh --fullheight)'{-fh,--fullheight}'[make the first frame high as the screen]' \
+  '(-fs --fullscreen)'{-fs,--fullscreen}'[make the first frame fullscreen]' \
+  '(-fw --fullwidth)'{-fw,--fullwidth}'[make the first frame wide as the screen]' \
+  '(-mm --maximized)'{-mm,--maximized}'[make the first frame maximized]' \
+  '(-g --geometry)'{-g,--geometry}'[window geometry]:geometry' \
+  '(-nbi --no-bitmap-icon)'{-nbi,--no-bitmap-icon}'[do not use picture of gnu for Emacs icon]' \
+  '--iconic[start Emacs in iconified state]' \
+  '(-ib --internal-border)'{-ib,--internal-border}'[width between text and main border]:width' \
+  '(-lsp --line-spacing)'{-lsp,--line-spacing}'[additional space to put between lines]' \
+  '(-ms --mouse-color)'{-ms,--mouse-color}'[mouse cursor color in Emacs window]:color' \
+  '(-T --name --title)'{-T,--name,--title}'[title for initial Emacs frame]:title' \
+  '(-nbc,--no-blinking-cursor)'{-nbc,--no-blinking-cursor}'[disable blinking cursor]' \
+  '(-r -rv --reverse-video)'{-r,-rv,--reverse-video}'[switch foreground and background]' \
+  '(-vb --vertical-scroll-bars)'{-vb,--vertical-scroll-bars}'[enable vertical scroll bars]' \
+  '--xrm[set additional X resources]:resource' \
+  '--parent-id[set parent window]:xid' \
+  '(- *)--help{display help and exit}' \
+  '(- *)--version[output version information and exit]' \
+  '*: :_files'
+
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
