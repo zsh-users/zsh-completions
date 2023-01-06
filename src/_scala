@@ -28,222 +28,323 @@
 # Description
 # -----------
 #
-#  Completion script for scala and scalac (https://www.scala-lang.org/).
+#  Completion script for scala and scalac 3.2.1 (https://www.scala-lang.org/).
 #
 # ------------------------------------------------------------------------------
 # Authors
 # -------
 #
 #  * Tony Sloane <inkytonik@gmail.com>
+#  * Shohei Yoshida <https://github.com/syohex>
 #
 # ------------------------------------------------------------------------------
 
-typeset -A opt_args
-local context state line
+_scala() {
+  local ret=1
 
-_scala_features () {
-   compadd "postfixOps" "reflectiveCalls" "implicitConversions" "higherKinds" \
-     "existentials" "experimental.macros" "_"
+  local -a common_options=(
+    "-Dproperty=[Pass -Dproperty=value directly to the runtime system]:value"
+    "-J-[Pass <flag> directly to the runtime system]:flag"
+    "-P\:-[Pass an option to a plugin, e.g. -P:<plugin>:<opt>]"
+    "-V[Print a synopsis of verbose options]"
+    "-W[Print a synopsis of warning options]"
+    "-Wconf[Configure compiler warnings]"
+    "-Werror[Fail the compilation if there are any warnings]"
+    "-X[Print a synopsis of advanced options]"
+    "-Y[Print a synopsis of private options]"
+    "-bootclasspath+[Override location of bootstrap class files]: :_files -/"
+    "-classpath+[Specify where to find user class files]: :_files -/"
+    "-color\:-[Colored output]: :(always never)"
+    "-coverage-out\:-[Destination for coverage classfiles and instrumentation data]: :_files -/"
+    "-d+[Destination for generated classfiles]: directory or jar file:_files"
+    "-deprecation[Emit warning and location for usages of deprecated APIs]"
+    "-encoding+[Specify character encoding used by source files]:encoding"
+    "-explain[Explain errors in more detail]"
+    "-explain-types[Explain type errors in more detail (deprecated, use -explain instead)]"
+    "-extdirs\:-[Override location of installed extensions]: :_files -/"
+    "-feature[Emit warning and location for usages of features that should be imported explicitly]"
+    "-from-tasty[Compile classes from tasty files. The arguments are .tasty or .jar files]"
+    "(* -)-help[Print a synopsis of standard options]"
+    "-indent[Together with -rewrite, remove {...} syntax when possible due to significant indentation]"
+    "-java-output-version[Compile code with classes specific to the given version of the Java platform]"
+    "-javabootclasspath+[Override java boot classpath]: :_files -/"
+    "-javaextdirs+[Override java extdirs classpath]: :_files -/"
+    "-language\:-[Enable one or more language features]: :_scala_features"
+    "-new-syntax[Require 'then' and 'do' in control expressions]"
+    "-no-indent[Require classical {...} syntax, indentation is not significant]"
+    "-nowarn[Silence all warnings]"
+    "-old-syntax[Require '(...)' around conditions]"
+    "-pagewidth:-[Set page width]:width"
+    "-print-lines[Show source code line numbers]"
+    "-print-tasty[Prints the raw tasty]"
+    "-project-url\:-[The source repository of your project]:url"
+    "-rewrite[When used in conjunction with a '...-migration' source version, rewrites sources to migrate to new]"
+    "-scalajs[Compile in Scala.js mode (requires scalajs-library.jar on the classpath)]"
+    "-scalajs-genStaticForwardersForNonTopLevelObjects[Generate static forwarders even for non-top-level objects (Scala.js only)]"
+    "-scalajs-mapSourceURI[rebases source URIs from uri1 to uri2 (or to a relative URI) for source maps (Scala.js only)]"
+    "-semanticdb-target[Specify an alternative output directory for SemanticDB files]"
+    "-source\:-[source version]:version"
+    "-sourcepath+[Specify location(s) of source files]:source file directory:_files -/"
+    "-sourceroot+[Specify workspace root directory]: :_files -/"
+    "-unchecked[Enable additional warnings where generated code depends on assumptions]"
+    "-uniqid[Uniquely tag all identifiers in debugging output]"
+    "-usejavacp[Utilize the java.class.path in classpath resolution]"
+    "-verbose[Output messages about what the compiler is doing]"
+    "(- *)-version[Print product version and exit]"
+  )
+
+  local -a advanced_options=(
+    "-Xcheck-macros[Check some invariants of macro generated code while expanding macros]"
+    "-Xignore-scala2-macros[Ignore errors when compiling code that calls Scala2 macros, these will fail at runtime]"
+    "-Ximplicit-search-limit\:-[Maximal number of expressions to be generated in an implicit search]"
+    "-Ximport-suggestion-timeout\:-[Timeout (in ms) for searching for import suggestions when errors are reported]"
+    "-Xmacro-settings[List of settings which exposed to the macros]"
+    "-Xmain-class[Class for manifest's Main-Class entry (only useful with -d <jar>)]"
+    "-Xmax-inlined-trees\:-[Maximal number of inlined trees]"
+    "-Xmax-inlines\:-[Maximal number of successive inlines]"
+    "-Xmigration[Warn about constructs whose behavior may have changed since version]"
+    "-Xmixin-force-forwarders\:-[Generate forwarder methods in classes inhering concrete methods from traits]: :(true junit false)"
+    "-Xno-forwarders[Do not generate static forwarders in mirror classes]"
+    "-Xplugin[Load a plugin from each classpath]"
+    "-Xplugin-disable[Disable plugins by name]"
+    "-Xplugin-list[Print a synopsis of loaded plugins]"
+    "-Xplugin-require[Abort if a named plugin is not loaded]"
+    "-Xpluginsdir\:-[Path to search for plugin archives]: :_files -/"
+    "-Xprint-diff[Print changed parts of the tree since last print]"
+    "-Xprint-diff-del[Print changed parts of the tree since last print including deleted parts]"
+    "-Xprint-inline[Show where inlined code comes from]"
+    "-Xprint-suspension[Show when code is suspended until macros are compiled]"
+    "-Xprint-types[Print tree types (debugging option)]"
+    "-Xprompt[Display a prompt after each error (debugging option)]"
+    "-Xrepl-disable-display[Do not display definitions in REPL]"
+    "-Xsemanticdb[Store information in SemanticDB]"
+    "-Xunchecked-java-output-version[Emit bytecode for the specified version of the Java platform]:java_version"
+    "-Xverify-signatures[Verify generic signatures in generated bytecode]"
+    "-Xwiki-syntax[Retains the Scala2 behavior of using Wiki Syntax in Scaladoc]"
+  )
+
+  local -a private_options=(
+    "-Ycc[Check captured references (warning: extremely experimental and unstable)]"
+    "-Ycc-debug[Used in conjunction with -Ycc, debug info for captured references]"
+    "-Ycc-no-abbrev[Used in conjunction with -Ycc, suppress type abbreviations]"
+    "-Ycheck[Check the tree at the end of]"
+    "-Ycheck-all-patmat[Check exhaustivity and redundancy of all pattern matching (used for testing the algorithm)]"
+    "-Ycheck-mods[Check that symbols and their defining trees have modifiers in sync]"
+    "-Ycheck-reentrant[Check that compiled program does not contain vars that can be accessed from a global root]"
+    "-Ycook-docs[Cook the documentation (type check '@usecase', etc.)]"
+    "-Ydebug[Increase the quantity of debugging output]"
+    "-Ydebug-error[Print the stack trace when any error is caught]"
+    "-Ydebug-flags[Print all flags of definitions]"
+    "-Ydebug-missing-refs[Print a stacktrace when a required symbol is missing]"
+    "-Ydebug-names[Show internal representation of names]"
+    "-Ydebug-pos[Show full source positions including spans]"
+    "-Ydebug-trace[Trace core operations]"
+    "-Ydebug-tree-with-id[Print the stack trace when the tree with the given id is created]"
+    "-Ydebug-type-error[Print the stack trace when a TypeError is caught]"
+    "-Ydebug-unpickling[Print the stack trace when an error occurs when reading Tasty]"
+    "-Ydetailed-stats[Show detailed internal compiler stats (needs Stats.enabled to be set to true)]"
+    "-YdisableFlatCpCaching[Do not cache flat classpath representation of classpath elements from jars across compiler]"
+    "-Ydrop-docs[Drop documentation when scanning source files]"
+    "-Ydump-classes[Dump the generated bytecode to .class files (useful for reflective compilation that utilizes]"
+    "-Ydump-sbt-inc[For every compiled foo.scala, output the API representation and dependencies used for sbt]"
+    "-Yexplain-lowlevel[When explaining type errors, show types at a lower level]"
+    "-Yexplicit-nulls[Make reference types non-nullable. Nullable types can be expressed with unions: e.g]"
+    "-Yforce-sbt-phases[Run the phases used by sbt for incremental compilation (ExtractDependencies and ExtractAPI)]"
+    "-Yfrom-tasty-ignore-list[List of 'tasty' files in jar files that will not be loaded when using -from-tasty]"
+    "-Yindent-colons[(disabled: use -language:experimental.fewerBraces instead)]"
+    "-Yinstrument[Add instrumentation code that counts allocations and closure creations]"
+    "-Yinstrument-defs[Add instrumentation code that counts method calls; needs -Yinstrument to be set, too]"
+    "-Ykind-projector\:-[Allow '*' as type lambda placeholder to be compatible with kind projector. When invoked as]: :(disable underscores)"
+    "-Ylog[Log operations during]"
+    "-Ylog-classpath[Output information about what classpath is being applied]"
+    "-Yno-decode-stacktraces[Show raw StackOverflow stacktraces, instead of decoding them into triggering operations]"
+    "-Yno-deep-subtypes[Throw an exception on deep subtyping call stacks]"
+    "-Yno-double-bindings[Assert no namedtype is bound twice (should be enabled only if program is error-free)]"
+    "-Yno-experimental[Disable experimental language features]"
+    "-Yno-generic-signatures[Suppress generation of generic signatures for Java]"
+    "-Yno-imports[Compile without importing scala.*, java.lang.*, or Predef]"
+    "-Yno-kind-polymorphism[Disable kind polymorphism]"
+    "-Yno-patmat-opt[Disable all pattern matching optimizations]"
+    "-Yno-predef[Compile without importing Predef]"
+    "-Yplain-printer[Pretty-print using a plain printer]"
+    "-Yprint-debug[When printing trees, print some extra information useful for debugging]"
+    "-Yprint-debug-owners[When printing trees, print owners of definitions]"
+    "-Yprint-level[print nesting levels of symbols and type variables]"
+    "-Yprint-pos[Show tree positions]"
+    "-Yprint-pos-syms[Show symbol definitions positions]"
+    "-Yprint-syms[When printing trees print info in symbols instead of corresponding info in trees]"
+    "-Yprofile-destination[Where to send profiling output - specify a file, default is to the console]"
+    "-Yprofile-enabled[Enable profiling]"
+    "-Yprofile-external-tool[Enable profiling for a phase using an external tool hook. Generally only useful for a single]"
+    "-Yprofile-run-gc[Run a GC between phases - this allows heap size to be accurate at the expense of more time]"
+    "-Yread-docs[Read documentation from tasty]"
+    "-Yrecheck-test[Run basic rechecking (internal test only)]"
+    "-Yrequire-targetName[Warn if an operator is defined without a @targetName annotation]"
+    "-Yresolve-term-conflict\:-[Resolve term conflicts]: :(package object error)"
+    "-Yretain-trees[Retain trees for top-level classes, accessible from ClassSymbol#tree]"
+    "-Ysafe-init[Ensure safe initialization of objects]"
+    "-Yscala2-unpickler\:-[Control where we may get Scala 2 symbols from]: :(always never)"
+    "-Yshow-print-errors[Don't suppress exceptions thrown during tree printing]"
+    "-Yshow-suppressed-errors[Also show follow-on errors and warnings that are normally suppressed]"
+    "-Yshow-tree-ids[Uniquely tag all tree nodes in debugging output]"
+    "-Yshow-var-bounds[Print type variables with their bounds]"
+    "-Yskip[Skip]"
+    "-Ystop-after[Stop after]"
+    "-Ystop-before[Stop before]"
+    "-Ytest-pickler[Self-test for pickling functionality; should be used with -Ystop-after:pickler]"
+  )
+
+  local -a scala_options=(
+    "-e+[execute <string> as if entered in the repl]:string"
+    "-save[save the compiled script in a jar for future use]"
+  )
+
+  case $words[$CURRENT] in
+    (-X*)
+      _arguments $advanced_options && ret=0
+      ;;
+    (-Y*)
+      _arguments $private_options && ret=0
+      ;;
+    (*)
+      case $service in
+       (scala)
+         _arguments $scala_options $common_options "*::filename:_files" && ret=0
+         ;;
+       (scalac)
+         _arguments $common_options "*::filename:_files" && ret=0
+         ;;
+     esac
+      ;;
+  esac
+
+  return $ret
 }
 
-_scala_phases () {
-   compadd "parser" "namer" "packageobjects" "typer" "patmat" "superaccessors" \
-     "extmethods" "pickler" "refchecks" "selectiveanf" "selectivecps" "uncurry" \
-     "tailcalls" "specialize" "explicitouter" "erasure" "posterasure" "lazyvals" \
-     "lambdalift" "constructors" "flatten" "mixin" "cleanup" "icode" "inliner" \
-     "inlineExceptionHandlers" "closelim" "dce" "jvm" "terminal"
+(( $+functions[_scala_features] )) ||
+_scala_features() {
+  local -a features=(
+    "adhocExtensions" "before" "dynamics" "experimental.captureChecking"
+    "experimental.dependent" "experimental.erasedDefinitions" "experimental.macros"
+    "implicitConversions" "noAutoTupling" "noob" "postfixOps" "strictEquality"
+    "unsafeNulls"
+  )
+  _values 'features' $features
 }
 
-local -a shared_opts
-shared_opts=(
-  "-bootclasspath+[Override location of bootstrap class files]:bootstrap class directory:_files -/"
-  "-classpath+[Specify where to find user class files]:directory:_files -/"
-  "-D-[Pass -Dproperty=value directly to the runtime system]"
-  "-d+[Destination for generated classfiles]: directory or jar file:_files"
-  "-dependencyfile+[Set dependency tracking file]:dependency tracking file:_files"
-  "-deprecation[Emit warning and location for usages of deprecated APIs]"
-  "-encoding+[Specify character encoding used by source files]:encoding:"
-  "-explaintypes[Explain type errors in more detail]"
-  "-extdirs+[Override location of installed extensions]:extensions directory:_files -/"
-  "-g\:-[Set level of generated debugging info (default\: vars)]:debugging info level:(none source line vars notailcalls)"
-  "-help[Print a synopsis of standard options]"
-  "-J-[pass argument directly to Java runtime system]:JVM argument:"
-  "-javabootclasspath+[Override java boot classpath]:Java boot class path directory]:_files -/"
-  "-javaextdirs+[Override java extdirs classpath]:Java extdirs directory:_files -/"
-  "-language\:-[Enable one or more language features]:feature:_scala_features"
-  "-no-specialization[Ignore @specialize annotations]"
-  "-nobootcp[Do not use the boot classpath for the scala jars]"
-  "-nowarn[Generate no warnings]"
-  "-optimise[Generate faster bytecode by applying optimisations to the program]"
-  "-P\:-[Pass an option to a plugin (written plugin\:opt)]:plugin option:"
-  "-print[Print program with Scala-specific features removed]"
-  "-sourcepath+[Specify location(s) of source files]:source file directory:_files -/"
-  "-target\:-[Target platform for object files (default\: jvm-1.5)]:platform name:(jvm-1.5 msil)"
-  "-toolcp+[Add to the runner classpath]:directory:_files -/"
-  "-unchecked[Enable detailed unchecked (erasure) warnings]"
-  "-uniqid[Uniquely tag all identifiers in debugging output]"
-  "-usejavacp[Utilize the java.class.path in classpath resolution]"
-  "-verbose[Output messages about what the compiler is doing]"
-  "-version[Print product version and exit]"
-  "-X[Print a synopsis of advanced options]"
-  "-Y[Print a synopsis of private options]"
-)
+(( $+functions[_scala_phases] )) ||
+_scala_phases() {
+  local -a phases=(
+    "parser:scan and parse sources"
+    "typer:type the trees"
+    "inlinedPositions:check inlined positions"
+    "sbt-deps:sends information on classes' dependencies to sbt"
+    "extractSemanticDB:extract info into .semanticdb files"
+    "posttyper:additional checks and cleanups after type checking"
+    "prepjsinterop:additional checks and transformations for Scala.js"
+    "sbt-api:sends a representation of the API of classes to sbt"
+    "SetRootTree:set the rootTreeOrProvider on class symbols"
+    "pickler:generates TASTy info"
+    "inlining:inline and execute macros"
+    "postInlining:add mirror support for inlined code"
+    "staging:check staging levels and heal staged types"
+    "splicing:splicing"
+    "pickleQuotes:turn quoted trees into explicit run-time data structures"
+    "instrumentCoverage:instrument code for coverage checking"
+    "firstTransform:some transformations to put trees into a canonical form"
+    "checkReentrant:check no data races involving global vars"
+    "elimPackagePrefixes:eliminate references to package prefixes in Select nodes"
+    "cookComments:cook the comments: expand variables, doc, etc."
+    "checkStatic:check restrictions that apply to @static members"
+    "checkLoopingImplicits:check that implicit defs do not call themselves in an infinite loop"
+    "betaReduce:reduce closure applications"
+    "inlineVals:check right hand-sides of an 'inline val's"
+    "expandSAMs:expand SAM closures to anonymous classes"
+    "elimRepeated:rewrite vararg parameters and arguments"
+    "refchecks:checks related to abstract members and overriding"
+    "initChecker:check initialization of objects"
+    "crossVersionChecks:check issues related to deprecated and experimental"
+    "protectedAccessors:add accessors for protected members"
+    "extmethods:expand methods of value classes with extension methods"
+    "uncacheGivenAliases:avoid caching RHS of simple parameterless given aliases"
+    "elimByName:map by-name parameters to functions"
+    "hoistSuperArgs:hoist complex arguments of supercalls to enclosing scope"
+    "forwardDepChecks:ensure no forward references to local vals"
+    "specializeApplyMethods:adds specialized methods to FunctionN"
+    "tryCatchPatterns:compile cases in try/catch"
+    "patternMatcher:compile pattern matches"
+    "preRecheck:preRecheck"
+    "recheck:recheck"
+    "preRecheck:preRecheck"
+    "cc:cc"
+    "elimOpaque:turn opaque into normal aliases"
+    "explicitJSClasses:make all JS classes explicit"
+    "explicitOuter:add accessors to outer classes from nested ones"
+    "explicitSelf:make references to non-trivial self types explicit as casts"
+    "interpolators:optimize s, f, and raw string interpolators"
+    "pruneErasedDefs:drop erased definitions and simplify erased expressions"
+    "uninitialized:eliminates 'compiletime.uninitialized'"
+    "inlinePatterns:remove placeholders of inlined patterns"
+    "vcInlineMethods:inlines calls to value class methods"
+    "seqLiterals:express vararg arguments as arrays"
+    "intercepted:rewrite universal '!=', '##' methods"
+    "getters:replace non-private vals and vars with getter defs"
+    "specializeFunctions:specialize Function{0,1,2} by replacing super with specialized super"
+    "specializeTuples:replaces tuple construction and selection trees"
+    "liftTry:lift any try that might be executed on a non-empty expression stack"
+    "collectNullableFields:collect fields that can be nulled out after use in lazy initialization"
+    "elimOuterSelect:expand outer selections"
+    "resolveSuper:implement super accessors"
+    "functionXXLForwarders:add forwarders for FunctionXXL apply methods"
+    "paramForwarding:add forwarders for aliases of superclass parameters"
+    "genericTuples:optimize generic operations on tuples"
+    "letOverApply:lift blocks from receivers of applications"
+    "arrayConstructors:intercept creation of (non-generic) arrays and intrinsify"
+    "erasure:rewrite types to JVM model"
+    "elimErasedValueType:expand erased value types to their underlying implmementation types"
+    "pureStats:remove pure statements in blocks"
+    "vcElideAllocations:peep-hole optimization to eliminate unnecessary value class allocations"
+    "etaReduce:reduce eta expansions of pure paths"
+    "arrayApply:optimize 'scala.Array.apply'"
+    "addLocalJSFakeNews:adds fake new invocations to local JS classes in calls to 'createLocalJSClass'"
+    "elimPolyFunction:rewrite PolyFunction subclasses to FunctionN subclasses"
+    "tailrec:rewrite tail recursion to loops"
+    "completeJavaEnums:fill in constructors for Java enums"
+    "mixin:expand trait fields and trait initializers"
+    "lazyVals:expand lazy vals"
+    "memoize:add private fields to getters and setters"
+    "nonLocalReturns:expand non-local returns"
+    "capturedVars:represent vars captured by closures as heap objects"
+    "constructors:collect initialization code in primary constructors"
+    "instrumentation:count calls and allocations under -Yinstrument"
+    "lambdaLift:lifts out nested functions to class scope"
+    "elimStaticThis:replace This references to static objects by global identifiers"
+    "countOuterAccesses:identify outer accessors that can be dropped"
+    "dropOuterAccessors:drop unused outer accessors"
+    "checkNoSuperThis:check that supercalls don't contain references to This"
+    "flatten:lift all inner classes to package scope"
+    "transformWildcards:replace wildcards with default values"
+    "moveStatic:move static methods from companion to the class itself"
+    "expandPrivate:widen private definitions accessed from nested classes"
+    "restoreScopes:repair rendered invalid scopes"
+    "selectStatic:get rid of selects that would be compiled into GetStatic"
+    "junitBootstrappers:generate JUnit-specific bootstrapper classes for Scala.js"
+    "Collect:entry points  collect all entry points and save them in the context"
+    "collectSuperCalls:find classes that are called with super"
+    "repeatableAnnotations:aggregate repeatable annotations"
+    "genSJSIR:generate .sjsir files for Scala.js"
+    "genBCode:generate JVM bytecode"
+  )
 
-local -a X_opts
-X_opts=(
-  "-Xcheck-null[Warn upon selection of nullable reference]"
-  "-Xcheckinit[Wrap field accessors to throw an exception on uninitialized access]"
-  "-Xdisable-assertions[Generate no assertions or assumptions]"
-  "-Xelide-below+[Calls to @elidable methods are omitted if method priority is lower than integer argument]"
-  "-Xexperimental[Enable experimental extensions]"
-  "-Xfatal-warnings[Fail the compilation if there are any warnings]"
-  "-Xfull-lubs[Retains pre 2.10 behavior of less aggressive truncation of least upper bounds]"
-  "-Xfuture[Turn on future language features]"
-  "-Xgenerate-phase-graph+[Generate the phase graphs (outputs .dot files) to fileX.dot]:output file:_files"
-  "-Xlint[Enable recommended additional warnings]"
-  "-Xlog-free-terms[Print a message when reification creates a free term]"
-  "-Xlog-free-types[Print a message when reification resorts to generating a free type]"
-  "-Xlog-implicits[Show more detail on why some implicits are not applicable]"
-  "-Xlog-implicit-conversions[Print a message whenever an implicit conversion is inserted]"
-  "-Xlog-reflective-calls[Print a message when a reflective method call is generated]"
-  "-Xmacro-settings\:-[Custom settings for macros]:option"
-  "-Xmain-class+[Class for manifest's Main-Class entry (only useful with -d jar)]:path:"
-  "-Xmax-classfile-name+[Maximum filename length for generated classes]"
-  "-Xmigration[Warn about constructs whose behavior may have changed]"
-  "-Xno-forwarders[Do not generate static forwarders in mirror classes]"
-  "-Xno-patmat-analysis[Don't perform exhaustivity/unreachability analysis. Also, ignore @switch annotation]"
-  "-Xno-uescape[Disable handling of \u unicode escapes]"
-  "-Xnojline[Do not use JLine for editing]"
-  "-Xoldpatmat[Use the pre-2.10 pattern matcher. Otherwise, the 'virtualizing' pattern matcher is used in 2.10]"
-  "-Xprint\:-[Print out program after <phase>]:phase name:_scala_phases"
-  "-Xprint-icode\:-[Log internal icode to *.icode files after phase (default\: icode)]:phase name:_scala_phases"
-  "-Xprint-pos[Print tree positions, as offsets]"
-  "-Xprint-types[Print tree types (debugging option)]"
-  "-Xprompt[Display a prompt after each error (debugging option)]"
-  "-Xresident[Compiler stays resident: read source filenames from standard input]"
-  "-Xscript+[Treat the source file as a script and wrap it in a main method]:main object name"
-  "-Xshow-class+[Show internal representation of class]:class name"
-  "-Xshow-object+[Show internal representation of object]:object name"
-  "-Xshow-phases[Print a synopsis of compiler phases]"
-  "-Xsource-reader+[Specify a class name for a custom method of reading source files]:class name"
-  "-Xverify[Verify generic signatures in generated bytecode]"
+  _describe -t phases 'phases' phases
+}
 
-  "-Xassem-extdirs+[List of directories containing assemblies (requires -target:msil) (default\: lib)]:assembly directory:_files -/"
-  "-Xassem-name+[Name of the output assembly (requires -target:msil)]:assembly name:_files"
-  "-Xassem-path+[List of assemblies referenced by the program (requires -target:msil)]:assembly path:_files"
-  "-Xsourcedir+[Mirror source folder structure in output directory (requires -target:msil)]:source directory:_files -/"
+_scala "$@"
 
-  "-Xplugin\:-[Load one or more plugins from file]:plugin file:_files"
-  "-Xpluginsdir+[Path to search compiler plugins]:plugin directory:_files -/"
-  "-Xplugin-list[Print a synopsis of loaded plugins]"
-  "-Xplugin-disable\:-[Disable the given plugin(s)]"
-  "-Xplugin-require\:-[Abort unless the given plugin(s) are available]"
-)
-
-local -a Y_opts
-Y_opts=(
-  "-Y[Print a synopsis of private options]"
-  "-Ybuild-manager-debug[Generate debug information for the Refined Build Manager compiler]"
-  "-Ybuilder-debug\:-[Compile using the specified build manager (default\: none)]:build manager:(none refined simple)"
-  "-Yclosure-elim[Perform closure elimination]"
-  "-Ycompact-trees[Use compact tree printer when displaying trees]"
-  "-Ydead-code[Perform dead code elimination]"
-  "-Ydependent-method-types[Allow dependent method types]"
-  "-Ydump-classes+[Dump the generated bytecode to .class files (useful for reflective compilation that utilizes in-memory classloaders)]:output directory:_files -/"
-  "-Yeta-expand-keeps-star[Eta-expand varargs methods to T* rather than Seq[T].  This is a temporary option to ease transition.]"
-  "-Ygen-javap+[Generate a parallel output directory of .javap files]:output directory:_files -/"
-  "-Yinfer-argument-types[Infer types for arguments of overridden methods]"
-  "-Yinline[Perform inlining when possible]"
-  "-Yinline-handlers[Perform exception handler inlining when possible]"
-  "-Yinline-warnings[Emit inlining warnings (normally suppressed due to high volume)]"
-  "-Yinvalidate+[Invalidate classpath entry before run]:classpath entry"
-  "-Ylinearizer\:-[Linearizer to use (default\: rpo)]:linearizer:(normal dfs rpo dump)"
-  "-Ylog-classpath[Output information about what classpath is being applied]"
-  "-Yno-adapted-args[Do not adapt an argument list (either by inserting unit or creating a tuple) to match the receiver]"
-  "-Ymacro-debug-lite[Trace essential macro-related activities]"
-  "-Ymacro-debug-verbose[Trace all macro-related activities: compilation, generation of synthetics, classloading, expansion, exceptions]"
-  "-Yno-completion[Disable tab-completion in the REPL]"
-  "-Yno-generic-signatures[Suppress generation of generic signatures for Java]"
-  "-Yno-imports[Compile without any implicit imports]"
-  "-Yno-predef[Compile without importing Predef]"
-  "-Yno-self-type-checks[Suppress check for self-type conformance among inherited members]"
-  "-Yno-squeeze[Disable creation of compact code in matching]"
-  "-Ynotnull[Enable (experimental and incomplete) scala.NotNull]"
-  "-Yoverride-objects[Allow member objects to be overridden]"
-  "-Yoverride-vars[Allow vars to be overridden]"
-  "-Ypmat-naive[Desugar matches as naively as possible]"
-  "-Ypresentation-delay+[Wait number of ms after typing before starting typechecking]"
-  "-Ypresentation-log+[Log presentation compiler events into file]:log file:_files"
-  "-Ypresentation-replay+[Replay presentation compiler events from file]:log file:_files"
-  "-Ypresentation-strict[Do not report type errors in sources with syntax errors]"
-  "-Ypresentation-verbose[Print information about presentation compiler tasks]"
-  "-Yprofile-class+[Specify name of profiler class]:profiler class name"
-  "-Yprofile-memory[Heap snapshot after compiler run (requires jgpagent on JVM -agentpath)]"
-  "-Yrangepos[Use range positions for syntax trees]"
-  "-Yrecursion+[Set recursion depth used when locking symbols]"
-  "-Yreify-copypaste[Dump the reified trees in copypasteable representation]"
-  "-Yrepl-sync[Do not use asynchronous code for REPL startup]"
-  "-Yresolve-term-conflict\:-[Resolve term conflicts (default\: error)]:resolution strategy:(package object error)"
-  "-Yself-in-annots[Include a \"self\" identifier inside of annotations]"
-  "-Yshow\:-[Show after <phase> (requires -Xshow-class or -Xshow-object)]:phase name:_scala_phases"
-  "-Yshow-syms[Print the AST symbol hierarchy after each phase]"
-  "-Yshow-symkinds[Print abbreviated symbol kinds next to symbol names]"
-  "-Yshow-trees[Print detailed ASTs (requires -Xprint\:phase)]"
-  "-Yshow-trees-compact[Print detailed ASTs in compact form (requires -Xprint\:)]"
-  "-Yshow-trees-stringified[Print stringifications along with detailed ASTs (requires -Xprint\:)]"
-  "-Ystatistics[Print compiler statistics]"
-  "-Ystruct-dispatch\:-[Structural method dispatch policy (default\: poly-cache)]:policy name:(no-cache mono-cache poly-cache invoke-dynamic)"
-
-  "-Ybrowse\:-[Browse the abstract syntax tree after <phase>]:phase name:_scala_phases"
-  "-Ycheck\:-[Check the tree at the end of <phase>]:phase name:_scala_phases"
-  "-Ylog\:-[Log operations during <phase>]:phase name:_scala_phases"
-  "-Yprofile\:-[Profile CPU usage of given phases (requires jgpagent on JVM -agentpath)]:phase name:_scala_phases"
-  "-Yskip\:-[Skip <phase>]:phase name:_scala_phases"
-  "-Ystop-after\:-[Stop after given phase <phase>]:phase name:_scala_phases"
-  "-Ystop-before\:-[Stop before given phase <phase>]:phase name:_scala_phases"
-
-  "-Ywarn-adapted-args[Warn if an argument list is modified to match the receiver]"
-  "-Ywarn-all[Enable all -Y warnings]"
-  "-Ywarn-dead-code[Warn when dead code is identified]"
-  "-Ywarn-inaccessible[Warn about inaccessible types in method signatures]"
-  "-Ywarn-nullary-override[Warn when non-nullary overrides nullary, e.g. def foo() over def foo]"
-  "-Ywarn-nullary-unit[Warn when nullary methods return Unit]"
-  "-Ywarn-numeric-widen[Warn when numerics are widened]"
-  "-Ywarn-value-discard[Warn when non-Unit expression results are unused]"
-
-  "-Ybuild-manager-debug[Generate debug information for the Refined Build Manager compiler]"
-  "-Ybuilder-debug\:-[Compile using the specified build manager (default\: none)]:manager:(none refined simple)"
-  "-Ycompletion-debug[Trace all tab completion activity]"
-  "-Ydebug[Increase the quantity of debugging output]"
-  "-Ydoc-debug[Trace all scaladoc activity]"
-  "-Yide-debug[Generate, validate and output trees using the interactive compiler]"
-  "-Yinfer-debug[Trace type inference and implicit search]"
-  "-Yissue-debug[Print stack traces when a context issues an error]"
-  "-Ypatmat-debug[Trace pattern matching translation]"
-  "-Ypmat-debug[Trace all pattern matcher activity]"
-  "-Ypos-debug[Trace position validation]"
-  "-Ypresentation-debug[Enable debugging output for the presentation compiler]"
-  "-Yreify-debug[Trace reification]"
-  "-Yrepl-debug[Trace all REPL activity]"
-  "-Ytyper-debug[Trace all type assignments]"
-)
-
-local -a scala_opts
-scala_opts=(
-  "-e+[execute <string> as if entered in the repl]:string" \
-  "-howtorun+[what to run (default\: guess)]:execution mode:(script object jar guess)" \
-  "-i+[preload <file> before starting the repl]:file to preload:_files" \
-  "-nc[no compilation daemon\: do not use the fsc offline compiler]" \
-  "-save[save the compiled script in a jar for future use]"
-)
-
-case $words[$CURRENT] in
-    -X*) _arguments $X_opts;;
-    -Y*) _arguments $Y_opts;;
-      *) case $service in
-           scala)  _arguments $scala_opts $shared_opts "*::filename:_files";;
-           scalac) _arguments $shared_opts "*::filename:_files";;
-         esac
-esac
-
-return 0
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
