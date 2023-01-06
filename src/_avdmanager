@@ -1,0 +1,197 @@
+#compdef avdmanager
+# ------------------------------------------------------------------------------
+# Copyright (c) 2023 Github zsh-users - https://github.com/zsh-users
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for avdmanager(https://developer.android.com/studio/command-line/avdmanager)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei Yoshida (https://github.com/syohex) <syohex@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+_avdmanager() {
+  typeset -A opt_args
+  local context state line
+  local curcontext="$curcontext"
+  local ret=1
+
+  _arguments -C -A "-*" \
+    '(- *)'{-h,--help}'[Print help message]' \
+    '(-s --silent)'{-s,--silent}'[Silent mode, shows error only]' \
+    '(-v --verbose)'{-v,--verbose}'[Verbose mode, shows errors, warnings and all messages]' \
+    '--clear-cache[Clear the SDK Manager repository manifest cache]' \
+    '1: :_avdmanager_subcommands' \
+    '*::arg:->args' \
+    && ret=0
+
+  case "$state" in
+    (args)
+      if (( $+functions[_avdmanager_${words[1]}] )); then
+          _avdmanager_${words[1]} && ret=0
+      else
+        ret=0
+      fi
+      ;;
+  esac
+
+  return ret
+}
+
+(( $+functions[_avdmanager_list] )) ||
+_avdmanager_list() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(avd target device)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (avd|target|device)
+          _arguments \
+            '(-0 --null)'{-0,--null}'[Terminate lines with \0 instead of \n]' \
+            '(-c --compact)'{-c,--compact}'[Compact output]' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_avdmanager_create] )) ||
+_avdmanager_create() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(avd)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (avd)
+          _arguments \
+            '(-c --sdcard)'{-c,--sdcard}'[Path to a shared SD card image]: :_files' \
+            '(-g --tag)'{-g,--tag}'[The sys-img tag to use for the AVD]:tag' \
+            '(-p --path)'{-p,--path}'[Directory where the new AVD will be created]' \
+            '(-k --package)'{-k,--package}'[Package path of the system image for this AVD]:package' \
+            '(-n --name)'{-n,--name}'[Name of the new AVD]:name' \
+            '--skin[The optional name of a skin to use with this device]' \
+            '(-f --force)'{-f,--force}'[Forces creation]' \
+            '(-b --abi)'{-b,--abi}'[The ABI to use for the AVD]:abi' \
+            '(-d --device)'{-d,--device}'[The optional device definition to use]' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_avdmanager_move] )) ||
+_avdmanager_move() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(avd)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (avd)
+          _arguments \
+            '(-p --path)'{-p,--path}"[Path to the AVD's new directory]: :_files -/" \
+            '(-n --name)'{-n,--name}'[Name of the AVD to delete]: :_avdmanager_avds' \
+            '(-r --rename)'{-r,--rename}'[New name of the AVD]' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_avdmanager_delete] )) ||
+_avdmanager_delete() {
+  local ret=1
+
+  _arguments -C \
+    '1: :(avd)' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (avd)
+          _arguments \
+            '(-n --name)'{-n,--name}'[Name of the AVD to delete]: :_avdmanager_avds' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_avdmanager_subcommands] )) ||
+_avdmanager_subcommands() {
+  local -a commands=(
+    "list:Lists existing targets or virtual devices"
+    "create:Creates a new Android Virtual Device"
+    "move:Moves or renames an Android Virtual Device"
+    "delete:Deletes an Android Virtual Device"
+  )
+  _describe -t commands 'subcommand' commands
+}
+
+(( $+functions[_avdmanager_avds] )) ||
+_avdmanager_avds() {
+  local -a avds=(${(@f)"$(avdmanager list avd -c)"})
+  _values 'android virtual devices' $avds
+}
+
+_avdmanager "$@"
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
