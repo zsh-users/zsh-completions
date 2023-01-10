@@ -1,0 +1,61 @@
+#compdef sdkmanager
+# ------------------------------------------------------------------------------
+# Copyright (c) 2023 Github zsh-users - https://github.com/zsh-users
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for sdkmanager(https://developer.android.com/studio/command-line/sdkmanager)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei Yoshida (https://github.com/syohex) <syohex@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+_arguments \
+  '(- *)--help[show help message]' \
+  '(- *)--version[print the current version of sdkmanager]' \
+  '--install[install or update package]' \
+  '--uninstall[uninstall the listed packages]' \
+  '--update[all installed packages are updated to the latest version]' \
+  '--list_installed[all installed packages are printed out]' \
+  '--licenses[show and offer the option to accept licenses for all available packages]' \
+  '--sdk_root=[use the specified SDK root instead of the SDK containing this tool]: :_files -/' \
+  '--channel=[include packages in channels up to channel ID]: :((0\:Stable 1\:Beta 2\:Dev 3\:Canary))' \
+  '--include_obsolete[show/update obsolete packages in the package listing]' \
+  '--newer[show only new and/or updatable packages]' \
+  '--no_https[force all connections to use http rather than https]' \
+  '--proxy=[connect via a proxy of the given type]: :(http socks)' \
+  '--proxy_host=[IP or DNS address of the proxy to use]:address' \
+  '--proxy_port=[proxy port to connect to]:port' \
+  '--verbose[enable verbose output]'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
