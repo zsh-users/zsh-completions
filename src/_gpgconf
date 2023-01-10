@@ -33,7 +33,7 @@
 
 _gpgconf_component() {
   local values=(
-    "${(@f)$(gpgconf --list-components | perl -F: -ale 'print "${F[0]}[$F[1]]"')}"
+    "${(@f)$(gpgconf --list-components | awk -F: '{printf "%s[%s]\n", $1, $2}')}"
   )
   if [ "${action[2]}" = all ]; then
     values+=('all[All daemon components]')
@@ -67,3 +67,11 @@ _arguments \
     '(-q --quiet)'{-q,--quiet}'[quiet]' \
     '(-n --dry-run)'{-n,--dry-run}'[do not make any changes]' \
     '(-r --runtime)'{-r,--runtime}'[activate changes at runtime, if possible]'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
