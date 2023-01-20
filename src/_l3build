@@ -1,0 +1,3 @@
+#compdef l3build
+
+(( $+functions[__l3build] )) || eval "$(l3build complete zsh)" && __l3build
