@@ -51,7 +51,7 @@ _flutter() {
     '(--no-wrap --wrap)--wrap[Whether to use output word wrapping]' \
     '(--wrap --no-wrap)--no-wrap[Whether to use output word wrapping]' \
     '--wrap-column=[Set the output wrap column]:number:' \
-    '(-d --device-id)'{-d,--device-id}'[Target device id or name (prefixes allowed)]' \
+    '(-d --device-id)'{-d,--device-id}'[Target device id or name (prefixes allowed)]:id' \
     '--version[Reports the version of this tool]' \
     '--machine[When used with the "--version" flag, outputs the information using JSON]' \
     '(--no-color --color)--color[Whether to use terminal colors]' \
@@ -200,10 +200,7 @@ _flutter() {
             && ret=0
           ;;
         (custom-devices)
-          _arguments \
-            '1: :_flutter_custom_devices_subcommands' \
-            '(- *)'{-h,--help}'[Print this usage information]' \
-            && ret=0
+          _flutter_custom_devices && ret=0
           ;;
         (daemon)
           _arguments \
@@ -384,10 +381,7 @@ _flutter() {
             && ret=0
           ;;
         (pub)
-          _arguments \
-            '1: :_flutter_pub_subcommands' \
-            '(- *)'{-h,--help}'[Print this usage information]' \
-            && ret=0
+          _flutter_pub && ret=0
           ;;
         (run)
           _arguments \
@@ -567,6 +561,37 @@ _flutter_build_entities() {
   _describe -t entities 'entity' entities "$@"
 }
 
+(( $+functions[_flutter_custom_devices] )) ||
+_flutter_custom_devices() {
+  local ret=0
+  _arguments -C \
+    '(- *)'{-h,--help}'[Print this usage information]' \
+     '1: :_flutter_custom_devices_subcommands' \
+     '*:: :->args' \
+    && ret=0
+
+  case $state in
+    (args)
+      case $words[1] in
+        (add)
+          _arguments \
+            '(- *)'{-h,--help}'[Print this usage information]' \
+            '--check[Make sure the config actually works]' \
+            '--json=[Add the custom device described by this JSON encoded string]:json' \
+            '--ssh[Add a ssh-device]' \
+            && ret=0
+          ;;
+        (*)
+          _arguments \
+            '(- *)'{-h,--help}'[Print this usage information]' \
+            && ret=0
+      esac
+    ;;
+  esac
+
+  return $ret
+}
+
 (( $+functions[_flutter_custom_devices_subcommands] )) ||
 _flutter_custom_devices_subcommands() {
   local -a subcmds=(
@@ -615,6 +640,122 @@ _flutter_android_languages() {
   _describe -t languages 'language' languages "$@"
 }
 
+(( $+functions[_flutter_pub] )) ||
+_flutter_pub() {
+  local ret=0
+
+  _arguments -C \
+    '(- *)'{-h,--help}'[Print this usage information]' \
+    '1: :_flutter_pub_subcommands' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (add|remove)
+          _arguments \
+            '(- *)'{-h,--help}'[Print this usage information]' \
+            '--offline[Use cached packages instead of accessing the network]' \
+            '(-n --dry-run)'{-n,--dry-run}'[Report what dependencies would change but do not change any]' \
+            '--precompile[Build executables in immediate dependencies]' \
+            '(-C --directory)'{-C,--directory=}'[Run this in the given directory]:dir:_files -/' \
+            && ret=0
+          ;;
+        (cache)
+          _flutter_pub_cache && ret=0
+          ;;
+        (deps)
+          _arguments \
+            '(- *)'{-h,--help}'[Print this usage information]' \
+            '(-s --style)'{-s,--style=}'[How output should be displayed]:style:(tree list compact)' \
+            '(--no-dev)--dev[Include dev dependencies]' \
+            '(--dev)--no-dev[Not include dev dependencies]' \
+            '--executables[List all available executables]' \
+            '--json[Output dependency information in a json format]' \
+            '(-C --directory)'{-C,--directory=}'[Run this in the given directory]:dir:_files -/' \
+            && ret=0
+          ;;
+        (downgrade)
+          _arguments \
+            '(- *)'{-h,--help}'[Print this usage information]' \
+            '--offline[Use cached packages instead of accessing the network]' \
+            '(-n --dry-run)'{-n,--dry-run}'[Report what dependencies would change but do not change any]' \
+            '(-C --directory)'{-C,--directory=}'[Run this in the given directory]:dir:_files -/' \
+            && ret=0
+          ;;
+        (get)
+          _arguments \
+            '(- *)'{-h,--help}'[Print this usage information]' \
+            '--offline[Use cached packages instead of accessing the network]' \
+            '(-n --dry-run)'{-n,--dry-run}'[Report what dependencies would change but do not change any]' \
+            '--enforce-lockfile[Enforce pubspec.lock]' \
+            '--precompile[Build executables in immediate dependencies]' \
+            '(-C --directory)'{-C,--directory=}'[Run this in the given directory]:dir:_files -/' \
+            && ret=0
+          ;;
+        (global)
+          _flutter_pub_global && ret=0
+          ;;
+        (outdated)
+          _arguments \
+            '(- *)'{-h,--help}'[Print this usage information]' \
+            '(--no-dependency-overrides)--dependency-overrides[Show resolution with `dependency_overrides`]' \
+            '(--dependency-overrides)--no-dependency-overrides[Not show resolution with `dependency_overrides`]' \
+            '(--no-dev-dependencies)--dev-dependencies[Take the dependencies into account]' \
+            '(--dev-dependencies)--no-dev-dependencies[Not take the dependencies into account]' \
+            '--json[Output the results using a json format]' \
+            '--mode=[Highlight versions with PROPERTY]:property:(null-safety)' \
+            '(--no-prereleases)--prereleases[Include prereleases in latest version]' \
+            '(--prereleases)--no-prereleases[Not include prereleases in latest version]' \
+            '--show-all[Include dependencies that are already fulfilling --mode]' \
+            '--transitive[Show transitive dependencies]' \
+            '(-C --directory)'{-C,--directory=}'[Run this in the given directory]:dir:_files -/' \
+            && ret=0
+          ;;
+        (publish)
+          _arguments \
+            '(- *)'{-h,--help}'[Print this usage information]' \
+            '(-n --dry-run)'{-n,--dry-run}'[Report what dependencies would change but do not change any]' \
+            '(-f --force)'{-f,--force}'[Publish without confirmation if there are no errors]' \
+            '(-C --directory)'{-C,--directory=}'[Run this in the given directory]:dir:_files -/' \
+            && ret=0
+          ;;
+        (run)
+          _arguments \
+            '(- *)'{-h,--help}'[Print this usage information]' \
+            '--enable-asserts[Enable assert statements]' \
+            '--enable-experiment=[Run the executable in a VM with the given experiments enabled]:experiment' \
+            '(--no-sound-null-safety)--sound-null-safety[Enable the null safety execution mode]' \
+            '(--sound-null-safety)--no-sound-null-safety[Disable the null safety execution mode]' \
+            '(-C --directory)'{-C,--directory=}'[Run this in the given directory]:dir:_files -/' \
+            && ret=0
+          ;;
+        (token)
+          _flutter_pub_token && ret=0
+          ;;
+        (run)
+          _arguments \
+            '(- *)'{-h,--help}'[Print this usage information]' \
+            '--offline[Use cached packages instead of accessing the network]' \
+            '(-n --dry-run)'{-n,--dry-run}'[Report what dependencies would change but do not change any]' \
+            '--precompile[Build executables in immediate dependencies]' \
+            '--null-safety[Upgrade constraints in pubspec.yaml to null-safety versions]' \
+            '--major-versions[Upgrades packages to their latest resolvable versions]' \
+            '(-C --directory)'{-C,--directory=}'[Run this in the given directory]:dir:_files -/' \
+            && ret=0
+          ;;
+        (*)
+          _arguments \
+            '(- *)'{-h,--help}'[Print this usage information]' \
+            && ret=0
+      esac
+    ;;
+  esac
+
+  return $ret
+}
+
 (( $+functions[_flutter_pub_subcommands] )) ||
 _flutter_pub_subcommands() {
   local -a subcommands=(
@@ -636,6 +777,156 @@ _flutter_pub_subcommands() {
     "upgrade:Upgrade the current package's dependencies to latest versions"
     "uploader:Manage uploaders for a package on pub.dev"
     "version:Print Pub version"
+  )
+  _describe -t subcommands 'subcommand' subcommands "$@"
+}
+
+(( $+functions[_flutter_pub_cache] )) ||
+_flutter_pub_cache() {
+  local ret=0
+
+  _arguments -C \
+    '(- *)'{-h,--help}'[Print this usage information]' \
+    '1: :_flutter_pub_cache_subcommand' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (add)
+          _arguments \
+            '(- *)'{-h,--help}'[Print this usage information]' \
+            '--all[Install all matching versions]'\
+            '(-v --version)'{-v,--version}'[Version constraint]:version' \
+            && ret=0
+          ;;
+        (clean)
+          _arguments \
+            '(- *)'{-h,--help}'[Print this usage information]' \
+            '(-f --force)'{f,--force}'[Do not ask for confirmation]' \
+            && ret=0
+          ;;
+        (repair)
+          _arguments \
+            '(- *)'{-h,--help}'[Print this usage information]' \
+            && ret=0
+          ;;
+      esac
+    ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_flutter_pub_cache_subcommand] )) ||
+_flutter_pub_cache_subcommand() {
+  local -a subcommands=(
+    "add:Install a package"
+    "clean:Clears the global PUB_CACHE"
+    "repair:Reinstall cached packages"
+  )
+  _describe -t subcommands 'subcommand' subcommands "$@"
+}
+
+(( $+functions[_flutter_pub_global] )) ||
+_flutter_pub_global() {
+  local ret=0
+
+  _arguments -C \
+    '(- *)'{-h,--help}'[Print this usage information]' \
+    '1: :_flutter_pub_global_subcommand' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (activate)
+          _arguments \
+            '(- *)'{-h,--help}'[Print this usage information]' \
+            '(-s --source)'{-s,--source}'[The source used to find the package]:source:(git hosted path)' \
+            '--git-path[Path of git package in repository]:path' \
+            '--git-ref[Git branch or commit to bbe retrieved]:ref' \
+            '(-x --executable)--no-executables[Do not put executables on PATH]' \
+            '(--no-executables)'{-x,--executable}'[Executables to place on PATH]' \
+            '--overwrite[Overwrite executables from other packages with the same name]' \
+            '(-u --hosted-url)'{-u,--hosted-url}'[A custom pub server URL for the package]:URL' \
+            && ret=0
+          ;;
+        (run)
+          _arguments \
+            '(- *)'{-h,--help}'[Print this usage information]' \
+            '--enable-asserts[Enable assert statements]' \
+            '--enable-experiment=[Run the executable in a VM with the given experiments enabled]' \
+            '(--no-sound-null-safety)--sound-null-safety[Enable the null safety execution mode]' \
+            '(--sound-null-safety)--no-sound-null-safety[Disable the null safety execution mode]' \
+            && ret=0
+          ;;
+        (*)
+          _arguments \
+            '(- *)'{-h,--help}'[Print this usage information]' \
+            && ret=0
+      esac
+    ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_flutter_pub_global_subcommand] )) ||
+_flutter_pub_global_subcommand() {
+  local -a subcommands=(
+    "activate:Make a package's executables globally available"
+    "deactivate:Remove a previously activated package"
+    "list:List globally activated packages"
+    "run:Run an executable from a globally activated package"
+  )
+  _describe -t subcommands 'subcommand' subcommands "$@"
+}
+
+(( $+functions[_flutter_pub_token] )) ||
+_flutter_pub_token() {
+  local ret=0
+
+  _arguments -C \
+    '(- *)'{-h,--help}'[Print this usage information]' \
+    '1: :_flutter_pub_token_subcommand' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (activate)
+          _arguments \
+            '(- *)'{-h,--help}'[Print this usage information]' \
+            '--env-var[Read the secret token from this environment variable when making requests]:env' \
+            && ret=0
+          ;;
+        (remove)
+          _arguments \
+            '(- *)'{-h,--help}'[Print this usage information]' \
+            '--all[Remove all secret tokens]' \
+            && ret=0
+          ;;
+        (*)
+          _arguments \
+            '(- *)'{-h,--help}'[Print this usage information]' \
+            && ret=0
+      esac
+    ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_flutter_pub_token_subcommand] )) ||
+_flutter_pub_token_subcommand() {
+  local -a subcommands=(
+    "add:Add authentication tokens for a package repository"
+    "list:List servers for which a token exists"
+    "remove:Remove secret token for package repository"
   )
   _describe -t subcommands 'subcommand' subcommands "$@"
 }
