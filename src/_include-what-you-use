@@ -1,34 +1,34 @@
-#compdef include-what-you-use
+#compdef include-what-you-use iwyu
 
 # Copyright 2018 CERN for the benefit of the LHCb Collaboration.
 # All rights reserved.
 #
 # Developed by:
-# 
+#
 #     CERN LBC group
-# 
+#
 #     CERN
-# 
+#
 #     https://home.web.cern.ch/
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # with the Software without restriction, including without limitation the
 # rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
 # sell copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 #     * Redistributions of source code must retain the above copyright notice,
 #       this list of conditions and the following disclaimers.
-# 
+#
 #     * Redistributions in binary form must reproduce the above copyright
 #       notice, this list of conditions and the following disclaimers in the
 #       documentation and/or other materials provided with the distribution.
-# 
+#
 #     * Neither the names of the LBC group, CERN, nor the names of its
 #       contributors may be used to endorse or promote products derived from
 #       this Software without specific prior written permission.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
@@ -40,26 +40,48 @@
 # In applying this licence, CERN does not waive the privileges and immunities
 # granted to it by virtue of its status as an Intergovernmental Organization or
 # submit itself to any jurisdiction.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for include-what-you-use 0.19 (https://github.com/include-what-you-use/include-what-you-use).
+#
+# ------------------------------------------------------------------------------
 
 # TODO:
 # - prevent _iwyu_opts from running once the first clang option got passed
 
 _iwyu_opts() {
-  _arguments '--check_also=[print iwyu-violation info for files matching the given glob pattern]:glob pattern:' \
-             '--cwd=[specify the current working directory]:current working directory:_path_files -/' \
-             '--howtodebug[print instructions on how to run iwyu under gdb]' \
-             '--howtodebug=[print instructions on how to run iwyu under gdb if file matches argument]:file for debug run:_path_files' \
-             '*'"--mapping_file=[iwyu mapping file]:iwyu mapping file:_path_files -g '*(/) *.imp'" \
-             "--no_default_mappings[do not add iwyu's default mappings]" \
-             '--pch_in_code[mark the first include in a translation unit as a precompiled header]' \
-             '--prefix_header_includes=[what to do with command line includes]:command line include treatment:(add keep remove)' \
-             "--transitive_includes_only[do not suggest that a file add headers that aren't already visible]" \
-             '--max_line_length=[maximum line length for includes]:a number:' \
-             '--no_comments[do not add "why" comments]' \
-             '--no_fwd_decls[do not use forward declarations]' \
-             '--verbose=[the higher the level, the more output]:a number:'
+  _arguments \
+    '--check_also=[print iwyu-violation info for files matching the given glob pattern]:glob pattern:' \
+    '--keep=[tells iwyu to always keep these includes]:glob pattern' \
+    '*'"--mapping_file=[iwyu mapping file]:iwyu mapping file:_path_files -g '*(/) *.imp'" \
+    "--no_default_mappings[do not add iwyu's default mappings]" \
+    '--pch_in_code[mark the first include in a translation unit as a precompiled header]' \
+    '--prefix_header_includes=[what to do with command line includes]:command line include treatment:(add keep remove)' \
+    "--transitive_includes_only[do not suggest that a file add headers that aren't already visible]" \
+    '--max_line_length=[maximum line length for includes]:a number:' \
+    '--comment_style=[set verbosity of "why" comments to]:comment style:(none short long)' \
+    '--no_comments[do not add "why" comments]' \
+    '--no_fwd_decls[do not use forward declarations]' \
+    '--verbose=[the higher the level, the more output]:a number:' \
+    '--quoted_includes_first[when sorting includes, place quoted ones first]' \
+    '--cxx17ns[suggests the more concise syntax introduced in C++17]' \
+    '--error=-[exit with N(default: 1) for iwyu violations]::exit code' \
+    '--error_always=-[always exit with N (default: 1)]::exit code' \
+    '--debug=[debug flags]:flag' \
+    '--regex=[use specified regex dialect in iwyu]:dialect:(llvm ecmascript)' \
+    '*: :_files'
 }
 
-_arguments "*-Xiwyu[include-what-you-use options]:include-what-you-use options:_iwyu_opts"
-# gcc will also provide --version and --help. Not ideal.
-_gcc
+_alternative \
+  'iwyu:iwyu_option:_iwyu_opts' \
+  'gcc:gcc_option:_gcc' \
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
