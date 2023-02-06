@@ -139,11 +139,18 @@ __tmuxp_load() {
   # Can't get the options to be recognized when there are sessions that has
   # a dash.
 
+  local tmuxp_dir="${HOME}/.tmuxp"
+  local tmuxp_xdg_dir="${XDG_CONFIG_HOME:-${HOME}/.config}"
+  if [[ -d "${TMUXP_CONFIGDIR-}" ]]; then
+    tmuxp_dir="${TMUXP_CONFIGDIR}"
+  elif [[ -d "${tmuxp_xdg_dir}" ]]; then
+    tmuxp_dir="${tmuxp_xdg_dir}"
+  fi
   case $state in
     (sessions)
       local s
       _alternative \
-        'sessions-user:user session:compadd -F line - ~/.tmuxp/*.(json|yml|yaml)(:r:t)' \
+        'sessions-user:user session:compadd -F line - ${tmuxp_dir}/*.(json|yml|yaml)(:r:t)' \
         'sessions-other:session in current directory:_path_files -/ -g "**/.tmuxp.(yml|yaml|json)"' \
         'sessions-other:session in current directory:_path_files -g "*.(yml|yaml|json)"'
       ;;
