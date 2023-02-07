@@ -140,7 +140,7 @@ __tmuxp_load() {
   # a dash.
 
   local tmuxp_dir="${HOME}/.tmuxp"
-  local tmuxp_xdg_dir="${XDG_CONFIG_HOME:-${HOME}/.config}"
+  local tmuxp_xdg_dir="${XDG_CONFIG_HOME:-${HOME}/.config}/tmuxp"
   if [[ -d "${TMUXP_CONFIGDIR-}" ]]; then
     tmuxp_dir="${TMUXP_CONFIGDIR}"
   elif [[ -d "${tmuxp_xdg_dir}" ]]; then
