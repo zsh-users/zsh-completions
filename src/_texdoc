@@ -1,0 +1,2 @@
+#compdef texdoc
+(( $+functions[__texdoc] )) || eval "$(texdoc --print-completion zsh)" && __texdoc
