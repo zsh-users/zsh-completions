@@ -1,0 +1,146 @@
+#compdef neofetch
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for neofetch (https://github.com/dylanaraps/neofetch)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Wu Zhenyu <wuzhenyu@ustc.edu>
+#
+# ------------------------------------------------------------------------------
+
+_neofetch_files_none() {
+  _alternative 'none:none:((none\:"Launch the script without a config file"))' 'files:file:_files'
+}
+_neofetch_sources() {
+  _alternative 'choices:choices:(auto ascii wallpaper "command output")' 'files: :_files'
+}
+local func_names=(
+  title underline os distro model kernel uptime packages shell resolution de wm
+  wm_theme icons term term_font cpu gpu memory gpu_driver cpu_usage disk battery
+  font song local_ip public_ip users locale cols
+)
+local colors=(black blue cyan default gray green magenta orange red white)
+local distros=(
+  AIX Alpine AlterLinux Anarchy Android Antergos antiX
+  "AOSC OS" "AOSC OS/Retro" Apricity ArcoLinux ArchBox
+  ARCHlabs ArchStrike XFerience ArchMerge Arch Artix Arya
+  Bedrock Bitrig BlackArch BLAG BlankOn BlueLight bonsai BSD
+  BunsenLabs Calculate Carbs CentOS Chakra ChaletOS Chapeau
+  Chrom Cleanjaro ClearOS Clear_Linux Clover Condres
+  Container_Linux CRUX Cucumber Debian Deepin DesaOS Devuan
+  DracOS DarkOs DragonFly Drauger Elementary EndeavourOS Endless
+  EuroLinux Exherbo Fedora Feren FreeBSD FreeMiNT Frugalware
+  Funtoo GalliumOS Garuda Gentoo Pentoo gNewSense GNOME GNU
+  GoboLinux Grombyang Guix Haiku Huayra Hyperbola janus Kali
+  KaOS KDE_neon Kibojoe Kogaion Korora KSLinux Kubuntu LEDE
+  LFS Linux_Lite LMDE Lubuntu Lunar macos Mageia MagpieOS
+  Mandriva Manjaro Maui Mer Minix LinuxMint MX_Linux Namib
+  Neptune NetBSD Netrunner Nitrux NixOS Nurunner NuTyX
+  OBRevenge OpenBSD openEuler OpenIndiana openmamba OpenMandriva
+  OpenStage OpenWrt osmc Oracle OS Elbrus PacBSD Parabola
+  Pardus Parrot Parsix TrueOS PCLinuxOS Peppermint popos
+  Porteus PostMarketOS Proxmox Puppy PureOS Qubes Radix
+  Raspbian Reborn_OS Redstar Redcore Redhat Refracted_Devuan
+  Regata Rosa sabotage Sabayon Sailfish SalentOS Scientific
+  Septor SereneLinux SharkLinux Siduction Slackware SliTaz
+  SmartOS Solus Source_Mage Sparky Star SteamOS SunOS
+  openSUSE_Leap openSUSE_Tumbleweed openSUSE SwagArch Tails
+  Trisquel Ubuntu-Budgie Ubuntu-GNOME Ubuntu-MATE Ubuntu-Studio
+  Ubuntu Venom Void Obarun windows10 Windows7 Xubuntu Zorin IRIX
+)
+local options=(
+  --disable"[Allows you to disable an info line from appearing in the output]:func_name:($func_names)"
+  --title_fqdn"[Hide/Show Fully Qualified Domain Name in title]:on/off:(on off)"
+  --package_managers"[Hide/Show Package Manager names]:on/off:(on tiny off)"
+  --os_arch"[Hide/Show OS architecture]:on/off:(on off)"
+  --speed_type"[Change the type of cpu speed to display]:type:(current min max bios scaling_current scaling_min scaling_max cpufreq)"
+  --speed_shorthand"[Whether or not to show decimals in CPU speed]:on/off:(on off)"
+  --cpu_brand"[Enable/Disable CPU brand in output]:on/off:(on off)"
+  --cpu_cores"[Whether or not to display the number of CPU cores]:type:(logical physical off)"
+  --cpu_speed"[Hide/Show cpu speed]:on/off:(on off)"
+  --cpu_temp"[Hide/Show cpu temperature]:C/F/off:(C F off)"
+  --distro_shorthand"[Shorten the output of distro]:on/off:(on tiny off)"
+  --kernel_shorthand"[Shorten the output of kernel]:on/off:(on off)"
+  --uptime_shorthand"[Shorten the output of uptime]:on/off:(on tiny off)"
+  --refresh_rate"[Whether to display the refresh rate of each monitor]:on/off:(on off)"
+  --gpu_brand"[Enable/Disable GPU brand in output]:on/off:(on off)"
+  --gpu_type"[Which GPU to display]:type:(all dedicated integrated)"
+  --de_version"[Show/Hide Desktop Environment version]:on/off:(on off)"
+  --gtk_shorthand"[Shorten output of gtk theme/icons]:on/off:(on off)"
+  --gtk2"[Enable/Disable gtk2 theme/font/icons output]:on/off:(on off)"
+  --gtk3"[Enable/Disable gtk3 theme/font/icons output]:on/off:(on off)"
+  --shell_path"[Enable/Disable showing $SHELL path]:on/off:(on off)"
+  --shell_version"[Enable/Disable showing $SHELL version]:on/off:(on off)"
+  --disk_show"[Which disks to display]:value:('/' '/dev/sdXX' '/path/to/mount point')"
+  --disk_subtitle"[What information to append to the Disk subtitle]:type:(name mount dir none)"
+  --disk_percent"[Hide/Show disk percent]:on/off:(on off)"
+  --ip_host"[URL to query for public IP]:url:_urls"
+  --ip_timeout"[Public IP timeout (in seconds)]:int"
+  --song_format"[Print the song data in a specific format]:format:(%artist% %album% %title%)"
+  --song_shorthand"[Print the Artist/Album/Title on separate lines]:on/off:(on off)"
+  --memory_percent"[Display memory percentage]:on/off:(on off)"
+  --memory_unit"[Memory output unit]:kib/mib/gib:(kib mib gib)"
+  --music_player"[Manually specify a player to use]:player-name"
+  --colors"[Changes the text colors]:title color:($colors):@ color:($colors):underline color:($colors):subtitle color:($colors):colon color:($colors):info color:($colors)"
+  --underline"[Enable/Disable the underline]:on/off:(on off)"
+  --underline_char"[Character to use when underlining title]:char"
+  --bold"[Enable/Disable bold text]:on/off:(on off)"
+  --separator"[Changes the default ':' separator to the specified string]:string"
+  --color_blocks"[Enable/Disable the color blocks]:on/off:(on off)"
+  --col_offset"[Left-padding of color blocks]:auto/num"
+  --block_width"[Width of color blocks in spaces]:num"
+  --block_height"[Height of color blocks in lines]:num"
+  --block_range"[Range of colors to print as blocks]:num::num"
+  --bar_char"[Characters to use when drawing bars]:elapsed char::total char"
+  --bar_border"[Whether or not to surround the bar with '\\[\\]']:on/off:(on off)"
+  --bar_length"[Length in spaces to make the bars]:num"
+  --bar_colors"[Colors to make the bar in elapsed, total]:num::num"
+  --cpu_display"[Bar mode]:mode:(bar infobar barinfo off)"
+  --memory_display"[Bar mode]:mode:(bar infobar barinfo off)"
+  --battery_display"[Bar mode]:mode:(bar infobar barinfo off)"
+  --disk_display"[Bar mode]:mode:(bar infobar barinfo off)"
+  --backend"[Which image backend to use]:backend:(ascii caca chafa jp2a iterm2 off sixel tycat w3m kitty)"
+  --source"[Which image or ascii file to use]:source:_neofetch_sources"
+  --ascii"[Shortcut to use 'ascii' backend]:source:_neofetch_sources"
+  --caca"[Shortcut to use 'caca' backend]:source:_neofetch_sources"
+  --chafa"[Shortcut to use 'chafa' backend]:source:_neofetch_sources"
+  --iterm2"[Shortcut to use 'iterm2' backend]:source:_neofetch_sources"
+  --jp2a"[Shortcut to use 'jp2a' backend]:source:_neofetch_sources"
+  --kitty"[Shortcut to use 'kitty' backend]:source:_neofetch_sources"
+  --pot"[Shortcut to use 'pot' backend]:source:_neofetch_sources"
+  --pixterm"[Shortcut to use 'pixterm' backend]:source:_neofetch_sources"
+  --sixel"[Shortcut to use 'sixel' backend]:source:_neofetch_sources"
+  --termpix"[Shortcut to use 'termpix' backend]:source:_neofetch_sources"
+  --tycat"[Shortcut to use 'tycat' backend]:source:_neofetch_sources"
+  --w3m"[Shortcut to use 'w3m' backend]:source:_neofetch_sources"
+  --off"[Shortcut to use off backend (Disable ascii art)]"
+  --ascii_colors"[Colors to print the ascii art]:title color:($colors):@ color:($colors):underline color:($colors):subtitle color:($colors):colon color:($colors):info color:($colors)"
+  --ascii_distro"[Which Distro's ascii art to print]:distro:($distros)"
+  --ascii_bold"[Whether or not to bold the ascii logo]:on/off:(on off)"
+  {-L,--logo}"[Hide the info text and only show the ascii logo]"
+  --loop"[Redraw the image constantly until Ctrl+C is used]"
+  --size"[How to size the image]:00px or 00%:(auto none)"
+  --crop_mode"[Which crop mode to use]:mode:(normal fit fill)"
+  --crop_offset"[Change the crop offset for normal mode]:value:(northwest north northeast west center east southwest south southeast)"
+  --xoffset"[How close the image will be to the left edge of the]:px"
+  --yoffset"[How close the image will be to the top edge of the]:px"
+  --bg_color"[Background color to display behind transparent image]:color:($colors)"
+  --gap"[Gap between image and text]:num"
+  --clean"[Delete cached files and thumbnails]"
+  --config"[Specify a path to a custom config file]:files or none:_neofetch_files_none"
+  --no_config"[Don't create the user config file]"
+  '(- : *)'--print_config"[Print the default config file to stdout]"
+  --stdout"[Turn off all colors and disables any ASCII/image backend]"
+  '(- : *)'--help"[Print this text and exit]"
+  '(- : *)'--version"[Show neofetch version]"
+  -v"[Display error messages]"
+  -vv"[Display a verbose log for error reporting]"
+  '(- : *)'--gen-man"[Generate a manpage for Neofetch in your PWD]"
+)
+
+_arguments $options "*::func_name:($func_names)"
