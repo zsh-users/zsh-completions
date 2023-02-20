@@ -140,10 +140,7 @@ _flutter() {
             && ret=0
           ;;
         (build)
-          _arguments \
-            '1: :_flutter_build_entities' \
-            '(- *)'{-h,--help}'[Print this usage information]' \
-            && ret=0
+          _flutter_build && ret=0
           ;;
         (config)
           _arguments \
@@ -544,6 +541,124 @@ _flutter_root_commands() {
   _describe -t commands 'command' commands "$@"
 }
 
+(( $+functions[_flutter_build] )) ||
+_flutter_build() {
+  local ret=1
+
+  _arguments -C \
+    '(- *)'{-h,--help}'[Print this usage information]' \
+    '1: :_flutter_build_entities' \
+    '*:: :->args' \
+    && ret=0
+
+  case $state in
+    (args)
+      local opts=(
+        '(- *)'{-h,--help}'[Print this usage information]'
+        '(--debug --profile --release)--debug[Build a debug version of your app]'
+        '(--debug --profile --release)--profile[Build a version of your app specialized for performance profiling]'
+        '(--debug --profile --release)--release[Build a release version of your app(default mode)]'
+        '--no-tree-shake-icons[Not use Tree shake icon fonts]'
+        '--flavor[Build a custom app flavor as defined by platform-specific build setup]:flavor'
+        '--build-number[An identifier used as an internal version number]:build_number'
+        '(-o --output)'{-o,--output}'[The absolute path to the directory where the repository is generated]:dir:_files -/'
+        '(--no-pub)--pub[Run "flutter pub get" before executing this command]'
+        '(--pub)--no-pub[Do not run "flutter pub get" before executing this command]'
+        '--split-debug-info[Split debug info]: :_files -/'
+        '--obfuscate[Remove identifiers and replace them with randomized values for code obfuscation]'
+        '*--dart-define=[Additional key-value pairs that will be available as constants]:'
+        '--dart-define-from-file=[The path of a json format file where flutter define a global constant pool]: :_files -g "*.json"'
+        '--no-track-widget-creation[Not track widget creation locations]'
+        '(--no-null-assertions)--null-assertions[Perform additional null assertions on the boundaries of migrated and un-migrated code]'
+        '(--null-assertions)--no-null-assertions[Not perform additional null assertions on the boundaries of migrated and un-migrated code]'
+
+      )
+      case $words[1] in
+        (aar)
+          opts+=(
+            '--target-platform=[The target platform for which the project is compiled]: :(android-arm android-arm64 android-x86 android-x64)'
+          )
+          ;;
+        (apk|appbundle)
+          opts+=(
+            '--build-name=[A string used as the version number shown to users]:build_name'
+            '(--no-analyze-size)--analyze-size[Produce additional profile information for artifact output size]'
+            '(--analyze-size)--no-analyze-size[Not produce additional profile information for artifact output size]'
+            '--code-size-directory=[The location to write code size analysis files]: :_files -/'
+            \*{-P,--android-project-arg}'[Additioanl arguments specified as key=value that are passed to gradle -P option]:arg'
+            '--no-multidex[the app is not built with multidex support]'
+            '--ignore-deprecation[the app should ignore deprecation warnings and continue to build using deprecated APIs]'
+            '--split-per-abi[Split the APKs per ABIs]'
+            '--target-platform=[The target platform for which the project is compiled]: :(android-arm android-arm64 android-x86 android-x64)'
+          )
+          if [[ $words[1] == "appbundle" ]]; then
+            opts+=(
+              '--no-deferred-components[Disable building with deferred components]'
+              '--no-validate-deferred-components[Do not validate deferred component]'
+            )
+          fi
+          ;;
+        (bundle)
+          opts+=(
+            '--depfile[A file path where a depfile will be written]:depfile:_files'
+            '--target-platform=[The target platform for which the project is compiled]: :(android-arm android-arm64 android-x86 android-x64)'
+            '--asset-dir[The output directory for the kernel_blob.bin file]: :_files -/'
+          )
+          ;;
+        (fuchsia)
+          ;;
+        (ios)
+          opts+=(
+            '--no-codesign[Do not codesign the application bundle]'
+            '--config-only[Update the project configuration without performing a build]'
+            '--simulator[Build for the iOS simulator instead of the device]'
+          )
+          ;;
+        (linux)
+          opts+=(
+            '--build-name=[A string used as the version number shown to users]:build_name'
+            '(--no-analyze-size)--analyze-size[Produce additional profile information for artifact output size]'
+            '(--analyze-size)--no-analyze-size[Not produce additional profile information for artifact output size]'
+            '--code-size-directory=[The location to write code size analysis files]: :_files -/'
+            \*{-P,--android-project-arg}'[Additioanl arguments specified as key=value that are passed to gradle -P option]:arg'
+            '--no-multidex[the app is not built with multidex support]'
+            '--ignore-deprecation[the app should ignore deprecation warnings and continue to build using deprecated APIs]'
+            '--split-per-abi[Split the APKs per ABIs]'
+            '--target-platform=[The target platform for which the project is compiled]: :(linux-arm64 linux-x64)'
+            '--target-sysroot=[The root filesystem path of target platform]: :_files -/'
+          )
+          ;;
+        (macos)
+          opts+=(
+            '--build-name=[A string used as the version number shown to users]:build_name'
+          )
+          ;;
+        (web)
+          opts+=(
+            '(--no-null-assertions)--null-assertions[Perform additional null assertions on the boundaries of migrated and un-migrated code]'
+            '(--null-assertions)--no-null-assertions[Not perform additional null assertions on the boundaries of migrated and un-migrated code]'
+            '--no-native-null-assertions[Disable additional runtime null checks in web applications]'
+            '--csp[Disable dynamic generation of code in the generated output]'
+            '(--no-source-maps)--source-maps[Generate a sourcemap file]'
+            '(--source-maps)--no-source-maps[Do not generate a sourcemap file]'
+            '--pwa-strategy=The caching strategy to be used by the PWA service worker: :(none offline-first)'
+            '--base-href[Overrides the href attribute of the base tag in web/index.html]'
+            '--dart2js-optimization=[Sets the optimization level used for Dart compilation to JavaScript]: :(O0 O1 O2 O3 O4)'
+            '--dump-info[Passes "--dump-info" to the JavaScript compiler]'
+            '--no-frequency-based-minification[Disables the frequency based minifier]'
+          )
+          ;;
+        (windows)
+          ;;
+      esac
+
+      _arguments $opts && ret=0
+    ;;
+  esac
+
+  return $ret
+}
+
 (( $+functions[_flutter_build_entities] )) ||
 _flutter_build_entities() {
   local -a entities=(
@@ -555,8 +670,8 @@ _flutter_build_entities() {
     "ios:Build an iOS application bundle (Mac OS X host only)."
     "linux:Build a Linux desktop application."
     "macos:Build a macOS desktop application."
+    "web:Build a web application bundle"
     "windows:Build a Windows desktop application."
-    "winuwp:Build a Windows UWP desktop application."
   )
   _describe -t entities 'entity' entities "$@"
 }
