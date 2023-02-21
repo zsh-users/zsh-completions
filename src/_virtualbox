@@ -1588,7 +1588,7 @@ _vboxmachines() {
 (( $+functions[_vboxostypes] )) ||
 _vboxostypes() {
   local -a os=(${(@f)"$(vboxmanage list ostypes | awk '/^ID:/{ print $2 }')"})
-  _values 'machines' $os
+  _values 'ostypes' $os
 }
 
 (( $+functions[_vboxmanage_setproperty_value] )) ||
