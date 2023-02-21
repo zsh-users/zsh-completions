@@ -172,7 +172,7 @@ _vboxmanage() {
           _arguments \
             '--delete[Deletes the image file]' \
             '1:type:(disk dvd floppy)' \
-            '*:file:_files' \
+            '2:file:_files' \
             && ret=0
           ;;
         (storageattach)
