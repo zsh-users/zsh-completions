@@ -70,7 +70,7 @@ _vboxmanage() {
             '--basefolder=[Specifies the name of the folder in which to save the machine configuration file for the new VM]: :_files -/' \
             '--default[Applies a default hardware configuration for the specified guest OS]' \
             '--group=[Assigns the VM to the specified groups]:group_id' \
-            '--ostype=[Specifies the guest OS to run in the VM]:_vboxostypes' \
+            '--ostype=[Specifies the guest OS to run in the VM]: :_vboxostypes' \
             '--register[Registers the VM with your Oracle VM VirtualBox installation]' \
             '--uuid=[Specifies the Universally Unique Identifier(UUID) of the VM]:uuid' \
             '--ciper=[Specifies the cipher to use for encryption]: :(AES-128 AES-256)' \
@@ -1588,7 +1588,7 @@ _vboxmachines() {
 (( $+functions[_vboxostypes] )) ||
 _vboxostypes() {
   local -a os=(${(@f)"$(vboxmanage list ostypes | awk '/^ID:/{ print $2 }')"})
-  _values 'machines' $os
+  _values 'ostypes' $os
 }
 
 (( $+functions[_vboxmanage_setproperty_value] )) ||
