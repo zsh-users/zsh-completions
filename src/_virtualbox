@@ -172,7 +172,7 @@ _vboxmanage() {
           _arguments \
             '--delete[Deletes the image file]' \
             '1:type:(disk dvd floppy)' \
-            '*:file:_files' \
+            '2:file:_files' \
             && ret=0
           ;;
         (storageattach)
@@ -224,7 +224,7 @@ _vboxmanage() {
         (showmediuminfo)
           _arguments \
             '1:medium:(disk dvd floppy)' \
-            '2:machine:_vboxmachines' \
+            '2: :_files' \
             && ret=0
           ;;
         (createmedium)
@@ -252,7 +252,7 @@ _vboxmanage() {
             '--setlocation=[Specifies the new location of the medium]: :_files' \
             '--type=[Specifies the new mode type of an existing image]: :(normal immutable writethrough multi-attach shareable readonly)' \
             '1:medium:(disk dvd floppy)' \
-            '2:machine:_vboxmachines' \
+            '2: :_files' \
             && ret=0
           ;;
         (clonemedium)
@@ -261,8 +261,8 @@ _vboxmanage() {
             '--format=[Specifies the file format of the target medium]: :(VDI VMDK VHD RAW)' \
             '--variant=[Specifies the file format variant for the target medium]:variant' \
             '1:medium:(disk dvd floppy)' \
-            '2:machine:_vboxmachines' \
-            '3:machine:_vboxmachines' \
+            '2: :_files' \
+            '3: :_files' \
             && ret=0
           ;;
         (encryptmedium)
@@ -271,7 +271,7 @@ _vboxmanage() {
             '--oldpassword=[Specifies the original encryption password]:password' \
             '--cipher=[Specifies the cipher to use for encryption]: :(AES-XTS128-PLAIN64 AES-XTS256-PLAIN64)' \
             '--newpasswordid=[Specifies a new password identifier]:password' \
-            '1:machine:_vboxmachines' \
+            '1: :_files' \
             && ret=0
           ;;
         (convertfromraw)
