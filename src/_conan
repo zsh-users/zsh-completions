@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for conan 1.54.0 (https://conan.io).
+#  Completion script for conan 2.0.0 (https://conan.io).
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -38,6 +38,64 @@
 #  * Shohei Yoshida <https://github.com/syohex>
 #
 # ------------------------------------------------------------------------------
+
+_conan_common_options=(
+  '(- *)'{-h,--help}'[show help message and exit]'
+  '-v[verbose output]'
+  '-vquiet[verbose level quiet]'
+  '-verror[verbose level error]'
+  '-vwarning[verbose level warning]'
+  '-vnotice[verbose level notice]'
+  '-vstatus[verbose level status]'
+  '-vverbose[verbose level verbose]'
+  '-vv[more verbose output]'
+  '-vdebug[verbose level debug]'
+  '-vvv[more and more verbose output]'
+  '-vtrace[verbose level trace]'
+  '--logger[show the output with log format, with time, type and message]'
+)
+
+_conan_package_options=(
+  '--name[Provide a package name if not specified in conanfile]:name'
+  '--version[Provide a package version if not specified in conanfile]:version'
+  '--user[Provide a user]:user'
+  '--channel[Provide a channel]:channel'
+  '--requires[directly provide requires instead of a conan file]:requires'
+  '--tool-requires[directly provide tool-requires instead of a conanfile]:tool_requires'
+)
+
+_conan_define_options=(
+  \*{-o,--options,'-o\:h','--options\:host'}'[define options of host machine]:option'
+  \*{'-o\:b','--options\:build'}'[define options of build machine]:option'
+)
+
+_conan_profile_options=(
+  '(-pr --profile -pr\:h --profile\:host)'{-pr,--profile,-pr:h,--profile:host}'[apply the specified profile to the host machine]: :_conan_profiles'
+  '(-pr\:b --profile\:build)'{-pr:b,--profile:build}'[apply the specified profile to the build machine]: :_conan_profiles'
+)
+
+_conan_setting_options=(
+  \*{-s,--settings,'-s\:h','--settings\:host'}'[overwrite the defaults of host machine to build]:setting'
+  \*{'-s\:b','--settings\:build'}'[overwrite the defaults of build machine to build]:setting'
+)
+
+_conan_configuration_options=(
+  \*{-c,--conf,'-c\:h','--conf\:host'}'[overwrite the defaults of host machine to configure]:config'
+  \*{'-c\:b','--conf\:build'}'[overwrite the defaults of build machine to configure]:config'
+)
+
+_conan_lockfile_options=(
+  '(-l --lockfile)'{-l,--lockfile}'[path to a lockfile]: :_files'
+  '--lockfile-partial[do not raise an error if some dependency is not found in lockfile]'
+  '--lockfile-out[filename of the updated lockfile]: :_files'
+  '--lockfile-packages[lock package-id and package-revision information]'
+  '--lockfile-clean[remove unused entries from the lockfile]'
+)
+
+_conan_remote_options=(
+  '(-r --remote -nr --no-remote)'{-r,--remote}'[look in the specified remote server]:remote'
+  '(-r --remote -nr --no-remote)'{-nr,--no-remote}'[do not use remote, resolve exclusively in the cache]'
+)
 
 _conan() {
   local context state state_descr line
@@ -51,105 +109,108 @@ _conan() {
 
   case $state in
     command_args)
-      (( $+functions[_conan_${words[1]}_args] )) && _conan_${words[1]}_args
+      (( $+functions[_conan_${words[1]}] )) && _conan_${words[1]}
     ;;
   esac
 }
 
 (( $+functions[_conan_commands] )) ||
 _conan_commands() {
-  local consumer_commands creator_commands package_development_commands misc_commands deprecated_commands
-  consumer_commands=(
-    'install:installs the requirements specified in a "conanfile.py" or "conanfile.txt"'
+  local -a commands=(
+    # consumer commands
+    'cache:perform file operations in the local cache'
     'config:manages conan configuration information'
-    'get:gets a file or list a directory of a given reference or package'
-    'info:prints information about a package recipe'\''s dependency graph'
-    'search:search package recipes and binaries in the local cache or in a remote server'
-  )
-  creator_commands=(
-    'new:creates a new package recipe template with a '\''conanfile.py'\'''
-    'create:export, build package and test it with a consumer project'
-    'upload:uploads a package recipe and the generated binary packages to a specified remote'
-    'export:copies the package recipe (conanfile.py and associated files) to your local cache'
-    'export-pkg:exports a recipe & creates a package with given files calling '\''package'\'''
-    'test:runs a test-folder/conanfile.py to test an existing package'
-  )
-  package_development_commands=(
-    'source:calls your conanfile.py "source()" method to configure the source directory'
-    'build:utility command to run your current project "conanfile.py" build() method'
-    'package:calls your conanfile.py "package" method for a specific package recipe'
-    'editable:manages editable packages'
-    'workspace:manages a workspace'
-  )
-  misc_commands=(
-    'profile:list profiles in the ".conan/profiles" folder, or show profile details'
-    'remote:handles the remote list and the package recipes associated to a remote'
-    'user:update your cached user name (and auth token) to avoid it being requested later'
-    'imports:execute the "imports" stage of a conanfile.txt or a conanfile.py'
-    'copy:copy conan recipes and packages to another user/channel.'
-    'remove:remove any package recipe or binary matching a pattern'
-    'alias:creates and export an alias recipe'
-    'download:Downloads conanfile attributes, like name, version, and options'
-    'inspect:displays conanfile attributes like name, version, and options'
-    'help:shows help for a specific command'
-    'lock:generates and manipulates lock file'
-    'frogarian:conan the frogarian'
+    'graph:obtain information about the dependency graph without fetching binaries'
+    'inspect:inspect a conanfile.py to return its public fields'
+    'install:installs the requirements specified in a "conanfile.py" or "conanfile.txt"'
+    'list:list recipes, revisions or packages in the cache or the remotes'
+    'lock:create or manage lockfiles'
+    'profile:manage profiles'
+    'remote:manage the remote list and the users authenticated on them'
+    'remove:remove recipes or packages from local cache or a remote'
+    'search:search for package recipes in all the remotes or a remote'
+
+    # create commands
+    'build:install dependencies and call the build() method'
+    'create:create a package'
+    'download:download(without installing) a single conan package from a remote server'
+    'editable:allow working with a package that resides in user folder'
+    'export:export a recipe to the Conan package cache'
+    'export-pkg:create a package directly from pre-compiled binaries'
+    'new:create a new example recipe and source files from a template'
+    'source:call the source() method'
+    'test:test a package from a test_package folder'
+    'upload:upload packages to a remote'
   )
 
-  _describe -t 'consumer-commands' "consumer commands" consumer_commands
-  _describe -t 'creator-commands' "creator commands" creator_commands
-  _describe -t 'package-development-commands' "package development commands" package_development_commands
-  _describe -t 'misc-commands' "misc commands" misc_commands
+  _describe -t 'subcommands' 'subcommands' commands
 }
 
-(( $+functions[_conan_install_args] )) ||
-_conan_install_args() {
-  _arguments -C \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '(-g --generator)'{-g,--generator}'[Generators to use]: :_conan_generators' \
-    '(-if --install-folder)'{-if,--install-folder}'[Use this directory as the directory where to put the generatorfiles]: :_files -/' \
-    '(-of --output-folder)'{-of,--output-folder}'[The root output folder for generated and build files]: :_files -/' \
-    '(-m --manifests)'{-m,--manifests}'[Install dependencies manifests in folder for later verify]:manifest' \
-    '(-mi --manifests-interactive)'{-mi,--manifests-interactive}'[Install dependencies manifests in folder for later verify, asking user for confirmation]:manifests' \
-    '(-v --verify)'{-v,--verify}'[Verify dependencies manifests against stored ones]:verify' \
-    '--no-imports[Install specified packages but avoid running imports]' \
-    '--build-require[The provided reference is a build-require]' \
-    '(-j --json)'{-j,--json}'[Path to a json file where the install information will be written]: :_files -g "*.json"' \
-    \*{-b,--build}'[Optional, specify which packages to build from source]:build' \
-    '(-r --remote)'{-r,--remote}'[Look in the specified remote server]' \
-    '(-u --update)'{-u,--update}'[Will check the remote and it will install those in the local cache]' \
-    '(-l --lockfile)'{-l,--lockfile}'[Path to a lockfile]: :_files' \
-    '--lockfile-out[Filename of the updated lockfile]: :_files' \
-    \*{-e,--env}'[Environment variables that will be set during the package build(host machine)]:env' \
-    \*{'-e\:b','--env\:build'}'[Environment variables that will be set during the package build(build machine)]:env' \
-    \*{'-e\:h','--env\:host'}'[Environment variables that will be set during the package build(host machine)]:env' \
-    \*{-o,--options}'[Define options values(host machine)]:option' \
-    \*{'-o\:b','--options\:build'}'[Define options values(build machine)]:option' \
-    \*{'-o\:h','--options\:host'}'[Define options values(host machine)]:option' \
-    '(-pr --profile)'{-pr,--profile}'[Apply the specified profile to the host machine]: :_conan_profiles' \
-    '(-pr\:b --profile\:build)'{-pr:b,--profile:build}'[Apply the specified profile to the build machine]: :_conan_profiles' \
-    '(-pr\:h --profile\:host)'{-pr:h,--profile:host}'[Apply the specified profile to the host machine]: :_conan_profiles' \
-    \*{-s,--settings}'[Settings to build the package, overwriting the defaults(host machine)]:setting' \
-    \*{'-s\:b','--settings\:build'}'[Settings to build the package, overwriting the defaults(build machine)]:setting' \
-    \*{'-s\:h','--settings\:host'}'[Settings to build the package, overwriting the defaults(host machine)]:setting' \
-    \*{-c,--conf}'[Configuration to build the package overwriting the defaults(host machine)]:config' \
-    \*{'-c\:b','--conf\:build'}'[Configuration to build the package overwriting the defaults(build machine)]:config' \
-    \*{'-c\:h','--conf\:host'}'[Configuration to build the package overwriting the defaults(host machine)]:config' \
-    '--lockfile-node-id[NodeID of the referenced package in the lockfile]:lockfile_node_id' \
-    '--require-override[Define a requirement override]' \
-    '1:config file:_files'
-}
+(( $+functions[_conan_cache] )) ||
+_conan_cache() {
+  local ret=1
 
-(( $+functions[_conan_config_args] )) ||
-_conan_config_args() {
   _arguments -C \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '(-h --help)1: :_conan_config_commands' \
-    '(-h --help)*:: :->command_args'
+   '(- *)'{-h,--help}'[show help message and exit]' \
+   '1: :(clean path)' \
+   '*:: :->args'
 
   case $state in
-    command_args)
-      (( $+functions[_conan_config_${words[1]}_args] )) && _conan_config_${words[1]}_args
+    (args)
+      local -a opts=($_conan_common_options[@])
+      case $words[1] in
+        (clean)
+          opts+=(
+            '(-s --source)'{-s,--source}'[clean source folders]'
+            '(-b --build)'{-b,--build}'[clean build folders]'
+            '(-d --download)'{-d,--download}'[clean download folders]'
+            \*{-p,--package-query}'[remove only the packages matching a specific query]:query'
+            '1:pattern'
+          )
+          ;;
+        (path)
+          opts+=(
+            '--folder[path to show]::type:(export_source source build)' \
+            '1:recipe_or_package_reference:_files'
+          )
+          ;;
+      esac
+
+      _arguments "$opts[@]"
+    ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_conan_config] )) ||
+_conan_config() {
+  _arguments -C \
+    '(- : *)'{-h,--help}'[display help information]' \
+    '1: :_conan_config_commands' \
+    '*:: :->args'
+
+  case $state in
+    (args)
+      local -a opts=($_conan_common_options[@])
+      case $words[1] in
+        (install)
+          opts+=(
+            '--verify-ssl[Verify SSL connection when downloading file]: :(True False)'
+            '(-t --type)'{-t,--type}'[Type of remote config]: :(git dir file url)'
+            \*{-a,--args}'[String with extra arguments for "git clone"]:arg'
+            \*{-sf,--source-folder}'[Install files only from a source subfolder from specified origin]: :_files -/'
+            '(-tf --target-folder)'{-tf,--target-folder}'[Install to that path in the conan cache]: :_files -/'
+          )
+          ;;
+        (list)
+          opts+=(
+            '(-f --format)'{-f,--format}'[select the output format]:format:(json)'
+          )
+          ;;
+      esac
+
+      _arguments "$opts[@]"
     ;;
   esac
 }
@@ -157,730 +218,166 @@ _conan_config_args() {
 (( $+functions[_conan_config_commands] )) ||
 _conan_config_commands() {
   local -a commands=(
-    'get:get the value of existing element'
-    'home:retrieve the Conan home directory'
-    'install:install a full configuration from a zip file, local or remote'
-    'rm:rm an existing config element'
-    'set:set/add value'
-    'init:initializes Conan configuration files'
-    'list:list Conan configuration properties'
+    'home:show the Conan home folder'
+    'install:install the configuration into the Conan home folder'
+    'list:show all the Conan available configurations:'
   )
   _describe -t 'commands' "command" commands
 }
 
-(( $+functions[_conan_config_get_args] )) ||
-_conan_config_get_args() {
+(( $+functions[_conan_graph] )) ||
+_conan_graph() {
   _arguments -C \
     '(- : *)'{-h,--help}'[display help information]' \
-    '1: :_conan_config_keys'
-}
+    '1: :_conan_graph_commands' \
+    '*:: :->args'
 
-(( $+functions[_conan_config_home_args] )) ||
-_conan_config_home_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '(-j --json)'{-j,--json}'[json file path where the config home will be written to]: :_files -g "*.json"'
-}
-
-(( $+functions[_conan_config_install_args] )) ||
-_conan_config_install_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[show help information]' \
-    '--verify-ssl[Verify SSL connection when downloading file]: :(True False)' \
-    '(-t --type)'{-t,--type}'[Type of remote config]: :(git dir file url)' \
-    \*{-a,--args}'[String with extra arguments for "git clone"]:arg' \
-    \*{-sf,--source-folder}'[Install files only from a source subfolder from specified origin]: :_files -/' \
-    '(-tf --target-folder)'{-tf,--target-folder}'[Install to that path in the conan cache]: :_files -/' \
-    '(-l --list)'{-l,--list}'[List stored configuration origins]' \
-    \*{-r,--remove}'[Remove configuration origin by index in list]:remove' \
-    '*:: :_files' \
-}
-
-(( $+functions[_conan_config_rm_args] )) ||
-_conan_config_rm_args() {
-  _arguments -C \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '(-h --help)1: :_conan_config_keys'
-}
-
-(( $+functions[_conan_config_set_args] )) ||
-_conan_config_set_args() {
-  _arguments -C \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '(-h --help)1: :_conan_config_set_key_values'
-}
-
-(( $+functions[_conan_config_set_key_values] )) ||
-_conan_config_set_key_values() {
-  local ret=1
-  if compset -P '*='; then
-    _wanted property-values expl 'config value' _conan_config_values ${IPREFIX%=} && ret=0
-  else
-    _wanted property-names expl 'config key' _conan_config_keys -qS= && ret=0
-  fi
-  return ret
-}
-
-(( $+functions[_conan_config_init_args] )) ||
-_conan_config_init_args() {
-  _arguments -C \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '(-h --help -f --force)'{-f,--force}'[overwrite existing Conan configuration files]'
-}
-
-(( $+functions[_conan_config_list_args] )) ||
-_conan_config_list_args() {
-  _arguments -C \
-    '(- : *)'{-h,--help}'[display help information]'
-}
-
-(( $+functions[_conan_get_args] )) ||
-_conan_get_args() {
-  _arguments -C \
-    '(- : *)'{-h,--help}'[display help information]' \
-    "(-p --package)"{-p,--package}'[package ID]: :_conan_package_references' \
-    '(-r --remote)'{-r,--remote}'[get from this specific remote]: :_conan_remotes' \
-    '(-raw --raw)'{-raw,--raw}'[do not decorate the text]' \
-    '1: :_conan_package_references' \
-    '2:file or directory path:_files'
-}
-
-(( $+functions[_conan_info_args] )) ||
-_conan_info_args() {
-  _arguments -C \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '--paths[show package paths in local cache]' \
-    '(-bo --build_order)'{-bo,--build_order}'[given a modified reference, return an ordered list to build (CI)]' \
-    '(-g --graph)'{-g,--graph}'[creates file with project dependencies graph]: :_files -g "*.(dot|html)"' \
-    '(-if --install-folder)'{-if,--install-folder}'[local folder containing the conaninfo.txt and conanbuildinfo.txt files]: :_files -/' \
-    '(-j --json)'{-j,--json}'[only with --build_order option, return the information in a json]: :_files -g "*.json"' \
-    '(-n --only)'{-n,--only}'[filter fields]: :_conan_info_only_values' \
-    '--package-filter[print information only for packages that match the filtere.g., MyPackage/1.2@user/channel or MyPackage*]: :_conan_package_references' \
-    '(-db --dry-build)'{-db,--dry-build}'[Apply the --build argument to output the information]:dry_build' \
-    '(-f --file)'{-f,--file}'[specify conanfile filename]: :_conan_conanfiles' \
-    '(-b --build)'{-b,--build}'[given a build policy (same install command "build" parameter), return an ordered list of packages that would be built from sources in install command (simulation)]: :_conan_build_policies' \
-    '(-r --remote)'{-r,--remote}'[look in the specified remote server]: :_conan_remotes' \
-    '(-u --update)'{-u,--update}'[check updates exist from upstream remotes]' \
-    '(-l --lockfile)'{-l,--lockfile}'[Path to a lockfile]: :_files' \
-    \*{-e,--env}'[Environment variables that will be set during the package build(host machine)]: :_conan_environment_variables' \
-    \*{'-e\:b','--env\:build'}'[Environment variables that will be set during the package build(build machine)]: :_conan_environment_variables' \
-    \*{'-e\:h','--env\:host'}'[Environment variables that will be set during the package build(host machine)]: :_conan_environment_variables' \
-    \*{-o,--options}'[Define options values(host machine)]: :_conan_options' \
-    \*{'-o\:b','--options\:build'}'[Define options values(build machine)]: :_conan_options' \
-    \*{'-o\:h','--options\:host'}'[Define options values(host machine)]: :_conan_options' \
-    '(-pr --profile)'{-pr,--profile}'[Apply the specified profile to the host machine]: :_conan_profiles' \
-    '(-pr\:b --profile\:build)'{-pr:b,--profile:build}'[Apply the specified profile to the build machine]: :_conan_profiles' \
-    '(-pr\:h --profile\:host)'{-pr:h,--profile:host}'[Apply the specified profile to the host machine]: :_conan_profiles' \
-    \*{-s,--settings}'[Settings to build the package, overwriting the defaults(host machine)]: :_conan_settings' \
-    \*{'-s\:b','--settings\:build'}'[Settings to build the package, overwriting the defaults(build machine)]: :_conan_settings' \
-    \*{'-s\:h','--settings\:host'}'[Settings to build the package, overwriting the defaults(host machine)]: :_conan_settings' \
-    \*{-c,--conf}'[Configuration to build the package, overwriting the defaults(host machine)]:conf' \
-    \*{'-c\:b','--conf\:build'}'[Configuration to build the package, overwriting the defaults(build machine)]:conf' \
-    \*{'-c\:h','--conf\:host'}'[Configuration to build the package, overwriting the defaults(host machine)]:conf' \
-    '1: :_conan_conanfiles_or_package_references'
-}
-
-(( $+functions[_conan_search_args] )) ||
-_conan_search_args() {
-  _arguments -C \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '(-o --outdated)'{-o,--outdated}'[Show only outdated from recipe packages]' \
-    '(-q --query)'{-q,--query}'[Packages query]:query' \
-    '(-r --remote)'{-r,--remote}'[Remote to search in. "-r all" searches all remotes]:remote' \
-    '--case-sensitive[Make a case-sensitive search]' \
-    '--raw[Print just the list of recipes]' \
-    '--table[Outputs html file with a table of binaries]: :_files' \
-    '(-j --json)'{-j,--json}'[json file path where the search information will be written to]: :_files -g "*.json"' \
-    '(-rev --revisions)'{-rev,--revisions}'[Get a list of versions for reference or a package reference]' \
-    '1: :_conan_conanfiles_or_package_references'
-}
-
-(( $+functions[_conan_new_args] )) ||
-_conan_new_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '(-t --test)'{-t,--test}'[create test_package skeleton to test package]' \
-    '(-i --header)'{-i,--header}'[create a headers only package template]' \
-    '(-c --pure-c)'{-c,--pure-c}'[create a C language package only package, deleting "self.settings.compiler.libcxx" setting in the configure method]' \
-    '(-s --sources)'{-s,--sources}'[create a package with embedded sources in "src" folder, using "exports_sources" instead of retrieving external code with the "source()" method]' \
-    '(-b --bare)'{-b,--bare}'[create the minimum package recipe, without build() or package() methods. Useful in combination with "package_files" command]' \
-    '(-m --template)'{-m,--template}'[use the given template to generate a conan project]: :_files' \
-    '(-cis --ci-shared)'{-cis,--ci-shared}'[package will have a "shared" option to be used in CI]' \
-    '(-cilg --ci-travis-gcc)'{-cilg,--ci-travis-gcc}'[generate travis-ci files for linux gcc]' \
-    '(-cilc --ci-travis-clang)'{-cilc,--ci-travis-clang}'[generate travis-ci files for linux clang]' \
-    '(-cio --ci-travis-osx)'{-cio,--ci-travis-osx}'[generate travis-ci files for OSX apple-clang]' \
-    '(-ciw --ci-appveyor-win)'{-ciw,--ci-appveyor-win}'[generate appveyor files for Appveyor Visual Studio]' \
-    '(-ciglg --ci-gitlab-gcc)'{-ciglg,--ci-gitlab-gcc}'[generate GitLab files for linux gcc]' \
-    '(-ciglc --ci-gitlab-clang)'{-ciglc,--ci-gitlab-clang}'[generate GitLab files for linux clang]' \
-    '(-ciccg --ci-circleci-gcc)'{-ciccg,--ci-circleci-gcc}'[generate CircleCI files for linux gcc]' \
-    '(-ciccc --ci-circleci-clang)'{-ciccc,--ci-circleci-clang}'[generate CircleCI files for linux clang]' \
-    '(-cicco --ci-circleci-osx)'{-cicco,--ci-circleci-osx}'[generate CircleCI files for apple-clang]' \
-    '(-gi --gitignore)'{-gi,--gitignore}'[generate a .gitignore with the known patterns to excluded]' \
-    '(-ciu --ci-upload-url)'{-ciu,--ci-upload-url}'[define URL of the repository to upload]: :_urls' \
-    \*{-d,--define}'[define]:define' \
-    '1: :_conan_package_references'
-}
-
-(( $+functions[_conan_create_args] )) ||
-_conan_create_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '(-j --json)'{-j,--json}'[json file path where the install information will be written to]: :_files -g "*.json"' \
-    '(-k -ks --keep-source)'{-k,-ks,--keep-source}'[Do not remove the source folder in the local cache, even if the recipe changed]' \
-    '(-kb --keep-build)'{-kb,--keep-build}'[Do not remove the build folder in local cache]' \
-    '(-ne --not-export)'{-ne,--not-export}'[Do not export the conanfile.py]' \
-    '(-tbf --test-build-folder)'{-tbf,--test-builder-folder}'[Working directory for the build of the test project]: :_files -/' \
-    '(-tf --test-folder)'{-tf,--test-folder}'[Alternative test folder name]: :_files -/' \
-    '--ignore-dirty[When using the "scm" feature with "auto" values]' \
-    '--require-override[Define a requirement override]:require_override' \
-    '(-m --manifests)'{-m,--manifests}'[Install dependencies manifests in folder for later verify]:manifests' \
-    '(-mi --manifests-interactive)'{-mi,--manifests-interactive}'[Install dependencies manifests in folder for later verify, asking user for confirmation]:manifests' \
-    '(-v --verify)'{-v,--verify}'[Verify dependencies manifests against stored ones]:verify' \
-    '(-b --build)'{-b,--build}'[Optional, specify which packages to build from source]:build' \
-    '(-r --remote)'{-r,--remote}'[Look in the specified remote server]:remote' \
-    '(-u --update)'{-u,--update}'[Look in the specified remote server and it will install those in the local cache]' \
-    '(-l --lockfile)'{-l,--lockfile}'[Path to a lockfile]: :_files' \
-    '--lockfile-out[Filename of the updated lockfile]' \
-    \*{-e,--env}'[Environment variables that will be set during the package build(host machine)]: :_conan_environment_variables' \
-    \*{'-e\:b','--env\:build'}'[Environment variables that will be set during the package build(build machine)]: :_conan_environment_variables' \
-    \*{'-e\:h','--env\:host'}'[Environment variables that will be set during the package build(host machine)]: :_conan_environment_variables' \
-    \*{-o,--options}'[Define options values(host machine)]: :_conan_options' \
-    \*{'-o\:b','--options\:build'}'[Define options values(build machine)]: :_conan_options' \
-    \*{'-o\:h','--options\:host'}'[Define options values(host machine)]: :_conan_options' \
-    '(-pr --profile)'{-pr,--profile}'[Apply the specified profile to the host machine]: :_conan_profiles' \
-    '(-pr\:b --profile\:build)'{-pr:b,--profile:build}'[Apply the specified profile to the build machine]: :_conan_profiles' \
-    '(-pr\:h --profile\:host)'{-pr:h,--profile:host}'[Apply the specified profile to the host machine]: :_conan_profiles' \
-    \*{-s,--settings}'[Settings to build the package, overwriting the defaults(host machine)]: :_conan_settings' \
-    \*{'-s\:b','--settings\:build'}'[Settings to build the package, overwriting the defaults(build machine)]: :_conan_settings' \
-    \*{'-s\:h','--settings\:host'}'[Settings to build the package, overwriting the defaults(host machine)]: :_conan_settings' \
-    \*{-c,--conf}'[Configuration to build the package, overwriting the defaults(host machine)]:conf' \
-    \*{'-c\:b','--conf\:build'}'[Configuration to build the package, overwriting the defaults(build machine)]:conf' \
-    \*{'-c\:h','--conf\:host'}'[Configuration to build the package, overwriting the defaults(host machine)]:conf' \
-    '1: :_conan_package_references'
-}
-
-(( $+functions[_conan_upload_args] )) ||
-_conan_upload_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '(-p --package)'{-p,--package}'[Package ID]:package' \
-    '(-q --query)'{-q,--query}'[Only upload packages matching a specific query]:query' \
-    '(-r --remote)'{-r,--remote}'[upload to this specific remote]:remote' \
-    '--all[Upload both package recipe and packages]' \
-    '--skip-upload[Do not upload anything, just run the checks and the compression]' \
-    '--force[Ignore checks before uploading the recipe]' \
-    '--check[Perform an integrity check, using the manifests, before upload]' \
-    '(-c --confirm)'{-c,--confirm}'[Upload all matching recipes without confirmation]' \
-    '--retry[In case of fail retries to upload again the specified times]:retry' \
-    '--retry-wait[Waits specified seconds before retry again]:retry_wait' \
-    '(-no --no-overwrite)'{-no,--no-overwrite}'[Uploads package only if recipe is the same as the remote one]:all_or_recipe' \
-    '--parellel[Upload files in parallel using multiple threads]' \
-    '1: :_conan_package_references'
-}
-
-(( $+functions[_conan_export_args] )) ||
-_conan_export_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '(-k -ks --keep-source)'{-k,-ks,--keep-source}'[do not remove the source folder in the local cache]' \
-    '(-l --lockfile)'{-l,--lockfile}'[Path to a lockfile file]: :_files' \
-    '--lockfile-out[Filename of the updated lockfile]: :_files' \
-    '--ignore-dirty[When using the "scm" feature with "auto" values]' \
-    '1: :_conan_channel_or_package_references'
-}
-
-(( $+functions[_conan_export-pkg_args] )) ||
-_conan_export-pkg_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '(-b --build-folder)'{-b,--build-folder}'[Directory for the build process]: :_files -/' \
-    '(-f --force)'{-f,--force}'[Overwrite existing package if existing]' \
-    '(-if --install-folder)'{-if,--install-folder}'[Directory containing the conaninfo.txt and conanbuildinfo.txt files]: :_files -/' \
-    '(-pf --package-folder)'{-pf,--package-folder}'[folder containing a locally created package]: :_files -/' \
-    '(-sf --source-folder)'{-sf,--source-folder}'[Directory containing the sources]: :_files -/' \
-    '(-j --json)'{-j,--json}'[Path to a json file where the install information will be written]: :_files -g "*.json"' \
-    '(-l --lockfile)'{-l,--lockfile}'[Path to a lockfile file]: :_files' \
-    '--lockfile-out[Filename of the updated lockfile]: :_files' \
-    '--ignore-dirty[When using the "scm" feature with "auto" values]' \
-    \*{-e,--env}'[Environment variables that will be set during the package build(host machine)]: :_conan_environment_variables' \
-    \*{'-e\:b','--env\:build'}'[Environment variables that will be set during the package build(build machine)]: :_conan_environment_variables' \
-    \*{'-e\:h','--env\:host'}'[Environment variables that will be set during the package build(host machine)]: :_conan_environment_variables' \
-    \*{-o,--options}'[Define options values(host machine)]: :_conan_options' \
-    \*{'-o\:b','--options\:build'}'[Define options values(build machine)]: :_conan_options' \
-    \*{'-o\:h','--options\:host'}'[Define options values(host machine)]: :_conan_options' \
-    '(-pr --profile)'{-pr,--profile}'[Apply the specified profile to the host machine]: :_conan_profiles' \
-    '(-pr\:b --profile\:build)'{-pr:b,--profile:build}'[Apply the specified profile to the build machine]: :_conan_profiles' \
-    '(-pr\:h --profile\:host)'{-pr:h,--profile:host}'[Apply the specified profile to the host machine]: :_conan_profiles' \
-    \*{-s,--settings}'[Settings to build the package, overwriting the defaults(host machine)]: :_conan_settings' \
-    \*{'-s\:b','--settings\:build'}'[Settings to build the package, overwriting the defaults(build machine)]: :_conan_settings' \
-    \*{'-s\:h','--settings\:host'}'[Settings to build the package, overwriting the defaults(host machine)]: :_conan_settings' \
-    \*{-c,--conf}'[Configuration to build the package, overwriting the defaults(host machine)]:conf' \
-    \*{'-c\:b','--conf\:build'}'[Configuration to build the package, overwriting the defaults(build machine)]:conf' \
-    \*{'-c\:h','--conf\:host'}'[Configuration to build the package, overwriting the defaults(host machine)]:conf' \
-    '1: :_conan_channel_or_package_references'
-}
-
-(( $+functions[_conan_test_args] )) ||
-_conan_test_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '(-tbf --test-build-folder)'{-tbf,--test-builder-folder}'[Working directory for the build of the test project]: :_files -/' \
-    '(-b --build)'{-b,--build}'[Optional, specify which packages to build from source]:build' \
-    '(-r --remote)'{-r,--remote}'[Look in the specified remote server]:remote' \
-    '(-l --lockfile)'{-l,--lockfile}'[Path to a lockfile]: :_files' \
-    '--lockfile-out[Filename of the updated lockfile]' \
-    \*{-e,--env}'[Environment variables that will be set during the package build(host machine)]: :_conan_environment_variables' \
-    \*{'-e\:b','--env\:build'}'[Environment variables that will be set during the package build(build machine)]: :_conan_environment_variables' \
-    \*{'-e\:h','--env\:host'}'[Environment variables that will be set during the package build(host machine)]: :_conan_environment_variables' \
-    \*{-o,--options}'[Define options values(host machine)]: :_conan_options' \
-    \*{'-o\:b','--options\:build'}'[Define options values(build machine)]: :_conan_options' \
-    \*{'-o\:h','--options\:host'}'[Define options values(host machine)]: :_conan_options' \
-    '(-pr --profile)'{-pr,--profile}'[Apply the specified profile to the host machine]: :_conan_profiles' \
-    '(-pr\:b --profile\:build)'{-pr:b,--profile:build}'[Apply the specified profile to the build machine]: :_conan_profiles' \
-    '(-pr\:h --profile\:host)'{-pr:h,--profile:host}'[Apply the specified profile to the host machine]: :_conan_profiles' \
-    \*{-s,--settings}'[Settings to build the package, overwriting the defaults(host machine)]: :_conan_settings' \
-    \*{'-s\:b','--settings\:build'}'[Settings to build the package, overwriting the defaults(build machine)]: :_conan_settings' \
-    \*{'-s\:h','--settings\:host'}'[Settings to build the package, overwriting the defaults(host machine)]: :_conan_settings' \
-    \*{-c,--conf}'[Configuration to build the package, overwriting the defaults(host machine)]:conf' \
-    \*{'-c\:b','--conf\:build'}'[Configuration to build the package, overwriting the defaults(build machine)]:conf' \
-    \*{'-c\:h','--conf\:host'}'[Configuration to build the package, overwriting the defaults(host machine)]:conf' \
-    '1: :_conan_package_references'
-}
-
-(( $+functions[_conan_source_args] )) ||
-_conan_source_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '(-sf --source-folder)'{-sf,--source-folder}'[Destination directory. Defaulted to current directory]: :_files -/' \
-    '(-if --install-folder)'{-if,--install-folder}'[Directory containing the conaninfo.txt and conanbuildinfo.txt files]: :_files -/' \
-    '*: :_files'
-}
-
-(( $+functions[_conan_build_args] )) ||
-_conan_build_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '(-b --build)'{-b,--build}'[Execute the build step]' \
-    "(-bf --build-folder)"{-bf,--build-folder}'[build folder, working directory of the build process. Defaulted to the current directory. A relative path can also be specified (relative to the current directory)]: :_files -/' \
-    '(-c --configure)'{-c,--configure}'[Execute the configuration step]' \
-    '(-i --install)'{-i,--install}'[Execute the install step]' \
-    '(-t --test)'{-t,--test}'[Execute the test step]' \
-    "(-if --install-folder)"{-if,--install-folder}'[local folder containing the conaninfo.txt and conanbuildinfo.txt files (from a previous conan install execution). Defaulted to --build-folder]: :_files -/' \
-    "(-pf --package-folder)"{-pf,--package-folder}'[folder to install the package (when the build system or build() method does it). Defaulted to the '\''{build_folder}/package'\'' folder. A relative path can be specified, relative to the current folder. Also an absolute path is allowed.]: :_files -/' \
-     "(-sf --source-folder)"{-sf,--source-folder}'[local folder containing the sources. Defaulted to the directory of the conanfile. A relative path can also be specified (relative to the current directory)]: :_files -/' \
-    '1: :_files'
-}
-
-(( $+functions[_conan_package_args] )) ||
-_conan_package_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    "(-bf --build-folder)"{-bf,--build-folder}'[build folder, working directory of the build process. Defaulted to the current directory. A relative path can also be specified (relative to the current directory)]: :_files -/' \
-    "(-if --install-folder)"{-if,--install-folder}'[local folder containing the conaninfo.txt and conanbuildinfo.txt files (from a previous conan install execution). Defaulted to --build-folder]: :_files -/' \
-    "(-pf --package-folder)"{-pf,--package-folder}'[folder to install the package (when the build system or build() method does it). Defaulted to the '\''{build_folder}/package'\'' folder. A relative path can be specified, relative to the current folder. Also an absolute path is allowed.]: :_files -/' \
-    '1: :_conan_package_references' \
-    "(-sf --source-folder)"{-sf,--source-folder}'[local folder containing the sources. Defaulted to the directory of the conanfile. A relative path can also be specified (relative to the current directory)]: :_files -/' \
-    '2:package ID:'
-}
-
-(( $+functions[_conan_editable_args] )) ||
-_conan_editable_args() {
-  _arguments -C \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '1: :_conan_editable_commands' \
-    '*:: :->command_args'
+  local -a common_opts=(
+    $_conan_package_options[@]
+    \*{-b,--build}'[optional, specify which packages to build from source]:build'
+    $_conan_remote_options[@]
+    '(-u --update)'{-u,--update}'[will check the remote and in case a newer version]'
+    $_conan_define_options[@]
+    $_conan_profile_options[@]
+    $_conan_setting_options[@]
+    $_conan_configuration_options[@]
+    $_conan_lockfile_options[@]
+  )
 
   case $state in
-    command_args)
-      (( $+functions[_conan_editable_${words[1]}_args] )) && _conan_editable_${words[1]}_args
+    (args)
+      local -a opts=($_conan_common_options[@])
+      case $words[1] in
+        (build-order)
+          opts+=(
+            '(-f --format)'{-f,--format}'[select the output format]:format:(json)'
+            $common_opts[@]
+          )
+          ;;
+        (build-order-merge)
+          opts+=(
+            '--file[files to be merged]:file:_files'
+          )
+          ;;
+        (info)
+          opts+=(
+            $common_opts[@]
+            '(-f --format)'{-f,--format}'[select the output format]:format:(html json dot)'
+            '--check-updates[check if there are recipe updates]'
+            '*--filter[show only the specified fields]:filter'
+            '*--package-filter[print information only for packages that match the patterns]:package_filter'
+            '--deploy[deploy using the provided deployer to the output folder]:deployer'
+          )
+          ;;
+      esac
+
+      _arguments "$opts[@]"
     ;;
   esac
 }
 
-(( $+functions[_conan_editable_commands] )) ||
-_conan_editable_commands() {
+(( $+functions[_conan_graph_commands] )) ||
+_conan_graph_commands() {
   local -a commands=(
-    'add:Put a package in editable mode'
-    'remove:Disable editable mode for a package'
-    'list:List packages in editable mode'
+    'build-order:compute the build order of a dependency graph'
+    'build-order-merge:merge more than 1 build-order file'
+    'info:compute the dependency graph and shows information about it'
   )
   _describe -t 'commands' "command" commands
 }
 
-(( $+functions[_conan_editable_add_args] )) ||
-_conan_editable_add_args() {
+(( $+functions[_conan_inspect] )) ||
+_conan_inspect() {
   _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '(-l --layout)'{-l,--layout}'[Relative or absolute path to a file containing the layout]: :_files' \
-    '(-of --output)'{-of,--output-folder}'[The root output folder for generated and build files]: :_files -/' \
-    '*: :_files'
+    "$_conan_common_options[@]" \
+    '(-f --format)'{-f,--format}'[select the output format]:format:(json)' \
+    '*:recipe_folder:_files -/'
 }
 
-(( $+functions[_conan_editable_remove_args] )) ||
-_conan_editable_remove_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '*: :_conan_package_references'
-}
-
-(( $+functions[_conan_editable_list_args] )) ||
-_conan_editable_list_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]'
-}
-
-(( $+functions[_conan_workspace_args] )) ||
-_conan_workspace_args() {
-  _arguments -C \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '1: :_conan_workspace_commands' \
-    '*:: :->command_args'
-
-  case $state in
-    command_args)
-      (( $+functions[_conan_workspace_${words[1]}_args] )) && _conan_workspace_${words[1]}_args
-    ;;
-  esac
-}
-
-(( $+functions[_conan_workspace_commands] )) ||
-_conan_workspace_commands() {
-  local -a commands=(
-    'install:same as a "conan install" command but using the workspace data from the file'
+(( $+functions[_conan_install] )) ||
+_conan_install() {
+  local -a generators=(
+    cmake cmake_multi cmake_paths cmake_find_package cmake_find_package_multi
+    msbuild visual_studio visual_studio_multi visual_studio_legacy xcode compiler_args gcc
+    boost-build b2 qbs qmake scons pkg_config virtualenv virtualenv_python virtualbuildenv
+    virtualrunenv youcompleteme txt json premake make markdown deploy
   )
-  _describe -t 'commands' "command" commands
-}
-
-(( $+functions[_conan_workspace_install_args] )) ||
-_conan_workspace_install_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '(-b --build)'{-b,--build}'[Optional, specify which packages to build from source]:build' \
-    '(-r --remote)'{-r,--remote}'[Look in the specified remote server]:remote' \
-    '(-u --update)'{-u,--update}'[Will check the remote and it will install those in the local cache]' \
-    '(-l --lockfile)'{-l,--lockfile}'[Path to a lockfile]: :_files' \
-    '--lockfile-out[Filename of the updated lockfile]' \
-    \*{-e,--env}'[Environment variables that will be set during the package build(host machine)]: :_conan_environment_variables' \
-    \*{'-e\:b','--env\:build'}'[Environment variables that will be set during the package build(build machine)]: :_conan_environment_variables' \
-    \*{'-e\:h','--env\:host'}'[Environment variables that will be set during the package build(host machine)]: :_conan_environment_variables' \
-    \*{-o,--options}'[Define options values(host machine)]: :_conan_options' \
-    \*{'-o\:b','--options\:build'}'[Define options values(build machine)]: :_conan_options' \
-    \*{'-o\:h','--options\:host'}'[Define options values(host machine)]: :_conan_options' \
-    '(-pr --profile)'{-pr,--profile}'[Apply the specified profile to the host machine]: :_conan_profiles' \
-    '(-pr\:b --profile\:build)'{-pr:b,--profile:build}'[Apply the specified profile to the build machine]: :_conan_profiles' \
-    '(-pr\:h --profile\:host)'{-pr:h,--profile:host}'[Apply the specified profile to the host machine]: :_conan_profiles' \
-    \*{-s,--settings}'[Settings to build the package, overwriting the defaults(host machine)]: :_conan_settings' \
-    \*{'-s\:b','--settings\:build'}'[Settings to build the package, overwriting the defaults(build machine)]: :_conan_settings' \
-    \*{'-s\:h','--settings\:host'}'[Settings to build the package, overwriting the defaults(host machine)]: :_conan_settings' \
-    \*{-c,--conf}'[Configuration to build the package, overwriting the defaults(host machine)]:conf' \
-    \*{'-c\:b','--conf\:build'}'[Configuration to build the package, overwriting the defaults(build machine)]:conf' \
-    \*{'-c\:h','--conf\:host'}'[Configuration to build the package, overwriting the defaults(host machine)]:conf' \
-    '(-if --install-folder)'{-if,--install-folder}'[Folder where the workspace files will be created]: :_files -/' \
-    '*: :_files'
-}
-
-(( $+functions[_conan_profile_args] )) ||
-_conan_profile_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '1: :_conan_profile_commands' \
-    '*:: :->command_args'
-
-  case $state in
-    command_args)
-      (( $+functions[_conan_profile_${words[1]}_args] )) && _conan_profile_${words[1]}_args
-    ;;
-  esac
-}
-
-(( $+functions[_conan_profile_commands] )) ||
-_conan_profile_commands() {
-  local -a commands=(
-    'list:list current profiles'
-    'show:show the values defined for a profile'
-    'new:creates a new empty profile'
-    'update:update a profile'
-    'get:get a profile key'
-    'remove:remove a profile key'
+  local -a opts=(
+    $_conan_common_options[@]
+    '(-f --format)'{-f,--format}'[select the output format]:format:(json)'
+    \*{-b,--build}'[optional, specify which packages to build from source]:build'
+    $_conan_remote_options[@]
+    '(-u --update)'{-u,--update}'[will check the remote and in case a newer version]'
+    $_conan_define_options[@]
+    $_conan_profile_options[@]
+    $_conan_setting_options[@]
+    $_conan_configuration_options[@]
+    $_conan_lockfile_options[@]
+    '(-g --generator)'{-g,--generator}"[generators to use]:generator:($generators)"
+    '(-of --output)'{-of,--output-folder}'[the root output folder for generated and build files]:dir:_files -/'
+    '--deploy[deploy using the provided deployer to the output folder]:deployer'
+    '1:recipe_dir_or_conanfile:_files'
   )
-  _describe -t 'commands' "command" commands
+
+  _arguments "$opts[@]"
 }
 
-(( $+functions[_conan_profile_list_args] )) ||
-_conan_profile_list_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '(-j --json)'{-j,--json}'[json file path where the profile list will be written to]: :_files -g "*.json"'
-}
-
-(( $+functions[_conan_profile_show_args] )) ||
-_conan_profile_show_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '1: :_conan_profiles'
-}
-
-(( $+functions[_conan_profile_new_args] )) ||
-_conan_profile_new_args() {
-  _arguments -C \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '--detect[autodetect settings and fill \[settings\] section]' \
-    '--force[Overwrite existing profile if existing]' \
-    '1:profile name:'
-}
-
-(( $+functions[_conan_profile_update_args] )) ||
-_conan_profile_update_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '1: :_conan_settings' \
-    '2: :_conan_profiles'
-}
-
-(( $+functions[_conan_profile_get_args] )) ||
-_conan_profile_get_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '1: :_conan_setting_keys' \
-    '2: :_conan_profiles'
-}
-
-(( $+functions[_conan_profile_remove_args] )) ||
-_conan_profile_remove_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '1: :_conan_setting_keys' \
-    '2: :_conan_profiles'
-}
-
-(( $+functions[_conan_remote_args] )) ||
-_conan_remote_args() {
-  _arguments -C \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '(-h --help)1: :_conan_remote_commands' \
-    '(-h --help)*:: :->command_args'
-
-  case $state in
-    command_args)
-      (( $+functions[_conan_remote_${words[1]}_args] )) && _conan_remote_${words[1]}_args
-    ;;
-  esac
-}
-
-(( $+functions[_conan_remote_commands] )) ||
-_conan_remote_commands() {
-  local -a commands=(
-    'list:list current remotes'
-    'add:add a remote'
-    'remove:remove a remote'
-    'update:update the remote url'
-    'rename:Update the remote name'
-    'list_ref:list the package recipes and its associated remotes'
-    'add_ref:associate a recipe'\''s reference to a remote'
-    'remove_ref:dissociate a recipe'\''s reference and its remote'
-    'update_ref:update the remote associated with a package recipe'
-    'list_pref:list the package binaries and its associated remotes'
-    'add_pref:associate a package reference to a remote'
-    'remove_pref:dissociate a package reference to a remote'
-    'update_pref:update the remote associated with a binary package'
-    'clean:clean the list of remotes and all recipe-remote associations'
-    'enable:enable a remote'
-    'disable:disable a remote'
+(( $+functions[_conan_list] )) ||
+_conan_list() {
+  local -a opts=(
+    $_conan_common_options[@]
+    '(-f --format)'{-f,--format}'[select the output format]:format:(json html)'
+    \*{-p,--package-query}'[remove only the packages matching a specific query]:query'
+    '(-r --remote)'{-r,--remote}'[remote names]:remote'
+    '(-c --cache)'{-c,--cache}'[search in the local cache]'
+    '1:recipe_or_package_reference:_files'
   )
-  _describe -t 'commands' "command" commands
+
+  _arguments "$opts[@]"
 }
 
-(( $+functions[_conan_remote_list_args] )) ||
-_conan_remote_list_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '(-raw --raw)'{-raw,--raw}'[Raw format]'
-}
-
-(( $+functions[_conan_remote_add_args] )) ||
-_conan_remote_add_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '(-i --insert)'{-i,--insert}'[insert remote at specific index]:index' \
-    '(-f --force)'{-f,--force}'[Force addition, will update if existing]' \
-    '1:name of the remote:' \
-    '2:url of the remote:_urls' \
-    '3:verify SSL certificated:(True False)'
-}
-
-(( $+functions[_conan_remote_remove_args] )) ||
-_conan_remote_remove_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '1: :_conan_remotes'
-}
-
-(( $+functions[_conan_remote_update_args] )) ||
-_conan_remote_update_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '(-i --insert)'{-i,--insert}'[insert remote at specific index]:index' \
-    '1: :_conan_remotes' \
-    '2:url of the remote:_urls' \
-    '3:verify SSL certificated:(True False)'
-}
-
-(( $+functions[_conan_remote_rename_args] )) ||
-_conan_remote_rename_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '1: :_conan_remotes' \
-    '2: :_conan_remotes'
-}
-
-(( $+functions[_conan_remote_list_ref_args] )) ||
-_conan_remote_list_ref_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '--no-remote[List the ones without remote]'
-}
-
-(( $+functions[_conan_remote_add_ref_args] )) ||
-_conan_remote_add_ref_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '1:reference:_conan_package_references' \
-    '2:remote:_conan_remotes'
-}
-
-(( $+functions[_conan_remote_remove_ref_args] )) ||
-_conan_remote_remove_ref_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '1:reference:_conan_package_references'
-}
-
-(( $+functions[_conan_remote_update_ref_args] )) ||
-_conan_remote_update_ref_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '1:reference:_conan_package_references' \
-    '2:remove:_conan_remotes'
-}
-
-(( $+functions[_conan_remote_list_pref_args] )) ||
-_conan_remote_list_pref_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '--no-remote[List the ones without remote]' \
-    '1:reference:_conan_package_references'
-}
-
-(( $+functions[_conan_remote_add_pref_args] )) ||
-_conan_remote_add_pref_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '1:reference:_conan_package_references' \
-    '2: :_conan_remotes'
-}
-
-(( $+functions[_conan_remote_remove_pref_args] )) ||
-_conan_remote_remove_pref_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '1:reference:_conan_package_references'
-}
-
-(( $+functions[_conan_remote_update_pref_args] )) ||
-_conan_remote_update_pref_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '1:reference:_conan_package_references' \
-    '2: :_conan_remotes'
-}
-
-(( $+functions[_conan_user_args] )) ||
-_conan_user_args() {
-  _arguments  \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '(-c --clean)'{-c,--clean}'[Remove user and tokens for all remotes]' \
-    '(-p --password)'{-p,--password}'[User password]:password' \
-    '(-r --remote)'{-r,--remote}'[Use the specified remote server]: :_conan_remotes' \
-    '(-j --json)'{-j,--json}'[json file path where the user list will be written to]: :_files -g "*.json"' \
-    '1::name_name'
-}
-
-(( $+functions[_conan_imports_args] )) ||
-_conan_imports_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '(-if --install-folder)'{-if,--install-folder}'[local folder containing the conaninfo.txt and conanbuildinfo.txt files (from a previous conan install execution)]: :_files -/' \
-    '(-imf --import-folder)'{-imf,--import-folder}'[directory to copy the artifacts to. By default it will be the current directory]: :_files -/' \
-    '(-u --undo)'{-u,--undo}'[undo imports (remove imported files)]' \
-    '1: :_conan_directory_or_package_references'
-}
-
-(( $+functions[_conan_copy_args] )) ||
-_conan_copy_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    "(--all -p --package)"{-p,--package}'[copy specified package ID]:package reference:_conan_package_references' \
-    '(--all -p --package)--all[copy all packages from the specified package recipe]' \
-    '(--force)--force[override destination packages and the package recipe]' \
-    '1: :_conan_package_references' \
-    '2: :_conan_user_channels'
-}
-
-(( $+functions[_conan_remove_args] )) ||
-_conan_remove_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '(-b --builds)'{-b,--builds}'[By default, remove all the build folders or select one]::package_id' \
-    '(-f --force)'{-f,--force}'[Remove without requesting a confirmation]' \
-    '(-l --locks)'{-l,--locks}'[Remove locks]' \
-    '(-o --outdated)'{-o,--outdated}'[Remove only outdated from recipe packages]' \
-    \*{-p,--packages}'[Remove all packages of the specified reference]:package_id' \
-    '(-q --query)'{-q,--query}'[Package query]:query' \
-    '(-r --remote)'{-r,--remote}'[Will remove from the specified remote]: :_conan_remotes' \
-    '(-s --src)'{-s,--src}'[Remove source folders]' \
-    '(-t --system-reqs)'{-t,--system-reqs}'[Remove system_reqs folder]' \
-    '*: :_conan_package_references'
-}
-
-(( $+functions[_conan_alias_args] )) ||
-_conan_alias_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '1:alias reference:_conan_package_references' \
-    '2:target reference:_conan_package_references'
-}
-
-(( $+functions[_conan_download_args] )) ||
-_conan_download_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '(-p --package)'{-p,--package}'[Force install specified package ID]:package_id' \
-    '(-r --remote)'{-r,--remote}'[Will remove from the specified remote]: :_conan_remotes' \
-    '(-re --recipe)'{-re,--recipe}'[Downloads only the recipe]' \
-    '*: :_conan_package_references' \
-}
-
-(( $+functions[_conan_inspect_args] )) ||
-_conan_inspect_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    \*{-a,--attribute}'[The attribute to be displayed]' \
-    '(-r --remote)'{-r,--remote}'[Will remove from the specified remote]: :_conan_remotes' \
-    '(-j --json)'{-j,--json}'[json output file]: :_files -g "*.json"' \
-    '*--raw[Print just the value of the requested attribute]:attribute' \
-    '*: :_conan_package_references' \
-}
-
-(( $+functions[_conan_lock_args] )) ||
-_conan_lock_args() {
+(( $+functions[_conan_lock] )) ||
+_conan_lock() {
   _arguments -C \
     '(- : *)'{-h,--help}'[display help information]' \
-    '(-h --help)1: :_conan_lock_commands' \
-    '(-h --help)*:: :->command_args'
+    '1: :_conan_lock_commands' \
+    '*:: :->args'
 
   case $state in
-    command_args)
-      (( $+functions[_conan_lock_${words[1]}_args] )) && _conan_lock_${words[1]}_args
+    (args)
+      local -a opts=($_conan_common_options)
+      case $words[1] in
+        (add)
+          opts+=(
+            '*--requires[add references to lockfile]:requires'
+            '*--build-requires[add build-requires to lockfile]:build_requires'
+            '*--python-requires[add python-requires to lockfile]'
+            '--lockfile-out[file name of the created lockfile]:filename:_files'
+            '--lockfile[file name of the input lockfile]:filename:_files'
+          )
+          ;;
+        (create)
+          opts+=(
+            \*{-b,--build}'[optional, specify which packages to build from source]:build'
+            $_conan_remote_options[@]
+            '(-u --update)'{-u,--update}'[will check the remote and in case a newer version]'
+            $_conan_define_options[@]
+            $_conan_profile_options[@]
+            $_conan_setting_options[@]
+            $_conan_configuration_options[@]
+            $_conan_lockfile_options[@]
+            '1: :_files'
+          )
+        ;;
+        (merge)
+          opts+=(
+            '--lockfile-out[file name of the created lockfile]:filename:_files'
+            '--lockfile[file name of the input lockfile]:filename:_files'
+          )
+        ;;
+      esac
+
+      _arguments "$opts[@]"
     ;;
   esac
 }
@@ -888,295 +385,374 @@ _conan_lock_args() {
 (( $+functions[_conan_lock_commands] )) ||
 _conan_lock_commands() {
   local -a commands=(
-    'update:Complete missing information in the first lockfile with information defined in the second lockfile'
-    'build-order:Returns build-order'
-    'clean-modified:Clean modified flags'
-    'install:Install a lockfile'
-    'create:Create a lockfile from a conanfile or a reference'
-    'bundle:Manages lockfile bundles'
+    'add:add requires, build-requires or python requires to an existing or new lockfile'
+    'create:create a lockfile from a conanfile or a reference'
+    'merge:merge 2 or more lockfiles'
   )
   _describe -t 'commands' "command" commands
 }
 
-(( $+functions[_conan_lock_update_args] )) ||
-_conan_lock_update_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '1:old_lockfile:_files' \
-    '2:new_lockfile:_files'
-}
-
-(( $+functions[_conan_lock_build-order_args] )) ||
-_conan_lock_build-order_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '--json[generate output file in json format]: :_files -g "*.json"' \
-    '*:lockfile:_files'
-}
-
-(( $+functions[_conan_lock_clean-modified_args] )) ||
-_conan_lock_clean-modified_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '*:lockfile:_files'
-}
-
-(( $+functions[_conan_lock_install_args] )) ||
-_conan_lock_install_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '--recipes[Install only recipes, not binaries]' \
-    '(-g --generator)'{-g,--generator}'[Generators to use]:_conan_generators' \
-    '*:lockfile:_files'
-}
-
-(( $+functions[_conan_lock_create_args] )) ||
-_conan_lock_create_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '--name[Provide a package name if not specified in conanfile]:name' \
-    '--version[Provide a package version if not specified in conanfile]:version' \
-    '--user[Provide a user]:user' \
-    '--channel[Provide a channel]:channel' \
-    '--reference[Provide a package reference instead of a conanfile]: :_conan_package_references' \
-    '(-l --lockfile)'{-l,--lockfile}'[Path to a lockfile]: :_files' \
-    '--base[Lock only recipe versions and revisions]' \
-    '--lockfile-out[Filename of the updated lockfile]: :_files' \
-    '(-r --remote)'{-r,--remote}'[Look in the specified remote server]:remote' \
-    '(-u --update)'{-u,--update}'[Will check the remote and it will install those in the local cache]' \    \*{-e,--env}'[Environment variables that will be set during the package build(host machine)]:env' \
-    \*{'-e\:b','--env\:build'}'[Environment variables that will be set during the package build(build machine)]:env' \
-    \*{'-e\:h','--env\:host'}'[Environment variables that will be set during the package build(host machine)]:env' \
-    \*{-o,--options}'[Define options values(host machine)]:option' \
-    \*{'-o\:b','--options\:build'}'[Define options values(build machine)]:option' \
-    \*{'-o\:h','--options\:host'}'[Define options values(host machine)]:option' \
-    '(-pr --profile)'{-pr,--profile}'[Apply the specified profile to the host machine]: :_conan_profiles' \
-    '(-pr\:b --profile\:build)'{-pr:b,--profile:build}'[Apply the specified profile to the build machine]: :_conan_profiles' \
-    '(-pr\:h --profile\:host)'{-pr:h,--profile:host}'[Apply the specified profile to the host machine]: :_conan_profiles' \
-    \*{-s,--settings}'[Settings to build the package, overwriting the defaults(host machine)]:setting' \
-    \*{'-s\:b','--settings\:build'}'[Settings to build the package, overwriting the defaults(build machine)]:setting' \
-    \*{'-s\:h','--settings\:host'}'[Settings to build the package, overwriting the defaults(host machine)]:setting' \
-    \*{-c,--conf}'[Configuration to build the package overwriting the defaults(host machine)]:config' \
-    \*{'-c\:b','--conf\:build'}'[Configuration to build the package overwriting the defaults(build machine)]:config' \
-    \*{'-c\:h','--conf\:host'}'[Configuration to build the package overwriting the defaults(host machine)]:config' \
-    '*:lockfile:_files'
-}
-
-(( $+functions[_conan_lock_bundle_args] )) ||
-_conan_lock_bundle_args() {
+(( $+functions[_conan_profile] )) ||
+_conan_profile() {
   _arguments -C \
     '(- : *)'{-h,--help}'[display help information]' \
-    '(-h --help)1: :_conan_lock_bundle_commands' \
-    '(-h --help)*:: :->command_args'
+    '1: :_conan_profile_commands' \
+    '*:: :->args'
 
   case $state in
-    command_args)
-      (( $+functions[_conan_lock_bundle_${words[1]}_args] )) && _conan_lock_bundle_${words[1]}_args
+    (args)
+      local opts=($_conan_common_options[@])
+      case $words[1] in
+        (detect)
+          opts+=(
+            '--name[profile name, "default" if not specified]::name'
+            '(-f --force)'{-f,--force}'[overwrite if exists]'
+          )
+          ;;
+        (list)
+          opts+=(
+            '(-f --format)'{-f,--format}'[select the output format]:format:(json)'
+          )
+          ;;
+        (path|show)
+          opts+=(
+            $_conan_define_options[@]
+            $_conan_profile_options[@]
+            $_conan_setting_options[@]
+            $_conan_configuration_options[@]
+          )
+          ;;
+      esac
+
+      _arguments "$opts[@]"
     ;;
   esac
 }
 
-(( $+functions[_conan_lock_bundle_commands] )) ||
-_conan_lock_bundle_commands() {
+(( $+functions[_conan_profile_commands] )) ||
+_conan_profile_commands() {
   local -a commands=(
-    'create:Create lockfile bundle'
-    'build-order:Return build-order'
-    'update:Update both the bundle information as well as every individual lockfile'
-    'clean-modified:Clean modified flag'
+    'detect:generate a profile using auto-detected values'
+    'list:list all profiles in the cache'
+    'path:show profile path location'
+    'show:show aggregated profiles from the passed arguments'
   )
   _describe -t 'commands' "command" commands
 }
 
-(( $+functions[_conan_lock_bundle_create_args] )) ||
-_conan_lock_bundle_create_args() {
-  _arguments \
+(( $+functions[_conan_remote] )) ||
+_conan_remote() {
+  _arguments -C \
     '(- : *)'{-h,--help}'[display help information]' \
-    '--bundle-out[Filename of the created bundle]: :_files' \
-    '*:lockfile:_files' \
+    '1: :_conan_remote_commands' \
+    '*:: :->args'
+
+  case $state in
+    (args)
+      local -a opts=($_conan_common_options[@])
+      case $words[1] in
+        (add)
+          opts+=(
+            '--insecure[allow insecure server connections when using SSL]'
+            '--index[insert the remote at a specific position in the remote list]:index'
+            '(-f --force)'{-f,--force}'[force the definition of the remote even if duplicated]'
+            '1:name'
+            '2:url'
+          )
+          ;;
+        (auth)
+          opts+=(
+            '--with-user[only try to auth in those remotes that already have a user name]'
+            '1:remote:_conan_remotes'
+          )
+          ;;
+        (list|list-users)
+          opts+=('(-f --format)'{-f,--format}'[select the output format]:format:(json)')
+          ;;
+        (login)
+          opts+=(
+            '(-f --format)'{-f,--format}'[select the output format]:format:(json)'
+            '(-p --password)'{-p,--password}'[user password]:password'
+            '1:remote:_conan_remotes'
+            '2:username:'
+          )
+          ;;
+        (logout)
+          opts+=(
+            '(-f --format)'{-f,--format}'[select the output format]:format:(json)'
+            '1:remote:_conan_remotes'
+          )
+          ;;
+        (remove)
+          opts+=('1:remote:_conan_remotes')
+          ;;
+        (rename)
+          opts+=(
+            '1:remote:_conan_remotes'
+            '2:new_name'
+          )
+          ;;
+        (set-user)
+          opts+=(
+            '(-f --format)'{-f,--format}'[select the output format]:format:(json)'
+            '1:remote:_conan_remotes'
+            '2:user_name'
+          )
+          ;;
+        (update)
+          opts+=(
+            '--url[new url for the remote]'
+            '--secure[do not allow insecure server connections when using SSL]'
+            '--insecure[allow insecure server connections when using SSL]'
+            '--index[insert the remote at a specific position in the remote list]:index'
+            '1:remote:_conan_remotes'
+          )
+          ;;
+      esac
+    ;;
+  esac
 }
 
-(( $+functions[_conan_lock_bundle_build-order_args] )) ||
-_conan_lock_bundle_build-order_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '--json[generate output file in json format]: :_files -g "*.json"' \
-    '*:bundle:_files' \
-}
-
-(( $+functions[_conan_lock_bundle_update_args] )) ||
-_conan_lock_bundle_update_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '*:bundle:_files' \
-}
-
-(( $+functions[_conan_lock_bundle_clean-modified_args] )) ||
-_conan_lock_bundle_clean-modified_args() {
-  _arguments \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '*:bundle:_files' \
-}
-
-(( $+functions[_conan_generators] )) ||
-_conan_generators() {
-  local -a generators=(cmake cmake_multi cmake_paths cmake_find_package cmake_find_package_multi
-                       msbuild visual_studio visual_studio_multi visual_studio_legacy xcode compiler_args gcc
-                       boost-build b2 qbs qmake scons pkg_config virtualenv virtualenv_python virtualbuildenv
-                       virtualrunenv youcompleteme txt json premake make markdown deploy)
-
-  _values "generator" $generators
-}
-
-(( $+functions[_conan_info_only_values] )) ||
-_conan_info_only_values() {
-  local -a values=(
-    'id:show only "id"'
-    'build_id:show only "build_id"'
-    'remote:show only "remote"'
-    'url:show only "url"'
-    'license:show only "license"'
-    'requires:show only "requires"'
-    'update:show only "update"'
-    'required:show only "required"'
-    'date:show only "date"'
-    'author:show only "author"'
-    'export_folder:use with --paths'
-    'build_folder:use with --paths'
-    'package_folder:use with --paths'
-    'source_folder:use with --paths'
-    'None:show only references'
+(( $+functions[_conan_remote_commands] )) ||
+_conan_remote_commands() {
+  local -a commands=(
+    'add:add a remote'
+    'auth:authenticate in the defined remotes'
+    'disable:disable all the remotes matching a pattern'
+    'enable:enable all the remotes matching a pattern'
+    'list:list current remotes'
+    'list-users:list the users logged into all the remotes'
+    'login:login into the specified remotes matching a pattern'
+    'logout:clear the existing credentials for the specified remotes matching a pattern'
+    'remove:remove a remote'
+    'rename:rename a remote'
+    'set-user:associate a username with a remote matching pattern without performing the authentication'
+    'update:update a remote'
   )
-  _describe -t 'values' "value" values
+  _describe -t 'commands' "command" commands
 }
 
-(( $+functions[_conan_conanfiles] )) ||
-_conan_conanfiles() {
-  _files -g '*.py'
+(( $+functions[_conan_remove] )) ||
+_conan_remove() {
+  local -a opts=(
+    $_conan_common_options[@]
+    '(-c --confirm)'{-c,--confirm}'[remove without requesting a confirmation]'
+    \*{-p,--package-query}'[remove only the packages matching a specific query]:query'
+    \*{-r,--remote}'[will remove from the specified remote]:remote'
+    '*:recipe_or_package_reference:_files'
+  )
+
+  _arguments "$opts[@]"
 }
 
-(( $+functions[_conan_conanfiles_or_package_references] )) ||
-_conan_conanfiles_or_package_references() {
-  _alternative \
-    'conanfile: :_conan_conanfiles' \
-    'package-references: :_conan_package_references'
+(( $+functions[_conan_search] )) ||
+_conan_search() {
+  local -a opts=(
+    $_conan_common_options[@]
+    \*{-r,--remote}'[will remove from the specified remote]:remote'
+    '*:recipe_reference:_files'
+  )
+
+  _arguments "$opts[@]"
 }
 
-(( $+functions[_conan_directory_or_package_references] )) ||
-_conan_directory_or_package_references() {
-  _alternative \
-    'directory: :_files -/' \
-    'package-references: :_conan_package_references'
+(( $+functions[_conan_build] )) ||
+_conan_build() {
+  local -a opts=(
+    $_conan_common_options[@]
+    $_conan_package_options[@]
+    \*{-b,--build}'[optional, specify which packages to build from source]:build'
+    $_conan_remote_options[@]
+    '(-u --update)'{-u,--update}'[will check the remote and in case a newer version]'
+    $_conan_define_options[@]
+    $_conan_profile_options[@]
+    $_conan_setting_options[@]
+    $_conan_configuration_options[@]
+    $_conan_lockfile_options[@]
+    '*: :_files'
+  )
+
+  _arguments "$opts[@]"
 }
 
-(( $+functions[_conan_channel_or_package_references] )) ||
-_conan_channel_or_package_references() {
-  _alternative \
-    'package-references: :_conan_package_references' \
-    'user-channels: :_conan_user_channels'
+(( $+functions[_conan_create] )) ||
+_conan_create() {
+  local -a opts=(
+    $_conan_common_options[@]
+    $_conan_package_options[@]
+    \*{-b,--build}'[optional, specify which packages to build from source]:build'
+    $_conan_remote_options[@]
+    '(-u --update)'{-u,--update}'[will check the remote and in case a newer version]'
+    $_conan_define_options[@]
+    $_conan_profile_options[@]
+    $_conan_setting_options[@]
+    $_conan_configuration_options[@]
+    $_conan_lockfile_options[@]
+    '--build-require[whether the provided reference is a build-require]'
+    '(-tf --test-folder)'{-tf,--test-folder}'[alternative test folder name]:folder:_files -/'
+    '*: :_files -/'
+  )
+
+  _arguments "$opts[@]"
 }
 
-(( $+functions[_conan_package_references] )) ||
-_conan_package_references() {
-  _guard '[^\-]#' 'package reference'  # TODO complete package references
+(( $+functions[_conan_download] )) ||
+_conan_download() {
+  local -a opts=(
+    $_conan_common_options[@]
+    '--only-recipe[download only the recipe, not the binary packages]'
+    \*{-p,--package-query}'[only download packages matching a specific query]:query'
+    '(-r --remote)'{-r,--remote}'[download from the specific remote]:remote:_conan_remotes'
+    '*:recipe_or_package_reference:_files'
+  )
+
+  _arguments "$opts[@]"
 }
 
-(( $+functions[_conan_user_channels] )) ||
-_conan_user_channels() {
-  _guard '[^\-]#' 'user channel' # TODO complete user channels
+(( $+functions[_conan_editable] )) ||
+_conan_editable() {
+  _arguments -C \
+    '(- : *)'{-h,--help}'[display help information]' \
+    '1: :_conan_editable_commands' \
+    '*:: :->args'
+
+  case $state in
+    (args)
+      local opts=($_conan_common_options[@])
+      case $words[1] in
+        (add)
+          opts+=(
+            $_conan_package_options[@]
+            '(-of --output-folder)'{-of,--output-folder}'[the root output folder]:folder:_files -/'
+          )
+          ;;
+        (list)
+          opts+=('(-f --format)'{-f,--format}'[select the output format]:format:(json)')
+          ;;
+        (remove)
+          opts+=('(-r --refs)'{-r,--refs}'[directly provide reference patterns]:refs')
+          ;;
+      esac
+
+      _arguments "$opts[@]"
+    ;;
+  esac
+}
+
+(( $+functions[_conan_editable_commands] )) ||
+_conan_editable_commands() {
+  local -a commands=(
+    'add:define the given path location as the package reference'
+    'list:list all the packages in editable mode'
+    'remove:remove the editable mode for this reference'
+  )
+  _describe -t 'commands' "command" commands
+}
+
+(( $+functions[_conan_export] )) ||
+_conan_export() {
+  local -a opts=(
+    $_conan_common_options[@]
+    $_conan_package_options[@]
+    $_conan_remote_options[@]
+    $_conan_lockfile_options[@]
+    '--build-require[whether the provided reference is a build-require]'
+    '*: :_files -/'
+  )
+
+  _arguments "$opts[@]"
+}
+
+(( $+functions[_conan_export-pkg] )) ||
+_conan_export-pkg() {
+  local -a opts=(
+    $_conan_common_options[@]
+    $_conan_package_options[@]
+    $_conan_remote_options[@]
+    $_conan_lockfile_options[@]
+    $_conan_define_options[@]
+    $_conan_profile_options[@]
+    $_conan_setting_options[@]
+    $_conan_configuration_options[@]
+    '*: :_files -/'
+  )
+
+  _arguments "$opts[@]"
+}
+
+(( $+functions[_conan_new] )) ||
+_conan_new() {
+  local -a templates=(
+    basic cmake_lib cmake_exe meson_lib meson_exe msbuild_lib msbuild_exe
+    bezel_lib bezel_exe autotools_lib autotools_exe
+  )
+  local -a opts=(
+    $_conan_common_options[@]
+    \*{-d,--define}'[define a template argument as key=value]:key_value'
+    '(-f --force)'{-f,--force}'[overwrite file if it already exists]'
+    "1:template:($templates)"
+  )
+
+  _arguments "$opts[@]"
+}
+
+(( $+functions[_conan_source] )) ||
+_conan_source() {
+  local -a opts=(
+    $_conan_common_options[@]
+    $_conan_package_options[@]
+    '1: :_files'
+  )
+
+  _arguments "$opts[@]"
+}
+
+(( $+functions[_conan_test] )) ||
+_conan_test() {
+  local -a opts=(
+    $_conan_common_options[@]
+    $_conan_package_options[@]
+    \*{-b,--build}'[optional, specify which packages to build from source]:build'
+    $_conan_remote_options[@]
+    '(-u --update)'{-u,--update}'[will check the remote and in case a newer version]'
+    $_conan_define_options[@]
+    $_conan_profile_options[@]
+    $_conan_setting_options[@]
+    $_conan_configuration_options[@]
+    $_conan_lockfile_options[@]
+    '1:path:_files -/'
+    '2:reference'
+  )
+
+  _arguments "$opts[@]"
+}
+
+(( $+functions[_conan_upload] )) ||
+_conan_upload() {
+  local -a opts=(
+    $_conan_common_options[@]
+    \*{-p,--package-query}'[only upload packages matching a specific query]:query'
+    '(-r --remote)'{-r,--remote}'[upload to this specific remote]:remote:_conan_remotes'
+    '--only-recipe[upload only the recipe, not the binary packages]'
+    '--force[force the upload of the artifacts]'
+    '--check[perform an integrity check before upload]'
+    '(-c --confirm)'{-c,--confirm}'[upload all matching recipes without confirmation]'
+    '1::reference'
+  )
+
+  _arguments "$opts[@]"
 }
 
 (( $+functions[_conan_remotes] )) ||
 _conan_remotes() {
-  local remotes; remotes=(${(f)"$(_call_program remotes $service remote list)"})
+  local -a remotes=(${(f)"$(_call_program remotes $service remote list)"})
   _describe -t remotes 'remote' remotes "$@"
-}
-
-(( $+functions[_conan_scopes] )) ||
-_conan_scopes() {
-  _guard '[^\-]#' 'scope' # TODO complete scopes
-}
-
-(( $+functions[_conan_build_policies] )) ||
-_conan_build_policies() {
-  _guard '[^\-]#' 'build policy' # TODO complete build policies
 }
 
 (( $+functions[_conan_profiles] )) ||
 _conan_profiles() {
-  local profiles; profiles=(${(f)"$(_call_program profiles $service profile list)"})
+  local -a profiles=(${(f)"$(_call_program profiles $service profile list 2>/dev/null)"})
   _describe -t profiles 'profile' profiles "$@"
-}
-
-(( $+functions[_conan_config_keys] )) ||
-_conan_config_keys() {
-  _guard '[^\-]#' 'config key' # TODO complete config keys
-}
-
-(( $+functions[_conan_config_values] )) ||
-_conan_config_values() {
-  _guard '[^\-]#' 'config value' # TODO complete config values
-}
-
-(( $+functions[_conan_options] )) ||
-_conan_options() {
-  local ret=1
-  if compset -P '*='; then
-    _wanted option-values expl 'option value' _conan_option_values ${IPREFIX%=} && ret=0
-  else
-    _wanted option-names expl 'option key' _conan_option_keys -qS= && ret=0
-  fi
-  return ret
-}
-
-(( $+functions[_conan_option_keys] )) ||
-_conan_option_keys() {
-  _guard '[^\-]#' 'option key' # TODO complete option keys
-}
-
-(( $+functions[_conan_option_values] )) ||
-_conan_option_values() {
-  _guard '[^\-]#' 'option value' # TODO complete option values
-}
-
-(( $+functions[_conan_settings] )) ||
-_conan_settings() {
-  local ret=1
-  if compset -P '*='; then
-    _wanted setting-values expl 'setting value' _conan_setting_values ${IPREFIX%=} && ret=0
-  else
-    _wanted setting-names expl 'setting key' _conan_setting_keys -qS= && ret=0
-  fi
-  return ret
-}
-
-(( $+functions[_conan_setting_keys] )) ||
-_conan_setting_keys() {
-  _guard '[^\-]#' 'setting key' # TODO complete setting keys
-}
-
-(( $+functions[_conan_setting_values] )) ||
-_conan_setting_values() {
-  _guard '[^\-]#' 'setting value' # TODO complete setting values
-}
-
-(( $+functions[_conan_environment_variables] )) ||
-_conan_environment_variables() {
-  local ret=1
-  if compset -P '*='; then
-    _wanted environment_variable-values expl 'environment variable value' _conan_environment_variable_values ${IPREFIX%=} && ret=0
-  else
-    _wanted environment_variable-names expl 'environment variable' _conan_environment_variable_keys -qS= && ret=0
-  fi
-  return ret
-}
-
-(( $+functions[_conan_environment_variable_keys] )) ||
-_conan_environment_variable_keys() {
-  _parameters -g "*export*"
-}
-
-(( $+functions[_conan_environment_variable_values] )) ||
-_conan_environment_variable_values() {
-  _guard '[^\-]#' 'environment variable value' # TODO complete environment variable values
 }
 
 _conan "$@"
