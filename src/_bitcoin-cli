@@ -44,8 +44,8 @@ _bitcoin-cli() {
   _arguments -C \
     -?'[This help message]' \
     -addrinfo'[Get the number of addresses known to the node, per network and total, after filtering for quality and recency. Total number of addresses known to the node may be higher.]' \
-    -chain='[Use the chain <chain> (default: main). Allowed values: main, test, signet, regtest]' \
-    -color='[Color setting for CLI output (default: auto). Valid values: always, auto, never]' \
+    -chain='[Use the chain <chain> (default: main). Allowed values: main, test, signet, regtest]:chain:(main test signet regtest)' \
+    -color='[Color setting for CLI output (default: auto). Valid values: always, auto, never]:when:(always auto never)' \
     -conf='[Specify configuration file. Relative paths will be prefixed by datadir location. (default: bitcoin.conf)]:PATH:_files' \
     -datadir='[Specify data directory]:PATH:_directories' \
     -getinfo='[Get general information from the remote server.]' \
