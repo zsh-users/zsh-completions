@@ -35,7 +35,7 @@
 # -------
 #
 #  * Ian Ker-Seymer (https://github.com/ianks)
-#
+#  * notmike
 # ------------------------------------------------------------------------------
 
 _bitcoin-cli() {
@@ -43,12 +43,16 @@ _bitcoin-cli() {
 
   _arguments -C \
     -?'[This help message]' \
+    -addrinfo'[Get the number of addresses known to the node, per network and total, after filtering for quality and recency. Total number of addresses known to the node may be higher.]' \
+    -chain='[Use the chain <chain> (default: main). Allowed values: main, test, signet, regtest]:chain:(main test signet regtest)' \
+    -color='[Color setting for CLI output (default: auto). Valid values: always, auto, never]:when:(always auto never)' \
     -conf='[Specify configuration file. Relative paths will be prefixed by datadir location. (default: bitcoin.conf)]:PATH:_files' \
     -datadir='[Specify data directory]:PATH:_directories' \
     -getinfo='[Get general information from the remote server.]' \
     -testnet'[Use the test chain]' \
     -regtest'[Enter regression test mode, which uses a special chain in which blocks can be solved instantly. This is intended for regression testing tools and app development.]' \
     -named'[Pass named instead of positional arguments (default: false)]' \
+    -netinfo=-'[Get network peer connection information from the remote server.]::level_or_help:(0 1 2 3 4 help)' \
     -stdin'[Read extra arguments from standard input, one per line until EOF/Ctrl-D (recommended for sensitive information such as passphrases)]' \
     -rpcport='[Connect to JSON-RPC on <port> (default: 8332, testnet: 18332, regtest: 18443)]: :_guard "[[\:digit\:]]#" "PORT"' \
     -rpcwait'[Wait for RPC server to start]' \
@@ -56,6 +60,7 @@ _bitcoin-cli() {
     -rpcpassword='[Password for JSON-RPC connections]:RPCPASSWORD:()' \
     -rpcconnect='[Send commands to node running on <ip> (default: 127.0.0.1)]:RPCCONNECT:_hosts' \
     -rpcclienttimeout='[Timeout during HTTP requests, or 0 for no timeout. (default: 900)]: :_guard "[[\:digit\:]]#" "RPCCLIENTTIMEOUT"' \
+    -version'[Print version and exit]' \
     ':subcommand:->subcommand' && ret=0
 
   case $state in
@@ -66,11 +71,13 @@ _bitcoin-cli() {
       'getblockchaininfo'
       'getblockcount'
       'getblockfilter'
+      'getblockfrompeer'
       'getblockhash'
       'getblockheader'
       'getblockstats'
       'getchaintips'
       'getchaintxstats'
+      'getdeploymentinfo'
       'getdifficulty'
       'getmempoolancestors'
       'getmempooldescendants'
@@ -80,6 +87,7 @@ _bitcoin-cli() {
       'gettxout'
       'gettxoutproof'
       'gettxoutsetinfo'
+      'gettxspendingprevout'
       'preciousblock'
       'pruneblockchain'
       'savemempool'
@@ -92,7 +100,6 @@ _bitcoin-cli() {
       'logging'
       'stop'
       'uptime'
-      'generatetoaddress'
       'getblocktemplate'
       'getmininginfo'
       'getnetworkhashps'
@@ -129,6 +136,7 @@ _bitcoin-cli() {
       'signrawtransactionwithkey'
       'testmempoolaccept'
       'utxoupdatepsbt'
+      'enumeratesigners'
       'createmultisig'
       'deriveaddresses'
       'estimatesmartfee'
@@ -157,6 +165,7 @@ _bitcoin-cli() {
       'getunconfirmedbalance'
       'getwalletinfo'
       'importaddress'
+      'importdescriptors'
       'importmulti'
       'importprivkey'
       'importprunedfunds'
@@ -164,6 +173,7 @@ _bitcoin-cli() {
       'importwallet'
       'keypoolrefill'
       'listaddressgroupings'
+      'listdescriptors'
       'listlabels'
       'listlockunspent'
       'listreceivedbyaddress'
@@ -175,8 +185,14 @@ _bitcoin-cli() {
       'listwallets'
       'loadwallet'
       'lockunspent'
+      'migratewallet'
+      'newkeypool'
+      'psbtbumpfee'
       'removeprunedfunds'
       'rescanblockchain'
+      'restorewallet'
+      'send'
+      'sendall'
       'sendmany'
       'sendtoaddress'
       'sethdseed'
@@ -185,8 +201,11 @@ _bitcoin-cli() {
       'setwalletflag'
       'signmessage'
       'signrawtransactionwithwallet'
+      'simulaterawtransaction'
       'unloadwallet'
+      'upgradewallet'
       'walletcreatefundedpsbt'
+      'walletdisplayaddress'
       'walletlock'
       'walletpassphrase'
       'walletpassphrasechange'
