@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Node.js v19.7.0 (https://nodejs.org)
+#  Completion script for Node.js v20.0.0 (https://nodejs.org)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -68,6 +68,9 @@ _arguments -C \
   '-[script read from stdin (default; interactive mode if a tty)]' \
   '--[indicate the end of node options]' \
   '--abort-on-uncaught-exception[aborting instead of exiting causes a core file to be generated for analysis]' \
+  '--allow-child-process[allow use of child process when any permissions are set]' \
+  '--allow-fs-read=[allow permissions to read the filesystem]: :_files' \
+  '--allow-fs-write=[allow permissions to write in the filesystem]:_files' \
   '--build-snapshot[generate a snapshot blob when the process exits]' \
   '--completion-bash[print source-able bash completion script]' \
   '--cpu-prof[Start the V8 CPU profiler on start up]' \
@@ -86,10 +89,11 @@ _arguments -C \
   '--experimental-import-meta-resolve[experimental ES Module import.meta.resolve() support]' \
   '(--loader --experimental-loader)'{--loader,--experimental-loader}'=[Specify the module of a custom ECMAScript Module loader]: :_files' \
   '--experimental-network-imports[experimental https support for the ES Module loader]' \
+  '--experimental-permission[enable the permission system]' \
   '--experimental-policy=[security policy file]: :_files' \
+  '--experimental-sea-config=[generate a blob that can be embedded into the single executable application]: :_files' \
   '--experimental-test-coverage[enable code coverage in the test runner]' \
   '--experimental-vm-modules[experimental ES Module support in vm module]' \
-  '--experimental-wasi-unstable-preview1[experimental WASI support]' \
   '--experimental-wasm-modules[experimental ES module support for webassembly modules]' \
   '--force-context-aware[disable loading non-context-aware addons]' \
   '--force-fips[force FIPS crypto]' \
