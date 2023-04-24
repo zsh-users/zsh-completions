@@ -1,0 +1,78 @@
+#compdef grpcurl
+# ------------------------------------------------------------------------------
+# Copyright (c) 2023 Github zsh-users - https://github.com/zsh-users
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for grpcurl v1.8.7. (https://github.com/fullstorydev/grpcurl)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei Yoshida (https://github.com/syohex) <syohex@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+_arguments \
+  '*-H[Additional headers in "name:value" format]:header' \
+  '-allow-unknown-fields[If "json" format is used, allows unknown fields to be present]' \
+  '-authority[The authoritative name of the remote server]:authority' \
+  '-cacert[File containing trusted root certificates for the server]: :_files' \
+  '-cert[File containing client certificate(public key) to present to the server]: :_files' \
+  '-connect-timeout[The maximum time, in seconds, to wait for connection to be established]:seconds' \
+  '*-d[Data for request contents]:data' \
+  '-emit-defaults[Emit default values for JSON-encoded responses]' \
+  '-expand-headers[Headers may use "\${NAME}" syntax to reference environment variables]' \
+  '-format[The format of request data]: :(json text)' \
+  '-format-error[When a non-zero status is returned, format the response using the value set by the -format flag]' \
+  '*-import-path[The path to a directory from which proto sources can be imported]: :_files -/' \
+  '-insecure[Skip server certificate and domain verification]' \
+  '-keepalive-time[The maximum idle time in seconds]:seconds' \
+  '-key[File containing client private key, to present to the server]: :_files' \
+  '-max-msg-sz[The maximum encoded size of a response message in bytes, that grpcurl will accept]:bytes' \
+  '-max-time[The maximum total time the operation can take, in seconds]:seconds' \
+  '-msg-template[When describing messages, show a template of input data]' \
+  '-plaintext[Use plain-text HTTP/2 when connecting to server(no TLS)]' \
+  '*-proto[The name of a proto source file]: :_files' \
+  '*-protoset[The name of a file containing an encoded FileDescriptorSet]: :_files' \
+  '-protoset-out[The name of a file to be written that will contain a FileDescriptorSet]: :_files' \
+  '*-reflect-header[Additional reflection headers in "name:value" format]:header' \
+  '*-rpc-header[Additional RPC headers in "name:value" format]' \
+  '-servername[Override server name when validating TLS certificate]' \
+  '-unix[Indicates that the server address is the path to a Unix domain socket]' \
+  '-use-reflection[Server reflection will be used to determine the RPC schema]' \
+  '-user-agent[The specified value will be added to the User-Agent header set by the grpc-go library]:user_agent' \
+  '-v[Enable verbose output]' \
+  '(- *)-version[Print version]' \
+  '-vv[Enable very verbose output]' \
+  '(- *)-h[Show help message]' \
+  '*:: :_files'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
