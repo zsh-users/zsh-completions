@@ -25,7 +25,7 @@
 # Description
 # -----------
 #
-#  Completion script for the Flutter.io sdk's cli tool 3.7.0 (https://flutter.dev)
+#  Completion script for the Flutter.io sdk's cli tool 3.10.0 (https://flutter.dev)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -631,6 +631,7 @@ _flutter_build() {
         (macos)
           opts+=(
             '--build-name=[A string used as the version number shown to users]:build_name'
+            '--config-only[Update the project configuration without performing a build]'
           )
           ;;
         (web)
@@ -642,6 +643,9 @@ _flutter_build() {
             '(--no-source-maps)--source-maps[Generate a sourcemap file]'
             '(--source-maps)--no-source-maps[Do not generate a sourcemap file]'
             '--pwa-strategy=The caching strategy to be used by the PWA service worker: :(none offline-first)'
+            '--web-renderer[The renderer implementation to use when building for the web]: :(auto canvaskit html)'
+            '(--no-web-resources-cdn)--web-resources-cdn[Use Web static resources hosted on a CDN]'
+            '(--web-resources-cdn)--no-web-resources-cdn[Do not Web static resources hosted on a CDN]'
             '--base-href[Overrides the href attribute of the base tag in web/index.html]'
             '--dart2js-optimization=[Sets the optimization level used for Dart compilation to JavaScript]: :(O0 O1 O2 O3 O4)'
             '--dump-info[Passes "--dump-info" to the JavaScript compiler]'
