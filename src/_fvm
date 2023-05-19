@@ -55,6 +55,14 @@ _fvm_run_flutter() {
   fi
 }
 
+_fvm_run_dart() {
+  local begin=$(($CURRENT - 1))
+  if (( $+functions[_dart] )); then
+    compset -n $begin
+    _dart "$@"
+  fi
+}
+
 _fvm() {
   typeset -A opt_args
   local context state line
@@ -91,6 +99,12 @@ _fvm() {
         (destroy|doctor|flavor|list|releases)
           _arguments -C \
            '(- *)'{-h,--help}'[Print this usage information]' \
+            && ret=0
+          ;;
+        (dart)
+          _arguments -C \
+           '1: :_fvm_run_dart' \
+           '*: :_normal' \
             && ret=0
           ;;
         (exec)

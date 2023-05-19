@@ -295,17 +295,6 @@ _flutter() {
             '--name[Used with the "--create" flag. Specifies a name for the emulator being created]' \
             && ret=0
           ;;
-        (format)
-          _arguments \
-            '(- *)'{-h,--help}'[Print this usage information]' \
-            '(-v --verbose)'{-v,--verbose}'[Show all options and flags with --help]' \
-            '(-o --output)'{-o,--output=}'[Set where to write formatted output]: :(json none show write)' \
-            '--set-exit-if-changed[Return exit code 1 if there are any formatting changes]' \
-            '--fix[Apply all style fixes]' \
-            '(-l --line-length)'{-l,--line-length=}'[Wrap lines longer than this(defaults to 80)]:lines:' \
-            '*: :_files' \
-            && ret=0
-          ;;
         (gen-l10n)
           _arguments \
             '(- *)'{-h,--help}'[Print this usage information]' \
@@ -525,7 +514,6 @@ _flutter_root_commands() {
     'doctor:Show information about the installed tooling.'
     'drive:Runs Flutter Driver tests for the current project.'
     'emulators:List, launch and create emulators.'
-    'format:Format one or more dart files.'
     'gen-l10n:Generate localizations for the current project.'
     'help:Display help information for flutter.'
     'install:Install a Flutter app on an attached device.'

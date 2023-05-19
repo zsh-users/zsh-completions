@@ -1,0 +1,618 @@
+#compdef dart
+# ------------------------------------------------------------------------------
+# Copyright (c) 2023 Github zsh-users - https://github.com/zsh-users
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for dart. (https://dart.dev/)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei Yoshida (https://github.com/syohex) <syohex@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+_dart() {
+  typeset -A opt_args
+  local context state line
+  local curcontext="$curcontext"
+  local ret=1
+
+  _arguments -C -A "-*" \
+    '(-v --verbose)'{-v,--verbose}'[Show additional command output]' \
+    '(- *)--version[Print the Dart SDK version]' \
+    '(--enable-analytics --disable-analytics --suppress-analytics)--enable-analytics[Enable analytics]' \
+    '(--enable-analytics --disable-analytics --suppress-analytics)--disable-analytics[Disable analytics]' \
+    '(--enable-analytics --disable-analytics --suppress-analytics)--suppress-analytics[Disapply analytics for this "dart *" run without changing the analytics configuration]' \
+    '(- *)'{-h,--help}'[Print this usage information]' \
+    '1: :_dart_subcommands' \
+    '*::arg:->args' \
+    && ret=0
+
+  case "$state" in
+    (args)
+      case $words[1] in
+        (help)
+          _arguments \
+           '(- *)'{-h,--help}'[Print this usage information]' \
+           '1: :_dart_subcommands' \
+            && ret=0
+          ;;
+        (analyze)
+          _arguments \
+            '(- *)'{-h,--help}'[Print this usage information]' \
+            '--fatal-infos[Treat info level issues as fatal]' \
+            '(--no-fatal-warnings --fatal-warnings)--fatal-warnings[Treat warnings level issue as fatal]' \
+            '(--no-fatal-warnings --fatal-warnings)--no-fatal-warnings[Do not treat warnings level issue as fatal]' \
+            '*: :_files -/' \
+            && ret=0
+          ;;
+        (compile)
+          _dart_compile && ret=0
+          ;;
+        (create)
+          _arguments \
+            '(- *)'{-h,--help}'[Print this usage information]' \
+            '(-t --template)'{-t,--template}'[The project template to use]:template:(console package server-shelf web)' \
+            '(--no-pub --pub)--pub[Run "pub get" after the project has been created]' \
+            '(--no-pub --pub)--no-pub[Do not run "pub get" after the project has been created]' \
+            '--force[Force project generation even if the target directory already exists]' \
+            '*: :_files -/' \
+            && ret=0
+          ;;
+        (devtools)
+          _arguments \
+            '(- *)'{-h,--help}'[Print this usage information]' \
+            '(- *)--version[Prints the DevTools version]' \
+            '--host=[Hostname to serve DevTools on(defaults to localhost)]:host' \
+            '--port=[Port to serve DevTools on, specify 0 to automatically use any available port(defaults to 9100)]:port' \
+            '(--no-launch-browser --launch-browser)--launch-browser[Launches DevTools in a browser immediately at start]' \
+            '(--no-launch-browser --launch-browser)--no-launch-browser[Do not launches DevTools in a browser immediately at start]' \
+            '--machine[Sets output format to JSON for consumption in tools]' \
+            '--record-memory-profile=[Start devtools headlessly and write memory profiling samples to the indicated file]:file:_files' \
+            '--app-size-base=[Path to the base app size file used for app size]' \
+            '*:server_uri :' \
+            && ret=0
+          ;;
+        (doc)
+          _arguments \
+            '(- *)'{-h,--help}'[Print this usage information]' \
+            '(-o --output)'{-o,--output=}'[Configuration the output directory(defaults to "doc/api")]:dir:_files -/' \
+            '(--dry-run)--validate-links[Display warnings for broken links]' \
+            '(--validate-links)--dry-run[Try to generate the docs without saving them]' \
+            '*:dir:_files -/' \
+            && ret=0
+          ;;
+        (fix)
+          _arguments \
+            '(- *)'{-h,--help}'[Print this usage information]' \
+            '(-n --dry-run)'{-n,--dry-run}'[Preview the proposed changes but make no changes]' \
+            '--apply[Apply the proposed changes]' \
+            '--code=[Apply fixes for one or more diagnostics codes]:codes' \
+            '*: :_files' \
+            && ret=0
+          ;;
+        (format)
+          _arguments \
+            '(- *)'{-h,--help}'[Print this usage information]' \
+            '(-v --verbose)'{-v,--verbose}'[Show all options and flags with --help]' \
+            '(-o --output)'{-o,--output}'[Set where to write formatted output]:format:_dart_format_output' \
+            '--show[Set which filenames to print]:show:_dart_format_show' \
+            '--summary[Show the specified summary after formatting]:summary:_dart_format_summary' \
+            '--set-exit-if-changed[Return exit code 1 if there are any formatting changes]' \
+            '--fix[Apply all style fixes]' \
+            '--fix-doc-comments[Use triple slash for documentation comments]' \
+            '--fix-function-typedefs[Use new syntax for function type typedefs]' \
+            '--fix-named-default-separator[Use "=" as the separator before named parameter default values]' \
+            '--fix-optional-const[Remove "const" keyword inside constant context]' \
+            '--fix-optional-new[Remove "new" keyword]' \
+            '--fix-single-cascade-statements[Remove unnecessary single cascades from expression statements]' \
+            '(-i --indent)'{-i,--indent}'[Add this many spaces of leading indentation(default to 0)]' \
+            '--follow-links[Follow links to files and directories]' \
+            '(- *)--version[Show dart_style version]' \
+            '--selection[Track selection through formatting]:start_length' \
+            '--stdin-name[Use this path in error messages when input is read from stdin(defaults to "stdin")]:name' \
+            '*:file_or_directory:_files' \
+            && ret=0
+          ;;
+        (info)
+          _arguments \
+            '(- *)'{-h,--help}'[Print this usage information]' \
+            '(--no-remove-file-paths --remove-file-paths)--remove-file-paths[Remove file paths in displayed information]' \
+            '(--no-remove-file-paths --remove-file-paths)--no-remove-file-paths[Do not remove file paths in displayed information]' \
+            '*: :_files' \
+            && ret=0
+          ;;
+        (pub)
+          _dart_pub && ret=0
+          ;;
+        (run)
+          _arguments \
+            '(- *)'{-h,--help}'[Print this usage information]' \
+            '(-r --resident)'{-r,--resident}'[Enable faster startup times with the resident frontend compiler]' \
+            '--observe=[Specify debug port and bind address]:port_address' \
+            '--enable-vm-service=[Enable the VM service and listens on the specified port for connections(default port 8181)]:port_address' \
+            '(--serve-devtools --no-serve-devtools)--serve-devtools[Serves an instance of the Dart DevTools debugger and profiler]' \
+            '(--serve-devtools --no-serve-devtools)--no-serve-devtools[Do not serve an instance of the Dart DevTools debugger and profiler]' \
+            '--pause-isolates-on-exit[Pause isolates on exit when running with --enable-vm-service]' \
+            '--pause-isolates-on-unhandled-exceptions[Pause isolates when an unhandled exception is encountered when running with --enable-vm-service]' \
+            '--warn-on-pause-with-no-debugger[Print a warning when an isolate pauses with no attached debugger when runnin with --enable-vm-service]' \
+            '--timeline-streams=[Enables recording for specific timeline streams]:stream:_dart_run_timeline_streams' \
+            '--pause-isolates-on-start[Pause isolates on start when running with --enable-vm-service]' \
+            '(--enable-asserts --no-enable-asserts)--enable-asserts[Enable assert statements]' \
+            '(--enable-asserts --no-enable-asserts)--no-enable-asserts[Do not enable assert statements]' \
+            '--timeline-recorder=[Selects the timeline recorder to use]:recorder:(none ring endless startup systrace file callback)' \
+            '--verbosity[Sets the verbosity level of the compilation]:level:(all error info warning)' \
+            '*'{-d,--define=}'[Define an environment declaration]:key_value:' \
+            '*: :_files' \
+            && ret=0
+          ;;
+        (test)
+          _arguments \
+            '(- *)'{-h,--help}'[Print this usage information]' \
+            '(- *)--version[Show the package:test version]' \
+            '*'{-n,--name}'[A substring of the name of the test to run]:name' \
+            '*'{-N,--plain-name}'[A plain-text substring of the name of the test to run]:plain_name' \
+            '*'{-t,--tags}'[Run only tests with all of the specified tags]:tag' \
+            '*'{-x,--exclude-tags}'[Do not run tests with any of the specified tags]:tag' \
+            '(-p --platform)'{-p,--platform}'[The platform on which to run the tests]:platform:(vm chrome firefox edge node experimental-chrome-wasm)' \
+            '(-c --compiler)'{-c,--compiler}'[The compiler to use to run tests]:compiler:(dart2js dart2wasm exe kernel source)' \
+            '(-P --preset)'{-P,--preset}'[The configuration preset to use]:preset' \
+            '(-j --concurrency)'{-j,--concurrency}'[The number of concurrent test suites run(defaults to 1)]:concurrency' \
+            '--total-shards[The total number of invocations of the test runner being run]:number' \
+            '--shard-index[The index of this test runner invocation]:index' \
+            '--pub-serve=[The port of a pub serve instance serving "test/"]:port' \
+            '(--ignore-timeouts --timeout)--timeout[The default test timeout]:timeout' \
+            '(--ignore-timeouts --timeout)--ignore-timeouts[Ignore all timeouts]' \
+            '--pause-after-load[Pause for debugging before any tests execute]' \
+            '--debug[Run the VM and Chrome tests in debug mode]' \
+            '--coverage=[Gather coverage and output it to the specified directory]:dir:_files -/' \
+            '(--no-chain-stack-traces --chain-stack-traces)--chain-stack-traces[Use chained stack traces to provide greater exception]' \
+            '(--no-chain-stack-traces --chain-stack-traces)--no-chain-stack-traces[Do not use chained stack traces to provide greater exception]' \
+            '--no-retry[Do not rerun tests that have retry set]' \
+            '--test-randomize-ordering-seed[Use the specified seed to randomize the execution order of test cases]:seed' \
+            '(-r --reporter)'{-r,--reporter=}'[Set how to print test results]:reporter:_dart_test_reporter' \
+            '--file-reporter[Enable an additional reporter writing test results to a file]:reporter_file' \
+            '--verbose-trace[Emit stack traces with core library frames]' \
+            '--js-trace[Emit raw JavaScript stack traces for browser tests]' \
+            '(--color --no-color)--color[Use terminal colors]' \
+            '(--color --no-color)--no-color[Do not use terminal colors]' \
+            '*: :_files' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return ret
+}
+
+(( $+functions[_dart_compile] )) ||
+_dart_compile() {
+  local ret=1
+
+  _arguments -C \
+    '(- *)'{-h,--help}'[Print this usage information]' \
+    '1: :_dart_compile_subcommands' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      local -a opts=(
+        '(- *)'{-h,--help}'[Print this usage information]'
+        '(-o --output)'{-o,--output}'[Write the output to file]:output:_files'
+      )
+
+      case $words[1] in
+        (aot-snapshot|exe|jit-snapshot|kernel)
+          opts+=(
+            '--verbosity[Sets the verbosity level of the compilation]:level:(all error info warning)'
+            '*'{-d,--define=}'[Define an environment declaration]:key_value:'
+            '(-p --packages)'{-p,--packages=}'[Get package locations from the specified file instead of .dart_tool/package_config.json]:config:_files'
+          )
+          ;|
+        (aot-snapshot|exe)
+          opts+=(
+            '(-S --save-debugging-info)'{-S,--save-debugging-info=}'[Remove debugging information from the output and save it separately to the specified file]:file:_files'
+            '--target-os[Compile to a specific target operating system]:os:(android fuchsia ios linux macos windows)'
+          )
+          ;|
+        (aot-snapshot)
+          opts+=(
+            '--enable-asserts[Enable assert statements]'
+          )
+          ;;
+        (js)
+          opts+=(
+            '-O-[Set the compiler optimization level(defaults to -O1)]:level:(0 1 2 3 4)'
+          )
+          ;;
+      esac
+
+      opts+=('*:entry_point:_files')
+
+      _arguments "$opts[@]" && ret=0
+    ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_dart_compile_subcommands] )) ||
+_dart_compile_subcommands() {
+  local -a commands=(
+    "aot-snapshot:Compile Dart to an AOT snapshot"
+    "exe:Compile Dart to a self-contained executable"
+    "jit-snapshot:Compile Dart to a JIT snapshot"
+    "js:Compile Dart to JavaScript"
+    "kernel:Compile Dart to a kernel snapshot"
+  )
+  _describe -t commands 'command' commands "$@"
+}
+
+(( $+functions[_dart_format_output] )) ||
+_dart_format_output() {
+  local -a options=(
+    "json:Print code and selection as JSON"
+    "none:Discard output"
+    "show:Print code to terminal"
+    "write:Overwrite formatted files on disk"
+  )
+  _describe -t options 'command' options "$@"
+}
+
+(( $+functions[_dart_format_show] )) ||
+_dart_format_show() {
+  local -a options=(
+    "all:All visited files and directories"
+    "changed:Only the names of files whose formatting is changed"
+    "none:No file names or directories"
+  )
+  _describe -t options 'command' options "$@"
+}
+
+(( $+functions[_dart_format_summary] )) ||
+_dart_format_summary() {
+  local -a options=(
+    "line:Single-line summary"
+    "none:No summary"
+    "profile:How long it took for format each file"
+  )
+  _describe -t options 'command' options "$@"
+}
+
+(( $+functions[_dart_pub] )) ||
+_dart_pub() {
+  local ret=1
+
+  _arguments -C \
+    '(- *)'{-h,--help}'[Print this usage information]' \
+    '(-v --verbose)'{-v,--verbose}'[Print detailed logging]' \
+    '(--color --no-color)--color[Use colors in terminal output]' \
+    '(--color --no-color)--no-color[Do not use colors in terminal output]' \
+    '(-C --directory)'{-d,--directory=}'[Run the subcommand in the directory]:dir:_files -/'\
+    '1: :_dart_pub_subcommands' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      local -a opts=(
+        '(- *)'{-h,--help}'[Print this usage information]'
+      )
+
+      case $words[1] in
+        (add|downgrade|get|publish|remove|upgrade)
+          opts+=(
+            '(- *)'{-h,--help}'[Print this usage information]'
+            '(-n --dry-run)'{-n,--dry-run}'[Report what dependencies would change but do not change any]'
+            '(-C --directory)'{-C,--directory=}'[Run this in the directory]:dir:_files -/'
+            '*: :_files'
+          )
+          ;|
+        (add|downgrade|get|upgrade)
+          opts+=(
+            '--offline[Use cached packages instead of accessing the network]'
+          )
+          ;|
+        (add|get|remove|upgrade)
+          opts+=(
+            '--precompile[Build executables in immediate dependencies]'
+          )
+          ;|
+        (get)
+          opts+=(
+            '--enforce-lockfile[Enforce pubspec.lock]'
+          )
+          ;|
+        (publish)
+          opts+=(
+            '(-f --force)'{-f,--force}'[Publish without confirmation if there are no errors]'
+          )
+          ;|
+        (upgrade)
+          opts+=(
+            '--major-versions[Upgrades packages to their latest resolvable versions and updates pubspec.yaml]'
+          )
+          ;|
+        (cache)
+          _dart_pub_cache && return 0
+          return 1
+          ;;
+        (deps)
+          opts+=(
+            '(-s --style)'{-s,--style}'[How output should be displayed]:style:(compact tree list)'
+            '(--dev --no-dev)--dev[Include dev dependencies]'
+            '(--dev --no-dev)--no-dev[Do not include dev dependencies]'
+            '--executables[List all available executables]'
+            '--json[Output dependency information in a json format]'
+            '(-C --directory)'{-C,--directory=}'[Run this in the directory]:dir:_files -/'
+          )
+          ;;
+        (global)
+          _dart_pub_global && return 0
+          return 1
+          ;;
+        (outdated)
+          opts+=(
+            '(--no-dependency-overrides --dependency-overrides)--dependency-overrides[Show resolutions with "dependency_overrides"]'
+            '(--no-dependency-overrides --dependency-overrides)--no-dependency-overrides[Do not show resolutions with "dependency_overrides"]'
+            '(--no-dev-dependencies --dev-dependencies)--dev-dependencies[Take dev dependencies into account]'
+            '(--no-dev-dependencies --dev-dependencies)--no-dev-dependencies[Do not take dev dependencies into account]'
+            '--json[Output the results using a json format]'
+            '(--no-prereleased --prereleases)--prereleases[Include prereleases in latest version]'
+            '(--no-prereleased --prereleases)--no-prereleases[Do not include prereleases in latest version]'
+            '(--no-show-all --show-all)--show-all[Include dependencies that are already fulfilling --mode]'
+            '(--no-show-all --show-all)--no-show-all[Do not include dependencies that are already fulfilling --mode]'
+            '(--no-transitive --transitive)--transitive[Show transitive dependencies]'
+            '(--no-transitive --transitive)--no-transitive[Do not show transitive dependencies]'
+            '(-C --directory)'{-C,--directory=}'[Run this in the directory]:dir:_files -/'          )
+          ;;
+        (token)
+          _dart_pub_token && return 0
+          return 1
+          ;;
+      esac
+
+      _arguments "$opts[@]" && ret=0
+    ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_dart_pub_subcommands] )) ||
+_dart_pub_subcommands() {
+  local -a commands=(
+    "add:Add dependencies to 'pubspec.yaml'"
+    "cache:Work with the system cache"
+    "deps:Print package dependencies"
+    "downgrade:Downgrade the current package's dependencies to oldest versions"
+    "get:Get the current package's dependencies"
+    "global:Work with global packages"
+    "login:Log into pub.dev"
+    "logout:Log out of pub.dev"
+    "outdated:Analyze your dependencies to find which ones can be upgraded"
+    "publish:Publish the current package to pub.dev"
+    "remove:Removes dependencies from 'pubspec.yaml'"
+    "token:Manage authentication tokens for hosted pub repositories"
+    "upgrade:Upgrade the current package's dependencies to latest versions"
+  )
+  _describe -t commands 'command' commands "$@"
+}
+
+(( $+functions[_dart_pub_cache] )) ||
+_dart_pub_cache() {
+  local ret=1
+
+  _arguments -C \
+    '(- *)'{-h,--help}'[Print this usage information]' \
+    '1: :_dart_pub_cache_subcommands' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      local -a opts=(
+        '(- *)'{-h,--help}'[Print this usage information]'
+        '*: :_files'
+      )
+      case $words[1] in
+        (add)
+          opts+=(
+            '--all[Install all matching versions]'
+            '(-v --version)'{-v,--version}'[Version constraint]:version'
+          )
+          ;;
+        (clean)
+          opts+=(
+            '(-f --force)'{-f,--force}'[Do not ask for confirmation]'
+          )
+          ;;
+      esac
+
+      _arguments "$opts[@]" && ret=0
+    ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_dart_pub_cache_subcommands] )) ||
+_dart_pub_cache_subcommands() {
+  local -a commands=(
+    "add:Install a package"
+    "clean:Clears the global PUB_CACHE"
+    "repair:Reinstall cached packages"
+  )
+  _describe -t commands 'command' commands "$@"
+}
+
+(( $+functions[_dart_pub_global] )) ||
+_dart_pub_global() {
+  local ret=1
+
+  _arguments -C \
+    '(- *)'{-h,--help}'[Print this usage information]' \
+    '1: :_dart_pub_global_subcommands' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      local -a opts=(
+        '(- *)'{-h,--help}'[Print this usage information]'
+        '*: :_files'
+      )
+      case $words[1] in
+        (activate)
+          opts+=(
+            '(-s --source)'{-s,--source}'[The source used to find the package]:source'
+            '--git-path[Path of git package in repository]:git_path'
+            '--git-ref[Git branch or commit to be retrieved]:git_ref'
+            '(-x --executable --noexecutables)--no-executables[Do not put executables on PATH]'
+            '(-x --executable --noexecutables)'{-x,--executable}'[Executable to place on PATH]'
+            '--overwrite[Overwrite executables from other packages with the same name]'
+            '(-u --hosted-url)'{-u,--hosted-url}'[A custom pub server URL for the package]:server'
+          )
+          ;;
+        (run)
+          opts+=(
+            '(--enable-asserts --no-enable-asserts)--enable-asserts[Enable assert statements]'
+            '(--enable-asserts --no-enable-asserts)--no-enable-asserts[Do not enable assert statements]'
+            '*--enable-experiment=[Runs the executable in a VM with the given experiments enabled]'
+          )
+          ;;
+      esac
+
+      _arguments "$opts[@]" && ret=0
+    ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_dart_pub_global_subcommands] )) ||
+_dart_pub_global_subcommands() {
+  local -a commands=(
+    "activate:Make a package's executables globally available"
+    "deactivate:Remove a previously activated package"
+    "list:List globally activated packages"
+    "run:Run an executable from a globally activated package"
+  )
+  _describe -t commands 'command' commands "$@"
+}
+
+(( $+functions[_dart_pub_token] )) ||
+_dart_pub_token() {
+  local ret=1
+
+  _arguments -C \
+    '(- *)'{-h,--help}'[Print this usage information]' \
+    '1: :_dart_pub_token_subcommands' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      local -a opts=(
+        '(- *)'{-h,--help}'[Print this usage information]'
+        '*: :_files'
+      )
+      case $words[1] in
+        (add)
+          opts+=(
+            '--env-var=[Read the secret token from this environment variable]:envvar'
+          )
+          ;;
+        (remove)
+          opts+=(
+            '--all[Remove all secret tokens]'
+          )
+          ;;
+      esac
+
+      _arguments "$opts[@]" && ret=0
+    ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_dart_pub_token_subcommands] )) ||
+_dart_pub_token_subcommands() {
+  local -a commands=(
+    "add:Add an authentication token for a package repository"
+    "list:List servers for which a token exists"
+    "remove:Remove secret token for package repository at hosted-url"
+  )
+  _describe -t commands 'command' commands "$@"
+}
+
+(( $+functions[_dart_run_timeline_streams] )) ||
+_dart_run_timeline_streams() {
+  local -a options=(all API Compiler CompilerVerbose Dart Debugger Embedder GC Isolate VM)
+  _values -s ',' streams $options
+}
+
+(( $+functions[_dart_test_reporter] )) ||
+_dart_test_reporter() {
+  local -a options=(
+    "compact:A single line, updated continuously"
+    "expanded:A separate line for each update"
+    "github:A custom reporter for GitHub Actions"
+    "json:A machine-readable format"
+  )
+  _describe -t options 'command' options "$@"
+}
+
+(( $+functions[_dart_subcommands] )) ||
+_dart_subcommands() {
+  local -a commands=(
+    "analyze:Analyze Dart code in a directory"
+    "compile:Compile Dart to various formats"
+    "create:Create a new Dart project"
+    "devtools:Open DevTools (optionally connecting to an existing application)"
+    "doc:Generate API documentation for Dart projects"
+    "fix:Apply automated fixes to Dart source code"
+    "format:Idiomatically format Dart source code"
+    "info:Show diagnostic information about the installed tooling"
+    "pub:Work with packages"
+    "run:Run a Dart program"
+    "test:Run tests for a project"
+  )
+  _describe -t commands 'command' commands "$@"
+}
+
+_dart "$@"
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
