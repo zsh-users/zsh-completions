@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for vnstat 2.6
+#  Completion script for vnstat 2.10
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -54,6 +54,7 @@ _arguments -C : \
   "($period)"{-y,--years}'[show traffic statistics for the last year]' \
   "($period)"{-5,--fiveminutes}'[show traffic statistic with a 5 minute resolution for the last hours]' \
   '--dbdir[specify database directory]:directory:_files -/' \
+  '--dbiflist[List interfaces currently in the database]::mode:->dbiflist' \
   '(-D --debug)'{-D,--debug}'[show additional debug output]' \
   '(-e --end)'{-e,--end}'[end the list output with a specific date]:date:' \
   '--delete[delete database and stop monitoring selected interface]' \
@@ -89,13 +90,11 @@ _arguments -C : \
   && ret=0
 
 case "$state" in
-
   (live)
     _values 'live mode' \
       '0[packets per second]' \
       '1[traffic counters]' && ret=0
     ;;
-
   (style)
     _values 'output style' \
       '0[narrow output]' \
@@ -104,13 +103,17 @@ case "$state" in
       '3[enable average traffic rate]' \
       '4[disable use of terminal control characters]' && ret=0
     ;;
-
   (interface)
     local interfaces="$(_call_program interfaces 'vnstat --iflist')"
     interfaces="${interfaces#*:}"
     _values -s + 'interface' ${(z)interfaces} && ret=0
     ;;
-
+  (dbiflist)
+    _values 'mode' \
+      '0[one line verbose format]' \
+      '1[one interface per line]' \
+      && ret=0
+    ;;
 esac
 
 return ret
