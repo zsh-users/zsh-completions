@@ -1,0 +1,77 @@
+#compdef ts-node
+# ------------------------------------------------------------------------------
+# Copyright (c) 2023 Github zsh-users - https://github.com/zsh-users
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for ts-node v10.9.1. (https://github.com/TypeStrong/ts-node)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei Yoshida (https://github.com/syohex) <syohex@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+_arguments \
+  '(- *)'{-h,--help}'[Print help message]' \
+  '(- *)'{-v,--version}'[Print module version information]' \
+  '(- *)-vvv[Print additional version information]' \
+  '(-e --eval)'{-e,--eval}'[Evaluate code]:code' \
+  '(-p --print)'{-p,--print}'[Print result of "--eval"]' \
+  '*'{-r,--require}'[Require a node module before execution]:path:_files' \
+  '--esm[Bootstrap with the ESM loader, enabling full ESM support]' \
+  '--swc[Use the faster swc transpiler]' \
+  '(- *)--showConfig[Print resolved configuration and exit]' \
+  '(-T --transpileOnly)'{-T,--transpileOnly}"[Use TypeScript's faster 'transpileModule' or a third-party transpiler]" \
+  '(-H --compilerHost)'{-H,--compilerHost}"[Use TypeScript's compiler host API]" \
+  '*'{-I,--ignore}'[Override the path patterns to skip compilation]:pattern' \
+  '(-P --project)'{-P,--project}'[Path to TypeScript JSON project file]:path:_files' \
+  '(-C --compiler)'{-C,--compiler}'[Specify a custom TypeScript compiler]:compiler:_files' \
+  '--transpiler[Specify a third-party, non-typechecking transpiler]' \
+  '*'{-D,--ignoreDiagnostics}'[Ignore TypeScript warnings by diagnostic code]:code' \
+  '*'{-O,--compilerOptions}'[JSON object to merge with compiler options]:option' \
+  '--cwd[Behave as if invoked within this working directory]:dir:_files -/' \
+  '--files[Load "files", "include", and "exclude" from "tsconfig.json" on startup]' \
+  '--pretty[Use pretty diagnostic formatter]' \
+  '--cwdMode[Use current directory instead of script,ts for config resolution]' \
+  '--skipProject[Skip reading "tsconfig.json"]' \
+  '--skipIgnore[Skip "--ignore" checks]' \
+  '--emit[Emit output files into ".ts-node" directory]' \
+  '--scope[Scope compiler to files within "scopeDir"]' \
+  '--scopeDir[Directory for "--scope"]:dir:_files -/' \
+  '--preferTsExts[Prefer importing TypeScript files over JavaScript files]' \
+  '--logError[Logs TypeScript errors to stderr instead of throwing exceptions]' \
+  '--noExperimentalReplAwait[Disable top-level await in REPL]' \
+  "--experimentalSpecifierResolution[Like node's --experimental-specifier-resolution]: :(node explicit)" \
+  '*:: :_files' \
+  && return 0
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
