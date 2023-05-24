@@ -1,0 +1,58 @@
+#compdef mkcert
+# ------------------------------------------------------------------------------
+# Copyright (c) 2023 Github zsh-users - https://github.com/zsh-users
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for mkcert v1.4.4 (https://github.com/FiloSottile/mkcert)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei Yoshida (https://github.com/syohex) <syohex@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+_arguments \
+  '(- *)-help[Print help message]' \
+  '(- *)-version[Print version information]' \
+  '-install[Install the local CA in the system trust store]' \
+  '-uninstall[Uninstall the local CA]' \
+  '-cert-file[Specify cert file output path]:path:_files' \
+  '-key-file[Specify key file output path]:path:_files' \
+  '-p12-file[Specify p12 file output path]:path:_files' \
+  '-client[Generate a certificate for client authentication]' \
+  '-ecdsa[Generate a certificate with an ECDSA key]' \
+  '-pkcs12[Generate a ".p12" PKCS #12 file]' \
+  '-csr[Generate a certificate based on the supplied CSR]:csr' \
+  '(- *)-CAROOT[Print the CA certificate and key storage location]' \
+  && return 0
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
