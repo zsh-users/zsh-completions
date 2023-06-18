@@ -1,0 +1,27 @@
+#compdef sboinstall
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for Slackware Packages Installation using sbotools
+#  sboinstall package
+#  from https://slackbuilds.org
+#
+#  Requisites:
+#  sbotools ( https://pink-mist.github.io/sbotools/ ) must be installed, 
+#  and its repository inside the standard location: /usr/sbo/repo/
+#
+# ------------------------------------------------------------------------------
+# Author
+# -------
+#
+#  * Ruben Carlo Benante <rcb@beco.cc>
+#
+#  Creationg Date: 2023-06-18
+#
+# ------------------------------------------------------------------------------
+
+local -a spkg
+
+_alternative "arguments:pkgs arg:($(find /usr/sbo/repo/ -type f -name slack-desc -exec sed -n '/handy-ruler/{ n; p }' {} \+ | sed 's/:/ :/' | cut -d':' -f1 | tr -d '\n\r'))"
+
