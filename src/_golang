@@ -30,7 +30,7 @@
 # Description
 # -----------
 #
-#  Completion script for go 1.20 (https://go.dev/).
+#  Completion script for go 1.21 (https://go.dev/).
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -178,7 +178,7 @@ __go_gcflags() {
 
 __go_pgo() {
   _alternative \
-    "name:name:(all off)" \
+    "name:name:(auto off)" \
     "file:file:_files"
 }
 
@@ -258,7 +258,7 @@ __go_envvarvals() {
       ;&
     GOOS)
       # from https://golang.org/doc/install/source#environment
-      _values 'operating system' aix android darwin dragonfly freebsd illumos ios js linux netbsd openbsd plan9 solaris windows
+      _values 'operating system' aix android darwin dragonfly freebsd illumos ios js linux netbsd openbsd plan9 solaris windows wasip1
       ;;
     GOHOSTARCH)
       ;&
@@ -362,7 +362,7 @@ case $state in
     '-ldflags[arguments to pass on each go tool link invocation.]:flags'
     '-linkshared[link against shared libraries]'
     '-overlay[read a JSON config file that provides an overlay for build operations]:file:_files -g "*.json"'
-    '-pgo[specify the file path of a profile for profile-guided optimization]: :__go_pgo'
+    '-pgo[specify the file path of a profile for profile-guided optimization]:file_or_profile:__go_pgo'
     '-pkgdir[install and load all packages from dir]:dir'
     '-tags[list of build tags to consider satisfied]:tags'
     '-trimpath[remove all file system paths from the resulting executable]'
@@ -707,7 +707,8 @@ case $state in
             '-coverprofile[write a coverage profile to file]:cover' \
             '-cpu[specify a list of GOMAXPROCS values]:cpus' \
             '-cpuprofile[write a CPU profile to the specified file]:profile' \
-            '-failtest[do not start new tests after the first test failure]' \
+            '-failfast[do not start new tests after the first test failure]' \
+            '-fullpath[show full file names in the error messages]' \
             '-fuzz[run the fuzz test matching the regular expression]:regexp' \
             '-fuzztime[run enough iterations of the fuzz target during fuzzing]:t' \
             '-fuzzminimizetime[run enough iterations of the fuzz target during each minimization attempt]:t' \
