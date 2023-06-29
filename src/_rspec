@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for RSpec (https://rspec.info/).
+#  Completion script for RSpec 3.12.0 (https://rspec.info/).
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -43,35 +43,37 @@ _rspec() {
   local context state line curcontext="$curcontext"
 
   _arguments -C \
-    -I'[Specify PATH to add to $LOAD_PATH (may be used more than once)]:PATH:_files' \
+    *'-I[Specify PATH to add to $LOAD_PATH (may be used more than once)]:PATH:_files -/' \
     '*'{-r,--require}'[Require a file]:PATH:_files' \
     '*'{-O,--options}'[Specify the path to a custom options file]:PATH:_files' \
-    --order'[Run examples by the specified order type]: :->order' \
-    --seed'[Equivalent of --order rand:SEED]: :_guard "[[\:digit\:]]#" "SEED"' \
-    --bisect'[Repeatedly runs the suite in order to isolate the failures to the smallest reproducible case]' \
-    --only-failures'[Filter to just the examples that failed the last time they ran]' \
+    '--order[Run examples by the specified order type]: :->order' \
+    '--seed[Equivalent of --order rand:SEED]: :_guard "[[\:digit\:]]#" "SEED"' \
+    '--bisect[Repeatedly runs the suite in order to isolate the failures to the smallest reproducible case]' \
+    '--only-failures[Filter to just the examples that failed the last time they ran]' \
     '(-n --next-failure)'{-n,--next-failure}'[Apply `--only-failures` and abort after one failure (equivalent to `--only-failures --fail-fast --order defined`)]' \
-    --fail-fast'[Abort the run on first failure]' \
-    --no-fail-fast'[Do not abort the run on first failure]' \
-    --failure-exit-code'[Override the exit code used when there are failing specs]: :_guard "[[\:digit\:]]#" "CODE"' \
-    --dry-run'[Print the formatter output of your suite without running any examples or hooks]' \
+    '--fail-fast[Abort the run on first failure]' \
+    '--no-fail-fast[Do not abort the run on first failure]' \
+    '--failure-exit-code[Override the exit code used when there are failing specs]: :_guard "[[\:digit\:]]#" "CODE"' \
+    '--error-exit-code[Override the exit code used when there are errors loading or running specs]:code' \
+    '--dry-run[Print the formatter output of your suite without running any examples or hooks]' \
     '(-X --drb)'{-X,--drb}'[Run examples via DRb]' \
-    --drb-port'[Port to connect to the DRb server]: :_guard "[[\:digit\:]]#" "PORT"' \
+    '--drb-port[Port to connect to the DRb server]: :_guard "[[\:digit\:]]#" "PORT"' \
     '(-f --format)'{-f,--format}'[Choose a formatter]:FORMATTER:(progress documentation html json failures)' \
     '(-o --out)'{-o,--out}'[Write output to a file instead of $stdout]:FILE:_files' \
-    --deprecation-out'[Write deprecation warnings to a file instead of $stderr]:FILE:_files' \
+    '--deprecation-out[Write deprecation warnings to a file instead of $stderr]:FILE:_files' \
     '(-b --backtrace)'{-b,--backtrace}'[Enable full backtrace]' \
-    --force-color'[Force the output to be in color, even if the output is not a TTY]' \
-    --no-color'[Force the output to not be in color, even if the output is a TTY]' \
+    '--force-color[Force the output to be in color, even if the output is not a TTY]' \
+    '--no-color[Force the output to not be in color, even if the output is a TTY]' \
     '(-p --profile)'{-p,--profile}'[Enable profiling of examples and list the slowest examples (default: 10)]: :_guard "[[\:digit\:]]#" "COUNT"' \
-    --no-profile'[Disable profiling of examples]' \
+    '--no-profile[Disable profiling of examples]' \
     '(-w --warnings)'{-w,--warnings}'[Enable ruby warnings]' \
     '(-P --pattern)'{-P,--pattern}'[Load files matching pattern (default: "spec/**/*_spec.rb")]:PATTERN:' \
-    --exclude-pattern'[Load files except those matching pattern]:PATTERN:' \
+    '--exclude-pattern[Load files except those matching pattern]:PATTERN:' \
     '(-e --example)'{-e,--example}'[Run examples whose full nested names include STRING (may be used more than once)]:STRING:' \
+    '(-E --example-matches)'{-E,--example-matches}'[Run examples whose full nested names match REGEX]:regex' \
     '(-t --tag)'{-t,--tag}'[Run examples with the specified tag, or exclude examples by adding ~ before the tag]: :->tag' \
-    --default-path'[Set the default path where RSpec looks for examples (can be a path to a file or a directory)]:PATH:_files' \
-    '(- *)'--init'[Initialize your project with RSpec]' \
+    '--default-path[Set the default path where RSpec looks for examples (can be a path to a file or a directory)]:PATH:_files' \
+    '(- *)--init[Initialize your project with RSpec]' \
     '(- *)'{-h,--help}"[You're looking at it]" \
     '(- *)'{-v,--version}'[Display the version]' \
     '*:files or directories:_files'
@@ -82,9 +84,10 @@ _rspec() {
         _guard '[[:digit:]]#' 'SEED'
       else
         _values 'TYPE[:SEED]' \
-          defined'[examples and groups are run in the order they are defined]' \
-          rand'[randomize the order of groups and examples]' \
-          random'[alias for rand]'
+          'defined[examples and groups are run in the order they are defined]' \
+          'rand[randomize the order of groups and examples]' \
+          'random[alias for rand]' \
+          'recently-modified[run the most recently modified files first]'
       fi
       ;;
     tag)
