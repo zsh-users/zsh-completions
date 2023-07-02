@@ -18,19 +18,19 @@
 # Description
 # -----------
 #
-# Completion script for rfkill (https://wireless.wiki.kernel.org/en/users/Documentation/rfkill)
+# Completion script for rfkill 2.38.1 (https://wireless.wiki.kernel.org/en/users/Documentation/rfkill)
 #
 # ------------------------------------------------------------------------------
 # Authors
 # -------
 #
 #  * Vincent Bernat <bernat@luffy.cx>
+#  * Shohei YOSHIDA <https://github.com/syohex>
 #
 # ------------------------------------------------------------------------------
 
 _rfkill_types() {
-  declare -a devicetypes
-  devicetypes=(all
+  local -a devicetypes=(all
     "wifi:Wireless LAN" "wlan:Wireless LAN"
     "bluetooth:Bluetooth"
     "uwb:Ultrawide Band"
@@ -44,30 +44,36 @@ _rfkill_types() {
 }
 
 _rfkill_devices() {
-  declare -a devices
-  devices=(${(M)${(f)"$(rfkill list)"}:#[0-9]*})
+  local -a devices=(${(M)${(f)"$(rfkill list)"}:#[0-9]*})
   _rfkill_types
   _describe -t devices "devices" devices
 }
 
-_rfkill_commands () {
-  declare -a subcommands
-  subcommands=(help event list block unblock)
-  _describe -t rfkill-commands "rfkill command" subcommands
+_rfkill_columns() {
+  local -a columns=(DEVICE ID TYPE TYPE-DESC SOFT HARD)
+  _values -s ',' 'column' $columns
 }
 
-_rfkill_subcommand () {
+_rfkill_command() {
+  local -a commands=(
+    'help:display help text and exit'
+    'event:listen for rfkill events and display them on stdout'
+    'list:list the current state of all available devices'
+    'block:disable the corresponding device'
+    'unblock:enable the corresponding device'
+    'toggle:enable or disable the corresponding device'
+  )
+  _describe -t commands 'command' commands "$@"
+}
+
+_rfkill_subcommand() {
   case "$words[1]" in
-    (help|event)
-      ;;
     (list)
       _arguments ':types:_rfkill_types'
       ;;
-    (block|unblock)
+    (block|unblock|toggle)
       _arguments ':device:_rfkill_devices'
       ;;
-    (*)
-      _message 'Unknown subcommand'
   esac
 }
 
@@ -76,14 +82,17 @@ _rfkill () {
   typeset -A opt_args
 
   _arguments -C \
-    '--version[get version]:' \
-    '(-): :->command' \
+    '(* -)'{-h,--help}'[display help]' \
+    '(* -)'{-V,--version}'[get version]' \
+    '(-J --json -r --raw)'{-J,--json}'[use JSON output format]' \
+    '(-n --noheadings)'{-n,--noheadings}"[don't print headings]" \
+    '(-o --output --output-all)'{-o,--output}'[define which output columns to use]:column_list:_rfkill_columns' \
+    '(-o --output --output-all)--output-all[output all columns]' \
+    '(-J --json -r --raw)'{-r,--raw}'[use the raw output format]' \
+    '(-): :_rfkill_command' \
     '(-)*:: :->arguments'
 
   case $state in
-    (command)
-      _rfkill_commands
-      ;;
     (arguments)
       curcontext=${curcontext%:*:*}:rfkill-$words[1]:
       _rfkill_subcommand
