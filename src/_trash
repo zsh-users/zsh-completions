@@ -28,7 +28,7 @@ args=(
 	'--delete[Delete a file from the trash]'
 	'--empty[Empty the trash bin]'
 	'--rm[Escape hatch to permanently delete a file]'
-	'(-h --help)'{-h,--help}'[This help information]'
+	'(- *)'{-h,--help}'[This help information]'
 	'*:: :->file'
 )
 
