@@ -15,35 +15,35 @@
 
 declare -a args opts=( -A '-*' )
 args=(
-	'(-d --dir)'{-d,--dir}'[Remove empty directories]'
-	'(-r --recursive)'{-r,--recursive}'[Delete directories and their contents]'
-	'(-v --verbose)'{-v,--verbose}'[Print more information]'
-	'(-i --interactive -I --interactive-once -f --force)'{-i,--interactive}'[Ask before each deletion]'
-	'(-i --interactive -I --interactive-once -f --force)'{-I,--interactive-once}'[Ask once if deleting 3 or more]'
-	'(-i --interactive -I --interactive-once -f --force)'{-f,--force}'[Don'\''t prompt and ignore errors]'
-	'(- *)--version[Output the version and exit]'
-	'(--list --orphans)--list[List out the files in the trash]'
-	'(--list --orphans)--orphans[List orphaned files in the trash]'
-	'(--restore --delete)--restore[Restore a file from the trash]'
-	'(--restore --delete)--delete[Delete a file from the trash]'
-	'--empty[Empty the trash bin]'
-	'--rm[Escape hatch to permanently delete a file]'
-	'(- *)'{-h,--help}'[This help information]'
-	'*:: :->file'
+  '(-d --dir)'{-d,--dir}'[Remove empty directories]'
+  '(-r --recursive)'{-r,--recursive}'[Delete directories and their contents]'
+  '(-v --verbose)'{-v,--verbose}'[Print more information]'
+  '(-i --interactive -I --interactive-once -f --force)'{-i,--interactive}'[Ask before each deletion]'
+  '(-i --interactive -I --interactive-once -f --force)'{-I,--interactive-once}'[Ask once if deleting 3 or more]'
+  '(-i --interactive -I --interactive-once -f --force)'{-f,--force}'[Don'\''t prompt and ignore errors]'
+  '(- *)--version[Output the version and exit]'
+  '(--list --orphans)--list[List out the files in the trash]'
+  '(--list --orphans)--orphans[List orphaned files in the trash]'
+  '(--restore --delete)--restore[Restore a file from the trash]'
+  '(--restore --delete)--delete[Delete a file from the trash]'
+  '--empty[Empty the trash bin]'
+  '--rm[Escape hatch to permanently delete a file]'
+  '(- *)'{-h,--help}'[This help information]'
+  '*:: :->file'
 )
 
 local curcontext=$curcontext state line ret=1
 declare -A opt_args
 
 _arguments -C -s -S $opts \
-	$args && ret=0
+  $args && ret=0
 
 case $state in
-	(file)
-		(( CURRENT > 0 )) && line[CURRENT]=()
-		line=( ${line//(#m)[\[\]()\\*?#<>~\^\|]/\\$MATCH} )
-		_files -F line && ret=0
-		;;
+  (file)
+    (( CURRENT > 0 )) && line[CURRENT]=()
+    line=( ${line//(#m)[\[\]()\\*?#<>~\^\|]/\\$MATCH} )
+    _files -F line && ret=0
+    ;;
 esac
 
 return $ret
