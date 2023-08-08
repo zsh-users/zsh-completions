@@ -284,7 +284,7 @@ __go_envvarvals() {
       _values 'mips floating point instructions' hardfloat softfloat
       ;;
     GOPPC64)
-      _values 'powerpc64 instruction set' power8 power9
+      _values 'powerpc64 instruction set' power8 power9 power10
       ;;
     GOWASM)
       _values 'web assembly features' -s ',' satconv signext
