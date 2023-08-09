@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for protoc -- protocol buffer description file compiler
+#  Completion script for protoc 24.0(https://github.com/protocolbuffers/protobuf)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -47,29 +47,35 @@ __protoc_files() {
 }
 
 _protoc() {
-  _arguments -C \
+  _arguments \
     '(- : *)'{-h,--help}'[Show summary of options]' \
     '(- : *)--version[Show version of program]' \
     '*'{-I,--proto_path}'=[Specify the directory which to search for imports]:import_dir:_files -/' \
-    '--encode=[Read a text-format message of given type from stdin and write it in binary to stdout]' \
-    '--decode=[Read a text-format message of given type from stdin and write it in binary to stdout]' \
+    '--encode=[Read a text-format message of given type from stdin and write it in binary to stdout]:message_type' \
+    '--deterministic_output[When using --encode, ensure map fields are deterministically ordered]' \
+    '--decode=[Read a text-format message of given type from stdin and write it in binary to stdout]:message_type' \
     '--decode_raw[Read an arbitrary protocol message from stdin and write the raw tag/value pairs in text format to stdout]' \
     '--descriptor_set_in=[Specifies a delimited list of FILES each containing a FileDescriptorSet]:desc_in:_files' \
     {-o,--descriptor_set_out}'=[Writes a FileDescriptorSet to FILE]:desc_out:_files' \
     '--include_imports[When using --descriptor_set_out, also include all dependencies of the input files in the set]' \
     '--include_source_info[When using --descriptor_set_out, do not strip SourceCodeInfo from the FileDescriptorProto]' \
+    '--retain_options[when using --descriptor_set_out, do not strip any options from the FileDescriptorProto]' \
     '--dependency_out=[Write a dependency output file in the format expected by make]:dep_out:_files' \
     '--error_format=[Set the format in which print errors]:error_format:(gcc msvc)' \
+    '--fatal_warnings[Make warnings be fatal]' \
     '--print_free_field_numbers[Print the free field numbers of the messages]'\
+    '--enable_codegen_trace[Enables tracing which parts of protoc are responsible for what codegen output]' \
     '--plugin=[Specifies a plugin executable to use]:plugin:_files' \
     '--cpp_out=[Generate C++ header and source]:out_dir:_files -/' \
     '--csharp_out=[Generate C# source file]:out_dir:_files -/' \
     '--java_out=[Generate Java source file]:out_dir:_files -/' \
+    '--kotlin_out[Generate Kotlin file]:out_dir:_files -/' \
     '--js_out=[Generate JavaScript source]:out_dir:_files -/' \
     '--objc_out=[Generate Objective C header and source]:out_dir:_files -/' \
     '--php_out=[Generate PHP source file]:out_dir:_files -/' \
     '--python_out=[Generate Python source file]:out_dir:_files -/' \
     '--ruby_out=[Generate Ruby source file]:out_dir:_files -/' \
+    '--rust_out=[Generate Rust sources]:out_dir:_files -/' \
     '*: :__protoc_files'
 }
 
