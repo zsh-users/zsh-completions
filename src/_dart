@@ -24,7 +24,7 @@
 # Description
 # -----------
 #
-#  Completion script for dart 3.0.5. (https://dart.dev/)
+#  Completion script for dart 3.1.0 (https://dart.dev/)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -119,21 +119,7 @@ _dart() {
             '(- *)'{-h,--help}'[Print this usage information]' \
             '(-v --verbose)'{-v,--verbose}'[Show all options and flags with --help]' \
             '(-o --output)'{-o,--output}'[Set where to write formatted output]:format:_dart_format_output' \
-            '--show[Set which filenames to print]:show:_dart_format_show' \
-            '--summary[Show the specified summary after formatting]:summary:_dart_format_summary' \
             '--set-exit-if-changed[Return exit code 1 if there are any formatting changes]' \
-            '--fix[Apply all style fixes]' \
-            '--fix-doc-comments[Use triple slash for documentation comments]' \
-            '--fix-function-typedefs[Use new syntax for function type typedefs]' \
-            '--fix-named-default-separator[Use "=" as the separator before named parameter default values]' \
-            '--fix-optional-const[Remove "const" keyword inside constant context]' \
-            '--fix-optional-new[Remove "new" keyword]' \
-            '--fix-single-cascade-statements[Remove unnecessary single cascades from expression statements]' \
-            '(-i --indent)'{-i,--indent}'[Add this many spaces of leading indentation(default to 0)]' \
-            '--follow-links[Follow links to files and directories]' \
-            '(- *)--version[Show dart_style version]' \
-            '--selection[Track selection through formatting]:start_length' \
-            '--stdin-name[Use this path in error messages when input is read from stdin(defaults to "stdin")]:name' \
             '*:file_or_directory:_files' \
             && ret=0
           ;;
@@ -275,33 +261,13 @@ _dart_compile_subcommands() {
 
 (( $+functions[_dart_format_output] )) ||
 _dart_format_output() {
-  local -a options=(
+  local -a outputs=(
     "json:Print code and selection as JSON"
     "none:Discard output"
     "show:Print code to terminal"
-    "write:Overwrite formatted files on disk"
+    "write:Overwrite formatted files on disk(default)"
   )
-  _describe -t options 'command' options "$@"
-}
-
-(( $+functions[_dart_format_show] )) ||
-_dart_format_show() {
-  local -a options=(
-    "all:All visited files and directories"
-    "changed:Only the names of files whose formatting is changed"
-    "none:No file names or directories"
-  )
-  _describe -t options 'command' options "$@"
-}
-
-(( $+functions[_dart_format_summary] )) ||
-_dart_format_summary() {
-  local -a options=(
-    "line:Single-line summary"
-    "none:No summary"
-    "profile:How long it took for format each file"
-  )
-  _describe -t options 'command' options "$@"
+  _describe -t outputs 'output' outputs "$@"
 }
 
 (( $+functions[_dart_pub] )) ||
@@ -574,19 +540,19 @@ _dart_pub_token_subcommands() {
 
 (( $+functions[_dart_run_timeline_streams] )) ||
 _dart_run_timeline_streams() {
-  local -a options=(all API Compiler CompilerVerbose Dart Debugger Embedder GC Isolate VM)
-  _values -s ',' streams $options
+  local -a streams=(all API Compiler CompilerVerbose Dart Debugger Embedder GC Isolate VM)
+  _values -s ',' streams $streams
 }
 
 (( $+functions[_dart_test_reporter] )) ||
 _dart_test_reporter() {
-  local -a options=(
+  local -a reporters=(
     "compact:A single line, updated continuously"
     "expanded:A separate line for each update"
     "github:A custom reporter for GitHub Actions"
     "json:A machine-readable format"
   )
-  _describe -t options 'command' options "$@"
+  _describe -t reporters 'reporter' reporters "$@"
 }
 
 (( $+functions[_dart_subcommands] )) ||
