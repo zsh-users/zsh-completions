@@ -36,8 +36,8 @@
 # ------------------------------------------------------------------------------
 
 
-local -a options
-options=(
+local -a command_options
+command_options=(
   '--version[Show the program version and exit]'
   '--filter[Set the filter, e.g. installed]'
   "--root[Set the install root, e.g. '/' or '/mnt/ltsp']"
@@ -107,23 +107,23 @@ done
 
 if [[ -z "$cmd" ]]
 then
-  _arguments -s -w : $options \
+  _arguments -s -w : $command_options \
     ":action:($actions)"
   return
 fi
 
 case "$cmd" in
   search)
-    _arguments : $options \
+    _arguments : $command_options \
       ':type:(name details group file)' \
       ':data: :'
   ;;
   refresh)
-    _arguments -s -w : $options \
+    _arguments -s -w : $command_options \
       '--force'
   ;;
   *)
-    _arguments -s -w : $options
+    _arguments -s -w : $command_options
   ;;
 esac
 return 1

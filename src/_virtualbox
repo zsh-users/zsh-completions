@@ -339,9 +339,9 @@ _vboxmanage() {
             && ret=0
           ;;
         (modifyvm|export)
-          local -a options=(${(@f)"$(vboxmanage $words[1] | perl -wln -e 'm{(--[a-zA-Z_-]+) [^]|]+} and print qq{$1:arg}')"})
+          local -a command_options=(${(@f)"$(vboxmanage $words[1] | perl -wln -e 'm{(--[a-zA-Z_-]+) [^]|]+} and print qq{$1:arg}')"})
           _arguments \
-            $options \
+            $command_options \
             ':machine:_vboxmachines'
           ;;
         (controlvm)
