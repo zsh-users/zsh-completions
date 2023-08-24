@@ -34,35 +34,6 @@
 #
 # ------------------------------------------------------------------------------
 
-_fvm_versions() {
-  local -a versions
-  versions=($(fvm releases | awk '/[0-9]+\.[0-9]+\.[0-9]+/{ sub(/^[^│]*│ /, ""); print $1}'))
-  versions=(master beta stable $versions)
-  _describe 'versions' versions
-}
-
-_fvm_installed_versions() {
-  local -a versions
-  versions=($(fvm list | sed -e '1,2d'))
-  _describe 'installed_versions' versions
-}
-
-_fvm_run_flutter() {
-  local begin=$(($CURRENT - 1))
-  if (( $+functions[_flutter] )); then
-    compset -n $begin
-    _flutter "$@"
-  fi
-}
-
-_fvm_run_dart() {
-  local begin=$(($CURRENT - 1))
-  if (( $+functions[_dart] )); then
-    compset -n $begin
-    _dart "$@"
-  fi
-}
-
 _fvm() {
   typeset -A opt_args
   local context state line
@@ -81,13 +52,13 @@ _fvm() {
     (args)
       case $words[1] in
         (help)
-          _arguments -C \
+          _arguments \
            '(- *)'{-h,--help}'[Print this usage information]' \
            '1: :_fvm_subcommands' \
             && ret=0
           ;;
         (config)
-          _arguments -C \
+          _arguments \
             '(- *)'{-h,--help}'[Print this usage information]' \
             '(-c --cache-path)'{-c,--cache-path}'[Set the path which FVM will cache the version.Priority over FVM_HOME]::_path_files -/' \
             '(-s --skip-setup --no-skip-setup)'{-s,--skip-setup}'[Skip setup after a version install]' \
@@ -102,51 +73,51 @@ _fvm() {
             && ret=0
           ;;
         (dart)
-          _arguments -C \
+          _arguments \
            '1: :_fvm_run_dart' \
            '*: :_normal' \
             && ret=0
           ;;
         (exec)
-          _arguments -C \
+          _arguments \
            '*::args:_normal' \
             && ret=0
           ;;
         (flutter)
-          _arguments -C \
+          _arguments \
            '1: :_fvm_run_flutter' \
            '*: :_normal' \
             && ret=0
           ;;
         (global)
-          _arguments -C \
+          _arguments \
            '(- *)'{-h,--help}'[Print this usage information]' \
            '*::args:_fvm_installed_versions' \
             && ret=0
           ;;
         (install)
-          _arguments -C \
+          _arguments \
            '(- *)'{-h,--help}'[Print this usage information]' \
            '(-s --skip-setup)'{-s,--skip-setup}'[Skips Flutter setup after install]' \
            '1: :_fvm_versions' \
             && ret=0
           ;;
         (remove)
-          _arguments -C \
+          _arguments \
            '(- *)'{-h,--help}'[Print this usage information]' \
            '--force[Skips version global check]' \
            '1: :_fvm_installed_versions' \
             && ret=0
           ;;
         (spawn)
-          _arguments -C \
+          _arguments \
             '1: :_fvm_installed_versions' \
             '2: :_fvm_run_flutter' \
             '*: :_normal' \
             && ret=0
           ;;
         (use)
-          _arguments -C \
+          _arguments \
            '(- *)'{-h,--help}'[Print this usage information]' \
            '(-f --force)'{-f,--force}'[Skips command guards that does Flutter project checks]' \
            '(-p --pin)'{-p,--pin}'[If version provided is a channel. Will pin the latest release of the channel]' \
@@ -162,11 +133,9 @@ _fvm() {
   return ret
 }
 
-
 (( $+functions[_fvm_subcommands] )) ||
 _fvm_subcommands() {
-  local commands;
-  commands=(
+  local -a commands=(
     'config:Set configuration for FVM'
     'dart:Proxies Dart Commands'
     'destroy:Destroy FVM cache by deleting FVM directory'
@@ -185,6 +154,38 @@ _fvm_subcommands() {
   _describe -t commands 'command' commands "$@"
 }
 
+(( $+functions[_fvm_versions] )) ||
+_fvm_versions() {
+  local -a versions
+  versions=($(fvm releases | awk '/[0-9]+\.[0-9]+\.[0-9]+/{ sub(/^[^│]*│ /, ""); print $1}'))
+  versions=(master beta stable $versions)
+  _describe 'versions' versions
+}
+
+(( $+functions[_fvm_installed_versions] )) ||
+_fvm_installed_versions() {
+  local -a versions
+  versions=($(fvm list | sed -e '1,2d'))
+  _describe 'installed_versions' versions
+}
+
+(( $+functions[_fvm_run_flutter] )) ||
+_fvm_run_flutter() {
+  local begin=$(($CURRENT - 1))
+  if (( $+functions[_flutter] )); then
+    compset -n $begin
+    _flutter "$@"
+  fi
+}
+
+(( $+functions[_fvm_run_dart] )) ||
+_fvm_run_dart() {
+  local begin=$(($CURRENT - 1))
+  if (( $+functions[_dart] )); then
+    compset -n $begin
+    _dart "$@"
+  fi
+}
 
 _fvm "$@"
 
