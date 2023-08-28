@@ -45,7 +45,7 @@ common_ops=(
   {-C,--no-color}"[disable color]"
   {-V,--verbose}"[make output more detailed]"
   {-d,--debug}"[enable debugging]"
-  {-e,--env=}"[set environment]:envvar:_parameters -g '*export*' -qS="
+  \*{-e,--env=}"[set environment]:envvar:_parameters -g '*export*' -qS="
   '(- *)'{-h,--help}"[show the help message and quit]"
   {-l,--color}"[enable color]"
   '(- *)'{-v,--version}"[show version information and quit]"
