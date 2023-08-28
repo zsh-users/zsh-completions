@@ -23,7 +23,7 @@
 # Description
 # -----------
 #
-#  Completion script for nanoc (https://nanoc.app/)
+#  Completion script for nanoc 4.12.16 (https://nanoc.app/)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -36,24 +36,26 @@
 #
 # ------------------------------------------------------------------------------
 
-local ret=1 state
+local ret=1
+local context state line
+local curcontext="$curcontext"
 
 local -a common_ops
 common_ops=(
   {-C,--no-color}"[disable color]"
   {-V,--verbose}"[make output more detailed]"
   {-d,--debug}"[enable debugging]"
-  {-e,--env=}"[set environment]"
-  {-h,--help}"[show the help message and quit]"
+  \*{-e,--env=}"[set environment]:envvar:_parameters -g '*export*' -qS="
+  '(- *)'{-h,--help}"[show the help message and quit]"
   {-l,--color}"[enable color]"
-  {-v,--version}"[show version information and quit]"
+  '(- *)'{-v,--version}"[show version information and quit]"
   {-w,--warn}"[enable warnings]"
 )
 
 typeset -A opt_args
-_arguments \
-  ':subcommand:->subcommand' \
+_arguments -C \
   $common_ops \
+  '1:subcommand:->subcommand' \
   '*::options:->options' && ret=0
 
 case $state in
@@ -74,17 +76,11 @@ case $state in
     )
 
     _describe -t subcommands 'nanoc subcommand' subcommands && ret=0
-  ;;
-
+    ;;
   options)
     local -a args
     args=(
       $common_ops
-    )
-
-    local -a help
-    help=(
-      "--help[Display help information]"
     )
 
     case $words[1] in
@@ -93,64 +89,48 @@ case $state in
           {-L,--list}"[list all checks]"
           {-a,--all}"[run all checks]"
         )
-      ;;
-
+        ;;
       compile)
         args=(
+          {-W,--watch}'[watch for changes and recompile when needed]'
           "--diff[generate diff]"
           )
-      ;;
-
+        ;;
       create-site)
         args=(
           "--force[force creation of new site]"
           )
-      ;;
-
+        ;;
       deploy)
         args=(
           {-C,--no-check}"[do not run the issue checks marked for deployment]"
           {-D,--list-deployers}"[list available deployers]"
           {-L,--list}"[list available locations to deploy to]"
           {-n,--dry-run}"[show what would be deployed]"
-          {-t,--target=}"[specify the location to deploy to (default:\`default\`)]"
+          {-t,--target=}"[specify the location to deploy to (default:\`default\`)]:target"
           )
-      ;;
-
+        ;;
       prune)
         args=(
           {-n,--dry-run}"[print files to be deleted instead of actually deleting them]"
           {-y,--yes}"[confirm deletion]"
           )
-      ;;
-
+        ;;
       shell)
         args=(
           {-p,--preprocess}"[run preprocessor]"
           )
-      ;;
-
-      show-data)
+        ;;
+      show-data|show-plugins|show-rules)
         args=(
           )
-      ;;
-
-      show-plugins)
-        args=(
-          )
-      ;;
-
-      show-rules)
-        args=(
-          )
-      ;;
-
+        ;;
       view)
         args=(
-          {-H,--handler=}"[specify the handler to use(webrick/mongrel/...)]"
+          {-H,--handler=}"[specify the handler to use(webrick/mongrel/...)]:handler"
           {-L,--live-reload}"[reload on changes]"
-          {-o,--host=}"[specify the host to listen on(default: 127.0.0.1)]"
-          {-p,--port=}"[specify the port to listen on(default: 3000)]"
+          {-o,--host=}"[specify the host to listen on(default: 127.0.0.1)]:host"
+          {-p,--port=}"[specify the port to listen on(default: 3000)]:port"
           )
       ;;
     esac
@@ -160,3 +140,11 @@ case $state in
 esac
 
 return ret
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
