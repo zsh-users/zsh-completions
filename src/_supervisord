@@ -1,0 +1,65 @@
+#compdef supervisord
+# ------------------------------------------------------------------------------
+# Copyright (c) 2023 Github zsh-users - https://github.com/zsh-users
+# All rights reserved.
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for supervisord. (https://github.com/Supervisor/supervisor)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei YOSHIDA (https://github.com/syohex)
+#
+# ------------------------------------------------------------------------------
+
+_arguments \
+  '(-c --configuration)'{-c,--configuration}'[configuration file path]:config file:_files' \
+  '(-n --nodaemon)'{-n,--nodaemon}'[run in the foreground]' \
+  '(-s --silent)'{-s,--silent}'[no longs to stdout]' \
+  '(- *)'{-h,--help}'[print this usage message and exit]' \
+  '(- *)'{-v,--version}'[print supervisord version number and exit]' \
+  '(-u --user)'{-u,--user}'[run supervisord as given user]:user:_users' \
+  '(-m --umask)'{-m,--umask}'[use given umask for daemon subprocess]:umask' \
+  '(-d --directory)'{-d,--directory}'[directory to chdir to when daemonized]:directory:_files -/' \
+  '(-l --logfile)'{-l,--logfile}'[logfile path]:logfile:_files' \
+  '(-y --logfile_maxbytes)'{-y,--logfile_maxbytes}'[limit the max size of logfile]:max bytes' \
+  '(-z --logfile_backups)'{-z,--logfile_backups}'[number of backups to keep when max bytes reached]:number of backups' \
+  '(-e --loglevel)'{-e,--loglevel}'[log level]:level:(debug info warn error critical)' \
+  '(-j --pidfile)'{-j,--pidfile}'[pid file path]:pid file:_files' \
+  '(-i --identifier)'{-i,--identifier}'[identifier used for this instance of supervisord]:id' \
+  '(-q --childlogdir)'{-q,--childlogdir}'[the log directory for child process logs]:log dir:_files -/' \
+  '(-k --nocleanup)'{-k,--nocleanup}'[prevent the process from performing cleanup]' \
+  '(-a --minfds)'{-m,--minfds}'[the minimum number of file descriptors for start success]:min fds' \
+  '(-t --strip_ansi)'{-t,--strip_ansi}'[strip ansi escape codes from process output]' \
+  '--profile_options[profile options]:profile option:_values -s , "field" cumulative calls callers'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
