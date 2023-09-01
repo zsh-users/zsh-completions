@@ -28,11 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for supervisorctl from Supervisord (http://supervisord.org)
-#
-#  Sources:
-#  https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/supervisor
-#  https://github.com/zsh-users/zsh-completions/blob/master/src/_brew
+#  Completion script for supervisorctl 4.2.5 from Supervisord (https://github.com/Supervisor/supervisor)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -40,130 +36,197 @@
 #
 #  * Matt Black (https://github.com/mafrosis)
 #  * dongweiming (https://github.com/dongweiming)
+#  * Shohei Yoshida (https://github.com/syohex)
 #
 # ------------------------------------------------------------------------------
 
+_supervisorctl() {
+  local -a procs
+  typeset -A opt_args
+  local context state line
+  local curcontext="$curcontext"
+  local ret=1
 
-_supervisorctl_list_procs() {
-  procs=(${(f)"$(_call_program supervisor_procs supervisorctl avail | awk '{print $1}')"})
+  _arguments -C \
+    {--configuration,-c}='[configuration file path (default /etc/supervisor.conf)]:filename:_files' \
+    '(- *)'{--help,-h}'[print usage message and exit]:' \
+    {--interactive,-i}'[start an interactive shell after executing commands]' \
+    {--serverurl,-s}='[URL on which supervisord server is listening (default "http://localhost:9001")]:url:_urls' \
+    {--username,-u}='[username to use for authentication with server]:username:_users' \
+    {--password,-p}='[password to use for authentication with server]:password' \
+    {--history-file,-r}'[keep a readline history (if readline is available)]:filename:_files' \
+    '1: :_supervisorctl_subcommands' \
+    '*:: :->subcmds' && ret=0
+
+  case $state in
+    (subcmds)
+      case "$words[1]" in
+        (help)
+          _arguments \
+           '1: :_supervisorctl_subcommands' \
+            && ret=0
+          ;;
+        (add|remove)
+          _arguments \
+            '1: :_supervisorctl_procs_groups' \
+            && ret=0
+          ;;
+        (fg)
+          _arguments \
+            '1: :_supervisorctl_processes' \
+            && ret=0
+          ;;
+        (pid|clear)
+          _arguments \
+            '*: :_supervisorctl_processes_all' \
+            && ret=0
+          ;;
+        (restart|status)
+          _arguments \
+            '*:process_or_group:_supervisorctl_procs_and_group_prefixes' \
+            && ret=0
+          ;;
+        (update)
+          _arguments \
+            '*: :_supervisorctl_groups' \
+            && ret=0
+          ;;
+        (stop)
+          _arguments \
+            '*:running process or group:_supervisorctl_running_procs' \
+            && ret=0
+          ;;
+        (start)
+          _arguments \
+            '*:stopped process or group:_supervisorctl_stopped_procs' \
+            && ret=0
+          ;;
+        (signal)
+          _arguments \
+            '1:signal:_signals -s' \
+            '*:running process or group:_supervisorctl_running_procs' \
+            && ret=0
+          ;;
+        (tail)
+          _arguments \
+            '-f[Continuous tail of named process stdout]' \
+            '-[last N *bytes* of process stdout]:number' \
+            '1: :_supervisorctl_processes' \
+            '2:output:(stdout stderr)' \
+            && ret=0
+          ;;
+        (maintail)
+          _arguments \
+            '-f[Continuous tail of named process stdout]' \
+            '-[last N *bytes* of process stdout]:number' \
+            && ret=0
+          ;;
+      esac
+  esac
+
+  return 0
 }
-_supervisorctl_list_groups() {
-  groups=(${(f)"$(_call_program supervisor_procs supervisorctl avail | awk '$1 ~ /:/ { print substr($1,1,index($1,":")) }' | uniq)"})
+
+(( $+functions[_supervisorctl_subcommands] )) ||
+_supervisorctl_subcommands() {
+  local -a commands=(
+    'add:Activates any updates in config for process/group'
+    'avail:Display all configured processes'
+    'clear:Clear single/multiple/all process log files'
+    'exit:Exit the supervisor shell'
+    'fg:Connect to a process in foreground mode'
+    'maintail:tail of supervisor main log file'
+    'open:Connect to a remote supervisord process. (for UNIX domain socket, use unix:///socket/path)'
+    'pid:Get the PID of process/supervisord'
+    'quit:Exit the supervisor shell'
+    'reload:Restart the remote supervisord'
+    'remove:Removes process/group from active config'
+    "reread:Reload the daemon's configuration files"
+    'restart:Restart process, group or all'
+    'signal:Send signal to a process'
+    'shutdown:Shut the remote supervisord down'
+    'start:Start process, group or all'
+    'status:Get process/group status info'
+    'stop:Stop process, group or all'
+    'tail:tail of process stdout'
+    'update:Reload config and add/remove as necessary'
+    'version:Show the version of the remote supervisord process'
+    'help:Show help'
+  )
+
+  _describe -t commands 'command' commands "$@"
 }
 
-_supervisorctl_list_procs_stopped() {
-  procs=(${(f)"$(_call_program supervisor_procs supervisorctl status | awk '/STOPPED/ {print $1}')"})
-}
-_supervisorctl_list_groups_stopped() {
-  groups=(${(f)"$(_call_program supervisor_procs supervisorctl status | awk '$1$2 ~ /:(.*)STOPPED/ { print substr($1,1,index($1,":")) }' | uniq)"})
-}
-
-_supervisorctl_list_procs_running() {
-  procs=(${(f)"$(_call_program supervisor_procs supervisorctl status | awk '/RUNNING/ {print $1}')"})
-}
-_supervisorctl_list_groups_running() {
-  groups=(${(f)"$(_call_program supervisor_procs supervisorctl status | awk '$1$2 ~ /:(.*)RUNNING/ { print substr($1,1,index($1,":")) }' | uniq)"})
+(( $+functions[_supervisorctl_processes] )) ||
+_supervisorctl_processes() {
+  local -a procs
+  procs=(${(f)"$(_call_program processes supervisorctl avail | awk '{gsub(":","\\:", $1); print $1 }')"})
+  if [[ "$1" = 'all' ]]; then
+    procs+=(all)
+  fi
+  _describe 'processes' procs
 }
 
-local -a _1st_arguments
-_1st_arguments=(
-  'add:Activates any updates in config for process/group'
-  'avail:Display all configured processes'
-  'clear:Clear single/multiple/all process log files'
-  'exit:Exit the supervisor shell'
-  'fg:Connect to a process in foreground mode'
-  'maintail:tail of supervisor main log file'
-  'open:Connect to a remote supervisord process. (for UNIX domain socket, use unix:///socket/path)'
-  'pid:Get the PID of process/supervisord'
-  'quit:Exit the supervisor shell'
-  'reload:Restart the remote supervisord'
-  'remove:Removes process/group from active config'
-  "reread:Reload the daemon's configuration files"
-  'restart:Restart process, group or all'
-  'shutdown:Shut the remote supervisord down'
-  'start:Start process, group or all'
-  'status:Get process/group status info'
-  'stop:Stop process, group or all'
-  'tail:tail of process stdout'
-  'update:Reload config and add/remove as necessary'
-  'version:Show the version of the remote supervisord process'
-  'help:Show help'
-)
+(( $+functions[_supervisorctl_processes_all] )) ||
+_supervisorctl_processes_all() {
+  _supervisorctl_processes all
+}
 
-local expl
-local -a procs
+(( $+functions[_supervisorctl_procs_groups] )) ||
+_supervisorctl_procs_groups() {
+  local -a procs
+  procs=(${(f)"$(_call_program processes supervisorctl status \
+  | awk '{n=$1;gsub(":","\\:",n); printf "%s\n%s\n",n,substr($1,1,index($1,":")-1)}' \
+  | uniq)"})
+  _describe 'process and groups' procs
+}
 
-_arguments \
-  {--configuration,-c}='[configuration file path (default /etc/supervisor.conf)]:filename:_files' \
-  {--help,-h}'[print usage message and exit]:' \
-  {--interactive,-i}'[start an interactive shell after executing commands]' \
-  {--serverurl,-s}='[URL on which supervisord server is listening (default "http://localhost:9001")]' \
-  {--username,-u}='[username to use for authentication with server]:username:_users' \
-  {--password,-p}='[password to use for authentication with server]:password:' \
-  {--history-file,-r}'[keep a readline history (if readline is available)]:filename:_files' \
-  '*:: :->subcmds' && return 0
+(( $+functions[_supervisorctl_procs_and_group_prefixes] )) ||
+_supervisorctl_procs_and_group_prefixes() {
+  _supervisorctl_collect_procs '.'
+}
 
-if (( CURRENT == 1 )); then
-  _describe -t commands 'supervisorctl subcommand' _1st_arguments
-  return
-fi
+(( $+functions[_supervisorctl_running_procs] )) ||
+_supervisorctl_running_procs() {
+  _supervisorctl_collect_procs 'RUNNING'
+}
 
-case "$words[1]" in
-  help)
-    tasks=(add avail clear exit fg maintail open pid quit reload remove \
-           reread restart shutdown start status stop tail update version)
+(( $+functions[_supervisorctl_stoped_procs] )) ||
+_supervisorctl_stopped_procs() {
+  _supervisorctl_collect_procs 'STOPPED'
+}
 
-    _wanted tasks expl 'help' compadd $tasks ;;
+(( $+functions[_supervisorctl_collect_procs] )) ||
+_supervisorctl_collect_procs() {
+  if (( $words[(I)all] )); then
+    return
+  fi
 
-  add|fg|remove)
-    # commands that only operate on processes
-    _supervisorctl_list_procs
-    _wanted procs expl 'process' compadd -a procs ;;
+  local pattern=$1
 
-  clear|pid)
-    # commands that operate on processes and "all"
-    _supervisorctl_list_procs
-    procs+=('all')
-    _wanted procs expl 'process' compadd -a procs ;;
+  local -a procs
+  procs=(${(f)"$(_call_program processes supervisorctl status \
+  | awk "/$pattern/"'{n=$1;gsub(":","\\:",n); printf "%s\n%s\\:\n",n,substr($1,1,index($1,":")-1)}' \
+  | uniq)"})
+  procs+=(all)
+  _describe 'stooped processes or groups' procs
+}
 
-  status|update)
-    # commands that operate on processes, groups & "all"
-    _supervisorctl_list_procs
-    procs+=('all')
-    _wanted procs expl 'process' compadd -a procs
+(( $+functions[_supervisorctl_groups] )) ||
+_supervisorctl_groups() {
+  if (( $words[(I)all] )); then
+    return
+  fi
 
-    _supervisorctl_list_groups
-    _wanted groups expl 'group' compadd -a groups ;;
+  local -a groups
+  groups=(${(f)"$(_call_program processes supervisorctl status \
+  | awk '{printf "%s\n",substr($1,1,index($1,":")-1)}' \
+  | uniq)"})
+  groups+=(all)
+  _describe 'groups' groups
+}
 
-  stop)
-    # commands that operate on RUNNING processes, groups & "all"
-    _supervisorctl_list_procs_running
-    procs+=('all')
-    _wanted procs expl 'process' compadd -a procs
-
-    _supervisorctl_list_groups_running
-    _wanted groups expl 'group' compadd -a groups ;;
-
-  restart|start)
-    # commands that operate on STOPPED processes, groups & "all"
-    _supervisorctl_list_procs_stopped
-    procs+=('all')
-    _wanted procs expl 'process' compadd -a procs
-
-    _supervisorctl_list_groups_stopped
-    _wanted groups expl 'group' compadd -a groups ;;
-
-  tail|maintail)
-    _arguments \
-      '-f[Continuous tail of named process stdout]' \
-      '-[last N *bytes* of process stdout]:number' \
-      '1: :->forms' && return 0
-
-      if [[ $state == forms ]]; then
-        _supervisorctl_list_procs
-        _wanted procs expl 'processes' compadd -a procs
-      fi ;;
-esac
+_supervisorctl "$@"
 
 # Local Variables:
 # mode: Shell-Script
