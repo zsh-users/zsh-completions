@@ -253,15 +253,10 @@ _port_select() {
   fi
 }
 
-stat -f%m . > /dev/null 2>&1
-if [ "$?" = 0 ]; then
-  stat_cmd=(stat -f%Z)
-else
-  stat_cmd=(stat --format=%Z)
-fi
-
 _port_caching_policy() {
   local reg_time comp_time check_file
+
+  zmodload -F zsh/stat b:zstat 2> /dev/null
   case "${1##*/}" in
     PORT_INSTALLED_PACKAGES)
       check_file=$port_prefix/var/macports/registry/registry.db
@@ -270,9 +265,17 @@ _port_caching_policy() {
       check_file=${$(port dir MacPorts)%/*/*}/PortIndex
       ;;
   esac
-  reg_time=$($stat_cmd $check_file)
-  comp_time=$($stat_cmd $1)
+  reg_time=$(zstat +mtime $check_file)
+  comp_time=$(zstat +mtime $1)
   return $(( reg_time < comp_time ))
 }
 
 _port "$@"
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
