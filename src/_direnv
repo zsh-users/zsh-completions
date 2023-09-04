@@ -25,7 +25,7 @@
 # Description
 # -----------
 #
-#  Completion script for direnv (https://direnv.net/)
+#  Completion script for direnv 2.32.3 (https://direnv.net/)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -35,83 +35,86 @@
 #
 # ------------------------------------------------------------------------------
 
-_commands=(
-  'allow:Grants direnv permission to load the given .envrc or .env file.'
-  'permit:Grants direnv permission to load the given .envrc or .env file.'
-  'grant:Grants direnv permission to load the given .envrc or .env file.'
-  'block:Revokes the authorization of a given .envrc or .env file.'
-  'deny:Revokes the authorization of a given .envrc or .env file.'
-  'revoke:Revokes the authorization of a given .envrc or .env file.'
-  'edit:Opens PATH_TO_RC or the current .envrc or .env into an $EDITOR and allow the file to be loaded afterwards.'
-  'exec:Executes a command after loading the first .envrc or .env found in DIR'
-  'fetchurl:Fetches a given URL into direnv''s CAS'
-  'help:shows this help'
-  'hook:Used to setup the shell hook'
-  'prune:removes old allowed files'
-  'reload:triggers an env reload'
-  'status:prints some debug status information'
-  'stdlib:Displays the stdlib available in the .envrc execution context'
-  'version:prints the version or checks that direnv is older than VERSION_AT_LEAST.'
-)
-
+(( $+functions[_direnv_commands] )) ||
 _direnv_commands() {
-  _describe 'command' _commands
+  local -a commands=(
+    'allow:Grants direnv permission to load the given .envrc or .env file'
+    'permit:Grants direnv permission to load the given .envrc or .env file'
+    'grant:Grants direnv permission to load the given .envrc or .env file'
+    'block:Revokes the authorization of a given .envrc or .env file'
+    'deny:Revokes the authorization of a given .envrc or .env file'
+    'revoke:Revokes the authorization of a given .envrc or .env file'
+    'edit:Opens PATH_TO_RC or the current .envrc or .env into an $EDITOR and allow the file to be loaded afterwards'
+    'exec:Executes a command after loading the first .envrc or .env found in DIR'
+    "fetchurl:Fetches a given URL into direnv's CAS"
+    'help:shows this help'
+    'hook:Used to setup the shell hook'
+    'prune:removes old allowed files'
+    'reload:triggers an env reload'
+    'status:prints some debug status information'
+    'stdlib:Displays the stdlib available in the .envrc execution context'
+    'version:prints the version or checks that direnv is older than VERSION_AT_LEAST'
+  )
+
+  _describe 'command' commands
 }
 
 _direnv() {
-  local state
+  local curcontext="$curcontext" state line
+  typeset -A opt_args
+  local ret=1
 
-  _arguments \
+  _arguments -C \
     '1: :_direnv_commands' \
-    '*:: :->command_args'
+    '*:: :->command_args' && ret=0
 
   case $state in
     command_args)
       case $words[1] in
-        allow|permit|grant|block|deny|revoke|edit)
+        (allow|permit|grant|block|deny|revoke|edit)
           _arguments \
-            '1:PATH TO RC FILE:_files' \
-        ;;
-
-        exec)
+            '1:rc file:_files' \
+            && ret=0
+            ;;
+        (exec)
           _arguments \
-            '1:DIRECTORY:_files -/' \
-            '2:COMMAND:_command_names'
-
-        ;;
-
-        hook)
+            '1:directory:_files -/' \
+            '2:command:_command_names' \
+            && ret=0
+          ;;
+        (hook)
           _arguments \
-            '1:SHELL:(bash zsh fish tcsh elvish)'
-        ;;
-
-        fetchurl)
+            '1:shell:(bash zsh fish tcsh elvish)' \
+            && ret=0
+          ;;
+        (fetchurl)
           _arguments \
-            '1:URL:' \
-            '2:INTEGRITY HASH:'
-        ;;
-
-
-        prune|reload|status|stdlib)
-          _arguments
-        ;;
-
-        version)
+            '1:url:_urls' \
+            '2:integrity hash' \
+            && ret=0
+          ;;
+        (version)
           _arguments \
-            '1:VERSION:'
-        ;;
-
-        help)
+            '1:version at least' \
+            && ret=0
+          ;;
+        (help)
           _arguments \
-            '1:SHOW PRIVATE:'
-        ;;
-
-        *)
-          _default
-        ;;
+            '1:show private:(SHOW_PRIVATE)' \
+            && ret=0
+          ;;
+        (prune|reload|status|stdlib)
+          # do not complete
+          ret=0
+          ;;
+        (*)
+          _default && ret=0
+          ;;
       esac
     ;;
   esac
+
+  return ret
 }
 
 _direnv "$@"
