@@ -662,7 +662,7 @@ _flutter_build() {
     ;;
   esac
 
-  return $ret
+  return ret
 }
 
 (( $+functions[_flutter_build_entities] )) ||
@@ -684,7 +684,8 @@ _flutter_build_entities() {
 
 (( $+functions[_flutter_custom_devices] )) ||
 _flutter_custom_devices() {
-  local ret=0
+  local ret=1
+
   _arguments -C \
     '(- *)'{-h,--help}'[Print this usage information]' \
      '1: :_flutter_custom_devices_subcommands' \
@@ -710,7 +711,7 @@ _flutter_custom_devices() {
     ;;
   esac
 
-  return $ret
+  return ret
 }
 
 (( $+functions[_flutter_custom_devices_subcommands] )) ||
@@ -763,7 +764,7 @@ _flutter_android_languages() {
 
 (( $+functions[_flutter_pub] )) ||
 _flutter_pub() {
-  local ret=0
+  local ret=1
 
   _arguments -C \
     '(- *)'{-h,--help}'[Print this usage information]' \
@@ -878,7 +879,7 @@ _flutter_pub() {
     ;;
   esac
 
-  return $ret
+  return ret
 }
 
 (( $+functions[_flutter_pub_subcommands] )) ||
@@ -908,7 +909,7 @@ _flutter_pub_subcommands() {
 
 (( $+functions[_flutter_pub_cache] )) ||
 _flutter_pub_cache() {
-  local ret=0
+  local ret=1
 
   _arguments -C \
     '(- *)'{-h,--help}'[Print this usage information]' \
@@ -941,7 +942,7 @@ _flutter_pub_cache() {
     ;;
   esac
 
-  return $ret
+  return ret
 }
 
 (( $+functions[_flutter_pub_cache_subcommand] )) ||
@@ -956,7 +957,7 @@ _flutter_pub_cache_subcommand() {
 
 (( $+functions[_flutter_pub_global] )) ||
 _flutter_pub_global() {
-  local ret=0
+  local ret=1
 
   _arguments -C \
     '(- *)'{-h,--help}'[Print this usage information]' \
@@ -994,7 +995,7 @@ _flutter_pub_global() {
     ;;
   esac
 
-  return $ret
+  return ret
 }
 
 (( $+functions[_flutter_pub_global_subcommand] )) ||
@@ -1010,7 +1011,7 @@ _flutter_pub_global_subcommand() {
 
 (( $+functions[_flutter_pub_token] )) ||
 _flutter_pub_token() {
-  local ret=0
+  local ret=1
 
   _arguments -C \
     '(- *)'{-h,--help}'[Print this usage information]' \
@@ -1041,7 +1042,7 @@ _flutter_pub_token() {
     ;;
   esac
 
-  return $ret
+  return ret
 }
 
 (( $+functions[_flutter_pub_token_subcommand] )) ||
