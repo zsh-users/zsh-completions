@@ -1,4 +1,4 @@
-#compdef gtk-launch
+#compdef gtk-launch gtk4-launch
 # ------------------------------------------------------------------------------
 # Copyright (c) 2011 Github zsh-users - https://github.com/zsh-users
 # All rights reserved.
@@ -28,55 +28,52 @@
 # Description
 # -----------
 #
-#  Completion script for gtk-launch on gtk+-3.14.8 (https://www.gtk.org/).
+#  Completion script for gtk-launch on gtk+-3.24.37, gtk4-launch-4.10.4
+#  (https://www.gtk.org/).
 #
 # ------------------------------------------------------------------------------
 # Authors
 # -------
 #
-#  * ncaq <ncaq@ncaq.net> (version 3.14.8)
+#  * ncaq <ncaq@ncaq.net>
 #
 # ------------------------------------------------------------------------------
 
 _gtk-launch() {
-  _arguments \
-    {-h,--help}'[Show help options]' \
-    --help-all'[Show all help options]' \
-    --help-gtk'[Show GTK+ Options]' \
-    --display='[X display to use]' \
-    '1: :_applications'
+  local ret=1
+
+  if [[ $service == "gtk-launch" ]]; then
+    _arguments -S -A "-*" \
+      '(- *)'{-h,--help}'[Show help options]' \
+      '(- *)'{-v,--version}'[Show program version]' \
+      '(- *)'--help-all'[Show all help options]' \
+      '(- *)'--help-gtk'[Show GTK+ Options]' \
+      '(- *)'--display='[X display to use]:display:_x_display' \
+      '--class=[Program class as used by the window manager]:class' \
+      '--name=[Program name as used by the window manager]:name' \
+      '--gtk-module=[Load additional GTK+ modules]:module' \
+      '--g-fatal-warnings[Make all warnings fatal]' \
+      '1: :_gtk-launch-apps' \
+      '*:: :_files' && ret=0
+  else
+    # gtk4-launch
+    _arguments -S -A "-*" \
+      '(- *)'{-h,--help}'[Show help options]' \
+      '(- *)'{-v,--version}'[Show program version]' \
+      '1: :_gtk-launch-apps' \
+      '*:: :_files' && ret=0
+  fi
+
+  return ret
 }
 
-_applications() {
-  local -a applications
-
-  for file in /usr/share/applications/*.desktop; do
-    applications+=`_format_entry $file`
-  done
-
-  _values -w \
-          'applications' \
-          $applications
+(( $+functions[_gtk-launch-apps] )) ||
+_gtk-launch-apps() {
+  local -a apps=(/usr/share/applications/*.desktop(:r:t))
+  _values 'applications' $apps
 }
 
-_format_entry() {
-  echo "`_remove_path_extension $1`[`_get_description $1`]"
-}
-
-_remove_path_extension() {
-  # echo arg
-  # remove path string
-  # remove extension string
-  echo $1 | \
-    sed 's/.*\///' | \
-    sed 's/\.desktop//'
-}
-
-_get_description() {
-  # grep --no-messages option is handling of not UTF-8 text
-  grep --no-messages '^Comment=\|^Exec=' $1 | \
-    tr '\n' ' '
-}
+_gtk-launch "$@"
 
 # Local Variables:
 # mode: Shell-Script
