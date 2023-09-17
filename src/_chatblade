@@ -1,0 +1,63 @@
+#compdef chatblade
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for chatblade (https://github.com/npiv/chatblade)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Johannes Bittner (https://github.com/johannes87)
+#
+# ------------------------------------------------------------------------------
+
+_chatblade() {
+  local -a args
+  local context state state_descr line
+  typeset -A opt_args
+
+  args+=(
+    '(- *)'{-h,--help}'[show this help message and exit]'
+    '--openai-api-key[the OpenAI API key can also be set as env variable OPENAI_API_KEY]:key'
+    '--temperature[temperature (openai setting)]:temperature'
+    '(-c --chat-gpt)'{-c,--chat-gpt}'[chat GPT model 3.5/4 shorthand or full qualified model name, can also be set via env variable OPENAI_API_MODEL]:chat GPT model:(3.5 4)'
+    '(-i --interactive)'{-i,--interactive}'[start an interactive chat session. This will implicitly continue the conversation]'
+    '(-s --stream)'{-s,--stream}'[Stream the incoming text to the terminal]'
+    '(-t --tokens)'{-t,--tokens}'[display what *would* be sent, how many tokens, and estimated costs]'
+    '(-p --prompt-file)'{-p,--prompt-file}'[prompt name - will load the prompt with that name at ~/.config/chatblade/name or a path to a file]:prompt file:_files'
+    '(-e --extract)'{-e,--extract}'[extract content from response if possible (either json or code block)]'
+    '(-r --raw)'{-r,--raw}'[print session as pure text, dont pretty print or format]'
+    '(-n --no-format)'{-n,--no-format}'[do not add pretty print formatting to output]'
+    '(-o --only)'{-o,--only}'[Only display the response, omit query]'
+    '--theme[Set the theme for syntax highlighting see https://pygments.org/styles/, can also be set with CHATBLADE_THEME]:theme:_values "theme" default emacs friendly manni monokai'
+    '(-l --last)'{-l,--last}'[alias for -S last, the default session if none is specified]'
+    '(-S --session)'{-S,--session}'[initiate or continue named session]:session:->sessions'
+    '--session-list[list sessions]'
+    '--session-path[show path to session file]'
+    '--session-dump[dump session to stdout]'
+    '--session-delete[delete session]'
+    '--session-rename[rename session]:new session:->sessions'
+  )
+
+  _arguments -s $args
+
+  case $state in
+    (sessions)
+      local -a sessions
+      sessions=("${(@f)$(chatblade --session-list)}")
+      _describe 'session' sessions
+      ;;
+  esac
+}
+
+_chatblade
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
