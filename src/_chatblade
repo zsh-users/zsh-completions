@@ -15,7 +15,7 @@
 
 _chatblade() {
   local -a args
-  local context state state_descr line
+  local context state_descr line
   typeset -A opt_args
 
   args+=(
