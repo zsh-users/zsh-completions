@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Node.js v20.6.0 (https://nodejs.org)
+#  Completion script for Node.js v20.7.0 (https://nodejs.org)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -85,7 +85,7 @@ _arguments -C \
   '--enable-fips[enable FIPS crypto at startup]' \
   '--enable-network-family-autoselection[enable network address family autosetection algorithm]' \
   '--enable-source-maps[source map support]' \
-  '--env-file=[set environment variables from supplied file]:envfile:_files' \
+  '*--env-file=[set environment variables from supplied file]:envfile:_files' \
   '--es-module-specifier-resolution=[extension resolution algorithm for es modules]:resolution algorithm:(explicit none)' \
   '--experimental-import-meta-resolve[experimental ES Module import.meta.resolve() support]' \
   '(--loader --experimental-loader)'{--loader,--experimental-loader}'=[Specify the module of a custom ECMAScript Module loader]: :_files' \
