@@ -38,87 +38,167 @@
 #
 # ------------------------------------------------------------------------------
 
-
 _rails() {
-  local context state line curcontext="$curcontext"
+  local context state state_descr line curcontext="$curcontext"
+  typeset -A opt_args
 
-  if (( CURRENT > 2 )); then
-    (( CURRENT-- ))
-    shift words
-    _call_function - "_rails_${words[1]}" || _nothing
-  else
-    __rails_commands
-  fi
-}
-
-__rails_commands() {
-  local context state line curcontext="$curcontext"
-
-  local -a rails_options
-  __rails_setup_rails_options
-
-  _arguments -C \
-    $rails_options \
-    ': :->command'
-
-  case "$state" in
-    command)
-      local -a commands
-      local application_directory
-      __rails_setup_application_directory
-
-      if [ -n "$application_directory" ]; then
-        commands=(
-          {generate,g}'[Generate new code]'
-          {console,c}'[Start the Rails console]'
-          {server,s}'[Start the Rails server]'
-          {dbconsole,db}'[Start a console for the database specified in config/database.yml]'
-          application'[Generate the Rails application code]'
-          {destroy,d}'[Undo code generated with "generate"]'
-          benchmarker'[See how fast a piece of code runs]'
-          profiler'[Get profile information from a piece of code]'
-          plugin'[Install a plugin]'
-          {runner,r}'[Run a piece of code in the application environment]'
-          {test,t}'[Run tests]'
-        )
-      else
-        commands=(
-          new'[Create a new Rails application]'
-        )
-      fi
-
-      _values 'command' $commands
-      ;;
-  esac
-}
-
-__rails_setup_application_directory() {
-  application_directory="$(pwd)"
-
-  while [ -n "$application_directory" ]; do
-    if [ -f "${application_directory}/script/rails" -o -f "${application_directory}/bin/rails" ]; then
-      return
-    fi
-    application_directory="${application_directory%/*}"
-  done
-
-  application_directory=
-}
-
-__rails_setup_rails_options() {
-  rails_options=(
-    {-h,--help}'[Show this help message and quit]'
-    {-v,--version}'[Show Rails version number and quit]'
+  local -a runtime_options rails_options
+  runtime_options=(
+    '(- *)'{-h,--help}'[Show this help message and quit]'
+    '(- *)'{-v,--version}'[Show Rails version and quit]'
   )
-}
 
-__rails_setup_runtime_options() {
   runtime_options=(
     '(-f --force)'{-f,--force}'[Overwrite files that already exist]'
     '(-p --pretend)'{-p,--pretend}'[Run but do not make any changes]'
     '(-q --quiet)'{-q,--quiet}'[Suppress status output]'
     '(-s --skip)'{-s,--skip}'[Skip files that already exist]'
   )
+
+  local ret=1
+
+  _arguments -C \
+    $rails_options \
+    '1: :_rails_subcommands' \
+    '*:: :->command' && ret=0
+
+  case "$state" in
+    (command)
+      case $words[1] in
+        (new)
+          __rails_new && ret=0
+          ;;
+        (generate|g)
+          _rails_generate && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return ret
+}
+
+(( $+functions[_rails_subcommands] )) ||
+_rails_subcommands() {
+  local -a commands
+
+  _rails_is_in_app
+
+  if (( $? == 1 )); then
+    # is not in rails app directory
+    commands=(
+      new'[Create a new Rails application]'
+    )
+  else
+    commands=(
+      {generate,g}'[Generate new code]'
+      {console,c}'[Start the Rails console]'
+      {server,s}'[Start the Rails server]'
+      {dbconsole,db}'[Start a console for the database specified in config/database.yml]'
+      {destroy,d}'[Undo code generated with "generate"]'
+      plugin'[Install a plugin]'
+      {runner,r}'[Run a piece of code in the application environment]'
+      {test,t}'[Run tests]'
+    )
+  fi
+
+  _values 'command' $commands
+}
+
+# rails new
+(( $+functions[_rails_new] )) ||
+_rails_new() {
+  local ret=1
+
+  _arguments \
+    $runtime_options \
+    $rails_options \
+    --skip-namespace'[Skip namespace]' \
+    '(-n --name)'{-n,--name=}'[Name of the app]:name' \
+    '(-r --ruby)'{-r,--ruby=}'[Path to the Ruby binary of your choice]:path:_files' \
+    '(-b --builder)'{-b,--builder=}'[Path to a application builder(can be a filesystem path or URL)]: :_rails_path_or_url' \
+    '(-m --template)'{-m,--template=}'[Path to an application template(can be a filesystem path or URL)]: :_rails_path_or_url' \
+    '(-d --database)'{-d,--database=}'[Preconfigure for selected database]:database:(mysql trilogy oracle postgresql sqlite3 frontbase ibm_db sqlserver jdbcmysql jdbcsqlite3 jdbcpostgresql jdbc)' \
+    --skip-gemfile"[Don't create a Gemfile]" \
+    --skip-bundle"[Don't run bundle install]" \
+    '(-G --skip-git)'{-G,--skip-git}'[Skip git init]' \
+    --skip-docker'[Skip Dockerfile]' \
+    --skip-keeps'[Skip source control .keep files]' \
+    '(-M --skip-action-mailer)'{-M,--skip-action-mailer}'[Skip Action Mailder files]' \
+    --skip-action-mailbox'[Skip Action Mailbox gem]' \
+    --skip-action-text'[Skip Action Text gem]' \
+    '(-O --skip-active-record)'{-O,--skip-active-record}'[Skip Active Record files]' \
+    --skip-active-job'[Skip Active Job]' \
+    --skip-active-storage'[Skip Active Storage files]' \
+    '(-C --skip-action-cable)'{-C,--skip-action-cable}'[Skip Action Cable files]' \
+    '(-A --skip-asset-pipeline)'{-A,--skip-asset-pipeline}'[Skip asset pipeline]' \
+    '(-a --asset-pipeline)'{-a,--asset-pipeline=}'[Choose your asset pipeline]:asset pipeline:(sprockets propshaft)' \
+    '(-J --skip-js)'{-J,--skip-js}'[Skip JavaScript files]' \
+    --skip-hotwire'[Skip Hotwire integration]' \
+    --skip-jbuilder'[Skip jbuilder gem]' \
+    '(-T --skip-test)'{-T,--skip-test}'[Skip test files]' \
+    --skip-system-test'[Skip system test files]' \
+    --skip-bootsnap'[Skip bootsnap gem]' \
+    --skip-dev-gems'[Skip development gems(e.g. web-console)]' \
+    --dev'[Setup the application with Gemfile pointing to your Rails checkout]' \
+    --edge'[Setup the application with Gemfile pointing to Rails repository]' \
+    --master'[Set up the application with Gemfile pointing to Rails repository main branch]' \
+    --rc='[Path to file containing extra configuration options for rails command]:rc:_files' \
+    --api'[Preconfigure smaller stack for API only apps]' \
+    --minimal'[Preconfigure a minimal rails app]' \
+    '(-j --js)'{-j,--js=}'[Choose JavaScript approach]:javascript:(importmap bun webpack esbuild rollup)' \
+    '(-c --css)'{-c,--css=}'[Choose CSS processor]:css processor:(tailwind bootstrap bulma postcss sass)' \
+    '(-B --skip-bundle)'{-B,--skip-bundle}"[Don't run bundle install]" \
+    --skip-decrypted-diffs"[Don't configure git to show decrypted diffs of encrypted credentials]" \
+    ':app path:_directories' && ret=0
+
+  return ret
+}
+
+# rails generate
+(( $+functions[_rails_generate] )) ||
+_rails_generate() {
+  local ret=1
+
+  _arguments -C \
+    '(- *)'{-h,--help}"[Print generator's options and usage]" \
+    $runtime_options \
+    '1:generator:_rails_generate_generator' \
+    '*:: :->generate' && ret=0
+
+  case "$state" in
+    (generate)
+      case $words[1] in
+        (application_record)
+          ;;
+      esac
+      ;;
+  esac
+
+  return ret
+}
+
+(( $+functions[_rails_generate_generator] )) ||
+_rails_generate_generator() {
+  local -a generators=(
+    # rails
+    application_record benchmark channel controller generator helper integration_test
+    jbuilder job mailbox mailer migration model resource scaffold scaffold_controller
+    system_test task
+
+    # active record
+    "active_record\\:application_record"
+    "active_record\\:multi_db"
+
+    # Stimulus
+    stimulus
+
+    # TestUnit
+    "test_unit\\:channel" "test_unit\\:generator" "test_unit\\:install"
+    "test_unit\\:mailbox" "test_unit\\:plugin"
+  )
+
+  _values 'generators' $generators
 }
 
 __rails_setup_generators_options() {
@@ -169,54 +249,6 @@ __rails_migration_fields() {
   fi
 }
 
-_rails_generate() {
-  local context state line curcontext="$curcontext"
-
-  if (( CURRENT > 2 )); then
-    (( CURRENT-- ))
-    shift words
-    _call_function - "_rails_generate_${words[1]}" || _rails_generate_default
-  else
-    __rails_generate_commands
-  fi
-}
-
-_rails_g() {
-  _rails_generate
-}
-
-__rails_generate_commands() {
-  local context curcontext="$curcontext" update_policy
-
-  zstyle -s ":completion:${curcontext}:" cache-policy update_policy
-  if [ -z "$update_policy" ]; then
-    zstyle ":completion:${curcontext}:" cache-policy _rails_generate_commands_caching_policy
-  fi
-
-  local application_directory
-  __rails_setup_application_directory
-  local cache_name
-  cache_name="rails/${application_directory##*/}/all_generators"
-  if ! _retrieve_cache ${cache_name}; then
-    local -a all_generators
-    all_generators=($(_call_program rails_generators rails generate 2> /dev/null | awk '/^  [a-zA-Z_]+/{ print $1 }'))
-    _store_cache ${cache_name} all_generators
-  fi
-
-  local -a rails_generators
-  rails_generators=(${all_generators:#*:*})
-  _describe -t rails_generators 'rails generator' rails_generators
-
-  local -a -U namespaces
-  local namespace
-  local -a generators
-  namespaces=(${(R)${(M)all_generators:#*:*}%:*})
-  for namespace in $namespaces; do
-    generators=(${${(M)all_generators:#${namespace}:*}/:/\\:})
-    _describe -t ${namespace}_generators "${namespace/_/ } generator" generators
-  done
-}
-
 _rails_generate_commands_caching_policy() {
   local application_directory
   __rails_setup_application_directory
@@ -264,16 +296,6 @@ _rails_generate_controller() {
     --assets'[Indicates when to generate assets]: :__rails_boolean' \
     ': :_guard "^-*" "name"' \
     '*: :_guard "^-*" "action"'
-}
-
-_rails_generate_generator() {
-  local -a generators_options
-  __rails_setup_generators_options
-
-  _arguments \
-    $generators_options \
-    --namespace'[Namespace generator under lib/generators/name]: :__rails_boolean' \
-    ': :_guard "^-*" "name"'
 }
 
 _rails_generate_helper() {
@@ -461,45 +483,6 @@ _rails_dbconsole() {
     --header
 }
 
-_rails_new() {
-  local context state line curcontext="$curcontext"
-
-  local _a rails_options runtime_options
-  __rails_setup_rails_options
-  __rails_setup_runtime_options
-
-  _arguments -C \
-    $rails_options \
-    $runtime_options \
-    '(-r --ruby)'{-r,--ruby=}'[Path to the Ruby binary of your choice]:path' \
-    '(-b --builder)'{-b,--builder=}'[Path to a application builder (can be a filesystem path or URL)]: :->path_or_url' \
-    '(-m --template)'{-m,--template=}'[Path to an application template (can be a filesystem path or URL)]: :->path_or_url' \
-    --skip-gemfile"[Don't create a Gemfile]" \
-    --skip-bundle"[Don't run bundle install]" \
-    '(-G --skip-git)'{-G,--skip-git}'[Skip Git ignores and keeps]' \
-    '(-O --skip-active-record)'{-O,--skip-active-record}'[Skip Active Record files]' \
-    '(-S --skip-sprockets)'{-S,--skip-sprockets}'[Skip Sprockets files]' \
-    '(-d --database)'{-d,--database=}'[Preconfigure for selected database]:database:(mysql oracle postgresql sqlite3 frontbase ibm_db sqlserver jdbcmysql jdbcsqlite3 jdbcpostgresql jdbc)' \
-    '(-j --javascript)'{-j,--javascript=}'[Preconfigure for selected JavaScript library]:javascript' \
-    '(-J --skip-javascript)'{-J,--skip-javascript}'[Skip JavaScript files]' \
-    --dev'[Setup the application with Gemfile pointing to your Rails checkout]' \
-    --edge'[Setup the application with Gemfile pointing to Rails repository]' \
-    '(-T --skip-test-unit)'{-T,--skip-test-unit}'[Skip Test::Unit files]' \
-    --old-style-hash"[Force using old style hash (:foo => 'bar') on Ruby >= 1.9]" \
-    ':app path:_directories'
-
-  case "$state" in
-    path_or_url)
-      _alternative \
-        'files:path:_files -g "*.rb"' \
-        'url:url:_urls'
-      ;;
-  esac
-}
-
-_rails_application() {
-  _rails_new
-}
 
 _rails_db() {
   _rails_dbconsole
@@ -511,25 +494,6 @@ _rails_destroy() {
 
 _rails_d() {
   _rails_destroy
-}
-
-_rails_benchmarker() {
-  _arguments \
-    '(- *)'{-h,--help}'[Show this help message]' \
-    '(-r --runs)'{-r,--runs}'[Number of runs]: :_guard "[[\:digit\:]]#" "number"' \
-    '(-o --output)'{-o,--output}'[Directory to use when writing the results]:directory:_directories' \
-    '(-m --metrics)'{-m,--metrics}'[Metrics to use]: :_values -s "," "metrics" "wall_time" "memory" "objects" "gc_runs" "gc_time"' \
-    '*: :_guard "^-*" "ruby code"'
-}
-
-_rails_profiler() {
-  _arguments \
-    '(- *)'{-h,--help}'[Show this help message]' \
-    '(-r --runs)'{-r,--runs}'[Number of runs]: :_guard "[[\:digit\:]]#" "number"' \
-    '(-o --output)'{-o,--output}'[Directory to use when writing the results]:directory:_directories' \
-    '(-m --metrics)'{-m,--metrics}'[Metrics to use]: :_values -s "," "metrics" "process_time" "memory" "objects"' \
-    '(-f --formats)'{-f,--formats}'[Formats to output to]: :_values -s "," "formats" "flat" "graph" "html" "call_tree" "call_stack"' \
-    '*: :_guard "^-*" "ruby code"'
 }
 
 _rails_plugin() {
@@ -611,6 +575,27 @@ _rails_test() {
 
 _rails_t() {
   _rails_test
+}
+
+# Utilities
+(( $+functions[_rails_is_in_app] )) ||
+_rails_is_in_app() {
+  local dir="$PWD"
+  while [ -n "$dir" ]; do
+    if [[ -f "${dir}/bin/rails" ]]; then
+      return 0
+    fi
+    dir="${dir/*}"
+  done
+
+  return 1
+}
+
+(( $+functions[_rails_path_or_url] )) ||
+_rails_path_or_url() {
+  _alternative \
+    'files:path:_files -g "*.rb"' \
+    'url:url:_urls'
 }
 
 _rails "$@"
