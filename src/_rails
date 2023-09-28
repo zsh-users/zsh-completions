@@ -71,6 +71,30 @@ _rails() {
         (generate|g)
           _rails_generate && ret=0
           ;;
+        (console|c)
+          _arguments \
+            '(- *)'{-h,--help}'[Show this help message and quit]' \
+            '(-e --environment)'{-e,--environment=}'[The environment to run "console" in]:env:(test development production)' \
+            '(-s --sandbox)'{-s,--sandbox}'[Rollback database modifications on exit]' \
+            && ret=0
+          ;;
+        (server|s)
+          _arguments \
+            '(- *)'{-h,--help}'[Show this help message and quit]' \
+            '(-e --environment)'{-e,--environment=}'[The environment to run "server" in]:env:(test development production)' \
+            '(-p --port)'{-p,--port}'[Run Rails on the specified port]:port' \
+            '(-b --binding)'{-b,--binding=}'[Bind Rails to the specified IP]:binding' \
+            '(-c --config)'{-c,--config=}'[Use a custom rackup configuration]:config file:_files -g "*.ru"' \
+            '(-d --daemon)'{-d,--daemon}'[Run server as a Daemon]' \
+            '(-u --using)'{-u,--using=}'[Specify the Rack server used to run the application]:server:(thin puma webrick)' \
+            '(-P --pid)'{-P,--pid=}'[Specify the PID file]:pid file:_files -g "*.pid"' \
+            '(-C --dev-caching --no-dev-caching)'{-C,--dev-caching}'[Perform caching in development]' \
+            '(-C --dev-caching --no-dev-caching)--no-dev-caching[Not perform caching in development]' \
+            '--early-hints[Enable HTTP/2 early hints]' \
+            '(--log-to-stdout --no-log-to-stdout)--log-to-stdout[Log to stdout]' \
+            '(--log-to-stdout --no-log-to-stdout)--no-log-to-stdout[Not log to stdout]' \
+            && ret=0
+          ;;
       esac
       ;;
   esac
@@ -363,33 +387,6 @@ __rails_migration_fields() {
       _guard '[[:alnum:]_]#' 'field'
     fi
   fi
-}
-
-_rails_console() {
-  _arguments \
-    '(- *)'{-h,--help}'[Show this help message]' \
-    '(-s --sandbox)'{-s,--sandbox}'[Rollback database modifications on exit]' \
-    --debugger'[Enable ruby-debugging for the console]'
-}
-
-_rails_c() {
-  _rails_console
-}
-
-_rails_server() {
-  _arguments \
-    '(- *)'{-h,--help}'[Show this help message]' \
-    '(-p --port)'{-p,--port=}'[Runs Rails on the specified port]: :_guard "[[\:digit\:]]#" "port"' \
-    '(-b --binding)'{-b,--binding=}'[Binds Rails to the specified ip]:ip:_hosts' \
-    '(-c --config)'{-c,--config=}'[Use custom rackup configuration file]:file:_files -g "*.ru"' \
-    '(-d --daemon)'{-d,--daemon}'[Make server run as a Daemon]' \
-    '(-u --debugger)'{-u,--debugger}'[Enable ruby-debugging for the server]' \
-    '(-e --environment)'{-e,--environment=}'[Specifies the environment to run this server under (test/development/production)]:name:(test development production)' \
-    '(-P --pid)'{-P,--pid=}'[Specifies the PID file]:pid:_files -g "*.pid"'
-}
-
-_rails_s() {
-  _rails_server
 }
 
 _rails_dbconsole() {
