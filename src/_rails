@@ -168,10 +168,126 @@ _rails_generate() {
 
   case "$state" in
     (generate)
+      local -a opts
+      opts=(
+        '(- *)'{-h,--help}'[Show this help message and quit]'
+        $runtime_options
+        '--skip-namespace[Skip namespace]'
+        '--skip-collision-check[Skip collision check]'
+      )
+
       case $words[1] in
-        (application_record)
-          ;;
+        (application_record|migration|model|resource|scaffold|scaffold_controller)
+          opts+=(
+            '(-o --orm)'{-o,--orm=}'[ORM to be invoked]:orm:(active_record)'
+          )
+          ;|
+        (channel)
+          opts+=(
+            '--no-assets[Not generate assets]'
+          )
+          ;|
+        (controller|resource|scaffold|scaffold_controller)
+          opts+=(
+            '--skip-routes[Do not add routes to config/routes.rb]'
+            '--no-helper[Not generate helper]'
+          )
+          ;|
+        (controller|job|model|resource|scaffold)
+          opts+=(
+            '--parent=[The parent class for the generated controler]:parent class'
+          )
+          ;|
+        (controler|mailer|resource|scaffold|scaffold_controller)
+          opts+=(
+            '(-e --template-engine)'{-e,--template-engine=}'[Template engine to be invoked]:engine:(erb)'
+          )
+          ;|
+        (channel|controller|generator|helper|job|mailbox|mailer|model|scaffold|scaffold_controller)
+          opts+=(
+            '(-t --test-framework)'{-t,--test-framework=}'[Test framework to be invoked]:test_framework:(test_unit)'
+          )
+          ;|
+        (generator|test_unit:channel)
+          opts+=(
+            '--no-namespace[Not generate namespace generate]'
+          )
+          ;|
+        (integration_test)
+          opts+=(
+            '--integration-tool=[Integration tool to be invoked]:tool:(test_unit)'
+          )
+          ;|
+        (jbuilder|resource|scaffold|scaffold_controller)
+          opts+=(
+            '--model-name=[ModelName to be used]:name'
+          )
+          ;|
+        (jbuilder|model|resource|scaffold|scaffold_controller)
+          opts+=(
+            '--force-plural[Do not singularize the model name]'
+          )
+          ;|
+        (jbuilder|migration|model|resource|scaffold_controller)
+          opts+=(
+            '--no-timestamps[Not generate timestamps]'
+          )
+          ;|
+        (job)
+          opts+=(
+            '--queue=[The queue name for the generated job]:name'
+          )
+          ;|
+        (migration|model|resource|scaffold)
+          opts+=(
+            '--primary-key-type=[The type for primary key]'
+            '(--db --database)'{--db,--database=}'[The database for your migration]:db'
+          )
+          ;|
+        (model|resource|scaffold)
+          opts+=(
+            '--no-migration[Not generate migration]'
+            '--no-indexes[Not add indexes for references and belongs_to columns]'
+            '--no-fixture[Not generate fixture]'
+            '(-r --fixture-replacement)'{-r,--fixture-replacement=}'[Fixture replacement to be invoked]:fixture'
+          )
+          ;|
+        (resource)
+          opts+=(
+            '(-c --resource-controller)'{-c,--resource-controller=}'[Resource controller to be invoked]:controller:(controller)'
+            '(-a --actions)'{-a,--actions=}'[Actions for the source controller]:action'
+          )
+          ;|
+        (resource|scaffold|scaffold_controller)
+          opts+=(
+            '--no-resource-route[Not generate resource route]'
+          )
+          ;|
+        (scaffold)
+          opts+=(
+            '(-c --scaffold-controller)'{-c,--scaffold-controller=}'[Scaffold controller to be invoked]:controller:(scaffold_controller)'
+
+          )
+          ;|
+        (scaffold|scaffold_controller)
+          opts+=(
+            '--api[Generate API-only controller and tests, with no view templates]'
+            '--no-jbuilder[Not generate jbuilder]'
+          )
+          ;|
+        (scaffold|scaffold_controller|system_test)
+          opts+=(
+            '--system-tests=[System test framework to be invoked]:framework:(test_unit)'
+          )
+          ;|
+        (stimulus)
+          opts+=(
+            '--skip-manifest[Do not update the stimulus manifest]'
+          )
+          ;|
       esac
+
+      _arguments $opts && ret=0
       ;;
   esac
 
