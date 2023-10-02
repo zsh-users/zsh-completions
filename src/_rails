@@ -126,10 +126,12 @@ _rails() {
             '(-c --color --no-color)--no-color[Disable color in the output]' \
             '--profile=[Enable profiling of tests and list the slowest test cases]:count' \
             '(-p --pride)'{-p,--pride}'[Show your testing pride]' \
+            '*:: :_files -g "*.rb"' \
             && ret=0
           ;;
         (runner|r)
           _arguments \
+            '(- *)'{-h,--help}'[Show this help message and quit]' \
             '(-e --environment)'{-e,--environment=}'[The environment to run "runner"]:env:(test development production)' \
             '*:: :_files -g "*.rb"' \
             && ret=0
@@ -142,6 +144,7 @@ _rails() {
           ;;
         (routes)
           _arguments \
+            '(- *)'{-h,--help}'[Show this help message and quit]' \
             '(-c --controller)'{-c,--controller=}'[Filter by a specific controller]:controller' \
             '(-g --grep)'{-g,--grep}'[Grep routes by a specific pattern]' \
             '(-E --expanded)'{-E,--expanded}'[Print routes expanded vertically with parts explained]' \
@@ -151,6 +154,7 @@ _rails() {
         (*)
           _arguments \
             '(- *)'{-h,--help}'[Show help message and quit]' \
+            '*:: :_files' \
             && ret=0
           ;;
       esac
