@@ -40,7 +40,7 @@
 # Notes
 # -----
 #
-#  Created for Cppcheck version 2.9
+#  Created for Cppcheck version 2.12 (https://github.com/danmar/cppcheck)
 #
 # ------------------------------------------------------------------------------
 
@@ -52,6 +52,8 @@ _cppcheck() {
   local curcontext="$curcontext" state line
   typeset -A opt_args
 
+  local check_ids='(all warning style performance portability information unusedFunction missingInclude)'
+
   _arguments -C \
     "--addon=[Execute addon]" \
     "--addon-python=[Specify the python interpreter]: :_files" \
@@ -62,11 +64,12 @@ _cppcheck() {
     "--config-exclude=[Path to be excluded from configuration checking]:directory:_files -/" \
     "--config-exclude-files=[A file that contains a list of config-excludes]:file:_files" \
     "--doc[Print a list of all available checks]" \
+    "*--disable=[Disable indivisual checks]:id:$check_ids" \
     "--dump[Dump xml data for each translation unit]" \
     "-D[Define preprocessor symbol]" \
     "-U[Undefine preprocessor symbol]" \
     "-E[Print preprocessor output on stdout and don't do any further processing]" \
-    "--enable[Enable additional checks]:id:(all warning style performance portability information unusedFunction missingInclude)" \
+    "--enable=[Enable additional checks]:id:$check_ids" \
     "--error-exitcode=[Integer to return if errors are found]" \
     "--errorlist[Print a list of all the error messages in XML format]" \
     "--exitcode-suppressions=[Used when certain messages should be displayed but should not cause a non-zero exitcode]:_files" \
