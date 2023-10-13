@@ -1,0 +1,75 @@
+#compdef shallow-backup
+# ------------------------------------------------------------------------------
+# Copyright (c) 2023 Aaron Lichtman -- https://github.com/alichtman
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of the zsh-users nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 'AS IS' AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL ZSH-USERS BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for shallow-backup: https://github.com/alichtman/shallow-backup
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Aaron Lichtman (https://github.com/alichtman)
+#
+# ------------------------------------------------------------------------------
+
+
+_shallow-backup() {
+    _arguments \
+      '(- 1 *)'{-h,--help}'[Show help and exit]' \
+      '(- 1 *)'{-v,--version}'[Print version]' \
+      '--add-dot[Add a dotfile or dotfolder to config by path]:PATH:_files' \
+      '--backup-all[Full back up]' \
+      '--backup-configs[Back up app config files]' \
+      '--backup-dots[Back up dotfiles]' \
+      '--backup-fonts[Back up installed fonts]' \
+      '--backup-packages[Back up package libraries]' \
+      '--delete-config[Delete config file]' \
+      '--destroy-backup[Delete backup directory]' \
+      '--dry-run[Do not backup or reinstall any files, just give verbose output]' \
+      '--new-path[Input a new back up directory path]:PATH:_files -/' \
+      '--no-new-backup-path-prompt[Skip setting new back up directory path prompt]' \
+      '--no-splash[Do not display splash screen]' \
+      '--reinstall-all[Full reinstallation]' \
+      '--reinstall-configs[Reinstall configs]' \
+      '--reinstall-dots[Reinstall dotfiles and dotfolders]' \
+      '--reinstall-fonts[Reinstall fonts]' \
+      '--reinstall-packages[Reinstall packages]' \
+      '--remote[Set remote URL for the git repo]':url \
+      '--show[Display config file]'
+}
+
+_shallow-backup
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
