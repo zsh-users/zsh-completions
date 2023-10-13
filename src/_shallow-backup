@@ -61,7 +61,7 @@ _shallow-backup() {
       '--reinstall-fonts[Reinstall fonts]' \
       '--reinstall-packages[Reinstall packages]' \
       '--remote[Set remote URL for the git repo]':url \
-      '--show[Display config file]' \
+      '--show[Display config file]'
 }
 
 _shallow-backup
