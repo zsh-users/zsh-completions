@@ -41,8 +41,8 @@
 
 _shallow-backup() {
     _arguments \
-      '(- 1 *)'-h, --help'[Show help and exit]' \
-      '(- 1 *)'-v, --version'[Print version]' \
+      '(- 1 *)'{-h,--help}'[Show help and exit]' \
+      '(- 1 *)'{-v,--version}'[Print version]' \
       '--add-dot[Add a dotfile or dotfolder to config by path]':PATH \
       '--backup-all[Full back up]' \
       '--backup-configs[Back up app config files]' \
