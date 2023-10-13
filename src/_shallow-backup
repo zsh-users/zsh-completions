@@ -52,7 +52,7 @@ _shallow-backup() {
       '--delete-config[Delete config file]' \
       '--destroy-backup[Delete backup directory]' \
       '--dry-run[Do not backup or reinstall any files, just give verbose output]' \
-      '--new-path[Input a new back up directory path]':PATH \
+      '--new-path[Input a new back up directory path]:PATH:_files -/' \
       '--no-new-backup-path-prompt[Skip setting new back up directory path prompt]' \
       '--no-splash[Do not display splash screen]' \
       '--reinstall-all[Full reinstallation]' \
