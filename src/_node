@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Node.js v20.7.0 (https://nodejs.org)
+#  Completion script for Node.js v21.0.0 (https://nodejs.org)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -87,6 +87,7 @@ _arguments -C \
   '--enable-source-maps[source map support]' \
   '*--env-file=[set environment variables from supplied file]:envfile:_files' \
   '--es-module-specifier-resolution=[extension resolution algorithm for es modules]:resolution algorithm:(explicit none)' \
+  '--experimental-default-type=[set module system to use by default]:module system:(commonjs module)' \
   '--experimental-import-meta-resolve[experimental ES Module import.meta.resolve() support]' \
   '(--loader --experimental-loader)'{--loader,--experimental-loader}'=[Specify the module of a custom ECMAScript Module loader]: :_files' \
   '--experimental-network-imports[experimental https support for the ES Module loader]' \
@@ -149,6 +150,7 @@ _arguments -C \
   '--secure-heap-min=[minimum allocation size from the OpenSSL secure heap]' \
   '--snapshot-blob=[path to the snapshot blob that is used to restore the application state]:snapshot:_files' \
   '--test[launch test runner on startup]' \
+  '--test-concurrency=[specify test runner concurrency]:concurrency' \
   '--test-name-pattern=[run tests whose name matches this regular expression]:pattern' \
   '--test-only[run tests with "only" option set]' \
   '*--test-reporter=[report test output using the given reporter]:reporter:(tap spec dot)' \
