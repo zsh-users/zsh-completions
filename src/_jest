@@ -1,0 +1,169 @@
+#compdef jest jest.js
+# ------------------------------------------------------------------------------
+# Copyright (c) 2023 Github zsh-users - https://github.com/zsh-users
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of the zsh-users nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL ZSH-USERS BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for Jest 29.7.0 (https://jestjs.io/)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shotaro Aoyama (https://github.com/aoyama-val)
+#
+# ------------------------------------------------------------------------------
+
+local curcontext=$curcontext state line ret=1
+declare -A opt_args
+
+_arguments -C -s \
+  '(- : *)'{-h,--help}'[Show help]' \
+  '(- : *)'--version'[Show version number]' \
+  --all'[The opposite of `onlyChanged`.]' \
+  --automock'[Automock all files by default.]' \
+  '(-b --bail)'{-b,--bail}'[Exit the test suite immediately after `n` number of failing tests.]' \
+  --cache'[Whether to use the transform cache.]' \
+  --cacheDirectory'[The directory where Jest should store its cached dependency information.]:directories:_dirs' \
+  --changedFilesWithAncestor'[Runs tests related to the current changes and the changes made in the last commit.]' \
+  --changedSince'[Runs tests related to the changes since the provided branch.]:string' \
+  --ci'[Whether to run Jest in continuous integration (CI) mode.]' \
+  --clearCache'[Clears the configured Jest cache directory and then exits.]' \
+  --clearMocks'[Automatically clear mock calls, instances, contexts and results before every test.]' \
+  --collectCoverageFrom'[A glob pattern relative to <rootDir> matching the files that coverage info needs to be collected from.]:string' \
+  '(--color --colors)'{--color,--colors}'[Forces test results output color highlighting (even if stdout is not a TTY).]' \
+  '(-c --config)'{-c,--config}'[The path to a jest config file specifying how to find and execute tests.]:files:_files' \
+  '(--coverage --collectCoverage)'{--coverage,--collectCoverage}'[Indicates that test coverage information should be collected and reported in the output.]' \
+  --coverageDirectory'[The directory where Jest should output its coverage files.]:directories:_dirs' \
+  --coveragePathIgnorePatterns'[An array of regexp pattern strings that are matched against all file paths before executing the test.]:array:' \
+  --coverageProvider'[Select between Babel and V8 to collect coverage]:choices:(babel v8)' \
+  --coverageReporters'[A list of reporter names that Jest uses when writing coverage reports.]:array' \
+  --coverageThreshold'[A JSON string with which will be used to configure minimum threshold enforcement for coverage results]:string' \
+  --debug'[Print debugging info about your jest config.]' \
+  --detectLeaks'[**EXPERIMENTAL**: Detect memory leaks in tests.]' \
+  --detectOpenHandles'[Print out remaining open handles preventing Jest from exiting at the end of a test run.]' \
+  '(--env --testEnvironment)'{--env,--testEnvironment}'[The test environment used for all tests.]:files:_files' \
+  --errorOnDeprecated'[Make calling deprecated APIs throw helpful error messages.]' \
+  '(-e --expand)'{-e,--expand}'[Use this flag to show full diffs instead of a patch.]' \
+  --filter'[Path to a module exporting a filtering function.]:string' \
+  --findRelatedTests'[Find related tests for a list of source files that were passed in as arguments.]' \
+  --forceExit'[Force Jest to exit after all tests have completed running.]' \
+  --globalSetup'[The path to a module that runs before All Tests.]:files:_files' \
+  --globalTeardown'[The path to a module that runs after All Tests.]:files:_files' \
+  --globals'[A JSON string with map of global variables that need to be available in all test environments.]:string' \
+  --haste'[A JSON string with map of variables for the haste module system]:string' \
+  --ignoreProjects'[Ignore the tests of the specified projects.]:array' \
+  --init'[Generate a basic configuration file]' \
+  --injectGlobals'[Should Jest inject global variables or not]' \
+  --json'[Prints the test results in JSON.]' \
+  --lastCommit'[Run all tests affected by file changes in the last commit made.]' \
+  --listTests'[Lists all tests Jest will run given the arguments and exits.]' \
+  --logHeapUsage'[Logs the heap usage after every test.]' \
+  --maxConcurrency'[Specifies the maximum number of tests that are allowed to run concurrently.]:number' \
+  '(-w --maxWorkers)'{-w,--maxWorkers}'[Specifies the maximum number of workers the worker-pool will spawn for running tests.]:string' \
+  --moduleDirectories'[An array of directory names to be searched recursively up from the requiring module'"'"'s location.]:directories:_dirs' \
+  --moduleFileExtensions'[An array of file extensions your modules use.]:array' \
+  --moduleNameMapper'[A JSON string with a map from regular expressions to module names or to arrays of module names that allow to stub out resources]:string' \
+  --modulePathIgnorePatterns'[An array of regexp pattern strings that are matched against all module paths before those paths are to be considered "visible" to the module loader.]:array' \
+  --modulePaths'[An array of absolute paths to additional locations to search when resolving modules.]:directories:_dirs' \
+  --no-cache'[Do not use the transform cache.]' \
+  --no-watchman'[Disable watchman for file crawling.]' \
+  --noStackTrace'[Disables stack trace in test results output]' \
+  --notify'[Activates notifications for test results.]' \
+  --notifyMode'[Specifies when notifications will appear for test results.]:string' \
+  '(-o --onlyChanged)'{-o,--onlyChanged}'[Attempts to identify which tests to run based on which files have changed in the current repository.]' \
+  '(-f --onlyFailures)'{-f,--onlyFailures}'[Run tests that failed in the previous execution.]' \
+  --openHandlesTimeout'[Print a warning about probable open handles if Jest does not exit cleanly after this number of milliseconds.]:number' \
+  --outputFile'[Write test results to a file when the --json option is also specified.]:files:_files' \
+  --passWithNoTests'[Will not fail if no tests are found (for example while using `--testPathPattern`.)]' \
+  --preset'[A preset that is used as a base for Jest'"'"'s configuration.]:string' \
+  --prettierPath'[The path to the "prettier" module used for inline snapshots.]:string' \
+  --projects'[A list of projects that use Jest to run all tests of all projects in a single instance of Jest.]:array' \
+  --randomize'[Shuffle the order of the tests within a file.]' \
+  --reporters'[A list of custom reporters for the test suite.]:array' \
+  --resetMocks'[Automatically reset mock state before every test.]' \
+  --resetModules'[If enabled, the module registry for every test file will be reset before running each individual test.]' \
+  --resolver'[A JSON string which allows the use of a custom resolver.]:string' \
+  --restoreMocks'[Automatically restore mock state and implementation before every test.]' \
+  --rootDir'[The root directory that Jest should scan for tests and modules within.]:directories:_dirs' \
+  --roots'[A list of paths to directories that Jest should use to search for files in.]:array' \
+  '(-i --runInBand)'{-i,--runInBand}'[Run all tests serially in the current process.]' \
+  --runTestsByPath'[Used when provided patterns are exact file paths.]' \
+  --runner'[Allows to use a custom runner instead of Jest'"'"'s default test runner.]:string' \
+  --seed'[Sets a seed value that can be retrieved in a tests file via `jest.getSeed()`.]:number' \
+  --selectProjects'[Run the tests of the specified projects.]:array' \
+  --setupFiles'[A list of paths to modules that run some code to configure or set up the testing environment before each test.]:files:_files' \
+  --setupFilesAfterEnv'[A list of paths to modules that run some code to configure or set up the testing framework before each test]:files:_files' \
+  --shard'[Shard tests and execute only the selected shard]:files:_files' \
+  --showConfig'[Print your jest config and then exits.]' \
+  --showSeed'[Prints the seed value in the test report summary.]' \
+  --silent'[Prevent tests from printing messages through the console.]' \
+  --skipFilter'[Disables the filter provided by --filter.]' \
+  --snapshotSerializers'[A list of paths to snapshot serializer modules Jest should use for snapshot testing.]:files:_files' \
+  --testEnvironmentOptions'[A JSON string with options that will be passed to the `testEnvironment`.]:string' \
+  --testFailureExitCode'[Exit code of `jest` command if the test run failed]:string' \
+  --testLocationInResults'[Add `location` information to the test results]' \
+  --testMatch'[The glob patterns Jest uses to detect test files.]:array' \
+  '(-t --testNamePattern)'{-t,--testNamePattern}'[Run only tests with a name that matches the regex pattern.]:string' \
+  --testPathIgnorePatterns'[An array of regexp pattern strings that are matched against all test paths before executing the test.]:array' \
+  --testPathPattern'[A regexp pattern string that is matched against all tests paths before executing the test.]:array' \
+  --testRegex'[A string or array of string regexp patterns that Jest uses to detect test files.]:array' \
+  --testResultsProcessor'[Allows the use of a custom results processor.]:string' \
+  --testRunner'[Allows to specify a custom test runner.]:string' \
+  --testSequencer'[Allows to specify a custom test sequencer.]:string' \
+  --testTimeout'[This option sets the default timeouts of test cases.]:number' \
+  --transform'[A JSON string which maps from regular expressions to paths to transformers.]:string' \
+  --transformIgnorePatterns'[An array of regexp pattern strings that are matched against all source file paths before transformation.]:array' \
+  --unmockedModulePathPatterns'[An array of regexp pattern strings that are matched against all modules before the module loader will automatically return a mock for them.]:array' \
+  '(-u --updateSnapshot)'{-u,--updateSnapshot}'[Use this flag to re-record snapshots.]' \
+  --useStderr'[Divert all output to stderr.]' \
+  --verbose'[Display individual test results with the test suite hierarchy.]' \
+  --watch'[Watch files for changes and rerun tests related to changed files.]' \
+  --watchAll'[Watch files for changes and rerun all tests.]' \
+  --watchPathIgnorePatterns'[An array of regexp pattern strings that are matched against all paths before trigger test re-run in watch mode.]:array' \
+  --watchman'[Whether to use watchman for file crawling.]' \
+  --workerThreads'[Whether to use worker threads for parallelization.]' \
+  '*: :->file' \
+  && ret=0
+
+case $state in
+  (file)
+    (( CURRENT > 0 )) && line[CURRENT]=()
+    line=( ${line//(#m)[\[\]()\\*?#<>~\^\|]/\\$MATCH} )
+    _files -F line && ret=0
+    ;;
+esac
+
+return ret
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
