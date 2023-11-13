@@ -424,6 +424,7 @@ _cmake_define_common_property_names() {
     'CMAKE_MODULE_PATH:Search path for CMake modules (FindPROJECT.cmake)'
     'CMAKE_PREFIX_PATH:Search path for installations (PROJECTConfig.cmake)'
     'CMAKE_BUILD_TYPE:Specifies the build type for make based generators'
+    'BUILD_SHARED_LIBS:Global flag to cause add_library() to create shared libraries if on'
     'CMAKE_TOOLCHAIN_FILE:Absolute or relative path to a CMake script which sets up toolchain related variables'
     'CMAKE_COLOR_MAKEFILE:Enables/disables color output when using the Makefile generator'
     'CMAKE_INSTALL_PREFIX:Install directory used by install'
@@ -449,6 +450,7 @@ _cmake_define_property_values() {
   setopt localoptions extendedglob
   case $@[-1] in
     (CMAKE_BUILD_TYPE)     _wanted build-types expl 'build type' _values 'build type' ${_cmake_build_types[@]} && ret=0;;
+    (BUILD_SHARED_LIBS)    _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
     (CMAKE_CXX_STANDARD) _wanted cxx-standards expl 'cxx standard' _values 'cxx standard' ${_cmake_cxx_standards[@]} && ret=0;;
     (CMAKE_C_STANDARD) _wanted c-standards expl 'c standard' _values 'c standard' ${_cmake_c_standards[@]} && ret=0;;
     (CMAKE_TOOLCHAIN_FILE) _wanted toolchain-files expl 'file' _cmake_toolchain_files && ret=0;;
