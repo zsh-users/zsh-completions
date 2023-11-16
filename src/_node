@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Node.js v21.1.0 (https://nodejs.org)
+#  Completion script for Node.js v21.2.0 (https://nodejs.org)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -123,8 +123,10 @@ _arguments -C \
   '--no-deprecation[silence deprecation warnings]' \
   '--no-experimental-fetch[disable experimental Fetch API]' \
   '--no-experimental-global-customevent[expose experimental CustomEvent on the global scope]' \
+  '--no-experimental-global-navigator[expose experimental Navigator API on the global scope]' \
   '--no-experimental-global-webcrypto[expose experimental Web Crypto API on the global scope]' \
   '--no-experimental-repl-await[disable experimental await keyword support in REPL]' \
+  '--no-experimental-websocket[experimental WebSocket API (currently set)]' \
   '--no-extra-info-on-fatal-exception[hide extra information on fatal exception that causes exit]' \
   '--no-force-async-hooks-checks[disable checks for async_hooks]' \
   '--no-global-search-paths[disable global module search paths]' \
