@@ -24,7 +24,7 @@
 # Description
 # -----------
 #
-#  Completion script for dart 3.1.0 (https://dart.dev/)
+#  Completion script for dart 3.2.0 (https://dart.dev/)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -119,7 +119,22 @@ _dart() {
             '(- *)'{-h,--help}'[Print this usage information]' \
             '(-v --verbose)'{-v,--verbose}'[Show all options and flags with --help]' \
             '(-o --output)'{-o,--output}'[Set where to write formatted output]:format:_dart_format_output' \
+            '--show[Set which filenames to print]:show type:(all changed none)' \
+            '--summary[Show the specified summary after formatting]:summary type:(line none profile)' \
             '--set-exit-if-changed[Return exit code 1 if there are any formatting changes]' \
+            '--fix[Apply all style fixes]' \
+            '--fix-doc-comments[Use triple slash for documentation comments]' \
+            '--fix-function-typedefs[Use new syntax for function type typedefs]' \
+            '--fix-named-default-separator[Use "=" as the separator before named parameter default values]' \
+            '--fix-optional-const[Remove "const" keyword inside constant context]' \
+            '--fix-optional-new[Remove "new" keyword]' \
+            '--fix-single-cascade-statements[Remove unnecessary single cascades from expression statements]' \
+            '(-i --indent)'{-i,--indent}'[Add this many spaces of leading indentation]' \
+            '--follow-links[Follow links to files and directories]' \
+            '(- *)--version[Show dart_style version]' \
+            '--enable-experiment[Enable one or more experimental features]:features' \
+            '--selection[Track selection through formatting]:selection' \
+            '--stdin-name[Use this path in error messages when input is read from stdin]:name' \
             '*:file_or_directory:_files' \
             && ret=0
           ;;
@@ -144,7 +159,7 @@ _dart() {
             '(--serve-devtools --no-serve-devtools)--no-serve-devtools[Do not serve an instance of the Dart DevTools debugger and profiler]' \
             '--pause-isolates-on-exit[Pause isolates on exit when running with --enable-vm-service]' \
             '--pause-isolates-on-unhandled-exceptions[Pause isolates when an unhandled exception is encountered when running with --enable-vm-service]' \
-            '--warn-on-pause-with-no-debugger[Print a warning when an isolate pauses with no attached debugger when runnin with --enable-vm-service]' \
+            '--warn-on-pause-with-no-debugger[Print a warning when an isolate pauses with no attached debugger when running with --enable-vm-service]' \
             '--timeline-streams=[Enables recording for specific timeline streams]:stream:_dart_run_timeline_streams' \
             '--pause-isolates-on-start[Pause isolates on start when running with --enable-vm-service]' \
             '(--enable-asserts --no-enable-asserts)--enable-asserts[Enable assert statements]' \
@@ -152,6 +167,7 @@ _dart() {
             '--timeline-recorder=[Selects the timeline recorder to use]:recorder:(none ring endless startup systrace file callback)' \
             '--verbosity[Sets the verbosity level of the compilation]:level:(all error info warning)' \
             '*'{-d,--define=}'[Define an environment declaration]:key_value:' \
+            '--enable-experiment=[Enable one or more experimental features]:features:_dart_run_enable_experiment' \
             '*: :_files' \
             && ret=0
           ;;
@@ -542,6 +558,15 @@ _dart_pub_token_subcommands() {
 _dart_run_timeline_streams() {
   local -a streams=(all API Compiler CompilerVerbose Dart Debugger Embedder GC Isolate VM)
   _values -s ',' streams $streams
+}
+
+(( $+functions[_dart_run_enable_experiment] )) ||
+_dart_run_enable_experiment() {
+  local -a features=(
+    class-modifiers const-functions inference-update-2 inline-class
+    macros native-asserts patterns records sealed-class test-experiment variance
+  )
+  _values -s ',' features $features
 }
 
 (( $+functions[_dart_test_reporter] )) ||

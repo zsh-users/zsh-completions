@@ -25,7 +25,7 @@
 # Description
 # -----------
 #
-#  Completion script for the Flutter.io sdk's cli tool 3.13.0 (https://flutter.dev)
+#  Completion script for the Flutter.io sdk's cli tool 3.16.0 (https://flutter.dev)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -64,6 +64,7 @@ _flutter() {
     '--packages[Path to your ".packages" file. (required, since the current directory does not contain a ".packages" file)]' \
     '--local-engine-src-path=[Path to your engine src directory]: :_path_files -/' \
     '--local-engine=[Specific version of the engine]:version' \
+    '--local-engine-host=[The host operating system for which engine artifacts should be selected]:host' \
     '--local-web-sdk=[Specific version of the Web SDK]:version' \
     '--show-test-device=[List the special "flutter-tester" device in device listings]' \
     '--show-web-server-device=[List the special "web-server" device in device listings]' \
