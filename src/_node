@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Node.js v21.2.0 (https://nodejs.org)
+#  Completion script for Node.js v21.3.0 (https://nodejs.org)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -79,6 +79,7 @@ _arguments -C \
   '--cpu-prof-interval=[sampling interval in microseconds for the V8 CPU profiler]:number' \
   '--diagnostic-dir=[set dir for all output files(default: current working directory)]:dir:_files -/' \
   '--disable-proto=[disable Object.prototype.__proto__]:mode:(delete throw)' \
+  '*--disable-warning=[silence specific process warnings]:warn type' \
   '--disallow-code-generation-from-strings[disallow eval and friends]' \
   '--dns-result-order=[set default value of verbatim in dns.lookup]: :(ipv4first verbatim)' \
   '--enable-etw-stack-walking[provides heap data to ETW Windows native tracing]' \
