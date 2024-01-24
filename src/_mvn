@@ -3,7 +3,7 @@
 # Description
 # -----------
 #
-#  Completion script for Maven 3.8.6 (https://maven.apache.org/).
+#  Completion script for Maven 3.x and 4.x (https://maven.apache.org/).
 #
 #  Status: See FIXME and TODO tags.
 #
@@ -49,23 +49,66 @@ _mvn() {
   typeset -A opt_args
   local context state line
 
-  local curcontext="$curcontext" maven_version excl_opts
+  local curcontext="$curcontext" maven_version excl_opts opts
 
   excl_opts=(-h --help -v --version -ep --encrypt-password -emp --encrypt-master-password)
 
-  _pick_variant -r maven_version maven3='Maven 3' maven2='Maven 2' unknown --version
-  if [[ $maven_version == 'maven3' ]]; then
-    opts=(
+  opts=(
+    "(- : *)"{-h,--help}'[display help information]'
+    "(- : *)"{-v,--version}'[display version information]'
+    "(- : *)"{-emp,--encrypt-master-password}'[encrypt master security password]:master password:_mvn_passwords'
+    "(- : *)"{-ep,--encrypt-password}'[encrypt server password]:password:_mvn_passwords'
+    "($excl_opts -B --batch-mode)"{-B,--batch-mode}'[run in non-interactive (batch) mode]'
+    "($excl_opts -b --builder)"{-b,--builder}'[The id of the build strategy to use]'
+    "($excl_opts -V --show-version)"{-V,--show-version}'[display version information without stopping build]'
+    "($excl_opts -q --quiet -X --debug)"{-q,--quiet}'[quiet output, only show errors]'
+    "($excl_opts -X --debug -q --quiet)"{-X,--debug}'[produce execution debug output]'
+    "($excl_opts -llr --legacy-local-repository)"{-llr,--legacy-local-repository}'[Use Maven 2 Legacy Local Repository behaviour]'
+    "($excl_opts -N --non-recursive)"{-N,--non-recursive}'[do not recurse into sub-projects]'
+    "($excl_opts -C --strict-checksums -c --lax-checksums)"{-C,--strict-checksums}'[fail the build if checksums don'\''t match]'
+    "($excl_opts -c --lax-checksums -C --strict-checksums)"{-c,--lax-checksums}'[warn if checksums don'\''t match]'
+    "($excl_opts -e --errors)"{-e,--errors}'[produce execution error messages]'
+    "($excl_opts -f --file)"{-f,--file}'[force the use of an alternate POM file]:POM file:_mvn_pom_files'
+    "($excl_opts -s --settings)"{-s,--settings}'[alternate path for the user settings file]:settings file:_mvn_settings_files'
+    "($excl_opts -gs --global-settings)"{-gs,--global-settings}'[alternate path for the global settings file]:global settings file:_mvn_settings_files'
+    "($excl_opts -gt --global-toolchains)"{-gt,--global-toolchains}'[alternate path for the global toolchains file]:global toolchains file:_mvn_toolchains_files'
+    "($excl_opts -fae --fail-at-end -ff --fail-fast -fn --fail-never)"{-fae,--fail-at-end}'[only fail the build afterwards, allow all non-impacted builds to continue]'
+    "($excl_opts -ff --fail-fast -fae --fail-at-end -fn --fail-never)"{-ff,--fail-fast}'[stop at first failure in reactorized builds]'
+    "($excl_opts -fn --fail-never -fae --fail-at-end -ff --fail-fast)"{-fn,--fail-never}'[never fail the build, regardless of project result]'
+    "($excl_opts)*"{-P,--activate-profiles}'[comma-delimited list of profiles to activate]:profile:_mvn_profiles -s ,'
+    "($excl_opts -pl --projects)"{-pl,--projects}'[build specified reactor projects instead of all projects]:project list:_mvn_projects -s ,'
+    "($excl_opts -rf --resume-from)"{-rf,--resume-from}'[resume reactor from specified project]:project:_mvn_projects'
+    "($excl_opts -o --offline -U --update-snapshots -cpu --check-plugin-updates -up --update-plugins)"{-o,--offline}'[work offline]'
+    "($excl_opts -U --update-snapshots -nsu --no-snapshot-updates -o --offline)"{-U,--update-snapshots}'[force a check for updated releases and snapshots on remote repositories]'
+    "($excl_opts -nsu --no-snapshot-updates -U --update-snapshots -o --offline)"{-nsu,--no-snapshot-updates}'[Suppress SNAPSHOT updates]'
+    "($excl_opts -ntp --no-transfer-progress)"{-ntp,--no-transfer-progress}'[Do not display transfer progress when downloading or uploading ]'
+    "*"{-D-,--define}'[define a system property]:property:_mvn_properties'
+  )
+
+  _pick_variant -r maven_version maven4='Maven 4' maven3='Maven 3' maven2='Maven 2' unknown --version
+  if [[ $maven_version == 'maven4' || $maven_version == 'maven3' ]]; then
+    opts+=(
+      "($excl_opts --color)"'--color[defines the color mode of the output. Supported are auto, always, never]: :(never always auto)'
       "($excl_opts -T --threads)"{-T,--threads}'[thread count, for instance 2.0C where C is core multiplied]:thread count:_mvn_thread_counts'
       "($excl_opts -t --toolchains)"{-t,--toolchains}'[alternate path for the user toolchains file]:toolchains file:_mvn_toolchains_files'
       "($excl_opts -l --log-file)"{-l,--log-file}'[log file to where all build output will go]:log file:_mvn_log_files'
     )
   elif [[ $maven_version == 'maven2' ]]; then
-    opts=(
+    opts+=(
       "($excl_opts -cpu --check-plugin-updates -up --update-plugins -npu --no-plugin-updates -o --offline)"{-cpu,--check-plugin-updates,-up,--update-plugins}'[force upToDate check for any relevant registered plugins]'
       "($excl_opts -npr --no-plugin-registry)"{-npr,--no-plugin-registry}'[don'\''t use plugin-registry.xml for plugin versions]'
       "($excl_opts -npu --no-plugin-updates -cpu --check-plugin-updates -up --update-plugins)"{-npu,--no-plugin-updates}'[suppress upToDate check for any relevant registered plugins]'
       "($excl_opts -r --reactor)"{-r,--reactor}'[dynamically build reactor from subdirectories]:reactor:_mvn_reactors'
+    )
+  fi
+
+  if [[ $maven_version == 'maven4' ]]; then
+    opts+=(
+     "($excl_opts -canf --cache-artifact-not-found)"{-canf,--cache-artifact-not-found}'[defines caching behaviour for not found artifacts]: :(false true)'
+     "($excl_opts -fos --fail-on-severity)"{-fos,--fail-on-severity}'[configure which severity of logging should cause the build to fail]: :(WARN ERROR)'
+     "($excl_opts -itr --ignore-transitive-repositories)"{-itr,--ignore-transitive-repositories}'[if set, Maven will ignore remote repositories introduced by transitive dependencies]'
+     "($excl_opts --non-interactive)"'--non-interactive[run in non-interactive mode. Alias for --batch-mode]'
+     "($excl_opts -r --resume)"{-r,--resume}'[resume reactor from the last failed project, using the resume.properties file in the build directory]'
     )
   fi
 
@@ -74,38 +117,11 @@ _mvn() {
     "($excl_opts -amd --also-make-dependents)"{-amd,--also-make-dependents}'[if project list is specified, also build projects that depend on projects on the list]'
   )
 
-  _arguments -C \
-    "(- : *)"{-h,--help}'[display help information]' \
-    "(- : *)"{-v,--version}'[display version information]' \
-    "(- : *)"{-emp,--encrypt-master-password}'[encrypt master security password]:master password:_mvn_passwords' \
-    "(- : *)"{-ep,--encrypt-password}'[encrypt server password]:password:_mvn_passwords' \
-    "($excl_opts -B --batch-mode)"{-B,--batch-mode}'[run in non-interactive (batch) mode]' \
-    "($excl_opts -b --builder)"{-b,--builder}'[The id of the build strategy to use]' \
-    "($excl_opts -V --show-version)"{-V,--show-version}'[display version information without stopping build]' \
-    "($excl_opts -q --quiet -X --debug)"{-q,--quiet}'[quiet output, only show errors]' \
-    "($excl_opts -X --debug -q --quiet)"{-X,--debug}'[produce execution debug output]' \
-    "($excl_opts -llr --legacy-local-repository)"{-llr,--legacy-local-repository}'[Use Maven 2 Legacy Local Repository behaviour]' \
-    "($excl_opts -N --non-recursive)"{-N,--non-recursive}'[do not recurse into sub-projects]' \
-    "($excl_opts -C --strict-checksums -c --lax-checksums)"{-C,--strict-checksums}'[fail the build if checksums don'\''t match]' \
-    "($excl_opts -c --lax-checksums -C --strict-checksums)"{-c,--lax-checksums}'[warn if checksums don'\''t match]' \
-    "($excl_opts -e --errors)"{-e,--errors}'[produce execution error messages]' \
-    "($excl_opts -f --file)"{-f,--file}'[force the use of an alternate POM file]:POM file:_mvn_pom_files' \
-    "($excl_opts -s --settings)"{-s,--settings}'[alternate path for the user settings file]:settings file:_mvn_settings_files' \
-    "($excl_opts -gs --global-settings)"{-gs,--global-settings}'[alternate path for the global settings file]:global settings file:_mvn_settings_files' \
-    "($excl_opts -gt --global-toolchains)"{-gt,--global-toolchains}'[alternate path for the global toolchains file]:global toolchains file:_mvn_toolchains_files' \
-    "($excl_opts -fae --fail-at-end -ff --fail-fast -fn --fail-never)"{-fae,--fail-at-end}'[only fail the build afterwards, allow all non-impacted builds to continue]' \
-    "($excl_opts -ff --fail-fast -fae --fail-at-end -fn --fail-never)"{-ff,--fail-fast}'[stop at first failure in reactorized builds]' \
-    "($excl_opts -fn --fail-never -fae --fail-at-end -ff --fail-fast)"{-fn,--fail-never}'[never fail the build, regardless of project result]' \
-    "($excl_opts)*"{-P,--activate-profiles}'[comma-delimited list of profiles to activate]:profile:_mvn_profiles -s ,' \
-    "($excl_opts -pl --projects)"{-pl,--projects}'[build specified reactor projects instead of all projects]:project list:_mvn_projects -s ,' \
-    "($excl_opts -rf --resume-from)"{-rf,--resume-from}'[resume reactor from specified project]:project:_mvn_projects' \
-    "($excl_opts -o --offline -U --update-snapshots -cpu --check-plugin-updates -up --update-plugins)"{-o,--offline}'[work offline]' \
-    "($excl_opts -U --update-snapshots -nsu --no-snapshot-updates -o --offline)"{-U,--update-snapshots}'[force a check for updated releases and snapshots on remote repositories]' \
-    "($excl_opts -nsu --no-snapshot-updates -U --update-snapshots -o --offline)"{-nsu,--no-snapshot-updates}'[Suppress SNAPSHOT updates]' \
-    "($excl_opts -ntp --no-transfer-progress)"{-ntp,--no-transfer-progress}'[Do not display transfer progress when downloading or uploading ]' \
-    "*"{-D-,--define}'[define a system property]:property:_mvn_properties' \
-    "${opts[@]}" \
+  opts+=(
     "($excl_opts)*: :_mvn_args"
+  )
+
+  _arguments -C "$opts[@]"
 }
 
 (( $+functions[_mvn_args] )) ||
