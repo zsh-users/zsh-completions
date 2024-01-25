@@ -1,238 +1,245 @@
+#                                Apache License
+#                          Version 2.0, January 2004
+#                       http://www.apache.org/licenses/
+
+#  TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+
+#  1. Definitions.
+
+#     "License" shall mean the terms and conditions for use, reproduction,
+#     and distribution as defined by Sections 1 through 9 of this document.
+
+#     "Licensor" shall mean the copyright owner or entity authorized by
+#     the copyright owner that is granting the License.
+
+#     "Legal Entity" shall mean the union of the acting entity and all
+#     other entities that control, are controlled by, or are under common
+#     control with that entity. For the purposes of this definition,
+#     "control" means (i) the power, direct or indirect, to cause the
+#     direction or management of such entity, whether by contract or
+#     otherwise, or (ii) ownership of fifty percent (50%) or more of the
+#     outstanding shares, or (iii) beneficial ownership of such entity.
+
+#     "You" (or "Your") shall mean an individual or Legal Entity
+#     exercising permissions granted by this License.
+
+#     "Source" form shall mean the preferred form for making modifications,
+#     including but not limited to software source code, documentation
+#     source, and configuration files.
+
+#     "Object" form shall mean any form resulting from mechanical
+#     transformation or translation of a Source form, including but
+#     not limited to compiled object code, generated documentation,
+#     and conversions to other media types.
+
+#     "Work" shall mean the work of authorship, whether in Source or
+#     Object form, made available under the License, as indicated by a
+#     copyright notice that is included in or attached to the work
+#     (an example is provided in the Appendix below).
+
+#     "Derivative Works" shall mean any work, whether in Source or Object
+#     form, that is based on (or derived from) the Work and for which the
+#     editorial revisions, annotations, elaborations, or other modifications
+#     represent, as a whole, an original work of authorship. For the purposes
+#     of this License, Derivative Works shall not include works that remain
+#     separable from, or merely link (or bind by name) to the interfaces of,
+#     the Work and Derivative Works thereof.
+
+#     "Contribution" shall mean any work of authorship, including
+#     the original version of the Work and any modifications or additions
+#     to that Work or Derivative Works thereof, that is intentionally
+#     submitted to Licensor for inclusion in the Work by the copyright owner
+#     or by an individual or Legal Entity authorized to submit on behalf of
+#     the copyright owner. For the purposes of this definition, "submitted"
+#     means any form of electronic, verbal, or written communication sent
+#     to the Licensor or its representatives, including but not limited to
+#     communication on electronic mailing lists, source code control systems,
+#     and issue tracking systems that are managed by, or on behalf of, the
+#     Licensor for the purpose of discussing and improving the Work, but
+#     excluding communication that is conspicuously marked or otherwise
+#     designated in writing by the copyright owner as "Not a Contribution."
+
+#     "Contributor" shall mean Licensor and any individual or Legal Entity
+#     on behalf of whom a Contribution has been received by Licensor and
+#     subsequently incorporated within the Work.
+
+#  2. Grant of Copyright License. Subject to the terms and conditions of
+#     this License, each Contributor hereby grants to You a perpetual,
+#     worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+#     copyright license to reproduce, prepare Derivative Works of,
+#     publicly display, publicly perform, sublicense, and distribute the
+#     Work and such Derivative Works in Source or Object form.
+
+#  3. Grant of Patent License. Subject to the terms and conditions of
+#     this License, each Contributor hereby grants to You a perpetual,
+#     worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+#     (except as stated in this section) patent license to make, have made,
+#     use, offer to sell, sell, import, and otherwise transfer the Work,
+#     where such license applies only to those patent claims licensable
+#     by such Contributor that are necessarily infringed by their
+#     Contribution(s) alone or by combination of their Contribution(s)
+#     with the Work to which such Contribution(s) was submitted. If You
+#     institute patent litigation against any entity (including a
+#     cross-claim or counterclaim in a lawsuit) alleging that the Work
+#     or a Contribution incorporated within the Work constitutes direct
+#     or contributory patent infringement, then any patent licenses
+#     granted to You under this License for that Work shall terminate
+#     as of the date such litigation is filed.
+
+#  4. Redistribution. You may reproduce and distribute copies of the
+#     Work or Derivative Works thereof in any medium, with or without
+#     modifications, and in Source or Object form, provided that You
+#     meet the following conditions:
+
+#     (a) You must give any other recipients of the Work or
+#         Derivative Works a copy of this License; and
+
+#     (b) You must cause any modified files to carry prominent notices
+#         stating that You changed the files; and
+
+#     (c) You must retain, in the Source form of any Derivative Works
+#         that You distribute, all copyright, patent, trademark, and
+#         attribution notices from the Source form of the Work,
+#         excluding those notices that do not pertain to any part of
+#         the Derivative Works; and
+
+#     (d) If the Work includes a "NOTICE" text file as part of its
+#         distribution, then any Derivative Works that You distribute must
+#         include a readable copy of the attribution notices contained
+#         within such NOTICE file, excluding those notices that do not
+#         pertain to any part of the Derivative Works, in at least one
+#         of the following places: within a NOTICE text file distributed
+#         as part of the Derivative Works; within the Source form or
+#         documentation, if provided along with the Derivative Works; or,
+#         within a display generated by the Derivative Works, if and
+#         wherever such third-party notices normally appear. The contents
+#         of the NOTICE file are for informational purposes only and
+#         do not modify the License. You may add Your own attribution
+#         notices within Derivative Works that You distribute, alongside
+#         or as an addendum to the NOTICE text from the Work, provided
+#         that such additional attribution notices cannot be construed
+#         as modifying the License.
+
+#     You may add Your own copyright statement to Your modifications and
+#     may provide additional or different license terms and conditions
+#     for use, reproduction, or distribution of Your modifications, or
+#     for any such Derivative Works as a whole, provided Your use,
+#     reproduction, and distribution of the Work otherwise complies with
+#     the conditions stated in this License.
+
+#  5. Submission of Contributions. Unless You explicitly state otherwise,
+#     any Contribution intentionally submitted for inclusion in the Work
+#     by You to the Licensor shall be under the terms and conditions of
+#     this License, without any additional terms or conditions.
+#     Notwithstanding the above, nothing herein shall supersede or modify
+#     the terms of any separate license agreement you may have executed
+#     with Licensor regarding such Contributions.
+
+#  6. Trademarks. This License does not grant permission to use the trade
+#     names, trademarks, service marks, or product names of the Licensor,
+#     except as required for reasonable and customary use in describing the
+#     origin of the Work and reproducing the content of the NOTICE file.
+
+#  7. Disclaimer of Warranty. Unless required by applicable law or
+#     agreed to in writing, Licensor provides the Work (and each
+#     Contributor provides its Contributions) on an "AS IS" BASIS,
+#     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+#     implied, including, without limitation, any warranties or conditions
+#     of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
+#     PARTICULAR PURPOSE. You are solely responsible for determining the
+#     appropriateness of using or redistributing the Work and assume any
+#     risks associated with Your exercise of permissions under this License.
+
+#  8. Limitation of Liability. In no event and under no legal theory,
+#     whether in tort (including negligence), contract, or otherwise,
+#     unless required by applicable law (such as deliberate and grossly
+#     negligent acts) or agreed to in writing, shall any Contributor be
+#     liable to You for damages, including any direct, indirect, special,
+#     incidental, or consequential damages of any character arising as a
+#     result of this License or out of the use or inability to use the
+#     Work (including but not limited to damages for loss of goodwill,
+#     work stoppage, computer failure or malfunction, or any and all
+#     other commercial damages or losses), even if such Contributor
+#     has been advised of the possibility of such damages.
+
+#  9. Accepting Warranty or Additional Liability. While redistributing
+#     the Work or Derivative Works thereof, You may choose to offer,
+#     and charge a fee for, acceptance of support, warranty, indemnity,
+#     or other liability obligations and/or rights consistent with this
+#     License. However, in accepting such obligations, You may act only
+#     on Your own behalf and on Your sole responsibility, not on behalf
+#     of any other Contributor, and only if You agree to indemnify,
+#     defend, and hold each Contributor harmless for any liability
+#     incurred by, or claims asserted against, such Contributor by reason
+#     of your accepting any such warranty or additional liability.
+
+#  END OF TERMS AND CONDITIONS
+
+#  APPENDIX: How to apply the Apache License to your work.
+
+#     To apply the Apache License to your work, attach the following
+#     boilerplate notice, with the fields enclosed by brackets "[]"
+#     replaced with your own identifying information. (Don't include
+#     the brackets!)  The text should be enclosed in the appropriate
+#     comment syntax for the file format. We also recommend that a
+#     file or class name and description of purpose be included on the
+#     same "printed page" as the copyright notice for easier
+#     identification within third-party archives.
+
+#  Copyright 2023 Erika Rowland
+
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+
+#      http://www.apache.org/licenses/LICENSE-2.0
+
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
+# Generated by https://github.com/erikareads/mix_completions
+
 #compdef mix
-#autoload
 
-# ------------------------------------------------------------------------------
-# Copyright (c) 2016 Github zsh-users - https://github.com/zsh-users
-# All rights reserved.
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are met:
-#     * Redistributions of source code must retain the above copyright
-#       notice, this list of conditions and the following disclaimer.
-#     * Redistributions in binary form must reproduce the above copyright
-#       notice, this list of conditions and the following disclaimer in the
-#       documentation and/or other materials provided with the distribution.
-#     * Neither the name of the zsh-users nor the
-#       names of its contributors may be used to endorse or promote products
-#       derived from this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL ZSH-USERS BE LIABLE FOR ANY
-# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# ------------------------------------------------------------------------------
-# Description
-# -----------
-#
-#  Completion script for Elixir Mix
-#
-#  Last updated: 18.04.2017
-#
-# ------------------------------------------------------------------------------
-# Authors
-# -------
-#
-#  * Han Ngo (https://github.com/tieubao)
-#  * Teja Sophista (https://github.com/tejanium)
-#
-# ------------------------------------------------------------------------------
+_mix() {
+  local options completion_line filtered_options
+  local -a completions
+  local current_word=${words[-1]}
+  local previous_word=${words[-2]}
 
-local -a _1st_arguments
-_1st_arguments=(
-    'app.start:Starts all registered apps'
-    'app.tree:Prints the application tree'
-    'archive:Lists installed archives'
-    'archive.build:Archives this project into a .ez file'
-    'archive.install:Installs an archive locally'
-    'archive.uninstall:Uninstalls archives'
-    'clean:Deletes generated application files'
-    'cmd:Executes the given command'
-    'compile:Compiles source files'
-    'deps:Lists dependencies and their status'
-    "deps.clean:Deletes the given dependencies' files"
-    'deps.compile:Compiles dependencies'
-    'deps.get:Gets all out of date dependencies'
-    'deps.tree:Prints the dependency tree'
-    'deps.unlock:Unlocks the given dependencies'
-    'deps.update:Updates the given dependencies'
-    'do:Executes the tasks separated by comma'
-    'ecto:Prints Ecto help information'
-    'ecto.create:Creates the repository storage'
-    'ecto.drop:Drops the repository storage'
-    'ecto.dump:Dumps the repository database structure'
-    'ecto.gen.migration:Generates a new migration for the repo'
-    'ecto.gen.repo:Generates a new repository'
-    'ecto.load:Loads previously dumped database structure'
-    'ecto.migrate:Runs the repository migrations'
-    'ecto.migrations:Displays the repository migration status'
-    'ecto.rollback:Rolls back the repository migrations'
-    'escript:Lists installed escripts'
-    'escript.build:Builds an escript for the project'
-    'escript.install:Installs an escript locally'
-    'escript.uninstall:Uninstalls escripts'
-    'gettext.extract:Extracts translations from source code'
-    'gettext.merge:Merge template files into translation files'
-    'help:Prints help information for tasks'
-    'hex:Prints Hex help information'
-    'hex.build:Builds a new package version locally'
-    'hex.config:Reads, updates or deletes Hex config'
-    'hex.docs:Fetch or open documentation of a package'
-    'hex.info:Prints Hex information'
-    'hex.key:Manages Hex API key'
-    'hex.outdated:Shows outdated Hex deps for the current project'
-    'hex.owner:Manages Hex package ownership'
-    'hex.public_keys:Manages Hex public keys'
-    'hex.publish:Publishes a new package version'
-    'hex.retire:Retires a package version'
-    'hex.search:Searches for package names'
-    'hex.user:Registers or manages Hex user'
-    'loadconfig:Loads and persists the given configuration'
-    'local:Lists local tasks'
-    'local.hex:Installs Hex locally'
-    'local.phoenix:Updates Phoenix locally'
-    'local.phx:Updates the Phoenix project generator locally'
-    'local.public_keys:Manages public keys'
-    'local.rebar:Installs Rebar locally'
-    'new:Creates a new Elixir project'
-    'phoenix.gen.html:Generates controller, model and views for an HTML based resource'
-    'phoenix.server:Starts applications and their servers'
-    'phx.digest:Digests and compresses static files'
-    'phx.digest.clean:Removes old versions of static assets.'
-    'phx.gen.auth:Generates a flexible, pre-built authentication system'
-    'phx.gen.channel:Generates a Phoenix channel'
-    'phx.gen.context:Generates a context with functions around an Ecto schema'
-    'phx.gen.html:Generates controller, views, and context for an HTML resource'
-    'phx.gen.json:Generates controller, views, and context for a JSON resource'
-    'phx.gen.presence:Generates a Presence tracker'
-    'phx.gen.schema:Generates an Ecto schema and migration file'
-    'phx.gen.secret:Generates a secret'
-    'phx.new:Creates a new Phoenix application'
-    'phx.new.ecto:Creates a new Ecto project within an umbrella project'
-    'phx.new.web:Creates a new Phoenix web project within an umbrella project'
-    'phx.routes:Prints all routes'
-    'phx.server:Starts applications and their servers'
-    'profile.fprof:Profiles the given file or expression with fprof'
-    'run:Runs the given file or expression'
-    "test:Runs a project's tests"
-    'xref:Performs cross reference checks'
-    '--help:Describe available tasks'
-    '--version:Prints the Elixir version information'
-)
+  if [[ -f 'mix.exs' && -f '.mix_complete.cache' ]]; then
+    options=$(cat .mix_complete.cache)
+  elif [[ ! -z "$XDG_CACHE_HOME" && -f "$XDG_CACHE_HOME/.mix_complete.cache" ]]; then
+    options=$(cat "$XDG_CACHE_HOME/.mix_complete.cache")
+  elif [[ -f "$HOME/.cache/.mix_complete.cache" ]]; then
+    options=$(cat "$HOME/.cache/.mix_complete.cache")
+  else
+    options=""
+  fi
 
-__task_list ()
-{
-    local expl
-    declare -a tasks
+  filtered_options=$(echo "$options" | grep "^$current_word")
 
-    tasks=(
-        'app.start'
-        'app.tree'
-        'archive'
-        'archive.build'
-        'archive.install'
-        'archive.uninstall'
-        'clean'
-        'cmd'
-        'compile'
-        'deps'
-        'deps.clean'
-        'deps.compile'
-        'deps.get'
-        'deps.tree'
-        'deps.unlock'
-        'deps.update'
-        'do'
-        'ecto'
-        'ecto.create'
-        'ecto.drop'
-        'ecto.dump'
-        'ecto.gen.migration'
-        'ecto.gen.repo'
-        'ecto.load'
-        'ecto.migrate'
-        'ecto.migrations'
-        'ecto.rollback'
-        'escript'
-        'escript.build'
-        'escript.install'
-        'escript.uninstall'
-        'gettext.extract'
-        'gettext.merge'
-        'format'
-        'help'
-        'hex'
-        'hex.build'
-        'hex.config'
-        'hex.docs'
-        'hex.info'
-        'hex.key'
-        'hex.outdated'
-        'hex.owner'
-        'hex.public_keys'
-        'hex.publish'
-        'hex.retire'
-        'hex.search'
-        'hex.user'
-        'loadconfig'
-        'local'
-        'local.hex'
-        'local.public_keys'
-        'local.rebar'
-        'new'
-        'phoenix.gen.html'
-        'phoenix.server'
-        'phx.digest'
-        'phx.digest.clean'
-        'phx.gen.auth'
-        'phx.gen.channel'
-        'phx.gen.context'
-        'phx.gen.html'
-        'phx.gen.json'
-        'phx.gen.presence'
-        'phx.gen.schema'
-        'phx.gen.secret'
-        'phx.routes'
-        'phx.server'
-        'profile.fprof'
-        'run'
-        'test'
-        'xref'
-    )
+  while IFS='
+' read -r completion_line; do
+    if [ -n "$completion_line" ]; then
+      # zsh's _describe needs a : instead of a TAB.
+      # So we first escape any : as part of the completion itself.
+      completion_line=${completion_line//:/\:}
 
-    _wanted tasks expl 'help' compadd $tasks
+      local tab="$(printf '	')"
+      completion_line=${completion_line//$tab/:}
+
+      completions+=${completion_line}
+    fi
+  done <<<"$filtered_options"
+
+  if [[ $previous_word == 'mix' ]]; then
+    _describe "completions" completions
+  else
+    _arguments '*:filenames:_files'
+  fi
 }
 
-local expl
-
-local curcontext="$curcontext" state line
-typeset -A opt_args
-
-_arguments -C \
-    ':command:->command' \
-    '*::options:->options'
-
-case $state in
-  (command)
-      _describe -t commands "mix subcommand" _1st_arguments
-      return
-  ;;
-
-  (options)
-    case $line[1] in
-      (help)
-         _arguments ':feature:__task_list'
-         return
-      ;;
-      (test|format|run)
-         _arguments ':PATH:_files'
-         return
-      ;;
-    esac
-  ;;
-esac
