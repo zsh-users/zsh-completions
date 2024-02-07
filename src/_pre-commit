@@ -1,0 +1,212 @@
+#compdef pre-commit
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for pre-commit (https://github.com/pre-commit/pre-commit/).
+#  Modified from rejected https://github.com/pre-commit/pre-commit/pull/2506
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Wu Zhenyu <wuzhenyu@ustc.edu>
+#
+# ------------------------------------------------------------------------------
+
+_pre_commit_commands() {
+  local _commands=(
+    "autoupdate:Auto-update pre-commit config to the latest repos' versions"
+    "clean:Clean out pre-commit files"
+    "gc:Clean unused cached repos"
+    "help:Show help for a specific command"
+    "init-templatedir:Install hook script in a directory intended for use with 'git config init.templateDir'"
+    "install:Install the pre-commit script"
+    "install-hooks:Install hook environments for all environments in the config file"
+    "migrate-config:Migrate list configuration to new map configuration"
+    "run:Run hooks"
+    "sample-config:Produce a sample .pre-commit-config.yaml file"
+    "try-repo:Try the hooks in a repository, useful for developing new hooks"
+    "uninstall:Uninstall the pre-commit script"
+    "validate-config:Validate .pre-commit-config.yaml files"
+    "validate-manifest:Validate .pre-commit-hooks.yaml files"
+  )
+  _describe 'pre-commit commands' _commands
+}
+
+_pre_commit_options=(
+  "(- : *)"{-h,--help}"[show this help message and exit]"
+  "(- : *)"{-V,--version}"[show program\'s version number and exit]"
+)
+
+_pre_commit_autoupdate_options=(
+  "(- : *)"{-h,--help}"[show this help message and exit]"
+  "--color[Whether to use color in output. Defaults to 'auto']:color:(auto always never)"
+  {-c,--config}"[Path to alternate config file]:config:_files -g '*.yaml'"
+  "--bleeding-edge[Update to the bleeding edge of 'HEAD' instead of the latest tagged version]"
+  "--freeze[Store 'frozen' hashes in 'rev' instead of tag names]"
+  "*--repo[Only update this repository -- may be specified multiple times]:repos:"
+)
+
+_pre_commit_clean_options=(
+  "(- : *)"{-h,--help}"[show this help message and exit]"
+  "--color[Whether to use color in output. Defaults to 'auto']:color:(auto always never)"
+)
+
+_pre_commit_gc_options=(
+  "(- : *)"{-h,--help}"[show this help message and exit]"
+  "--color[Whether to use color in output. Defaults to 'auto']:color:(auto always never)"
+)
+
+_pre_commit_help_options=(
+  "(- : *)"{-h,--help}"[show this help message and exit]"
+  ":Command to show help for.:"
+)
+
+_pre_commit_init_templatedir_options=(
+  "(- : *)"{-h,--help}"[show this help message and exit]"
+  "--color[Whether to use color in output. Defaults to 'auto']:color:(auto always never)"
+  {-c,--config}"[Path to alternate config file]:config:_files -g '*.yaml'"
+  "--no-allow-missing-config[Assume cloned repos should have a 'pre-commit' config]"
+  "*"{-t,--hook-type}"[which hook type to install]:hook_types:(pre-commit pre-merge-commit pre-push prepare-commit-msg commit-msg post-commit post-checkout post-merge post-rewrite)"
+  ":The directory in which to write the hook script.:_files -/"
+)
+
+_pre_commit_install_options=(
+  "(- : *)"{-h,--help}"[show this help message and exit]"
+  "--color[Whether to use color in output. Defaults to 'auto']:color:(auto always never)"
+  {-c,--config}"[Path to alternate config file]:config:_files -g '*.yaml'"
+  {-f,--overwrite}"[Overwrite existing hooks / remove migration mode]"
+  "--install-hooks[Whether to install hook environments for all environments in the config file]"
+  "*"{-t,--hook-type}"[which hook type to install]:hook_types:(pre-commit pre-merge-commit pre-push prepare-commit-msg commit-msg post-commit post-checkout post-merge post-rewrite)"
+  "--allow-missing-config[Hook scripts will permit a missing configuration file]"
+)
+
+_pre_commit_install_hooks_options=(
+  "(- : *)"{-h,--help}"[show this help message and exit]"
+  "--color[Whether to use color in output. Defaults to 'auto']:color:(auto always never)"
+  {-c,--config}"[Path to alternate config file]:config:_files -g '*.yaml'"
+)
+
+_pre_commit_migrate_config_options=(
+  "(- : *)"{-h,--help}"[show this help message and exit]"
+  "--color[Whether to use color in output. Defaults to 'auto']:color:(auto always never)"
+  {-c,--config}"[Path to alternate config file]:config:_files -g '*.yaml'"
+)
+
+_pre_commit_run_options=(
+  "(- : *)"{-h,--help}"[show this help message and exit]"
+  "--color[Whether to use color in output. Defaults to 'auto']:color:(auto always never)"
+  {-c,--config}"[Path to alternate config file]:config:_files -g '*.yaml'"
+  {--verbose,-v}"[ produce hook output independent of success]"
+  {--all-files,-a}"[Run on all the files in the repo]"
+  "--files[Specific filenames to run hooks on]:files:_files"
+  "--show-diff-on-failure[When hooks fail, run 'git diff' directly afterward]"
+  "--hook-stage[The stage during which the hook is fired]:hook_stage:(commit merge-commit prepare-commit-msg commit-msg post-commit manual post-checkout push post-merge post-rewrite)"
+  "--remote-branch[Remote branch ref used by 'git push']:remote_branch:"
+  "--local-branch[Local branch ref used by 'git push']:local_branch:"
+  {--from-ref,--source,-s}"[the original ref in a 'from_ref...to_ref' diff expression]:from_ref:"
+  {--to-ref,--origin,-o}"[the destination ref in a 'from_ref...to_ref' diff expression]:to_ref:"
+  "--commit-msg-filename[Filename to check when running during 'commit-msg']:commit_msg_filename:"
+  "--prepare-commit-message-source[Source of the commit message]:prepare_commit_message_source:"
+  "--commit-object-name[Commit object name]:commit_object_name:"
+  "--remote-name[Remote name used by 'git push']:remote_name:"
+  "--remote-url[Remote url used by 'git push']:remote_url:"
+  "--checkout-type[Indicates whether the checkout was a branch checkout or a file checkout]:checkout_type:((0\:file\ checkout 1\:branch\ checkout))"
+  "--is-squash-merge[During a post-merge hook, indicates whether the merge was a squash merge]:is_squash_merge:"
+  "--rewrite-command[During a post-rewrite hook, specifies the command that invoked the rewrite]:rewrite_command:"
+  ":A single hook-id to run:"
+)
+
+_pre_commit_sample_config_options=(
+  "(- : *)"{-h,--help}"[show this help message and exit]"
+  "--color[Whether to use color in output. Defaults to 'auto']:color:(auto always never)"
+)
+
+_pre_commit_try_repo_options=(
+  "(- : *)"{-h,--help}"[show this help message and exit]"
+  "--color[Whether to use color in output. Defaults to 'auto']:color:(auto always never)"
+  {-c,--config}"[Path to alternate config file]:config:_files -g '*.yaml'"
+  {--ref,--rev}"[Manually select a rev to run against, otherwise 'HEAD']:ref:"
+  {--verbose,-v}"[verbose output]"
+  {--all-files,-a}"[Run on all the files in the repo]"
+  "--files[Specific filenames to run hooks on]:files:_files"
+  "--show-diff-on-failure[When hooks fail, run 'git diff' directly afterward]"
+  "--hook-stage[The stage during which the hook is fired]:hook_stage:(commit merge-commit prepare-commit-msg commit-msg post-commit manual post-checkout push post-merge post-rewrite)"
+  "--remote-branch[Remote branch ref used by 'git push']:remote_branch:"
+  "--local-branch[Local branch ref used by 'git push']:local_branch:"
+  {--from-ref,--source,-s}"[the original ref in a 'from_ref...to_ref' diff expression]:from_ref:"
+  {--to-ref,--origin,-o}"[the destination ref in a 'from_ref...to_ref' diff expression]:to_ref:"
+  "--commit-msg-filename[Filename to check when running during 'commit-msg']:commit_msg_filename:"
+  "--prepare-commit-message-source[Source of the commit message]:prepare_commit_message_source:"
+  "--commit-object-name[Commit object name]:commit_object_name:"
+  "--remote-name[Remote name used by 'git push']:remote_name:"
+  "--remote-url[Remote url used by 'git push']:remote_url:"
+  "--checkout-type[Indicates whether the checkout was a branch checkout or a file checkout]:checkout_type:((0\:file\ checkout 1\:branch\ checkout))"
+  "--is-squash-merge[During a post-merge hook, indicates whether the merge was a squash merge]:is_squash_merge:"
+  "--rewrite-command[During a post-rewrite hook, specifies the command that invoked the rewrite]:rewrite_command:"
+  ":Repository to source hooks from.:"
+  ":A single hook-id to run:"
+)
+
+_pre_commit_uninstall_options=(
+  "(- : *)"{-h,--help}"[show this help message and exit]"
+  "--color[Whether to use color in output. Defaults to 'auto']:color:(auto always never)"
+  {-c,--config}"[Path to alternate config file]:config:_files -g '*.yaml'"
+  "*"{-t,--hook-type}"[which hook type to uninstall]:hook_types:(pre-commit pre-merge-commit pre-push prepare-commit-msg commit-msg post-commit post-checkout post-merge post-rewrite)"
+)
+
+_pre_commit_validate_config_options=(
+  "(- : *)"{-h,--help}"[show this help message and exit]"
+  "--color[Whether to use color in output. Defaults to 'auto']:color:(auto always never)"
+  "(*)::filenames:_files"
+)
+
+_pre_commit_validate_manifest_options=(
+  "(- : *)"{-h,--help}"[show this help message and exit]"
+  "--color[Whether to use color in output. Defaults to 'auto']:color:(auto always never)"
+  "(*)::filenames:_files"
+)
+
+_pre_commit() {
+  local context state line curcontext="$curcontext" one_or_more='(-)*' reminder='(*)'
+
+  if ((${_pre_commit_options[(I)${(q)one_or_more}*]} + ${_pre_commit_options[(I)${(q)reminder}*]} == 0)); then  # noqa: E501
+    _pre_commit_options+=(': :_pre_commit_commands' '*::: :->pre-commit')
+  fi
+  _arguments -C $_pre_commit_options
+
+  case $state in
+    pre-commit)
+      words=($line[1] "${words[@]}")
+      (( CURRENT += 1 ))
+      curcontext="${curcontext%:*:*}:_pre_commit-$line[1]:"
+      case $line[1] in
+        autoupdate) _arguments -C $_pre_commit_autoupdate_options ;;
+        clean) _arguments -C $_pre_commit_clean_options ;;
+        gc) _arguments -C $_pre_commit_gc_options ;;
+        help) _arguments -C $_pre_commit_help_options ;;
+        init-templatedir) _arguments -C $_pre_commit_init_templatedir_options ;;
+        install) _arguments -C $_pre_commit_install_options ;;
+        install-hooks) _arguments -C $_pre_commit_install_hooks_options ;;
+        migrate-config) _arguments -C $_pre_commit_migrate_config_options ;;
+        run) _arguments -C $_pre_commit_run_options ;;
+        sample-config) _arguments -C $_pre_commit_sample_config_options ;;
+        try-repo) _arguments -C $_pre_commit_try_repo_options ;;
+        uninstall) _arguments -C $_pre_commit_uninstall_options ;;
+        validate-config) _arguments -C $_pre_commit_validate_config_options ;;
+        validate-manifest) _arguments -C $_pre_commit_validate_manifest_options ;;
+      esac
+  esac
+}
+
+typeset -A opt_args
+_pre_commit "$@"
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
