@@ -47,6 +47,32 @@ Note: adding it as a regular Oh My ZSH! plugin will not work properly (see [#603
 
 Add `zinit light zsh-users/zsh-completions` to your `~/.zshrc`.
 
+### Using Homebrew
+
+### [Brew](https://github.com/Homebrew/brew)
+* Install command:
+        
+        brew install zsh-completions
+
+* To activate these completions, add the following to your `~/.zshrc`:
+
+    ```sh
+    if type brew &>/dev/null; then
+     FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
+
+     autoload -Uz compinit
+     compinit
+    fi
+    ```
+
+* You may also need to force rebuild `zcompdump`:
+
+        rm -f ~/.zcompdump; compinit
+
+* Additionally, if you receive `"zsh compinit: insecure directories"` warnings when attempting to load these completions, you may need to run this:
+
+        chmod -R go-w '$(brew --prefix)/share/zsh'
+        
 ### Manual installation
 
 * Clone the repository:
