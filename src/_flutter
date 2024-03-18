@@ -25,7 +25,7 @@
 # Description
 # -----------
 #
-#  Completion script for the Flutter.io sdk's cli tool 3.16.0 (https://flutter.dev)
+#  Completion script for the Flutter.io sdk's cli tool 3.19.3 (https://flutter.dev)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -58,9 +58,9 @@ _flutter() {
     '(--color --no-color)--no-color[Whether to use terminal colors]' \
     '(--no-version-check --version-check)--version-check[Allow Flutter to check for updates when this command runs]' \
     '(--version-check --no-version-check)--no-version-check[Not allow Flutter to check for updates when this command runs]' \
-    '--suppress-analytics[Suppress analytics reporting when this command runs]' \
-    '(--enable-telemetry)--disable-telemetry[Disable telemetry reporting each time a flutter command runs]' \
-    '(--disable-telemetry)--enable-telemetry[Enable telemetry reporting each time a flutter command runs]' \
+    '(--enable-analytics --disable-analytics --suppress-analytics)--disable-analytics[Disable telemetry reporting each time a flutter command runs]' \
+    '(--enable-analytics --disable-analytics --suppress-analytics)--enable-analytics[Enable telemetry reporting each time a flutter command runs]' \
+    '(--enable-analytics --disable-analytics --suppress-analytics)--suppress-analytics[Suppress analytics reporting when this command runs]' \
     '--packages[Path to your ".packages" file. (required, since the current directory does not contain a ".packages" file)]' \
     '--local-engine-src-path=[Path to your engine src directory]: :_path_files -/' \
     '--local-engine=[Specific version of the engine]:version' \
@@ -126,8 +126,6 @@ _flutter() {
             '*--dart-define=[Additional key-value pairs that will be available as constants]:' \
             '--dart-define-from-file=[The path of a json format file where flutter define a global constant pool]: :_files -g "*.json"' \
             '--device-user=[Identifier number for a user or work profile on Android only]:id:' \
-            '--null-assertions[Perform additional null assertions on the boundaries of migrated and un-migrated code]' \
-            '--no-null-assertions[Not perform additional null assertions on the boundaries of migrated and un-migrated code]' \
             '--debug-url=[The URL at which the observatory is listening]:url:' \
             '--app-id=[The package name (Android) or bundle identifier (iOS) for the app]:app_id:' \
             '--pid-file=[Specify a file to write the process id to]: :_files' \
@@ -151,8 +149,7 @@ _flutter() {
         (config)
           _arguments \
             '(-h --help)'{-h,--help}'[Print this usage information]' \
-            '--analytics[Enable or disable reporting anonymously tool usage statistics and crash reports]' \
-            '--no-analytics[Enable or disable reporting anonymously tool usage statistics and crash reports]' \
+            '--list[List all settings and their current values]' \
             '--clear-ios-signing-cert[Clear the saved development certificate choice used to sign apps for iOS device deployment]' \
             '--android-sdk=[The Android SDK directory]: :_path_files -/' \
             '--android-studio-dir=[The Android Studio install directory]: :_path_files -/' \
@@ -179,7 +176,6 @@ _flutter() {
             '--clear-features[Remove all configured features and restore them to the default values]' \
             && ret=0
           ;;
-
         (create)
           _arguments \
             '(- *)'{-h,--help}'[Print this usage information]' \
@@ -242,6 +238,7 @@ _flutter() {
             '--flavor[Build a custom app flavor as defined by platform-specific build setup]:flavor' \
             '--web-renderer=[The renderer implementation to use when building for the web]: :_flutter_web_renderers' \
             '--no-web-resources-cdn[Do not use Web static resources hosted on a CDN]' \
+            '--use-application-binary=[Specify a pre-built application binary to use when running]:app:_files -g "*.apk"' \
             '--trace-startup[Start tracing during startup]' \
             '(--cache-startup-profile --no-cache-startup-profile)--cache-startup-profile[Caches the CPU profile collected before the first frame for startup analysis]' \
             '(--cache-startup-profile --no-cache-startup-profile)--no-cache-startup-profile[Not caches the CPU profile collected before the first frame for startup analysis]' \
@@ -250,16 +247,17 @@ _flutter() {
             '--dump-skp-on-shader-compilation[Cache the shader in the SkSL format instead of in binary or GLSL formats]' \
             '--purge-persistent-cache[Removes all existing persistent caches]' \
             '--route[Which route to load when running the app]' \
-            '--use-application-binary=[Specify a pre-built application binary to use when running]::_files -g "*.apk"' \
             '(--no-start-paused --start-paused)--start-paused[Start in a paused mode and wait for a debugger to connect]' \
             '(--no-start-paused --start-paused)--no-start-paused[Not tart in a paused mode and wait for a debugger to connect]' \
             '--endless-trace-buffer[Enable tracing to an infinite buffer, instead of a ring buffer]' \
             '--trace-systrace[Enable tracing to the system tracer]' \
+            '--trace-to-file=[Write the timeline trace to a file at the specified path]:file:_files' \
             '--trace-skia[Enable tracing of Skia code]' \
             '--no-enable-dart-profiling[Disable the Dart VM sampling CPU profiler]' \
-            '--enable-software-rendering[Enable rendering using the Skia software backend]' \
             '--skia-deterministic-rendering[provide completely deterministic Skia rendering]' \
             *{-a,--dart-entrypoint-args=}'[Pass a list of arguments to the Dart entrypoint at application startup]: :' \
+            '--web-tls-cert-path=[The certificate that host will use to serve using TLS connection]:cert:_files' \
+            '--web-tls-cert-key-path=[The certificate key that host will use to authenticate cert]:key:_files' \
             '--web-launch-url=[The URL to provide to the browser]: :' \
             '(-t --target=)'{-t,--target=}'[The main entry-point file of the application, as run on the device.(defaults to "lib/main.dart")]: :_files -g "*.dart"' \
             '--device-vmservice-port=[Look for vmservice connections only from the specified port]:port:' \
@@ -330,6 +328,8 @@ _flutter() {
             '--format["dart format" is run after generating the localization files]' \
             '--use-escaping[use escaping for message]' \
             '--suppress-warnings[all warnings will be suppressed]' \
+            '--relax-syntax[Use the relax syntax]' \
+            '--use-named-parameter[Use named parameters for generated localization methods]' \
             && ret=0
           ;;
         (install)
@@ -407,6 +407,8 @@ _flutter() {
             '--enable-software-rendering[Enable rendering using the Skia software backend]' \
             '--skia-deterministic-rendering[When combined with --enable-software-rendering, provides 100% deterministic Skia rendering]' \
             *{-a,--dart-entrypoint-args=}'[Pass a list of arguments to the Dart entrypoint at application startup]: :' \
+            '--web-tls-cert-path=[The certificate that host will use to serve using TLS connection]:cert:_files' \
+            '--web-tls-cert-key-path=[The certificate key that host will use to authenticate cert]:key:_files' \
             '--web-launch-url=[The URL to provide to the browser]: :' \
             '(-t= --target=)'{-t=,--target=}'[The main entry-point file of the application, as run on the device.(defaults to "lib/main.dart")]: :_files -g "*.dart"' \
             '--device-vmservice-port=[Look for vmservice connections only from the specified port]:port:' \
@@ -436,7 +438,7 @@ _flutter() {
              '(- *)'{-h,--help}'[Print this usage information]' \
              '(-o --out)'{-o,--out=}'[Location to write the screenshot]: :_files' \
              '--vm-service-url=[The VM Service URL to which to connect]' \
-             '--type=[The type of screenshot to retrieve]:type:(device rasterizer skia)' \
+             '--type=[The type of screenshot to retrieve]:type:(device skia)' \
              '--device-timeout=[Time in seconds to wait for devices to attach]:seconds:' \
              '--device-connection=[Discover devices based on connection type]:type:_flutter_device_connection_types' \
             && ret=0
@@ -452,10 +454,10 @@ _flutter() {
         (test)
           _arguments \
             '(- *)'{-h,--help}'[Print this usage information]' \
-            '--pub[Run "flutter packages get" before executing this command(defaults to on)]' \
-            '--no-pub[Not to run "flutter packages get" before executing this command]' \
-            '--track-widget-creation[Track widget creation locations]' \
-            '--no-track-widget-creation[Not track widget creation locations]' \
+            '(--pub --no-pub)--pub[Run "flutter packages get" before executing this command(defaults to on)]' \
+            '(--pub --no-pub)--no-pub[Not to run "flutter packages get" before executing this command]' \
+            '(--track-widget-creation --no-track-widget-creation)--track-widget-creation[Track widget creation locations]' \
+            '(--track-widget-creation --no-track-widget-creation)--no-track-widget-creation[Not track widget creation locations]' \
             '*--dart-define=[Additional key-value pairs that will be available as constants]:' \
             '--dart-define-from-file=[The path of a json format file where flutter define a global constant pool]: :_files -g "*.json"' \
             '--web-renderer=[The renderer implementation to use when building for the web]: :_flutter_web_renderers' \
