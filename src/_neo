@@ -1,0 +1,49 @@
+#compdef neo
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for neo (https://github.com/st3w/neo).
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Hydrargyrum (https://github.com/hydrargyrum)
+#
+# ------------------------------------------------------------------------------
+
+_arguments \
+  '(-a --async)'{-a,--async}'[make each column of characters scroll at an independent speed]' \
+  '(-b --bold)'{-b+,--bold=}'[control if and how neo displays bold characters]:choice [1]:((0\:off 1\:random\ \(default\) 2\:all))' \
+  '(-C --colorfile -c --color)'{-C+,--colorfile=}'[read the colors from a file]: :_files' \
+  '(-C --colorfile -c --color)'{-c+,--color=}'[set the foreground text color]:color [green]:(green green2 green3 yellow orange red blue cyan gold rainbow purple pink pink2 vaporwave gray)' \
+  '(-D --defaultbg)'{-D,--defaultbg}'[use the default terminal background color]' \
+  '(-d --density)'{-d+,--density=}'[control how many droplets will appear onscreen]: :_numbers -f -d 1.0' \
+  '(-F --fullwidth)'{-F,--fullwidth}'[use two columns per character]' \
+  '(-f --fps)'{-f+,--fps=}'[set a frame rate target]: :_numbers -d 60' \
+  '(-G --glitchpct)'{-G+,--glitchpct=}'[set the percentage of characters onscreen that glitch]: :_numbers -f -d 10.0' \
+  '(-g --glitchms)'{-g+,--glitchms=}'[control how often the characters on screen glitch]:N [300,400]]' \
+  '(-h --help)'{-h,--help}'[shows the help message]' \
+  '(-l --lingerms)'{-l+,--lingerms=}'[control how long characters stay onscreen after they finish scrolling]:N [1,3000]' \
+  '(-M --shadingmode)'{-M+,--shadingmode=}'[control how neo assigns color values to characters on the screen]:choice [1]:((0\:random\ \(default\) 1\:gradient))' \
+  '(-m --message)'{-m+,--message=}'[display a message in the center of the screen]:message' \
+  '(-p --profile)'{-p,--profile}'[turn on the profiling mode]' \
+  '(-r --rippct)'{-r+,--rippct=}'[set the percentage of droplets that stop scrolling before reaching the bottom of the screen]: :_numbers -f -d 33.0' \
+  '(-S --speed)'{-S+,--speed=}'[control how fast characters scroll down the screen]: :_numbers -f -d 8.0' \
+  '(-s --screensaver)'{-s,--screensaver}'[exit on the first key press]' \
+  '(-V --version)'{-V,--version}'[display the version, build date, copyright, and license]' \
+  --noglitch'[disable character glitching]' \
+  --chars='[display Unicode characters between NUM1 and NUM2 inclusive]:CHAR,CHAR' \
+  --charset='[set the charset that is used to draw characters onto the screen]:flag:(ascii extended english dec decimal digits punc bin binary hex hexadecimal katakana greek cyrillic arabic hebrew devanagari braille runic)' \
+  --colormode='[set the color mode]:flag:((0\:mono 16\:16\ colors 32\:32-bit\ color 256\:256\ colors))' \
+  --maxdpc='[set the maximum number of droplets per column]: :_numbers -d 3' \
+  --shortpct='[set the percentage of shortened droplets]: :_numbers -f -d 50.0'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
