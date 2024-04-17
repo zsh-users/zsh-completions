@@ -1,0 +1,41 @@
+#compdef rdfind
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for rdfind (https://rdfind.pauldreik.se/).
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Hydrargyrum (https://github.com/hydrargyrum)
+#
+# ------------------------------------------------------------------------------
+
+_arguments \
+  "-ignoreempty[ignore empty files]:flag:(true false)" \
+  "-minsize[ignore files with less than N bytes]: :_numbers -d 1" \
+  "-maxsize[ignore files with N bytes or more]: :_numbers" \
+  "-followsymlinks[follow symlinks]:flag:(true false)" \
+  "-removeidentinode[remove items found which have identical inode and device ID]:flag:(true false)" \
+  "-checksum[type of checksum to be used]:algo:(md5 sha1 sha256 sha512)" \
+  "-deterministic[if set (the default), sort files of equal rank in an unspecified but deterministic order]:flag:(true false)" \
+  "(-makehardlinks -deleteduplicates)-makesymlinks[replace duplicate files with symbolic links]:flag:(true false)" \
+  "(-makesymlinks -deleteduplicates)-makehardlinks[replace duplicate files with hard links]:flag:(true false)" \
+  "(-makehardlinks -makesymlinks)-deleteduplicates[delete (unlink) files]:flag:(true false)" \
+  "-makeresultsfile[make a results file in the current directory]:flag:(true false)" \
+  "-outputname[make the results file name to be \"name\" instead of the default results.txt]:name" \
+  "(-n -dryrun)"{-n,-dryrun}"[display what should have been done, don’t actually delete or link anything]:flag:(true false)" \
+  "-sleep[sleeps X milliseconds between reading each file, to reduce load]: :_numbers -u ms -d 0" \
+  "(-h -help --help)"{-h,-help,--help}"[display a brief help message]" \
+  "(-v -version --version)"{-v,-version,--version}"[display the version number]" \
+  "*:file or directory:_files"
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
