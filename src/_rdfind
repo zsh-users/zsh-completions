@@ -31,3 +31,11 @@ _arguments \
   "(-h -help --help)"{-h,-help,--help}"[display a brief help message]" \
   "(-v -version --version)"{-v,-version,--version}"[display the version number]" \
   "*:file or directory:_files"
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
