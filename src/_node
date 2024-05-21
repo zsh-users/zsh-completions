@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Node.js v22.0.0 (https://nodejs.org)
+#  Completion script for Node.js v22.2.0 (https://nodejs.org)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -120,10 +120,11 @@ _arguments -C \
   '--icu-data-dir=[set ICU data load path to dir (overrides NODE_ICU_DATA) note: linked-in ICU data is present]: :_directories' \
   '--input-type=[set module type for string input]:module type :(commonjs module)' \
   '--insecure-http-parser[Use an insecure HTTP parser that accepts invalid HTTP headers]' \
-  '--inspect-brk=-[activate inspector on host:port and break at start of user script]:[host\:]port' \
-  '(--debug-port --inspect-port)'{--debug-port,--inspect-port}'=[set host:port for inspector]:[host\:]port' \
-  '--inspect=-[activate inspector on host:port (default: 127.0.0.1:9229)]:[host\:]port' \
+  '--inspect-brk=-[activate inspector on host:port and break at start of user script]:host_port' \
+  '(--debug-port --inspect-port)'{--debug-port,--inspect-port}'=[set host:port for inspector]:host_port' \
+  '--inspect=-[activate inspector on host:port (default: 127.0.0.1:9229)]:host_port' \
   '--inspect-publish-uid=[comma separated list of destinations for inspector uid]' \
+  '--inspect-wait=-[activate inspector on host:port and wait for debugger to be attached]::host_port' \
   '--interpreted-frames-native-stack[help system profilers to translate JavaScript interpreted frames]' \
   '--jitless[Disable runtime allocation of executable memory]' \
   '--max-http-header-size=[set the maximum size of HTTP headers]: :number' \
@@ -171,6 +172,7 @@ _arguments -C \
   '*--test-reporter=[report test output using the given reporter]:reporter:(tap spec dot)' \
   '*--test-reporter-destination=[report given reporter to the given destination]:destination:_files' \
   '--test-shard=[run test at specific shard]:shard' \
+  '--test-skip-pattern=[run tests whose name do not match this regular expression]' \
   '--test-timeout=[specify test runner timeout]' \
   '--throw-deprecation[throw an exception on deprecations]' \
   '--title=[the process title to use on startup]:process title' \
