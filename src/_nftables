@@ -468,7 +468,7 @@ _nft_object(){
   #$3:object type (chain/set/map/flowtable/ct helper/counter/quota/meter)
   #$4:include 'handle'?
   local objects=( ${(f)"$(_call_program -p objects nft -a list table $1 $2 2>/dev/null\
-      | grep ""\\s\*$3"" | sed 's/\s*'"$3"' // ;s/ { # \(.*\)/:(\1)/' )"} )
+      | grep ""\^\\s\*$3"" | sed 's/\s*'"$3"' // ;s/ { # \(.*\)/:(\1)/' )"} )
   if $4 ;then
     objects+=( "handle:address $3 by handle")
   fi
@@ -481,7 +481,7 @@ _nft_object_handle(){
   #$2:table
   #$3:object type (chain/set/ct helper/counter/quota)
   local handles=( ${(f)"$(_call_program -p handles nft -a list table $1 $2 2>/dev/null\
-      | grep ""\\s\*$3"" | sed 's/\s*'"$3"' // ;s/ { # handle// ;s/\(\S*\) \(\S*\)/\2:\1/' )"} )
+      | grep ""\^\\s\*$3"" | sed 's/\s*'"$3"' // ;s/ { # handle// ;s/\(\S*\) \(\S*\)/\2:\1/' )"} )
   _describe -t handles "$3-handle" handles
 }
 
