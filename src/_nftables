@@ -242,8 +242,12 @@ while true;do
     descriptors=(": : _nft_object $cmd_fam $cmd_tab $cmd_obj false")
     nextstate="start"
   ;;
+  (add-element | delete-element)
+    cmd_tab=$line[1]
+    descriptors=(": : _nft_object $cmd_fam $cmd_tab '\(map\|set\)' false")
+    nextstate="start"
+  ;;
   #TODO:
-  #(add-element | delete-element)
   #(add-set | add-map)
   #(add-flowtable)
   #("add-ct\ helper")
