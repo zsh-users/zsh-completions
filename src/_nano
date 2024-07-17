@@ -1,4 +1,12 @@
 #compdef nano
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for nano 8.1
+#  (https://www.nano-editor.org/)
+#
+# ------------------------------------------------------------------------------
 
 local curcontext="$curcontext" state line
 local -i ret=1
@@ -56,10 +64,12 @@ _arguments -s -S -C \
   '(-x --nohelp)'{-x,--nohelp}"[don't show the two help lines]"  \
   '(-y --afterends)'{-y,--afterends}'[make Ctrl+Right stop at word ends]' \
   '(-z --suspend)'{-z,--suspend}'[enable suspension]' \
+  '(-@ --colonparsing)'{-@,--colonparsing}'[accept "filename:linenumber" notation]' \
   '(-% --stateflags)'{-%,--stateflags}'[show some states in the title bar]' \
   '(-_ --minibar -U --quickblank)'{-_,--minibar}'[suppress the title bar and show information at the bottom of the screen]' \
   '(-! --magic)'{-\!,--magic}'[try libmagic to determine applicable syntax]' \
-  '(-0 --zero)'{-0,--zero}'[Hide all bars, use whole terminal]' \
+  '(-0 --zero)'{-0,--zero}'[hide all bars, use whole terminal]' \
+  '(-/ --modernbindings)'{-/,--modernbindings}'[use better-known key bindings]' \
   '(-t -q)*: :->args' && ret=0
 
 if [[ -n $state ]]; then
@@ -72,3 +82,11 @@ if [[ -n $state ]]; then
 fi
 
 return ret
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
