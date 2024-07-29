@@ -415,6 +415,17 @@ case $state in
       '-json[prints the final go.mod/work file in JSON format]'
       '-print[prints the final go.mod/work in its text format]'
     )
+    local -a mod_commands=(
+      'download:download modules to local cache'
+      'edit:edit go.mod from tools or scripts'
+      'graph:print module requirement graph'
+      'init:initialize new module in current directory'
+      'tidy:add missing and remove unused modules'
+      'vendor:make vendored copy of dependencies'
+      'verify:verify dependencies have expected content'
+      'why:explain why packages or modules are needed'
+      'help:get more information about a command'
+    )
 
     case $words[1] in
       build)
@@ -593,27 +604,15 @@ case $state in
         _arguments ${list_args[@]}
         ;;
 
-      mod)
-        local -a mod_commands=(
-          'download:download modules to local cache'
-          'edit:edit go.mod from tools or scripts'
-          'graph:print module requirement graph'
-          'init:initialize new module in current directory'
-          'tidy:add missing and remove unused modules'
-          'vendor:make vendored copy of dependencies'
-          'verify:verify dependencies have expected content'
-          'why:explain why packages or modules are needed'
-          'help:get more information about a command'
-        )
-
+      (mod)
         _arguments \
           "1: :{_describe 'command' mod_commands}" \
           '*:: :->args'
 
         case $state in
-          args)
+          (args)
             case $words[1] in
-              download)
+              (download)
                 _arguments \
                   '-json[print a sequence of JSON objects to standard output]' \
                   '-x[print the commands download executes]'
@@ -662,12 +661,12 @@ case $state in
         esac
         ;;
 
-      run)
+      (run)
         _arguments \
           ${build_flags[@]} \
           '-exec[invoke the binary using xprog]:xporg' \
           '*:importpaths:__go_packages'
-          ;;
+        ;;
 
       test)
         if [[ $words[$CURRENT] = -test.* ]]; then
@@ -1129,7 +1128,14 @@ case $state in
           'vcs:controlling version control with GOVCS'
         )
 
-        _arguments "1: :{_describe 'command' commands -- topics}"
+        case "$words[2]" in
+          (mod)
+            _arguments "2: :{_describe 'command' mod_commands}"
+            ;;
+          (*)
+            _arguments "1: :{_describe 'command' commands -- topics}"
+            ;;
+        esac
         ;;
     esac
     ;;
