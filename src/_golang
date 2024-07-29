@@ -45,25 +45,22 @@
 # ------------------------------------------------------------------------------
 
 __go_buildmodes() {
-  local -a buildmodes
-  buildmodes=(
-  'archive[non-main packages into .a files]'
-  'c-archive[main package, plus all packages it imports, into a C archive file]'
-  'c-shared[main package, plus all packages it imports, into a C shared library]'
-  'default[main packages are built into executables and listed non-main packages are built into .a files]'
-  'shared[non-main packages into a single shared library that will be used when building with the -linkshared option]'
-  'exe[main packages into executables]'
-  'pie[main packages and everything they import into position independent executables (PIE)]'
-  'plugin[main packages, plus all packages that they import, into a Go plugin]'
+  local -a buildmodes=(
+    'archive[non-main packages into .a files]'
+    'c-archive[main package, plus all packages it imports, into a C archive file]'
+    'c-shared[main package, plus all packages it imports, into a C shared library]'
+    'default[main packages are built into executables and listed non-main packages are built into .a files]'
+    'shared[non-main packages into a single shared library that will be used when building with the -linkshared option]'
+    'exe[main packages into executables]'
+    'pie[main packages and everything they import into position independent executables (PIE)]'
+    'plugin[main packages, plus all packages that they import, into a Go plugin]'
   )
 
   _values 'mode' $buildmodes
 }
 
-
 __go_runtimedebug() {
-  local -a vars
-  vars=(
+  local -a vars=(
     'allocfreetrace[profile allocations]:boolean:(1 0)'
     'clobberfree[clobber memory after free]:boolean:(1 0)'
     'cgocheck[check passing go pointers to non-go]: :((0\:"no checks" 1\:"check checks" 2\:"expensive checks"))'
@@ -114,66 +111,66 @@ __go_gcdebugflags() {
 
 __go_gcflags() {
   _arguments \
-  '-%[debug non-static initializers]' \
-  '-c=[concurrency during compilation]:int' \
-  '-+[compiling runtime]' \
-  '-B[disable bounds checking]' \
-  '-C[disable printing of columns in error messages]' \
-  '-D=[set relative path for local imports]:path: _path_files -/' \
-  '-E[debug symbol export]' \
-  '-I=[add directory to import search path]:directory: _path_files -/' \
-  '-K[debug missing line numbers]' \
-  '-L[show full file names in error messages]' \
-  '-N[disable optimizations]' \
-  '-S[print assembly listing]' \
-  '-V[print version and exit]' \
-  '-W[debug parse tree after type checking]' \
-  '-asmhdr=[write assembly header to file]:file' \
-  '-bench=[append benchmark times to file]:file' \
-  '-blockprofile=[write block profile to file]:file' \
-  '-buildid=[record id as the build id in the export metadata]:id' \
-  '-complete[compiling complete package (no C or assembly)]' \
-  '-cpuprofile=[write cpu profile to file]:file' \
-  '-d=[print debug information about items in list; try -d help]:list: __go_gcdebugflags' \
-  '-dwarf[generate DWARF symbols (default true)]' \
-  '-dwarfbasentries[use base address selection entries in DWARF (default true)]' \
-  '-dwarflocationlists[add location lists to DWARF in optimized mode (default true)]' \
-  '-dynlink[support references to Go symbols defined in other shared libraries]' \
-  '-e[no limit on number of errors reported]' \
-  '-gendwarfinl=[generate DWARF inline info records (default 2)]:int' \
-  '-goversion=[required version of the runtime]:string' \
-  '-h[halt on error]' \
-  '-importcfg=[read import configuration from file]:file' \
-  '-installsuffix=[set pkg directory suffix]:suffix' \
-  '-j[debug runtime-initialized variables]' \
-  '-json=[version,destination for JSON compiler/optimizer logging]:string' \
-  '-l[disable inlining]' \
-  '-lang=[release to compile for]:string' \
-  '-linkobj=[write linker-specific object to file]:file' \
-  '-linkshared[generate code that will be linked against Go shared libraries]' \
-  '-live[debug liveness analysis]' \
-  '-m[print optimization decisions]' \
-  '-memprofile=[write memory profile to file]:file' \
-  '-memprofilerate=[set runtime.MemProfileRate to rate]:rate' \
-  '-msan[build code compatible with C/C++ memory sanitizer]' \
-  '-mutexprofile=[write mutex profile to file]:file' \
-  '-newobj[use new object file format]' \
-  '-nolocalimports[reject local (relative) imports]' \
-  '-o=[write output to file]:file' \
-  '-p=[set expected package import path]:path: _path_files -/' \
-  '-pack[write to file.a instead of file.o]' \
-  '-r[debug generated wrappers]' \
-  '-race[enable race detector]' \
-  '-shared[generate code that can be linked into a shared library]' \
-  '-smallframes[reduce the size limit for stack allocated objects]' \
-  '-spectre=[enable spectre mitigations]:mitigations:(all index ret)' \
-  '-std[compiling standard library]' \
-  '-symabis=[read symbol ABIs from file]:file' \
-  '-traceprofile=[write an execution trace to file]:file' \
-  '-trimpath=[remove prefix from recorded source file paths]:prefix' \
-  '-v[increase debug verbosity]' \
-  '-w[debug type checking]' \
-  '-wb[enable write barrier (default true)]' \
+    '-%[debug non-static initializers]' \
+    '-c=[concurrency during compilation]:int' \
+    '-+[compiling runtime]' \
+    '-B[disable bounds checking]' \
+    '-C[disable printing of columns in error messages]' \
+    '-D=[set relative path for local imports]:path: _path_files -/' \
+    '-E[debug symbol export]' \
+    '-I=[add directory to import search path]:directory: _path_files -/' \
+    '-K[debug missing line numbers]' \
+    '-L[show full file names in error messages]' \
+    '-N[disable optimizations]' \
+    '-S[print assembly listing]' \
+    '-V[print version and exit]' \
+    '-W[debug parse tree after type checking]' \
+    '-asmhdr=[write assembly header to file]:file' \
+    '-bench=[append benchmark times to file]:file' \
+    '-blockprofile=[write block profile to file]:file' \
+    '-buildid=[record id as the build id in the export metadata]:id' \
+    '-complete[compiling complete package (no C or assembly)]' \
+    '-cpuprofile=[write cpu profile to file]:file' \
+    '-d=[print debug information about items in list; try -d help]:list: __go_gcdebugflags' \
+    '-dwarf[generate DWARF symbols (default true)]' \
+    '-dwarfbasentries[use base address selection entries in DWARF (default true)]' \
+    '-dwarflocationlists[add location lists to DWARF in optimized mode (default true)]' \
+    '-dynlink[support references to Go symbols defined in other shared libraries]' \
+    '-e[no limit on number of errors reported]' \
+    '-gendwarfinl=[generate DWARF inline info records (default 2)]:int' \
+    '-goversion=[required version of the runtime]:string' \
+    '-h[halt on error]' \
+    '-importcfg=[read import configuration from file]:file' \
+    '-installsuffix=[set pkg directory suffix]:suffix' \
+    '-j[debug runtime-initialized variables]' \
+    '-json=[version,destination for JSON compiler/optimizer logging]:string' \
+    '-l[disable inlining]' \
+    '-lang=[release to compile for]:string' \
+    '-linkobj=[write linker-specific object to file]:file' \
+    '-linkshared[generate code that will be linked against Go shared libraries]' \
+    '-live[debug liveness analysis]' \
+    '-m[print optimization decisions]' \
+    '-memprofile=[write memory profile to file]:file' \
+    '-memprofilerate=[set runtime.MemProfileRate to rate]:rate' \
+    '-msan[build code compatible with C/C++ memory sanitizer]' \
+    '-mutexprofile=[write mutex profile to file]:file' \
+    '-newobj[use new object file format]' \
+    '-nolocalimports[reject local (relative) imports]' \
+    '-o=[write output to file]:file' \
+    '-p=[set expected package import path]:path: _path_files -/' \
+    '-pack[write to file.a instead of file.o]' \
+    '-r[debug generated wrappers]' \
+    '-race[enable race detector]' \
+    '-shared[generate code that can be linked into a shared library]' \
+    '-smallframes[reduce the size limit for stack allocated objects]' \
+    '-spectre=[enable spectre mitigations]:mitigations:(all index ret)' \
+    '-std[compiling standard library]' \
+    '-symabis=[read symbol ABIs from file]:file' \
+    '-traceprofile=[write an execution trace to file]:file' \
+    '-trimpath=[remove prefix from recorded source file paths]:prefix' \
+    '-v[increase debug verbosity]' \
+    '-w[debug type checking]' \
+    '-wb[enable write barrier (default true)]'
 }
 
 __go_pgo() {
@@ -182,27 +179,27 @@ __go_pgo() {
     "file:file:_files"
 }
 
-local -a commands build_flags
-commands=(
-'bug:start a bug report'
-'build:compile packages and dependencies'
-'clean:remove object files and cached files'
-'doc:show documentation for package or symbol'
-'env:print Go environment information'
-'fix:update packages to use new APIs'
-'fmt:gofmt (reformat) package sources'
-'generate:generate Go files by processing source'
-'get:download and install packages and dependencies'
-'install:compile and install packages and dependencies'
-'list:list packages or modules'
-'mod:module maintenance'
-'work:workspace maintenance'
-'run:compile and run Go program'
-'test:test packages'
-'tool:run specified go tool'
-'version:print Go version'
-'vet:report likely mistakes in packages'
-'help:get more information about a command'
+local -a build_flags
+local -a commands=(
+  'bug:start a bug report'
+  'build:compile packages and dependencies'
+  'clean:remove object files and cached files'
+  'doc:show documentation for package or symbol'
+  'env:print Go environment information'
+  'fix:update packages to use new APIs'
+  'fmt:gofmt (reformat) package sources'
+  'generate:generate Go files by processing source'
+  'get:download and install packages and dependencies'
+  'install:compile and install packages and dependencies'
+  'list:list packages or modules'
+  'mod:module maintenance'
+  'work:workspace maintenance'
+  'run:compile and run Go program'
+  'test:test packages'
+  'tool:run specified go tool'
+  'version:print Go version'
+  'vet:report likely mistakes in packages'
+  'help:get more information about a command'
 )
 
 __go_envvarvals() {
@@ -342,47 +339,46 @@ _arguments \
 case $state in
   args)
     build_flags=(
-    '-C[change to directory before running the command]: :_files -/'
-    '-a[force rebuilding of packages that are already up-to-date]'
-    '-n[print the commands but do not run them]'
-    '-p[number of builds that can be run in parallel]:number'
-    '-race[enable data race detection]'
-    '-msan[enable interoperation with memory sanitizer]'
-    '-asan[enable interoperation with address sanitizer]'
-    '-v[print the names of packages as they are compiled]'
-    '-work[print temporary work directory and keep it]'
-    '-x[print the commands]'
-    '-asmflags[arguments for each go tool asm invocation]:flags'
-    '-buildmode[build mode to use]:mode:__go_buildmodes'
-    '-buildvcs[stamp binaries with version control information]:mode:(internal external auto)'
-    '-compiler[name of compiler to use]:name'
-    '-gccgoflags[arguments for gccgo]:args'
-    '*-gcflags=[arguments for each go tool compile invocation]:args:__go_gcflags'
-    '-installsuffix[suffix to add to package directory]:suffix'
-    '-ldflags[arguments to pass on each go tool link invocation.]:flags'
-    '-linkshared[link against shared libraries]'
-    '-overlay[read a JSON config file that provides an overlay for build operations]:file:_files -g "*.json"'
-    '-pgo[specify the file path of a profile for profile-guided optimization]:file_or_profile:__go_pgo'
-    '-pkgdir[install and load all packages from dir]:dir'
-    '-tags[list of build tags to consider satisfied]:tags'
-    '-trimpath[remove all file system paths from the resulting executable]'
-    '-toolexec[program to use to invoke toolchain programs]:args'
+      '-C[change to directory before running the command]: :_files -/'
+      '-a[force rebuilding of packages that are already up-to-date]'
+      '-n[print the commands but do not run them]'
+      '-p[number of builds that can be run in parallel]:number'
+      '-race[enable data race detection]'
+      '-msan[enable interoperation with memory sanitizer]'
+      '-asan[enable interoperation with address sanitizer]'
+      '-v[print the names of packages as they are compiled]'
+      '-work[print temporary work directory and keep it]'
+      '-x[print the commands]'
+      '-asmflags[arguments for each go tool asm invocation]:flags'
+      '-buildmode[build mode to use]:mode:__go_buildmodes'
+      '-buildvcs[stamp binaries with version control information]:mode:(internal external auto)'
+      '-compiler[name of compiler to use]:name'
+      '-gccgoflags[arguments for gccgo]:args'
+      '*-gcflags=[arguments for each go tool compile invocation]:args:__go_gcflags'
+      '-installsuffix[suffix to add to package directory]:suffix'
+      '-ldflags[arguments to pass on each go tool link invocation.]:flags'
+      '-linkshared[link against shared libraries]'
+      '-overlay[read a JSON config file that provides an overlay for build operations]:file:_files -g "*.json"'
+      '-pgo[specify the file path of a profile for profile-guided optimization]:file_or_profile:__go_pgo'
+      '-pkgdir[install and load all packages from dir]:dir'
+      '-tags[list of build tags to consider satisfied]:tags'
+      '-trimpath[remove all file system paths from the resulting executable]'
+      '-toolexec[program to use to invoke toolchain programs]:args'
     )
-    mod_flags=(
-    '-mod=[module download mode to use]:download mode:(readonly vendor mod)'
-    '-modcacherw[leave newly-created directories in the module cache read-write]'
-    '-modfile=[read an alternate go.mod file]:modfile: _files -g "*.mod"'
+    local -a mod_flags=(
+      '-mod=[module download mode to use]:download mode:(readonly vendor mod)'
+      '-modcacherw[leave newly-created directories in the module cache read-write]'
+      '-modfile=[read an alternate go.mod file]:modfile: _files -g "*.mod"'
     )
-
-    edit_flags=(
-    '-fmt[reformats the go.mod/work file without making other changes]' \
-    '*-require=[add a requirement on the given module path and version]:require' \
-    '*-droprequire=[drop a requirement on the given module path and version]:droprequire' \
-    '-go[sets the expected Go language version]:goversion' \
-    '*-replace=[add a replacement of the given module path and version]:replace' \
-    '*-dropreplace=[drop a replacement of the given module path and version]:dropreplace' \
-    '-json[prints the final go.mod/work file in JSON format]' \
-    '-print[prints the final go.mod/work in its text format]' \
+    local -a edit_flags=(
+      '-fmt[reformats the go.mod/work file without making other changes]'
+      '*-require=[add a requirement on the given module path and version]:require'
+      '*-droprequire=[drop a requirement on the given module path and version]:droprequire'
+      '-go[sets the expected Go language version]:goversion'
+      '*-replace=[add a replacement of the given module path and version]:replace'
+      '*-dropreplace=[drop a replacement of the given module path and version]:dropreplace'
+      '-json[prints the final go.mod/work file in JSON format]'
+      '-print[prints the final go.mod/work in its text format]'
     )
 
     __go_packages() {
@@ -438,8 +434,7 @@ case $state in
           ;;
 
       env)
-        local -a goenvvars
-        goenvvars=(
+        local -a goenvvars=(
           "GOARCH[architecture, or processor, for which to compile code.]:architecture"
           "GCCGO[gccgo command to run.]:gccgo command"
           "GOBIN[directory where 'go install' installs to]:go install target dir"
@@ -497,8 +492,7 @@ case $state in
           "GOMOD[absolute path the the main go.mod]:abs path to main go.mod"
           "GOTOOLDIR[installation directory of go tools]:tool installation directory"
         )
-        local -a exclude_from_w
-        exclude_from_w=(GOENV)
+        local -a exclude_from_w=(GOENV)
 
         __list_env_vars() {
           # the parameter expansion strops off everything after the first [
@@ -528,7 +522,7 @@ case $state in
           '-n[prints commands that would be executed]' \
           '-x[prints commands as they are executed]' \
           '*:importpaths:__go_packages'
-          ;;
+        ;;
 
       generate)
         _arguments \
@@ -538,7 +532,7 @@ case $state in
           '-n[print the commands but do not run them]' \
           '-v[print the names of packages as they are compiled]' \
           "*:args:{ _alternative ':importpaths:__go_packages' _files }"
-          ;;
+        ;;
 
       get)
         # no mod_flags for get
@@ -551,16 +545,15 @@ case $state in
           '-u[use the network to update the named packages]' \
           ${build_flags[@]} \
           '*:importpaths:__go_packages'
-          ;;
+        ;;
 
       install)
         _arguments ${build_flags[@]} \
           '*:importpaths:__go_packages'
-          ;;
+        ;;
 
       list)
-        local -a list_args
-        list_args=(
+        local -a list_args=(
           '-e[changes the handling of erroneous packages]'
           '-f[specifies an alternate format for the list]:format'
           '-json[causes package data to be printed in JSON format]'
@@ -579,20 +572,19 @@ case $state in
           )
         fi
         _arguments ${list_args[@]}
-          ;;
+        ;;
 
       mod)
-        local -a mod_commands
-        mod_commands=(
-        'download:download modules to local cache'
-        'edit:edit go.mod from tools or scripts'
-        'graph:print module requirement graph'
-        'init:initialize new module in current directory'
-        'tidy:add missing and remove unused modules'
-        'vendor:make vendored copy of dependencies'
-        'verify:verify dependencies have expected content'
-        'why:explain why packages or modules are needed'
-        'help:get more information about a command'
+        local -a mod_commands=(
+          'download:download modules to local cache'
+          'edit:edit go.mod from tools or scripts'
+          'graph:print module requirement graph'
+          'init:initialize new module in current directory'
+          'tidy:add missing and remove unused modules'
+          'vendor:make vendored copy of dependencies'
+          'verify:verify dependencies have expected content'
+          'why:explain why packages or modules are needed'
+          'help:get more information about a command'
         )
 
         _arguments \
@@ -763,16 +755,15 @@ case $state in
                 ;;
 
               callgraph)
-                local -a algos graphs
-                algos=(
-                'static:static calls only'
-                'cha:Class Hierarchy Analysis'
-                'rta:Rapid Type Analysis'
-                'pta:inclusion-based Points-To Analysis'
+                local -a algos=(
+                  'static:static calls only'
+                  'cha:Class Hierarchy Analysis'
+                  'rta:Rapid Type Analysis'
+                  'pta:inclusion-based Points-To Analysis'
                 )
-                graphs=(
-                'digraph:output in digraph format'
-                'graphviz:output in AT&T GraphViz (.dot) format'
+                local -a graphs=(
+                  'digraph:output in digraph format'
+                  'graphviz:output in AT&T GraphViz (.dot) format'
                 )
 
                 _arguments \
@@ -1052,7 +1043,6 @@ case $state in
           '*:files:_files'
         ;;
 
-
       vet)
         _arguments \
           '-n[print commands that would be executed]' \
@@ -1062,12 +1052,11 @@ case $state in
         ;;
 
       work)
-        local -a work_commands
-        work_commands=(
-        'edit:edit go.work from tools or scripts'
-        'init:initialize workspace file'
-        'sync:sync workspace build list to modules'
-        'use:add modules to workspace file'
+        local -a work_commands=(
+          'edit:edit go.work from tools or scripts'
+          'init:initialize workspace file'
+          'sync:sync workspace build list to modules'
+          'use:add modules to workspace file'
         )
 
         _arguments \
@@ -1103,29 +1092,27 @@ case $state in
         esac
         ;;
 
-
       help)
-        local -a topics
-        topics=(
-        'buildconstraint:build constraints'
-        'buildmode:build modes'
-        'c:calling between Go and C'
-        'cache:build and test caching'
-        'environment:environment variables'
-        'filetype:file types'
-        'go.mod:the go.mod file'
-        'gopath:GOPATH environment variable'
-        'gopath-get:legacy GOPATH go get'
-        'goproxy:module proxy protocol'
-        'importpath:import path syntax'
-        'modules:modules, module versions, and more'
-        'module-get:module-aware go get'
-        'module-auth:module authentication using go.sum'
-        'packages:package lists and patterns'
-        'private:configuration for downloading non-public code'
-        'testflag:testing flags'
-        'testfunc:testing functions'
-        'vcs:controlling version control with GOVCS'
+        local -a topics=(
+          'buildconstraint:build constraints'
+          'buildmode:build modes'
+          'c:calling between Go and C'
+          'cache:build and test caching'
+          'environment:environment variables'
+          'filetype:file types'
+          'go.mod:the go.mod file'
+          'gopath:GOPATH environment variable'
+          'gopath-get:legacy GOPATH go get'
+          'goproxy:module proxy protocol'
+          'importpath:import path syntax'
+          'modules:modules, module versions, and more'
+          'module-get:module-aware go get'
+          'module-auth:module authentication using go.sum'
+          'packages:package lists and patterns'
+          'private:configuration for downloading non-public code'
+          'testflag:testing flags'
+          'testfunc:testing functions'
+          'vcs:controlling version control with GOVCS'
         )
 
         _arguments "1: :{_describe 'command' commands -- topics}"
