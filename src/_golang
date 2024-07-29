@@ -320,6 +320,40 @@ __go_envvarvals() {
   esac
 }
 
+__go_packages() {
+  local -a gopaths=("${(s/:/)$(go env GOPATH)}")
+  gopaths+=("$(go env GOROOT)")
+  for p in $gopaths; do
+    _path_files $@ -W "$p/src" -/
+  done
+  # no special treatment for
+  # - relative paths starting with ..
+  # - absolute path starting with /
+  # - variables, substitutions, subshells
+  if [[ $words[$CURRENT] = ..* || $words[$CURRENT] = \$* || $words[$CURRENT] = /* ]]; then
+    _path_files $@ -/ -g '*.go'
+  else
+    # go build accepts paths relative to the cwd but they must start with './', so prefix them
+    _path_files $@ -P './' -/ -g '*.go'
+  fi
+}
+
+__go_fix_names() {
+  local -a fix_names=(
+    'buildtag[remove +build comments from modules using Go 1.18 or later]'
+    'cftype[fixes initialzers and casts of C.*Ref and JNI types]'
+    'context[Change imports of golang.org/x/net/context to context]'
+    'egl[fixes initializers of EGLDisplay]'
+    'eglconf[fixes initializers of EGLConfig]'
+    'gotypes[change imports of oglang.org/x/tools/go{exact,types} to go/{constant,types}]'
+    "jni[fixes initializers of JNI's jobject and subtypes]"
+    'netipv6zone[adapt element key to IPAddr, UPDAddr, TCPAddr composite literals]'
+    'printerconfig[add element keys to Config composite literals]'
+  )
+
+  _values -s ',' 'fix name' $fix_names
+}
+
 if [[ "$service" = -value-* ]]; then
   variable=${${service%,-default-}#-value-,}
   # some special variables are not read from the environment
@@ -382,26 +416,6 @@ case $state in
       '-print[prints the final go.mod/work in its text format]'
     )
 
-    __go_packages() {
-      local gopaths
-      declare -a gopaths
-      gopaths=("${(s/:/)$(go env GOPATH)}")
-      gopaths+=("$(go env GOROOT)")
-      for p in $gopaths; do
-        _path_files $@ -W "$p/src" -/
-      done
-      # no special treatment for
-      # - relative paths starting with ..
-      # - absolute path starting with /
-      # - variables, substitutions, subshells
-      if [[ $words[$CURRENT] = ..* || $words[$CURRENT] = \$* || $words[$CURRENT] = /* ]]; then
-        _path_files $@ -/ -g '*.go'
-      else
-        # go build accepts paths relative to the cwd but they must start with './', so prefix them
-        _path_files $@ -P './' -/ -g '*.go'
-      fi
-    }
-
     case $words[1] in
       build)
         _arguments \
@@ -409,7 +423,7 @@ case $state in
           ${build_flags[@]} \
           ${mod_flags[@]} \
           '*:importpaths:__go_packages'
-          ;;
+        ;;
 
       clean)
         _arguments \
@@ -422,7 +436,7 @@ case $state in
           ${build_flags[@]} \
           ${mod_flags[@]} \
           '*:importpaths:__go_packages'
-          ;;
+        ;;
 
       doc)
         _arguments \
@@ -432,7 +446,7 @@ case $state in
           '-short[one-line representation for each symbol]' \
           '-src[show the full source code for the symbol]' \
           '-u[show docs for unexported and exported symbols and methods]'
-          ;;
+        ;;
 
       env)
         local -a goenvvars=(
@@ -495,7 +509,7 @@ case $state in
         )
         local -a exclude_from_w=(GOENV)
 
-        __list_env_vars() {
+        __go_list_env_vars() {
           # the parameter expansion strops off everything after the first [
           _values -s ' ' -w 'environment variable' ${goenvvars[@]%%\[*}
         }
@@ -507,13 +521,17 @@ case $state in
           '-json[print the environment in JSON format]' \
           '-u[unset environment variables]' \
           '-w[change the default setting of environment variables]' \
-          '*:[show environment variable]: __list_env_vars' || _values \
+          '*:[show environment variable]: __go_list_env_vars' || _values \
           -s ' ' -S "=" -w 'environment variable' ${^goenvvars:#GOENV*}": __go_envvarvals"
         ;;
 
-      fix)
+      (fix)
         _arguments \
           '-C[change to directory before running the command]: :_files -/' \
+          '-diff[display diffs instead of rewriting files]' \
+          '-force[force these fixes to run even if the code looks updated]:fix_names:__go_fix_names' \
+          '-go[go language version for files]:version' \
+          '-r[restrict the rewrites to this comma-separated list]:fix_names:__go_fix_names' \
           '*:importpaths:__go_packages'
         ;;
 
@@ -860,12 +878,12 @@ case $state in
                   '*:file:_files -g "*.go(-.)"'
                 ;;
 
-              doc)
+              (doc)
                 _arguments \
                   '-c[respect case when matching symbols]' \
                   '-cmd[treat a command (package main) like a regular package]' \
-                  '-u[show docs for unexported and exported symbols and methods]' \
-                  ;;
+                  '-u[show docs for unexported and exported symbols and methods]'
+                ;;
 
               fix)
                 _arguments \
@@ -1021,13 +1039,6 @@ case $state in
                   '-unusedresult[check for unused result of calls to functions in -unusedfuncs]' \
                   '-unusedstringmethods[list of methods whose results must be used]:string' \
                   '-v[verbose]' \
-                  '*:files:_files'
-                ;;
-
-              yacc)
-                _arguments \
-                  '-o[output]:output' \
-                  '-v[parsetable]:parsetable' \
                   '*:files:_files'
                 ;;
             esac
