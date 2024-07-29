@@ -727,9 +727,8 @@ case $state in
         fi
           ;;
 
-      tool)
-        local -a tools
-        tools=($(go tool))
+      (tool)
+        local -a tools=($(go tool))
 
         _arguments \
           '-n[print command that would be executed]' \
@@ -737,22 +736,29 @@ case $state in
           '*:: :->args'
 
         case $state in
-          args)
+          (args)
             case $words[1] in
-              addr2line)
+              (addr2line)
                 _files
                 ;;
 
-              asm)
+              (asm)
                 _arguments \
-                  '-D[predefined symbol with optional simple value]:value' \
-                  '-I[include directory]:value' \
+                  '*-D[predefined symbol with optional simple value]:value' \
+                  '*-I[include directory]:value' \
                   '-S[print assembly and machine code]' \
+                  '(- *)-V[print assembler version and exit]' \
                   '-debug[dump instructions as they are parsed]' \
                   '-dynlink[support references to Go symbols]' \
-                  '-o[output file]:string' \
+                  '-e[no limit on number of errors reported]' \
+                  '-gensymabis[write symbol ABI information to output file. Do not assemble]' \
+                  '-o[output file]:string:_files' \
+                  '-p[set expected package import to pkgpath]:pkgpath' \
                   '-shared[generate code that can be linked into a shared lib]' \
-                  '-trimpath[remove prefix from recorded source file paths]:string'
+                  '-spectre[enable spectre mitigations in list]:list:(all ret)' \
+                  '-trimpath[remove prefix from recorded source file paths]:string' \
+                  '-v[print debug output]' \
+                  '*:file:_files'
                 ;;
 
               callgraph)
