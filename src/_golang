@@ -377,6 +377,7 @@ case $state in
       '-go[sets the expected Go language version]:goversion'
       '*-replace=[add a replacement of the given module path and version]:replace'
       '*-dropreplace=[drop a replacement of the given module path and version]:dropreplace'
+      '-toolchain=[set the Go toolchain to use]:name'
       '-json[prints the final go.mod/work file in JSON format]'
       '-print[prints the final go.mod/work in its text format]'
     )
@@ -1051,12 +1052,13 @@ case $state in
           '*:importpaths:__go_packages'
         ;;
 
-      work)
+      (work)
         local -a work_commands=(
           'edit:edit go.work from tools or scripts'
           'init:initialize workspace file'
           'sync:sync workspace build list to modules'
           'use:add modules to workspace file'
+          'vendor:make vendored copy of dependencies'
         )
 
         _arguments \
@@ -1064,9 +1066,9 @@ case $state in
           '*:: :->args'
 
         case $state in
-          args)
+          (args)
             case $words[1] in
-              edit)
+              (edit)
                 _arguments \
                   ${edit_flags[@]} \
                   '*-use[add use directive from the go.work set of module directories]' \
@@ -1074,25 +1076,29 @@ case $state in
                   ':go.work:_path_files -g "go.work"'
                 ;;
 
-              init)
+              (init)
                   _arguments \
                     '*:directory: _path_files -/'
                 ;;
 
-              sync)
-                ;;
-
-              use)
+              (use)
                 _arguments \
                   '-r[searches recursively for modules in the argumentdirectories]' \
                   '*:directory: _path_files -/'
+                ;;
+
+              (vendor)
+                _arguments \
+                  '-v[print the names of vendored modules and packages to standard error]' \
+                  '-e[attempt to proceed despite errors encountered while loading packages]' \
+                  '-o[create the vendor directory at the given path instead of vendor]:outdir:_path_files -/'
                 ;;
             esac
             ;;
         esac
         ;;
 
-      help)
+      (help)
         local -a topics=(
           'buildconstraint:build constraints'
           'buildmode:build modes'
@@ -1102,11 +1108,9 @@ case $state in
           'filetype:file types'
           'go.mod:the go.mod file'
           'gopath:GOPATH environment variable'
-          'gopath-get:legacy GOPATH go get'
           'goproxy:module proxy protocol'
           'importpath:import path syntax'
           'modules:modules, module versions, and more'
-          'module-get:module-aware go get'
           'module-auth:module authentication using go.sum'
           'packages:package lists and patterns'
           'private:configuration for downloading non-public code'
