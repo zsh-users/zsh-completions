@@ -761,25 +761,13 @@ case $state in
                   '*:file:_files'
                 ;;
 
-              callgraph)
-                local -a algos=(
-                  'static:static calls only'
-                  'cha:Class Hierarchy Analysis'
-                  'rta:Rapid Type Analysis'
-                  'pta:inclusion-based Points-To Analysis'
-                )
-                local -a graphs=(
-                  'digraph:output in digraph format'
-                  'graphviz:output in AT&T GraphViz (.dot) format'
-                )
-
+              (buildid)
                 _arguments \
-                  '-algo=[call-graph construction algorithm]:algos:{ _describe "algos" algos }' \
-                  "-test[include the package's tests in the analysis]" \
-                  '-format=[format in which each call graph edge is displayed]:graphs:{ _describe "graphs" graphs }'
+                  '-w[rewrite the build ID found in the file]' \
+                  '*:file:_files'
                 ;;
 
-              cgo)
+              (cgo)
                 _arguments \
                   '-debug-define[print relevant #defines]' \
                   '-debug-gcc[print gcc invocations]' \
