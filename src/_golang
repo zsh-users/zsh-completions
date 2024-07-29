@@ -1037,17 +1037,18 @@ case $state in
         esac
         ;;
 
-      version)
+      (version)
         _arguments \
           '-m[print each executable embedded module version information]' \
           '-v[report unrecognized files]' \
           '*:files:_files'
         ;;
 
-      vet)
+      (vet)
         _arguments \
           '-n[print commands that would be executed]' \
           '-x[prints commands as they are executed]' \
+          '-vettool[set a different analysis tool with alternative or additional checks]:prog:_files' \
           ${build_flags[@]} \
           '*:importpaths:__go_packages'
         ;;
