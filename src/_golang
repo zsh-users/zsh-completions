@@ -769,21 +769,25 @@ case $state in
 
               (cgo)
                 _arguments \
+                  '(- *)-V[print cgo version and exit]' \
                   '-debug-define[print relevant #defines]' \
                   '-debug-gcc[print gcc invocations]' \
                   '-dynimport[if non-empty, print dynamic import data]:string' \
                   '-dynlinker[record dynamic linker information]' \
-                  '-dynout[write -dynimport output to file]:file' \
+                  '-dynout[write -dynimport output to file]:file:_files' \
                   '-dynpackage[set Go package for -dynimport output]:string' \
                   '-exportheader[where to write export header]:string' \
-                  '-gccgo[generate files for use with gccgo]' \
-                  '-gccgopkgpath[-fgo-pkgpath option used with gccgo]:string' \
-                  '-gccgoprefix[-fgo-prefix option used with gccgo]:string' \
-                  '-godefs[write Go definitions for C file to stdout]' \
+                  '-importpath[the import path for the Go package]:package' \
                   '-import_runtime_cgo[import runtime/cgo in generated code]' \
                   '-import_syscall[import syscall in generated code]' \
-                  '-importpath[import path of package being built]:path' \
-                  '-objdir[object directory]:dir'
+                  '-gccgo[generate files for use with gccgo]' \
+                  '-gccgoprefix[-fgo-prefix option used with gccgo]:string' \
+                  '-gccgopkgpath[-fgo-pkgpath option used with gccgo]:string:_path_files -/' \
+                  '-gccgo_define_cgoincomplete[define cgo.Incomplete locally rather than importing it from "runtime/cgo" package]' \
+                  '-godefs[write Go definitions for C file to stdout]' \
+                  '-objdir[object directory]:dir:_path_files -/' \
+                  '-srcdir[source directory]:dir:_path_files -/' \
+                  '*:file:_files'
                 ;;
 
               compile)
