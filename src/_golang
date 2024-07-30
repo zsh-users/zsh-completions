@@ -1049,9 +1049,18 @@ case $state in
                   '*:files:_files'
                 ;;
 
-              trace)
+              (trace)
+                local -a trace_types=(
+                  "net:network blocking profile"
+                  "sync:synchronization blocking profile"
+                  "syscall:syscall blocking profile"
+                  "scheduler:latency profile"
+                )
+
                 _arguments \
+                  '-pprof=[profile type]:type:{_describe "type" trace_types}' \
                   '-http=[HTTP service address]:addr' \
+                  '-d=[print debug info such as parsed events]:level:((1\:"high-level" 2\:"low-level"))' \
                   '*:files:_files'
                 ;;
 
