@@ -826,7 +826,7 @@ case $state in
                   '*:file:_files'
                 ;;
 
-              compile)
+              (compile)
                 _arguments \
                   '-%[debug non-static initializers]' \
                   '-+[compiling runtime]' \
@@ -834,35 +834,47 @@ case $state in
                   '-B[disable bounds checking]' \
                   '-D[set relative path for local imports]:path' \
                   '-E[debug symbol export]' \
-                  '-I[add directory to import search path]:directory' \
+                  '*-I[add directory to import search path]:directory' \
                   '-K[debug missing line numbers]' \
                   '-L[use full (long) path in error messages]' \
                   '-M[debug move generation]' \
                   '-N[disable optimizations]' \
                   '-P[debug peephole optimizer]' \
                   '-R[debug register optimizer]' \
-                  '-S[print assembly listing]' \
-                  '-V[print compiler version]' \
+                  '*-S[print assembly listing]' \
+                  '(- *)-V[print compiler version and exit]' \
                   '-W[debug parse tree after type checking]' \
                   '-asmhdr[write assembly header to file]:file' \
+                  '-asan[insert calls to C/C++ address sanitizer]' \
                   '-buildid[record id as the build id in the export metadata]:id' \
+                  '-blockprofile[write block profile for the compilation to file]:file:_files' \
+                  '-c[concurrency during compilation]:concurrency' \
                   '-complete[compiling complete package (no C or assembly)]' \
-                  '-cpuprofile[write cpu profile to file]:file' \
+                  '-cpuprofile[write cpu profile to file]:file:_files' \
                   '-d[print debug information about items in list]:list' \
+                  '-dwarf[generate DWARF symbols]' \
+                  '-dwarflocationlists[add location lists to DWARF in optimized mode]' \
+                  '-gendwarfinl[generate DWARF inline info records]:num' \
                   '-dynlink[support references to Go symbols]' \
                   '-e[no limit on number of errors reported]' \
                   '-f[debug stack frames]' \
                   '-g[debug code generation]' \
+                  '-goversion[specify required go tool version of the runtime]:version' \
                   '-h[halt on error]' \
                   '-i[debug line number stack]' \
+                  '-importcfg[read import configuration from file]:config:_files' \
                   '-installsuffix[set pkg directory suffix]:suffix' \
                   '-j[debug runtime-initialized variables]' \
                   '-l[disable inlining]' \
+                  '-lang[set language version to compile]:version' \
                   '-largemodel[generate code that assumes a large memory model]' \
+                  '-linjobj[write linker-specific object to file and compiler-specific object to usual output file]:file:_files' \
                   '-live[debug liveness analysis]' \
                   '-m[print optimization decisions]' \
                   '-memprofile[write memory profile to file]:file' \
                   '-memprofilerate[set runtime.MemProfileRate to rate]:rate' \
+                  '-msan[insert calls to C/C++ memory sanitizer]' \
+                  '-mutexprofile[write mutex profile for the compilation to file]:file:_files' \
                   '-nolocalimports[reject local (relative) imports]' \
                   '-o[write output to file]:file' \
                   '-p[set expected package import path]:path' \
@@ -871,6 +883,8 @@ case $state in
                   '-race[enable race detector]' \
                   '-s[warn about composite literals that can be simplified]' \
                   '-shared[generate code that can be linked into a shared library]' \
+                  '-spectre[enable spectre mitigations in list]:type:(all index ret)' \
+                  '-traceprofile[write an execution trace to file]:file:_files' \
                   '-trimpath[remove prefix from recorded source file paths]:prefix' \
                   '-u[reject unsafe code]' \
                   '-v[increase debug verbosity]' \
