@@ -970,14 +970,25 @@ case $state in
                   '*:files:_files'
                 ;;
 
-              objdump)
+              (objdump)
                 _arguments \
                   '-s[only dump symbols matching this regexp]:regexp' \
                   '*:files:_files'
                 ;;
 
-              pack)
-                _arguments '1:ops:(c p r t x)' '::verbose:(v)' ':files:_files'
+              (pack)
+                local -a pack_ops=(
+                  'c:append files to a new archive'
+                  'p:print files from the archive'
+                  'r:append files to the archive'
+                  't:list files from the archive'
+                  'x:extract files from the archive'
+                )
+
+                _arguments \
+                  '1:ops:{_describe "ops" pack_ops}' \
+                  '::verbose:(v)' \
+                  ':files:_files'
                 ;;
 
               pprof)
