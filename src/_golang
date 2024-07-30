@@ -1055,34 +1055,48 @@ case $state in
                   '*:files:_files'
                 ;;
 
-              vet)
+              (vet)
                 _arguments \
-                  '-all[check everything]' \
+                  '(- *)-V[print version and exit]'\
+                  '-appends[enable appends analysis]' \
                   '-asmdecl[check assembly against Go declarations]' \
                   '-assign[check for useless assignments]' \
                   '-atomic[check for common mistaken usages of the sync/atomic]' \
-                  '-bool[check for mistakes involving boolean operators]' \
-                  '-buildtags[check that +build tags are valid]' \
+                  '-bools[enable bools analysis]' \
+                  '-buildtag[check that +build tags are valid]' \
+                  '-cgocall[enable cgocall analysis]' \
                   '-composites[check that composite literals used field-keyed elements]' \
                   '-compositewhitelist[use composite white list]' \
                   '-copylocks[check that locks are not passed by value]' \
+                  '-defers[enable defers analysis]' \
+                  '-directive[enable directive analysis]' \
+                  '-errorsas[enable errorsas analysis]' \
+                  '-flags[print analysis flags in JSON]' \
+                  '-framepointer[enable framepointer analysis]' \
+                  '-httpresponse[enable httpresponse analysis]' \
+                  '-ifaceassert[enable ifaceassert analysis]' \
+                  '-json[emit JSON output]' \
+                  '-loopclosure[enable loopclosure analysis]' \
+                  '-lostcancel[enable lostcancel analysis]' \
                   '-methods[check that canonically named methods are canonically defined]' \
                   '-nilfunc[check for comparisons between functions and nil]' \
                   '-printf[check printf-like invocations]' \
                   '-printfuncs[print function names to check]:string' \
                   '-rangeloops[check that range loop variables are used correctly]' \
-                  '-shadow[check for shadowed variables]' \
-                  '-shadowstrict[whether to be strict about shadowing]' \
-                  '-shift[check for useless shifts]' \
+                  '-shift[enable shift analysis]' \
+                  '-sigchanyzer[enable sigchanyzer analysis]' \
+                  '-slog[enable slog analysis]' \
+                  '-stdmethods[enable stdmethods analysis]' \
+                  '-stringintconv[enable stringintconv analysis]' \
                   '-structtags[check that struct field tags have canonical format]' \
-                  '-tags[list of build tags to apply when parsing]:list' \
-                  '-test[for testing only: sets -all and -shadow]' \
+                  '-tests[enable tests analysis]' \
+                  '-timeformat[enable time format analysis]' \
+                  '-unmarshal[enable unmarshal analysis]' \
                   '-unreachable[check for unreachable code]' \
                   '-unsafeptr[check for misuse of unsafe.Pointer]' \
                   '-unusedfuncs[list of functions whose results must be used]:string' \
                   '-unusedresult[check for unused result of calls to functions in -unusedfuncs]' \
                   '-unusedstringmethods[list of methods whose results must be used]:string' \
-                  '-v[verbose]' \
                   '*:files:_files'
                 ;;
             esac
