@@ -560,11 +560,12 @@ case $state in
           '*:importpaths:__go_packages'
         ;;
 
-      fmt)
+      (fmt)
         _arguments \
           '-C[change to directory before running the command]: :_files -/' \
           '-n[prints commands that would be executed]' \
           '-x[prints commands as they are executed]' \
+          '-mod=[sets which download mode to use]:mode:(readonly vendor)' \
           '*:importpaths:__go_packages'
         ;;
 
