@@ -917,11 +917,12 @@ case $state in
                   '-u[show docs for unexported and exported symbols and methods]'
                 ;;
 
-              fix)
+              (fix)
                 _arguments \
+                  '(* -)-help[show help message]' \
                   '-diff[display diffs instead of rewriting files]' \
-                  '-force[force fixes to run even if the code looks updated]:string' \
-                  '-r[restrict the rewrites]:string' \
+                  '-force[force fixes to run even if the code looks updated]:string:__go_fix_names' \
+                  '-r[restrict the rewrites]:string:__go_fix_names' \
                   '*:files:_files'
                 ;;
 
