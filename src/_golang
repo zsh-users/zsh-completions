@@ -43,6 +43,18 @@
 #  * Go authors
 #
 # ------------------------------------------------------------------------------
+# Notes
+# -----
+#
+#   * To disable listing packages from GOROOT (i.e. Go stdlib) in completions use:
+#
+#       zstyle ':completion:*:go:*' no-goroot true
+#
+#   * To disable listing packages from GOPATH in completions use:
+#
+#       zstyle ':completion:*:go:*' no-gopath true
+#
+# ------------------------------------------------------------------------------
 
 __go_buildmodes() {
   local -a buildmodes=(
@@ -384,11 +396,16 @@ case $state in
     __go_packages() {
       local gopaths
       declare -a gopaths
-      gopaths=("${(s/:/)$(go env GOPATH)}")
-      gopaths+=("$(go env GOROOT)")
+      if ! zstyle -t ":completion:${curcontext}:" no-gopath; then
+        gopaths=("${(s/:/)$(go env GOPATH)}")
+      fi
+      if ! zstyle -t ":completion:${curcontext}:" no-goroot; then
+        gopaths+=("$(go env GOROOT)")
+      fi
       for p in $gopaths; do
         _path_files $@ -W "$p/src" -/
       done
+
       # no special treatment for
       # - relative paths starting with ..
       # - absolute path starting with /
