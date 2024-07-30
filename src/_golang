@@ -428,7 +428,7 @@ case $state in
     )
 
     case $words[1] in
-      build)
+      (build)
         _arguments \
           '-o[force build to write to named output file or directory]:file or directory:_files' \
           ${build_flags[@]} \
@@ -436,7 +436,7 @@ case $state in
           '*:importpaths:__go_packages'
         ;;
 
-      clean)
+      (clean)
         _arguments \
           '-i[remove corresponding installed archive or binary]' \
           '-r[apply clean recursively on all dependencies]' \
@@ -460,12 +460,15 @@ case $state in
           '*:importpaths:__go_packages'
         ;;
 
-      env)
+      (env)
         local -a goenvvars=(
-          "GOARCH[architecture, or processor, for which to compile code.]:architecture"
+          # General-purpose environment variables
+          "GO111MODULE[controls whether the go command runs in module-aware mode]:value"
           "GCCGO[gccgo command to run.]:gccgo command"
+          "GOARCH[architecture, or processor, for which to compile code.]:architecture"
           "GOBIN[directory where 'go install' installs to]:go install target dir"
           "GOCACHE[directory to store cached information]:go build cache dir"
+          "GOMODCACHE[module cache directory]:path"
           "GODEBUG[enable runtime debug facilities]:runtime debug settings"
           "GOENV[location of the go environment configuration file]:configuration file"
           "GOFLAGS[default go command line flags]:space separated default command line flags"
@@ -473,13 +476,16 @@ case $state in
           "GOOS[target operating system]:operating system"
           "GOPATH[path to resolve import statements]:import path"
           "GOPROXY[URL of go module proxy]:proxy url"
-          "GOROOT[root of the go tree]:go root directory"
-          "GOTMPDIR[directory for temporary sources, packages, and binaries]:tmp directory"
           "GOPRIVATE[modules that should always be fetched directly]:comma separated glob patterns"
           "GONOPROXY[modules that should always be fetched directly]:comma separated glob patterns"
           "GONOSUMDB[modules that should not be compared against the checksum db]:comma separated glob patterns"
-          "GOMODCACHE[module cache directory]:path"
+          "GOROOT[root of the go tree]:go root directory"
           "GOSUMDB[checksum database]:name(+publickey( url))"
+          "GOTOOLCHAIN[control which Go tool chain is used]:toolchain"
+          "GOTMPDIR[directory for temporary sources, packages, and binaries]:tmp directory"
+          "GOVCS[lists version control commands that may be used with matching servers]:commands"
+          "GOWORK[use the given go.work file as a workspace file]:workspace_file"
+          # Environment variables for use with cgo
           "AR[command for manipulating library archives (for gccgo)]:archive manipulation program"
           "CC[command to compile C code]:C compiler"
           "CGO_ENABLED[enable/disable cgo]:boolean"
@@ -501,6 +507,7 @@ case $state in
           "CXX[command to compile C++]:C++ compiler"
           "FC[command to compile Fortran]:Fortran compiler"
           "PKG_CONFIG[Path to pkg-config tool.]:path to pkg-config"
+          # Architecture-specific environment variables
           "GOARM[arm architecture]:arm architecture"
           "GO386[x86 instruction set]:x86 instruction set"
           "GOAMD64[amd64 instruction set]:amd64 instruction set"
@@ -508,16 +515,22 @@ case $state in
           "GOMIPS64[mips64 instruction set]:mips64 instruction set"
           "GOPPC64[powerpc64 instruction set]:powerpc64 instruction set"
           "GOWASM[web assembly features]:comma separated web assembly features"
+          # Environment variable for use with code coverage
+          "GOCOVERDIR[directory into which to write code coverage data files]"
+          # Special-purpose environment variables
           "GCCGOTOOLDIR[directory of gccgo tools]:gccgo tool directory"
+          "GOEXPERIMENT[comma-separated list of toolchain experiments to enable or disable]"
           "GOROOT_FINAL[root of the go tree]:go root"
           "GO_EXTLINK_ENABLED[enable external linking mode]:boolean"
           "GIT_ALLOW_PROTOCOL[schemes allowed to fetch]:colon separated git schemes"
+          # Additional information
           "GOEXE[suffix for executables]:executable suffix"
           "GOGCCFLAGS[arguments supplied to CC]:space separated arguments to CC"
           "GOHOSTARCH[architecture of the toolchain binaries]:host os architecture"
           "GOHOSTOS[operating system of the toolchain binaries]:host os"
           "GOMOD[absolute path the the main go.mod]:abs path to main go.mod"
           "GOTOOLDIR[installation directory of go tools]:tool installation directory"
+          "GOVERSION[The version of the installed Go tree]"
         )
         local -a exclude_from_w=(GOENV)
 
