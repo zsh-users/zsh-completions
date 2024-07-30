@@ -563,19 +563,20 @@ case $state in
       (fmt)
         _arguments \
           '-C[change to directory before running the command]: :_files -/' \
-          '-n[prints commands that would be executed]' \
-          '-x[prints commands as they are executed]' \
-          '-mod=[sets which download mode to use]:mode:(readonly vendor)' \
+          '-n[print commands that would be executed]' \
+          '-x[print commands as they are executed]' \
+          '-mod=[set which download mode to use]:mode:(readonly vendor)' \
           '*:importpaths:__go_packages'
         ;;
 
-      generate)
+      (generate)
         _arguments \
           '-C[change to directory before running the command]: :_files -/' \
           '-run=[specifies a regular expression to select directives]:regex' \
           '-x[print the commands]' \
           '-n[print the commands but do not run them]' \
           '-v[print the names of packages as they are compiled]' \
+          ${build_flags[@]} \
           "*:args:{ _alternative ':importpaths:__go_packages' _files }"
         ;;
 
