@@ -449,14 +449,15 @@ case $state in
           '*:importpaths:__go_packages'
         ;;
 
-      doc)
+      (doc)
         _arguments \
           '-all[show all the documentation for the package]' \
           '-c[respect case when matching symbols]' \
           '-cmd[treat a command (package main) like a regular package]' \
           '-short[one-line representation for each symbol]' \
           '-src[show the full source code for the symbol]' \
-          '-u[show docs for unexported and exported symbols and methods]'
+          '-u[show docs for unexported and exported symbols and methods]' \
+          '*:importpaths:__go_packages'
         ;;
 
       env)
