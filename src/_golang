@@ -580,7 +580,7 @@ case $state in
           "*:args:{ _alternative ':importpaths:__go_packages' _files }"
         ;;
 
-      get)
+      (get)
         # no mod_flags for get
         _arguments \
           '-d[instructs get to stop after downloading the packages]' \
@@ -593,18 +593,21 @@ case $state in
           '*:importpaths:__go_packages'
         ;;
 
-      install)
+      (install)
         _arguments ${build_flags[@]} \
           '*:importpaths:__go_packages'
         ;;
 
-      list)
+      (list)
         local -a list_args=(
           '-e[changes the handling of erroneous packages]'
           '-f[specifies an alternate format for the list]:format'
           '-json[causes package data to be printed in JSON format]'
           '-compiled[set CompiledGoFiles to the Go source files presented to the compiler]'
           '-deps[iterate over named packages and their dependencies]'
+          '-export[set the Export for the given package]:package'
+          '-find[identify the named packages but not resolve their dependencies]:package'
+          '-test[report not only the named packages but also their test binaries]'
           '-m[list modules instead of packages]'
           ${build_flags[@]}
           ${mod_flags[@]}
@@ -613,8 +616,8 @@ case $state in
         # -u and -versions are only available if -m is present on the commandline
         if (($words[(I)-m])); then
           list_args+=(
-          '-u[adds information about available upgrades]'
-          '-versions[list all known versions of modules]'
+            '-u[adds information about available upgrades]'
+            '-versions[list all known versions of modules]'
           )
         fi
         _arguments ${list_args[@]}
