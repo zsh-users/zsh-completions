@@ -687,7 +687,7 @@ case $state in
           '*:importpaths:__go_packages'
         ;;
 
-      test)
+      (test)
         if [[ $words[$CURRENT] = -test.* ]]; then
           _arguments \
             '-test.bench[run only benchmarks matching regexp]:regexp' \
@@ -746,11 +746,13 @@ case $state in
             '-memprofile[write a memory profile to file]:mem' \
             '-memprofilerate[enable more precise memory profiles]:n' \
             '-mutexprofile[write a mutex contention profile to the specified file]:file:_files' \
-            '-outputdir[place output files from profiling in output dir]:dir' \
+            '-mutexprofilefraction[sample 1 in n stack traces of goroutines holding a contended mutex]:n' \
+            '-outputdir[place output files from profiling in output dir]:dir:_path_files -/' \
             '-parallel[allow parallel execution of test functions]:n' \
             '-run[run tests and examples matching the regular expression]:regexp' \
             '-short[tell long-running tests to shorten their run time]' \
             '-shuffle[randomize the execution order of tests and benchmarks]:type:(off on)' \
+            '-skip[run only tests that do not match the regular expression]:pattern' \
             '-test.-[specify options for test running]:test running options:' \
             '-timeout[timeout long running tests]:t' \
             '-trace[write an execution trace to the specified file]:trace' \
@@ -761,7 +763,7 @@ case $state in
             '-o[compile test binary to named file]:file:_files' \
             '*:importpaths:__go_packages'
         fi
-          ;;
+        ;;
 
       (tool)
         local -a tools=($(go tool))
