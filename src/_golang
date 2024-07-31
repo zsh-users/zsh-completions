@@ -634,10 +634,10 @@ case $state in
               (download)
                 _arguments \
                   '-json[print a sequence of JSON objects to standard output]' \
-                  '-x[print the commands download executes]'
+                  '-x[print the commands download executes]' \
+                  '-reuse[file containing the JSON output of a previous "go mod download -json" invocation]:json:_files -g "*.json"'
                 ;;
-
-              edit)
+              (edit)
                 _arguments \
                   ${edit_flags[@]} \
                   "-module[change the module's path]" \
@@ -645,31 +645,31 @@ case $state in
                   '*-dropexclude=[drop an exclusion for the given module path and version]:dropexclude' \
                   ':go.mod:_path_files -g "go.mod"'
                 ;;
-              graph)
+              (graph)
                 _arguments \
-                  '-go[report the module graph as loaded by the given Go version]:goversion'
+                  '-go[report the module graph as loaded by the given Go version]:goversion' \
+                  '-x[print the commands graph executes]'
                 ;;
-              init)
+              (init)
                 # Use go packages as module name suggestion
                 _arguments \
                   '*:module:__go_packages'
                 ;;
-              tidy)
+              (tidy)
                 _arguments \
                   '-v[print information about removed modules to standard error]' \
                   '-e[attempt to proceed despite errors encountered while loading packages]' \
+                  '-x[print the commands download executes]' \
                   '-go[update the go directive in the go.mod file to the given version]:goversion' \
-                  '-compat[preserves additional checksums needed for the indicated Go version]'
+                  '-compat[preserves additional checksums needed for the indicated Go version]:version'
                 ;;
-              vendor)
+              (vendor)
                 _arguments \
                   '-v[print the names of vendored modules and packages to standard error]' \
                   '-e[attempt to proceed despite errors encountered while loading packages]' \
                   '-o[create the vendor directory at the given path instead of "vendor"]:directory:_path_files -/'
                 ;;
-              verify)
-                ;;
-              why)
+              (why)
                 _arguments \
                   '-m[treats the arguments as a list of modules]' \
                   '-vendor[exclude tests of dependencies]' \
