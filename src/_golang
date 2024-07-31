@@ -207,114 +207,84 @@ __go_envvarvals() {
   # decide which variable to go to.  if $1 is not set, then __go_envvarvals is
   # called from the `go env` completion and the current word (with all after
   # the first '=' removed) is the current variable.
-  local variable
-  variable=${1-${words[$CURRENT]%%=*}}
-  case $variable in
+  local env_variable=${1-${words[$CURRENT]%%=*}}
+  case $env_variable in
+    (GO111MODULE)
+      _values "module mode" off on auto
+      ;;
     # commands
-    AR)
-      ;&
-    CC)
-      ;&
-    CXX)
-      ;&
-    FC)
-      ;&
-    GCCGO)
+    (AR|CC|CXX|FC|GCCGO)
       _command_names -e
       ;;
-    # directories (using fallthrough)
-    GOBIN)
-      ;&
-    GOCACHE)
-      ;&
-    GOTMPDIR)
-      ;&
-    GOTOOLDIR)
-      ;&
-    GOROOT)
-      ;&
-    GOROOT_FINAL)
-      ;&
-    GCCGOTOOLDIR)
-      ;&
-    GOPATH)
-      ;&
-    GOMODCACHE)
+    # directories
+    (GOBIN|GOCACHE|GOTMPDIR|GOTOOLDIR|GOROOT|GOROOT_FINAL|GCCGOTOOLDIR|GOPATH|GOMODCACHE|GOCOVERDIR)
       _files -/
       ;;
-    # regular files (using fallthrough)
-    GOMOD)
-      ;&
-    PKG_CONFIG)
-      ;&
-    GOENV)
+    # regular files
+    (GOMOD|PKG_CONFIG|GOENV)
       _files
       ;;
     # special
-    GOHOSTOS)
-      ;&
-    GOOS)
+    (GOHOSTOS|GOOS)
       # from https://golang.org/doc/install/source#environment
-      _values 'operating system' aix android darwin dragonfly freebsd illumos ios js linux netbsd openbsd plan9 solaris windows wasip1
+      local -a supported_os=(
+        aix android darwin dragonfly freebsd illumos ios js linux netbsd openbsd plan9 solaris wasip1 windows
+      )
+      _values 'operating system' $supported_os
       ;;
-    GOHOSTARCH)
-      ;&
-    GOARCH)
-      _values 'architecture' amd64 386 arm64 arm ppc64 ppc64le mips mipsle mips64 mips64le riscv64 s390x wasm
+    (GOHOSTARCH|GOARCH)
+      local -a supported_arch=(
+        amd64 386 arm arm64 ppc64le ppc64 mips64le mips64 mipsle mips s390x riscv64 wasm
+      )
+      _values 'architecture' $supported_arch
       ;;
-    CGO_ENABLED)
+    (CGO_ENABLED)
       _values 'enable/disable cgo' 0 1
       ;;
-    GO_EXTLINK_ENABLED)
+    (GO_EXTLINK_ENABLED)
       _values 'enable/disable external linkage' 0 1
       ;;
-    GOARM)
+    (GOARM)
       _values 'target arm architecture' 5 6 7
       ;;
-    GO386)
-      _values 'x86 floating point instruction set' 387 sse2
+    (GO386)
+      _values 'x86 floating point instruction set' sse2 softfloat
       ;;
-    GOAMD64)
+    (GOAMD64)
       _values 'amd64 instruction set' v1 v2 v3 v4
       ;;
-    GOMIPS*)
+    (GOMIPS*)
       _values 'mips floating point instructions' hardfloat softfloat
       ;;
-    GOPPC64)
+    (GOPPC64)
       _values 'powerpc64 instruction set' power8 power9 power10
       ;;
-    GOWASM)
+    (GOWASM)
       _values 'web assembly features' -s ',' satconv signext
       ;;
-    GOPROXY)
+    (GOPROXY)
       _urls
       ;;
-    GOEXE)
+    (GOEXE)
       _message "suffix for executables"
       ;;
-    CGO_*FLAGS_*ALLOW)
+    (CGO_*FLAGS_*ALLOW)
       _message "regexp"
       ;;
-    CGO_*FLAGS)
+    (CGO_*FLAGS)
       _dispatch $service -value-,${variable#CGO_},-default-
       ;;
-    GODEBUG)
+    (GODEBUG)
       __go_runtimedebug
       ;;
-    GOFLAGS)
+    (GOFLAGS)
       # not implemented, sorry
       ;;
-    GOINSECURE)
-      ;&
-    GOPRIVATE)
-      ;&
-    GONOPROXY)
-      ;&
-    GONOSUMDB)
+    (GOINSECURE|GOPRIVATE|GONOPROXY|GONOSUMDB)
       # comma separated glob patterns (in the syntax of Go's path.Match)
       _message "comma separated glob pattern"
       ;;
-    GOSUMDB)
+    (GOSUMDB)
       _message "e.g. sum.golang.org+<publickey> https://sum.golang.org"
       ;;
   esac
@@ -355,14 +325,13 @@ __go_fix_names() {
 }
 
 if [[ "$service" = -value-* ]]; then
-  variable=${${service%,-default-}#-value-,}
+  local env_variable=${${service%,-default-}#-value-,}
   # some special variables are not read from the environment
-  local -a blacklist
-  blacklist=('GOEXE' 'GOGCCFLAGS' 'GOHOSTARCH' 'GOHOSTOS' 'GOMOD' 'GOTOOLDIR')
-  if (($blacklist[(I)$variable])); then
+  local -a blacklist=('GOEXE' 'GOGCCFLAGS' 'GOHOSTARCH' 'GOHOSTOS' 'GOMOD' 'GOTOOLDIR')
+  if (($blacklist[(I)$env_variable])); then
     return
   fi
-  __go_envvarvals $variable
+  __go_envvarvals $env_variable
   return
 fi
 
