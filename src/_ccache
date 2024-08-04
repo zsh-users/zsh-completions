@@ -325,6 +325,8 @@ elif [[ $words[2] == -* ]]; then
     '--trim-dir[remove old files from directory _PATH_]: :_files -/'  \
     '--trim-max-size[specify the maximum size for --trim-dir]:size' \
     '--trim-method[specify the method for --trim-dir]: :(atime mtime)' \
+    '--trim-recompress[recompress to level LEVEL]:level' \
+    '--trim-recompress-threads[use up to THREADS threads when recompressing]:threads' \
     '--checksum-file[print the checksum of the file at PATH]: :_files' \
     '--extract-result[extract file data stored in result file at PATH to the current working directory]' \
     '(-k --get-config)'{-k,--get-config}'[print the value of configuration key]:key' \

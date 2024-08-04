@@ -39,7 +39,7 @@
 # ------------------------------------------------------------------------------
 
 local input='(-a --append -f --follow -i --input)'
-local operation='(-c --clear -d --delete -k --keep -x --exchange)' 
+local operation='(-c --clear -d --delete -k --keep -x --exchange)'
 local selection='(-p --primary -s --secondary -b --clipboard)'
 
 _arguments -s \
@@ -58,6 +58,14 @@ _arguments -s \
   {-t,--selectionTimeout}'[specify the timeout in milliseconds within which the selection must be retrieved]:number' \
   {-l,--logfile}'[specify the file to log errors to when detached (default $HOME/.xsel.log)]:log file:_files' \
   {-n,--nodetach}'[do not detach from the controlling terminal]' \
-  {-h,--help}'[display usage information and exit]' \
+  '(- *)'{-h,--help}'[display usage information and exit]' \
   {-v,--verbose}'[print informative messages; additional instances of -v raise the debugging level]' \
-  '--version[output version information and exit]'
+  '(- *)--version[output version information and exit]'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
