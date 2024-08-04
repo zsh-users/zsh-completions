@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for rubocop 1.55 (https://github.com/rubocop/rubocop)
+#  Completion script for rubocop 1.65.0 (https://github.com/rubocop/rubocop)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -93,6 +93,7 @@ _arguments \
   '--display-only-safe-correctable[Only output safe-correctable offense messages with combined with --display-only-correctable]' \
   '(-a --autocorrect)'{-a,--autocorrect}"[Auto-correct offenses(only when it's safe)]" \
   '(-A --autocorrect-all)'{-A,--autocorrect-all}'[Autocorrect offenses(safe and unsafe)]' \
+  '--disable-uncorrectable[used with --autocorrect to annotate any offenses that do not support autocorrect with comments]' \
   '--auto-gen-config[Generate a configuration file acting as a TODO list]' \
   '--regenerate-todo[Regenerate the TODO configuration file using the last configuration]' \
   '(--no-exclude-limit)--exclude-limit[Set the limit for how many files to explicitly exclude]:count' \
