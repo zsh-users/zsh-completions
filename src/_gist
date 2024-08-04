@@ -61,21 +61,21 @@ _arguments -C \
   '(-l --list)'{-l,--list}'[List all gists for user ]::user' \
   '(-h --help)'{-h,--help}'[print options help]' \
   '(-v --version)'{-v,--version}'[print version]' \
-  '(-r --read)'{-r,--read}'[Read a gist and print out the contents]:user gists:user_gists' \
+  '(-r --read)'{-r,--read}'[Read a gist and print out the contents]:user gists:_gist_read_gists' \
   '*: :_files' && ret=0
 
-_user_gists_cache_policy() {
+_gist_cache_policy() {
   # rebuild if cache is more than a day old
   local -a oldp
   oldp=( "$1"(mh+1) )
   (( $#oldp ))
 }
 
-user_gists() {
+_gist_read_gists() {
   local update_policy ret=1
   zstyle -s ":completion:${curcontext}:" cache-policy update_policy
   if [[ -z "$update_policy" ]]; then
-    zstyle ":completion:${curcontext}:" cache-policy _user_gists_cache_policy
+    zstyle ":completion:${curcontext}:" cache-policy _gist_cache_policy
   fi
 
   # stores the gists of the logged in user in the format ID[Description]

@@ -39,30 +39,37 @@
 # ------------------------------------------------------------------------------
 
 _dad() {
-    local -a commands
+  typeset -A opt_args
+  local context state line
+  local curcontext="$curcontext"
 
-    commands=(
-        "start:Start aria2c daemon"
-        "stop:Stop aria2c daemon"
-    )
+  local -a commands=(
+    "start:Start aria2c daemon"
+    "stop:Stop aria2c daemon"
+  )
 
-    _arguments -C \
-      '(- 1 *)'-h"[Show help and exit]" \
-      "-d[Set download dir]:download_dir:->val" \
-      "-s[Set secret token]:secret_token:->val" \
-      "-u[Set aria2c username]:username:->val" \
-      "-p[Set aria2c password]:password:->val" \
-      '1:cmd:->cmds' \
-      '*: : :->args' \
+  _arguments -C \
+    '(- 1 *)'-h"[Show help and exit]" \
+    "-d[Set download dir]:download_dir:->val" \
+    "-s[Set secret token]:secret_token:->val" \
+    "-u[Set aria2c username]:username:->val" \
+    "-p[Set aria2c password]:password:->val" \
+    '1:cmd:->cmds' \
+    '*: : :->args'
 
-    case "$state" in
-      (cmds)
-        _describe -t commands 'commands' commands
-      ;;
-      (*)
-      ;;
-    esac
+  case "$state" in
+  (cmds)
+    _describe -t commands 'commands' commands
+    ;;
+  esac
 }
 
 _dad
 
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et

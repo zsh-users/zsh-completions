@@ -53,7 +53,7 @@ _arguments \
   {-V,--version}'[print version information]' \
   {-W,--wiki-link-count=}'[specify number of wiki links to show, when applicable]:number' \
   {-x,--external-sources}'[allow outside sources]' \
-  '--help[show this usage summary and exit]' \
+  '(- *)--help[show this usage summary and exit]' \
   '*: :_files'
 
 # Local Variables:

@@ -35,30 +35,38 @@
 # -------
 #
 #  * loranger (https://github.com/loranger)
-#  * Yohan Tamb√® (https://github.com/Cronos87)
+#  * Yohan Tambè´≤ (https://github.com/Cronos87)
 #
 # ------------------------------------------------------------------------------
 
-_find_console () {
-     echo "php $(find . -maxdepth 2 -mindepth 1 -name 'console' -type f | head -n 1)"
+_console_find_console() {
+  echo "php $(find . -maxdepth 2 -mindepth 1 -name 'console' -type f | head -n 1)"
 }
 
-_console_get_command_list () {
-    IFS=" "
-    `_find_console` --no-ansi | \
-        sed "1,/Available commands/d" | \
-        awk '/  [a-z]+/ { print $0 }' | \
-        sed -E 's/^[ ]+//g' | \
-        sed -E 's/[:]+/\\:/g' | \
-        sed -E 's/[ ]{2,}/\:/g'
+_console_get_command_list() {
+  IFS=" "
+  `_console_find_console` --no-ansi | \
+    sed "1,/Available commands/d" | \
+    awk '/  [a-z]+/ { print $0 }' | \
+    sed -E 's/^[ ]+//g' | \
+    sed -E 's/[:]+/\\:/g' | \
+    sed -E 's/[ ]{2,}/\:/g'
 }
 
-_console () {
-    local -a commands
-    IFS=$'\n'
-    commands=(`_console_get_command_list`)
-    _describe 'commands' commands
+_console() {
+  local -a commands
+  IFS=$'\n'
+  commands=(`_console_get_command_list`)
+  _describe 'commands' commands
 }
 
 compdef _console php console
 compdef _console console
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et

@@ -36,9 +36,7 @@
 #
 # ------------------------------------------------------------------------------
 
-
-local -a _1st_arguments
-_1st_arguments=(
+local -a redis_commands=(
   'append:append a value to a key'
   'auth:authenticate to the server'
   'bgrewriteeaof:asynchronously rewrite the append-only file'
@@ -163,17 +161,11 @@ _1st_arguments=(
   'zunionstore:add multiple sorted sets and store the resulting sorted set in a new key'
 )
 
-local expl
-
 _arguments \
   '(-v --version)'{-v,--version}'[show version]' \
   '(-h --help)'{-h,--help}'[show help]' \
-  '*:: :->subcmds' && return 0
-
-if (( CURRENT == 1 )); then
-  _describe -t commands "redis-cli subcommand" _1st_arguments
-  return
-fi
+  '1::command:{ _describe -t commands "redis-cli subcommand" redis_commands }' \
+  && return 0
 
 # Local Variables:
 # mode: Shell-Script

@@ -49,12 +49,9 @@ _cppcheck_files() {
 }
 
 _cppcheck() {
-  local curcontext="$curcontext" state line
-  typeset -A opt_args
-
   local check_ids='(all warning style performance portability information unusedFunction missingInclude)'
 
-  _arguments -C \
+  _arguments \
     "--addon=[Execute addon]" \
     "--addon-python=[Specify the python interpreter]: :_files" \
     "--cppcheck-build-dir=[Analysis output directory]:directory:_files -/" \

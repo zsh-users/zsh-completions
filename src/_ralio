@@ -28,8 +28,8 @@
 # Description
 # -----------
 #
-#  Completion script for ralio (https://github.com/oesmith/ralio), a
-#  Rally client
+#  Completion script for ralio (https://github.com/oesmith/ralio)
+#  a Rally client
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -41,98 +41,89 @@
 
 _ralio ()
 {
-	local curcontext="$curcontext" state line
-	typeset -A opt_args
+  local curcontext="$curcontext" state line
+  typeset -A opt_args
 
-	_arguments -C \
-		':command:->command' \
-		'*::options:->options' \
+  _arguments -C \
+    ':command:->command' \
+    '*::options:->options'
 
-	case $state in
-		(command)
+  case $state in
+  (command)
+    local -a subcommands=(
+      "backlog:Show the product backlog"
+      "sprint:Show the current team iteration"
+      "show:Show related information for an individual story, defect or task"
+      "open:Open a story, defect or task in a web browser"
+      "start:Set a task, defect or story state to in-progress and assign it to you"
+      "finish:Set a task, defect or story state to completed and assign it to you"
+      "abandon:Set a task, defect or story state to defined and clear the owner"
+      "block:Set a task, defect or story state to blocked"
+      "unblock:Set a task, defect or story state to unblocked"
+      "current:Show your current tasks and stories"
+      "point:Set the points for a story or defect"
+      "task:Allow you to create and delete story tasks."
+      "configure:Set your Rally configurations."
+    )
+    _describe -t commands 'ralio commands' subcommands
 
-			local -a subcommands
-			subcommands=(
-        "backlog:Show the product backlog"
-        "sprint:Show the current team iteration"
-        "show:Show related information for an individual story, defect or task"
-        "open:Open a story, defect or task in a web browser"
-        "start:Set a task, defect or story state to in-progress and assign it to you"
-        "finish:Set a task, defect or story state to completed and assign it to you"
-        "abandon:Set a task, defect or story state to defined and clear the owner"
-        "block:Set a task, defect or story state to blocked"
-        "unblock:Set a task, defect or story state to unblocked"
-        "current:Show your current tasks and stories"
-        "point:Set the points for a story or defect"
-        "task:Allow you to create and delete story tasks."
-        "configure:Set your Rally configurations."
-			)
-			_describe -t commands 'ralio commands' subcommands
-
-      _arguments -C \
-        {-V,--version}"[display version information]" \
-        {-h,--help}"[output usage information]"
-		;;
-
-		(options)
-			case $line[1] in
-
-
-        (sprint)
-          _arguments \
-            "-t[Show tasks]" \
-            "-p[Project name]" \
-            "-f[Filter results]"
+    _arguments \
+      {-V,--version}"[display version information]" \
+      {-h,--help}"[output usage information]"
+    ;;
+  (options)
+    case $line[1] in
+      (sprint)
+        _arguments \
+          "-t[Show tasks]" \
+          "-p[Project name]" \
+          "-f[Filter results]"
         ;;
 
-				(start | finish)
-					_arguments \
-            '--pair[Pair programming partner]' \
-            "--resolution[Resolution status]" \
-            "--rootcause[Root cause]"
-				;;
+      (start | finish)
+        _arguments \
+          '--pair[Pair programming partner]' \
+          "--resolution[Resolution status]" \
+          "--rootcause[Root cause]"
+        ;;
 
-        (task)
-          __ralio-task
-		    ;;
+      (task)
+        __ralio-task
+        ;;
 
-			esac
-		;;
-	esac
+    esac
+    ;;
+  esac
 }
 
 __ralio-task ()
 {
-	local curcontext="$curcontext" state line
-	typeset -A opt_args
+  local curcontext="$curcontext" state line
+  typeset -A opt_args
 
-	_arguments -C \
-		':command:->command' \
-		'*::options:->options'
+  _arguments \
+    ':command:->command' \
+    '*::options:->options'
 
-	case $state in
-		(command)
+  case $state in
+    (command)
+      local -a subcommands=(
+        "create:Create a new task"
+        "delete:Delete a task"
+      )
+      _describe -t commands 'ralio task' subcommands
+      ;;
 
-			local -a subcommands
-			subcommands=(
-        "create:Create a new task" 
-        "delete:Delete a task" 
-			)
-			_describe -t commands 'ralio task' subcommands
-		;;
-
-		(options)
-			case $line[1] in
-
-				(create|delete)
-					_arguments \
+    (options)
+      case $line[1] in
+        (create|delete)
+          _arguments \
             -n"[Name of the new task]" \
             -t"[Name of the parent task]"
-				;;
-
-			esac
-		;;
-	esac
+          ;;
+      esac
+      ;;
+  esac
 }
 
 _ralio "$@"
