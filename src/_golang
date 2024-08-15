@@ -30,7 +30,7 @@
 # Description
 # -----------
 #
-#  Completion script for go 1.22.5 (https://go.dev/).
+#  Completion script for go 1.23.0 (https://go.dev/).
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -513,6 +513,7 @@ case $state in
         [[ $words[2] != '-w' ]] && _arguments \
           '-C[change to directory before running the command]: :_files -/' \
           '-json[print the environment in JSON format]' \
+          '-changed[prints only those settings whose effective value differs from the default value]' \
           '-u[unset environment variables]' \
           '-w[change the default setting of environment variables]' \
           '*:[show environment variable]: __go_list_env_vars' || _values \
@@ -629,6 +630,7 @@ case $state in
                   '-v[print information about removed modules to standard error]' \
                   '-e[attempt to proceed despite errors encountered while loading packages]' \
                   '-x[print the commands download executes]' \
+                  '-diff[not to modify go.mod or go.sum but instead print necessary changes as a unified diff]' \
                   '-go[update the go directive in the go.mod file to the given version]:goversion' \
                   '-compat[preserves additional checksums needed for the indicated Go version]:version'
                 ;;
@@ -897,45 +899,57 @@ case $state in
                   '*:files:_files'
                 ;;
 
-              link)
+              (link)
                 _arguments \
                   '-B[add an ELF NT_GNU_BUILD_ID note when using ELF]:note' \
-                  '-C[check Go calls to C code]' \
-                  '-D[set data segment address (default -1)]:address' \
                   '-E[set entry symbol name]:entry' \
                   '-H[set header type]:type' \
                   '-I[use linker as ELF dynamic linker]:linker' \
-                  '-L[add specified directory to library path]:directory' \
+                  '-L[add specified directory to library path]:directory:_path_files -/' \
                   '-R[set address rounding quantum (default -1)]:quantum' \
                   '-T[set text segment address (default -1)]:address' \
-                  '-V[print version and exit]' \
-                  '-W[disassemble input]' \
+                  '(- *)-V[print version and exit]' \
                   '-X[add string value definition]:definition' \
-                  '-a[disassemble output]' \
+                  '-asan[enable ASan interface]' \
+                  '-aslr[enable ASLR for buildmode=c-shared on windows]' \
+                  '-benchmark[set mode to enable phase benchmarking]:mode:(mem cpu)' \
+                  '-benchmarkprofile[emit phase profiles]:base' \
+                  '-bindnow[mark a synamically linked ELF object for immediate function binding]' \
                   '-buildid[record id as Go toolchain build id]:id' \
                   '-buildmode[set build mode]:mode' \
                   '-c[dump call graph]' \
-                  '-cpuprofile[write cpu profile to file]:file' \
+                  '-capturehostobjs[capture host object files loading duraing internal linking to specified dir]:dir:_path_files -/' \
+                  '-checklinkname[check linkname symbol references]' \
+                  '-compressdwarf[compress DWARF if possible]' \
+                  '-cpuprofile[write cpu profile to file]:file:_files' \
                   '-d[disable dynamic executable]' \
+                  '-debugnosplit[dump nosplit call graph]' \
+                  '-debugtextsize[debug text section max size]:size' \
+                  '-debugtramp[debug trampolines]:num' \
+                  '-extar[archive program for buildmode=c-archive]:program' \
                   '-extld[use linker when linking in external mode]:linker' \
                   '-extldflags[pass flags to external linker]:flags' \
                   '-f[ignore version mismatch]' \
                   '-g[disable go package data checks]' \
                   '-h[halt on error]' \
+                  '-importcfg[read import configuration from file]:config:_files' \
                   '-installsuffix[set package directory suffix]:suffix' \
                   '-k[set field tracking symbol]:symbol' \
+                  '-libgcc[compiler support lib for internal linking; use "none" to disable]:lib:(none)' \
                   '-linkmode[set link mode]:mode:(internal external auto)' \
                   '-linkshared[link against installed Go shared libraries]' \
                   '-memprofile[write memory profile to file]:file' \
                   '-memprofilerate[set runtime.MemProfileRate to rate]:rate' \
-                  '-n[dump symbol table]' \
-                  '-o[write output to file]:file' \
-                  '-r[set the ELF dynamic linker search path to dir1:dir2:...]:path' \
+                  '-msan[enable MSan interface]' \
+                  '-o[write output to file]:file:_files' \
+                  '-pluginpath[full path name for plugin]:path:_path_files -/' \
+                  '-pruneweakmap[prune weak mapinit refs]' \
+                  '-r[set the ELF dynamic linker search path to dir1:dir2:...]:path:_path_files -/' \
                   '-race[enable race detector]' \
+                  '-randlayout[randomize function layout]' \
                   '-s[disable symbol table]' \
-                  '-shared[generate shared object (implies -linkmode external)]' \
-                  '-tmpdir[use directory for temporary files]:directory' \
-                  '-u[reject unsafe packages]' \
+                  '-strictdups[sanity check duplicate symbol contents during object file reading]:level:((1\:"warn" 2\:"err"))' \
+                  '-tmpdir[use directory for temporary files]:directory:_path_files -/' \
                   '-v[print link trace]' \
                   '-w[disable DWARF generation]' \
                   '*:files:_files'
