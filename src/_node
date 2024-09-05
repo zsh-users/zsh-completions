@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Node.js v22.7.0 (https://nodejs.org)
+#  Completion script for Node.js v22.8.0 (https://nodejs.org)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -185,8 +185,11 @@ _arguments -C \
   '--snapshot-blob=[path to the snapshot blob that is used to restore the application state]:snapshot:_files' \
   '--test[launch test runner on startup]' \
   '--test-concurrency=[specify test runner concurrency]:concurrency' \
+  '--test-coverage-branches=[the branch coverage minimum threshold]:threshold' \
   '--test-coverage-exclude=[exclude files from coverage report that match this glob pattern]:pattern' \
+  '--test-coverage-functions=[the function coverage minimum threshold]:threshold' \
   '--test-coverage-include=[include files from coverage report that match this glob pattern]:pattern' \
+  '--test-coverage-lines=[the line coverage minimum threshold]:threshold' \
   '--test-force-exit[force test runner to exit upon completion]' \
   '--test-name-pattern=[run tests whose name matches this regular expression]:pattern' \
   '--test-only[run tests with "only" option set]' \
