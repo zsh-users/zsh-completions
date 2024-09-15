@@ -1,0 +1,21 @@
+#compdef sox
+# ------------------------------------------------------------------------------
+#
+# Description
+# -----------
+#  Completion script for the sox command (from SoX)
+#  (http://sox.sourceforge.net/)
+#
+# Authors
+# -------
+#
+#  * Alexander F. Rødseth <xyproto@archlinux.org>
+#
+# ------------------------------------------------------------------------------
+
+local curcontext="$curcontext" state line
+local -i ret=1
+
+_arguments -s -S -C   '(-h --help)'{-h,--help}'[display help text]'   '(-V --version)'{-V,--version}'[display version information]'   '(-D --no-dither)'{-D,--no-dither}"[don't dither automatically]"   '(-G --guard)'{-G,--guard}'[use temporary files to guard against clipping]'   '(-m --combine=)'{-m,--combine=}'[combine input files]:method:(mix merge concatenate)'   '(-t --type=)'{-t,--type=}'[specify file type]:file type:_files'   '(-r --rate=)'{-r,--rate=}'[set sample rate]:rate'   '(-c --channels=)'{-c,--channels=}'[specify the number of channels]:channels'   '(-b --bits=)'{-b,--bits=}'[set encoded sample size in bits]:bits'   '(-e --encoding=)'{-e,--encoding=}'[set encoding]:encoding:(signed-integer unsigned-integer floating-point mu-law a-law)'   '(-p --sox-pipe)'{-p,--sox-pipe}'[use SoX pipe]'   '(-q --no-show-progress)'{-q,--no-show-progress}'[run in quiet mode]'   '*:filename:_files -g "*.wav *.mp3 *.flac *.ogg *.aiff"' && ret=0
+
+return ret

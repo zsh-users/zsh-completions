@@ -1,9 +1,9 @@
-#compdef play
+#compdef rec
 # ------------------------------------------------------------------------------
 #
 # Description
 # -----------
-#  Completion script for the play command (from SoX)
+#  Completion script for the rec command (from SoX)
 #  (http://sox.sourceforge.net/)
 #
 # Authors

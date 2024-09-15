@@ -1,0 +1,21 @@
+#compdef soxi
+# ------------------------------------------------------------------------------
+#
+# Description
+# -----------
+#  Completion script for the soxi command (from SoX)
+#  (http://sox.sourceforge.net/)
+#
+# Authors
+# -------
+#
+#  * Alexander F. Rødseth <xyproto@archlinux.org>
+#
+# ------------------------------------------------------------------------------
+
+local curcontext="$curcontext" state line
+local -i ret=1
+
+_arguments -s -S -C   '(-h --help)'{-h,--help}'[display help text]'   '(-V --version)'{-V,--version}'[display version information]'   '*:filename:_files -g "*.wav *.mp3 *.flac *.ogg *.aiff"' && ret=0
+
+return ret
