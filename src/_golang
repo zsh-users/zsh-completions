@@ -195,6 +195,7 @@ local -a commands=(
   'mod:module maintenance'
   'work:workspace maintenance'
   'run:compile and run Go program'
+  'telemetry:manage Go telemetry data and settings'
   'test:test packages'
   'tool:run specified go tool'
   'version:print Go version'
@@ -656,6 +657,15 @@ case $state in
           ${build_flags[@]} \
           '-exec[invoke the binary using xprog]:xporg' \
           '*:importpaths:__go_packages'
+        ;;
+
+      (telemetry)
+        local -a telemetry_commands=(
+          'off:disable both collection and uploading of telemetry data'
+          'local:disable telemetry uploading, but enable local data collection'
+          'on:enable both collection and uploading of telemetry data'
+        )
+        _describe 'command' telemetry_commands
         ;;
 
       (test)
