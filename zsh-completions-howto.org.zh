@@ -1,5 +1,5 @@
-* Table of Contents                                                     :TOC:
-- [[#intro][Intro]]
+* 目录
+- [[#intro][介绍]]
 - [[#getting-started][Getting started]]
   - [[#telling-zsh-which-function-to-use-for-completing-a-command][Telling zsh which function to use for completing a command]]
   - [[#completing-generic-gnu-commands][Completing generic gnu commands]]
@@ -17,16 +17,15 @@
 - [[#tips][Tips]]
 - [[#other-resources][Other resources]]
 
-* Intro
-The official documentation for writing zsh completion functions is difficult to understand, and doesn't give many examples.
-At the time of writing this document I was able to find a few other tutorials on the web, however those tutorials only
-explain a small portion of the capabilities of the completion system. This document aims to cover areas not explained elsewhere,
-with examples, so that you can learn how to write more advanced completion functions. I do not go into all the details, but will
-give enough information and examples to get you up and running. If you need more details you can look it up for yourself in the
- [[https://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-System][official documentation]].
+* 介绍
+Zsh官方讲解补全函数的文档令人费解，而且也没提供多少示例。
+写这份文档的当下我已经在网上找到了其它几份教程，但是那些教程只涉及了补全系统的一小部分。
+这份文档目的在于补全网上其它地方没涵盖的部分，同时附带示例，这样读者就可以学会如何写更高级的补全函数。
+我不会展开每一细节，但会给你提供的内容和示例足以从零开始。
+如果你需要了解更多细节，你可以自行查询[[https://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-System][官方文档]]。
 
-Please make any scripts that you create publicly available for others (e.g. by forking this repo and making a [[id:64bcd501-b0f0-48c7-b8e2-07af708b95ec][pull request]]).
-Also if you have any more information to add or improvements to make to this tutorial, please do.
+还请公开你所作的任何脚本（比如fork这个仓库然后[[id:64bcd501-b0f0-48c7-b8e2-07af708b95ec][pr]]）。
+此外如果你有任何更多补充内容或对此教程的改进，欢迎作出贡献。
 * Getting started
 ** Telling zsh which function to use for completing a command
 Completion functions for commands are stored in files with names beginning with an underscore _, and these files should
