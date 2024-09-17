@@ -1,9 +1,9 @@
 * 目录
-- [[#intro][介绍]]
-- [[#getting-started][Getting started]]
-  - [[#telling-zsh-which-function-to-use-for-completing-a-command][Telling zsh which function to use for completing a command]]
-  - [[#completing-generic-gnu-commands][Completing generic gnu commands]]
-  - [[#copying-completions-from-another-command][Copying completions from another command]]
+- [[#介绍][介绍]]
+- [[#开始][开始]]
+  - [[#让zsh知道用哪个函数补全命令][让zsh知道用哪个函数补全命令]]
+  - [[#补全gnu格式命令][补全gnu格式命令]]
+  - [[#从其它命令复制补全][从其它命令复制补全]]
 - [[#writing-your-own-completion-functions][Writing your own completion functions]]
   - [[#utility-functions][Utility functions]]
   - [[#writing-simple-completion-functions-using-_describe][Writing simple completion functions using _describe]]
@@ -26,24 +26,22 @@ Zsh官方讲解补全函数的文档令人费解，而且也没提供多少示�
 
 还请公开你所作的任何脚本（比如fork这个仓库然后[[id:64bcd501-b0f0-48c7-b8e2-07af708b95ec][pr]]）。
 此外如果你有任何更多补充内容或对此教程的改进，欢迎作出贡献。
-* Getting started
-** Telling zsh which function to use for completing a command
-Completion functions for commands are stored in files with names beginning with an underscore _, and these files should
-be placed in a directory listed in the $fpath variable.
-You can add a directory to $fpath by adding a line like this to your ~/.zshrc file:
+* 开始
+** 让zsh知道用哪个函数补全命令
+补全命令用的补全函数储存于名字以下划线“_”起始的文件，这些文件应存于$fpath变量所列出的某目录中。
+你可以将下面的代码加入你的~/.zshrc以在$fpath中新增目录：
 #+BEGIN_SRC sh
 fpath=(~/newdir $fpath)
 #+END_SRC
-The first line of a completion function file can look something like this:
+一个补全函数文件的第一行长这个样：
 #+BEGIN_SRC sh
 #compdef foobar
 #+END_SRC
-This tells zsh that the file contains code for completing the foobar command.
-This is the format that you will use most often for the first line, but you can also use the same file for completing
-several different functions if you want. See [[https://zsh.sourceforge.net/Doc/Release/Completion-System.html#Autoloaded-files][here]] for more details.
+这行代码表示这个文件含有补全foobar命令的代码。
+多数情况下第一行都采用这个格式，但你也可以用同一个文件补全多个不同的函数。
+查阅[[https://zsh.sourceforge.net/Doc/Release/Completion-System.html#Autoloaded-files][官方文档]]以了解更多细节。
 
-You can also use the compdef command directly (e.g. in your ~/.zshrc file) to tell zsh which function to use for completing
-a command like this:
+你也可以直接使用compdef命令(比如在你的~/.zshrc文件)来告诉zsh用哪个函数补全命令：
 #+BEGIN_SRC sh
 > compdef _function foobar
 #+END_SRC
@@ -55,25 +53,24 @@ or if you want to supply arguments:
 #+BEGIN_SRC sh
 > compdef '_function arg1 arg2' foobar
 #+END_SRC
-See [[https://zsh.sourceforge.net/Doc/Release/Completion-System.html#Functions-4][here]] for more details.
-** Completing generic gnu commands
-Many [[https://www.gnu.org/][gnu]] commands have a standardized way of listing option descriptions (when the --help option is used).
-For these commands you can use the _gnu_generic function for automatically creating completions, like this:
+查阅[[https://zsh.sourceforge.net/Doc/Release/Completion-System.html#Functions-4][官方文档]]以了解更多细节。
+** 补全gnu格式命令
+很多[[https://www.gnu.org/][gnu]]命令以标准化的方式列出选项描述（使用--help选项时）。
+对于这些命令你可以使用_gnu_generic函数自动创建补全，比如这样：
 #+BEGIN_SRC sh
 > compdef _gnu_generic foobar
 #+END_SRC
-or to use _gnu_generic with several different commands:
+或者对多个不同命令使用_gnu_generic：
 #+BEGIN_SRC sh
 > compdef _gnu_generic foobar goocar hoodar
 #+END_SRC
-This line can be placed in your ~/.zshrc file.
-** Copying completions from another command
-If you want a command, say cmd1, to have the same completions as another, say cmd2, which has already had
-completions defined for it, you can do this:
+你可以把这行代码放进~/.zshrc文件里。
+** 从其它命令复制补全
+如果你想要一个命令（比如cmd1）和另一个已有补全的命令（比如cmd2)拥有相同的补全，你可以：
 #+BEGIN_SRC sh
 > compdef cmd1=cmd2
 #+END_SRC
-This can be useful for example if you have created an alias for a command to help you remember it.
+比如当你给一个命令创建了一个助记alias的时候会很有帮助。
 * Writing your own completion functions
 A good way to get started is to look at some already defined completion functions.
 On my linux installation these are found in /usr/share/zsh/functions/Completion/Unix
