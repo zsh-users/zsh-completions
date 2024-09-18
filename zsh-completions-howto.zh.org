@@ -12,7 +12,7 @@
   - [[#用_regex_arguments和_regex_words编写补全函数][用_regex_arguments和_regex_words编写补全函数]]
   - [[#用_values、_sep_parts和_multi_parts实现复杂补全][用_values、_sep_parts和_multi_parts实现复杂补全]]
   - [[#用compadd直接添加补全词][用compadd直接添加补全词]]
-- [[#testing--debugging][Testing & debugging]]
+- [[#测试与debug][测试与debug]]
 - [[#gotchas-things-to-watch-out-for][Gotchas (things to watch out for)]]
 - [[#tips][Tips]]
 - [[#other-resources][Other resources]]
@@ -404,8 +404,8 @@ compadd -P _todo -q foo bar blah
 compadd -a wordsarray
 #+END_SRC
 
-* Testing & debugging
-To reload a completion function:
+* 测试与debug
+重新加载补全函数：
 #+BEGIN_SRC sh
 > unfunction _func
 > autoload -U _func
@@ -413,11 +413,13 @@ To reload a completion function:
 
 The following functions can be called to obtain useful information.
 If the default keybindings don't work you can try pressing Alt+x and then enter the command name.
-| Function        | Default keybinding | Description                                                                                                                    |
-|-----------------+--------------------+--------------------------------------------------------------------------------------------------------------------------------|
-| _complete_help  | Ctrl+x h           | displays information about context names, tags, and completion functions used when completing at the current cursor position   |
-| _complete_help  | Alt+2 Ctrl+x h     | as above but displays even more information                                                                                    |
-| _complete_debug | Ctrl+x ?           | performs ordinary completion, but captures in a temporary file a trace of the shell commands executed by the completion system |
+这些函数会提供有用的信息。
+如果默认按键没有用，你可以尝试Alt+x然后再输入命令名。
+| 函数            | 默认按键           | 作用                                                           |
+|-----------------+--------------------+----------------------------------------------------------------|
+| _complete_help  | Ctrl+x h           | 在当前光标位置补全时显示有关上下文名称、标签和补全函数的信息   |
+| _complete_help  | Alt+2 Ctrl+x h     | 同上但显示更多信息                                             |
+| _complete_debug | Ctrl+x ?           | 执行正常补全，但跟踪补全系统执行的shell命令并存入一个临时文件  |
 * Gotchas (things to watch out for)
 Remember to include a #compdef line at the beginning of the file containing the completion function.
 
