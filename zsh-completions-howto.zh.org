@@ -13,7 +13,7 @@
   - [[#用_values、_sep_parts和_multi_parts实现复杂补全][用_values、_sep_parts和_multi_parts实现复杂补全]]
   - [[#用compadd直接添加补全词][用compadd直接添加补全词]]
 - [[#测试与debug][测试与debug]]
-- [[#gotchas-things-to-watch-out-for][Gotchas (things to watch out for)]]
+- [[#寄了吧-(需要小心的东西)][寄了吧 (需要小心的东西)]]
 - [[#tips][Tips]]
 - [[#other-resources][Other resources]]
 
@@ -411,8 +411,6 @@ compadd -a wordsarray
 > autoload -U _func
 #+END_SRC
 
-The following functions can be called to obtain useful information.
-If the default keybindings don't work you can try pressing Alt+x and then enter the command name.
 这些函数会提供有用的信息。
 如果默认按键没有用，你可以尝试Alt+x然后再输入命令名。
 | 函数            | 默认按键           | 作用                                                           |
@@ -420,19 +418,20 @@ If the default keybindings don't work you can try pressing Alt+x and then enter 
 | _complete_help  | Ctrl+x h           | 在当前光标位置补全时显示有关上下文名称、标签和补全函数的信息   |
 | _complete_help  | Alt+2 Ctrl+x h     | 同上但显示更多信息                                             |
 | _complete_debug | Ctrl+x ?           | 执行正常补全，但跟踪补全系统执行的shell命令并存入一个临时文件  |
-* Gotchas (things to watch out for)
-Remember to include a #compdef line at the beginning of the file containing the completion function.
+* 寄了吧 (需要小心的东西)
+记得在补全函数的文件开头加那行#compdef
 
-Take care to use the correct type of quoting for specifications to _arguments or _regex_arguments:
+_arguments或_regex_arguments的定义中要使用正确的引号：
+如果定义中有变量要展开，用双引号，其它情况用单引号，
+并且记得在item描述处用不同的引号 TODO 什么东西？
 use double quotes if there is a parameter that needs to be expanded in the specification, single quotes otherwise,
 and make sure to use different quotes around item descriptions.
 
-Check that you have the correct number of :'s in the correct places for specifications for _arguments,
-_alternative, _regex_arguments, etc.
+_arguments、_alternative、_regex_arguments等的定义处要在正确的地方使用正确数量的冒号“:”。
 
-Remember to include an initial pattern to match the command word when using _regex_arguments (it does not need a matching action).
+使用_regex_arguments时要记得在开头写匹配命令的模式（不需要加入匹配动作（action））。
 
-Remember to put a null char $'\0' at the end of any PATTERN argument for _regex_arguments
+记得在_regex_arguments的任何PATTERN（模式）参数后加上null字符$'\0'
 * Tips
 Sometimes you have a situation where there is just one option that can come after a subcommand, and zsh will complete this
 automatically when tab is pressed after the subcommand. If instead you want it listed with its description before completing
