@@ -10,10 +10,10 @@
   - [[#用_alternative编写补全函数][用_alternative编写补全函数]]
   - [[#用_arguments编写补全函数][用_arguments编写补全函数]]
   - [[#用_regex_arguments和_regex_words编写补全函数][用_regex_arguments和_regex_words编写补全函数]]
-  - [[#用_values、_sep_parts和_multi_parts实现复杂补全][用_values、_sep_parts和_multi_parts实现复杂补全]]
+  - [[#用_values_sep_parts和_multi_parts实现复杂补全][用_values、_sep_parts和_multi_parts实现复杂补全]]
   - [[#用compadd直接添加补全词][用compadd直接添加补全词]]
 - [[#测试与debug][测试与debug]]
-- [[#寄了吧-(需要小心的东西)][寄了吧 (需要小心的东西)]]
+- [[#寄了吧-需要小心的东西][寄了吧 （需要小心的东西）]]
 - [[#小贴士][小贴士]]
 - [[#其它资源][其它资源]]
 
@@ -417,12 +417,12 @@ compadd -a wordsarray
 | _complete_help  | Ctrl+x h           | 在当前光标位置补全时显示有关上下文名称、标签和补全函数的信息   |
 | _complete_help  | Alt+2 Ctrl+x h     | 同上但显示更多信息                                             |
 | _complete_debug | Ctrl+x ?           | 执行正常补全，但跟踪补全系统执行的shell命令并存入一个临时文件  |
-* 寄了吧 (需要小心的东西)
+* 寄了吧 （需要小心的东西）
 记得在补全函数的文件开头加那行#compdef
 
 _arguments或_regex_arguments的定义中要使用正确的引号：
 如果定义中有变量要展开，用双引号，其它情况用单引号，
-并且记得在ITEM（项目）描述处用不同的引号。（译注：见[[#动作（Actions）][动作（Actions）]]章节）
+并且记得在ITEM（项目）描述处用不同的引号。（译注：见[[#动作Actions][动作（Actions）]]章节）
 
 _arguments、_alternative、_regex_arguments等的定义处要在正确的地方使用正确数量的冒号“:”。
 
