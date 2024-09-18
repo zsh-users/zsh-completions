@@ -13,23 +13,26 @@
   - [[#用_values_sep_parts和_multi_parts实现复杂补全][用_values、_sep_parts和_multi_parts实现复杂补全]]
   - [[#用compadd直接添加补全词][用compadd直接添加补全词]]
 - [[#测试与debug][测试与debug]]
-- [[#寄了吧-需要小心的东西][寄了吧 （需要小心的东西）]]
+- [[#踩坑了吧-需要小心的东西][寄了吧 （需要小心的东西）]]
 - [[#小贴士][小贴士]]
 - [[#其它资源][其它资源]]
 
+> 译注：本文可能有不通顺的地方，或者采用的词汇不是很正确。
+> 如果你有更好的主意，欢迎提交PR。
+
 * 介绍
-Zsh官方讲解补全函数的文档令人费解，而且也没提供多少示例。
+Zsh官方的补全函数文档令人费解，而且也没提供多少示例。
 写这份文档的当下我已经在网上找到了其它几份教程，但是那些教程只涉及了补全系统的一小部分。
 这份文档目的在于补全网上其它地方没涵盖的部分，同时附带示例，这样读者就可以学会如何写更高级的补全函数。
-我不会展开每一细节，但会给你提供的内容和示例足以从零开始。
+我不会展开每一细节，但给你提供的内容和示例足以从零开始。
 如果你需要了解更多细节，你可以自行查询[[https://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-System][官方文档]]。
 
-还请公开你所作的任何脚本（比如fork这个仓库然后[[id:64bcd501-b0f0-48c7-b8e2-07af708b95ec][pr]]）。
+还请公开你所创作的任何脚本（比如fork这个仓库然后[[id:64bcd501-b0f0-48c7-b8e2-07af708b95ec][pr]]）。
 此外如果你有任何更多补充内容或对此教程的改进，欢迎做贡献。
 * 开始
 ** 让zsh知道用哪个函数补全命令
 补全命令用的补全函数储存于名字以下划线“_”起始的文件，这些文件应存于$fpath变量所列出的某目录中。
-你可以将下面的代码加入你的~/.zshrc以在$fpath中新增目录：
+你可以将下面的代码写入你的~/.zshrc以在$fpath中新增目录：
 #+BEGIN_SRC sh
 fpath=(~/newdir $fpath)
 #+END_SRC
@@ -41,7 +44,7 @@ fpath=(~/newdir $fpath)
 多数情况下第一行都采用这个格式，但你也可以用同一个文件补全多个不同的函数。
 查阅[[https://zsh.sourceforge.net/Doc/Release/Completion-System.html#Autoloaded-files][官方文档]]以了解更多细节。
 
-你也可以直接使用compdef命令(比如在你的~/.zshrc文件)来告诉zsh用哪个函数补全命令：
+你也可以直接使用compdef命令(比如在你的~/.zshrc文件里)来告诉zsh用哪个函数补全命令：
 #+BEGIN_SRC sh
 > compdef _function foobar
 #+END_SRC
@@ -66,19 +69,19 @@ fpath=(~/newdir $fpath)
 #+END_SRC
 你可以把这行代码放进~/.zshrc文件里。
 ** 从其它命令复制补全
-如果你想要一个命令（比如cmd1）和另一个已有补全的命令（比如cmd2)拥有相同的补全，你可以：
+如果你想要让一个命令（比如cmd1）和另一个已有补全的命令（比如cmd2)拥有相同的补全，你可以：
 #+BEGIN_SRC sh
 > compdef cmd1=cmd2
 #+END_SRC
 比如当你给一个命令创建了一个助记alias的时候会很有帮助。
 * 编写你自己的补全代码
-一个好的开始方式是阅读已有补全函数。
+你可以通过阅读已有的补全函数来开始入门。
 在我的Linux系统上这些补全函数在/usr/share/zsh/functions/Completion/Unix、
 /usr/share/zsh/functions/Completion/Linux和一些其它子目录下。
 
 你会注意到这些文件频繁使用_arguments函数。
 该函数是一个工具函数，可用于编写简单的补全函数。
-_arguments函数是一个compadd内置函数的包装。
+_arguments函数是一个compadd内置函数的包装函数。
 compadd内置函数是一个核心函数，用于向命令行加入补全词，并控制其行为。
 不过，多数情况下你不需要使用compadd，因为有很多更易于使用的工具函数，如_arguments和_describe。
 
@@ -88,6 +91,16 @@ compadd内置函数是一个核心函数，用于向命令行加入补全词，�
 下面是一个工具函数列表，你或许会用到它们。
 工具函数的完整列表及使用方法在[[https://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-Functions][此]]可供查阅。
 这些函数的使用示例在下一节给出。
+
+> 译注：从这里开始会出现一些术语，如定义（specification）、描述（description）、动作（action）、词汇（word）等。
+> 初次阅读可能会觉得比较困难，尤其是下面的工具函数表格，稍后教程开始一一讲解并给出示例的时候就好懂多了。
+> 定义指的是对补全规则的定义，如`_describe 定义`。
+> 描述当然指的是对命令行选项和参数的用户友好描述，补全时会显示在屏幕上，如：'-o  输出文件'
+> 词汇指的是如同'word'、'-o'、'--help'、'start'等连续的一小段字符串
+> 动作指的是匹配成功后执行的操作，比如执行某函数生成补全，或直接补全等等。
+> 选项（option）和参数指给命令提供的选项和参数，如`cp -r src dst`中，`-r`为选项，`src`和`dst`为参数。有些选项带参，如`tar -f file ...`中`-f`选项带`file`参数。
+> 候选（candidate）指可能的补全结果，如补全`tar -f`时目录下所有文件会被作为候选，补全`systemctl`时`start`、`stop`、`list-units`等指令会被作为候选。
+> 还请不要感到灰心，读下去就是了。
 
 *** 用于大部分补全的主要工具函数
 | _alternative     | 从其它工具函数或shell代码生成补全候选。                                |
@@ -111,7 +124,7 @@ compadd内置函数是一个核心函数，用于向命令行加入补全词，�
 | _parameters     | 补全shell参数/变量名（可用模式匹配限制要补全的参数/变量名）。                   |
 *** 处理已缓存的补全的函数
 如果你有大量的补全，你可以将补全保存于一个缓存文件以快速加载。
-| _cache_invalid  | 指明补全缓存是否需要rebuild，缓存由标识符指定   |
+| _cache_invalid  | 指明补全缓存是否需要重新构建（rebuild），缓存由标识符指定   |
 | _retrieve_cache | 从缓存文件获取补全信息                          |
 | _store_cache    | 储存缓存于缓存文件，缓存由标识符指定            |
 *** 其它函数
@@ -142,7 +155,7 @@ subcmds=('c:c命令描述' 'd:d命令描述')
 _describe 'command' subcmds
 #+END_SRC
 
-你可以像下面一样使用由双横杠分隔的列表，但注意实操时会混合匹配结果，所以不应用于不同种类的补全候选：
+你可以像下面一样使用由双横杠分隔的列表，但注意实操时会混合匹配结果，所以不应该用于不同种类的补全候选：
 #+BEGIN_SRC sh
 local -a subcmds topics
 subcmds=('c:c命令描述' 'd:d命令的描述')
@@ -180,14 +193,14 @@ _alternative \
   'files:文件名:_files -/'
 #+END_SRC
 
-如要用参数展开创建补全列表，必须用双引号将定义括起来，
+如要用变量展开创建补全列表，必须用双引号将定义括起来，
 如：
 #+BEGIN_SRC sh
 _alternative \
   "dirs:用户目录:($userdirs)" \
   "pids:进程ID:($(ps -A o pid=))"
 #+END_SRC
-在此例子中第一个定义加入存于$userdirs变量的词汇，第二个定义执行'ps -A o pid='并获取pid表，表用作补全候选。
+在此例子中第一个定义加入$userdirs变量中的词汇，第二个定义执行'ps -A o pid='并获取pid表，pid表用作补全候选。
 实操中，我们使用已有的_pids函数，而不是像上面那样手写。
 
 我们可以在ACTION中使用_values等其它工具函数以完成更复杂的补全，如：
@@ -282,6 +295,7 @@ _regex_arguments _cmd /$'[^\0]##\0'/ \( /$'word1(a|b|c)\0'/ ':word:first word:(w
 _cmd "$@"
 #+END_SRC
 TODO 英文原文和例子有出入
+
 在这个例子中第一个词可以是word1（即“词1”，下同）或者word11后紧跟a、b或c，并且如果第一个词含有11，则第二个词可以是word2后紧跟a、b或c，或一个文件名。
 
 如果感觉太复杂，你也可以用更简单的_regex_words函数达到相同效果。
@@ -292,7 +306,7 @@ TODO 英文原文和例子有出入
 这样变量就会展开，然后再在后面加个包含null字符的字符串参数，比如："$somevar"$'\0'（somevar即“某变量”）。
 
 表示模式用的正则表达式语法和正常的正则表达式不太一样，但我也找不到有关的文档。
-不过我还是折腾出这些特殊字符的意义：
+不过我还是试图搞清楚了这些特殊字符的意义：
 | *  | 通配符 - 任何数量的字符                              |
 | ?  | 通配符 - 单个字符                                    |
 | #  | 零个或更多的上一个字符（和一般正则表达式里的*一样）  |
@@ -362,7 +376,7 @@ _values -s , '会话id' "${(uonzf)$(ps -A o sid=)}"
 _sep_parts '(foo bar)' @ '(news ftp)' : '(woo laa)'
 #+END_SRC
 
-补全MAC地址，一次补全一个八进制数：
+补全MAC地址，一次补全一个字节：
 #+BEGIN_SRC sh
 _multi_parts : '(00:11:22:33:44:55 00:23:34:45:56:67 00:23:45:56:67:78)'
 #+END_SRC
@@ -417,7 +431,7 @@ compadd -a wordsarray
 | _complete_help  | Ctrl+x h           | 在当前光标位置补全时显示有关上下文名称、标签和补全函数的信息   |
 | _complete_help  | Alt+2 Ctrl+x h     | 同上但显示更多信息                                             |
 | _complete_debug | Ctrl+x ?           | 执行正常补全，但跟踪补全系统执行的shell命令并存入一个临时文件  |
-* 寄了吧 （需要小心的东西）
+* 踩坑了吧 （需要小心的东西）
 记得在补全函数的文件开头加那行#compdef
 
 _arguments或_regex_arguments的定义中要使用正确的引号：
