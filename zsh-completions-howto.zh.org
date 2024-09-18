@@ -4,14 +4,14 @@
   - [[#让zsh知道用哪个函数补全命令][让zsh知道用哪个函数补全命令]]
   - [[#补全gnu格式命令][补全gnu格式命令]]
   - [[#从其它命令复制补全][从其它命令复制补全]]
-- [[#writing-your-own-completion-functions][Writing your own completion functions]]
-  - [[#utility-functions][Utility functions]]
-  - [[#writing-simple-completion-functions-using-_describe][Writing simple completion functions using _describe]]
-  - [[#writing-completion-functions-using-_alternative][Writing completion functions using _alternative]]
-  - [[#writing-completion-functions-using-_arguments][Writing completion functions using _arguments]]
-  - [[#writing-completion-functions-using-_regex_arguments-and-_regex_words][Writing completion functions using _regex_arguments and _regex_words]]
-  - [[#complex-completions-with-_values-_sep_parts--_multi_parts][complex completions with _values, _sep_parts, & _multi_parts]]
-  - [[#adding-completion-words-directly-using-compadd][Adding completion words directly using compadd]]
+- [[#编写你自己的补全代码][编写你自己的补全代码]]
+  - [[#工具函数][工具函数]]
+  - [[#用_describe编写简单的补全函数][用_describe编写简单的补全函数]]
+  - [[#用_alternative编写补全函数][用_alternative编写补全函数]]
+  - [[#用_arguments编写补全函数][用_arguments编写补全函数]]
+  - [[#用_regex_arguments和_regex_words编写补全函数][用_regex_arguments和_regex_words编写补全函数]]
+  - [[#用_values、_sep_parts和_multi_parts实现复杂补全][用_values、_sep_parts和_multi_parts实现复杂补全]]
+  - [[#用compadd直接添加补全词][用compadd直接添加补全词]]
 - [[#testing--debugging][Testing & debugging]]
 - [[#gotchas-things-to-watch-out-for][Gotchas (things to watch out for)]]
 - [[#tips][Tips]]
@@ -25,7 +25,7 @@ Zsh官方讲解补全函数的文档令人费解，而且也没提供多少示�
 如果你需要了解更多细节，你可以自行查询[[https://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-System][官方文档]]。
 
 还请公开你所作的任何脚本（比如fork这个仓库然后[[id:64bcd501-b0f0-48c7-b8e2-07af708b95ec][pr]]）。
-此外如果你有任何更多补充内容或对此教程的改进，欢迎作出贡献。
+此外如果你有任何更多补充内容或对此教程的改进，欢迎做贡献。
 * 开始
 ** 让zsh知道用哪个函数补全命令
 补全命令用的补全函数储存于名字以下划线“_”起始的文件，这些文件应存于$fpath变量所列出的某目录中。
@@ -45,11 +45,11 @@ fpath=(~/newdir $fpath)
 #+BEGIN_SRC sh
 > compdef _function foobar
 #+END_SRC
-or to use the same completions for several commands:
+或者对多个命令使用同一种补全：
 #+BEGIN_SRC sh
 > compdef _function foobar goocar hoodar
 #+END_SRC
-or if you want to supply arguments:
+如果你想提供参数的话：
 #+BEGIN_SRC sh
 > compdef '_function arg1 arg2' foobar
 #+END_SRC
@@ -71,167 +71,164 @@ or if you want to supply arguments:
 > compdef cmd1=cmd2
 #+END_SRC
 比如当你给一个命令创建了一个助记alias的时候会很有帮助。
-* Writing your own completion functions
-A good way to get started is to look at some already defined completion functions.
-On my linux installation these are found in /usr/share/zsh/functions/Completion/Unix
-and /usr/share/zsh/functions/Completion/Linux and a few other subdirs.
+* 编写你自己的补全代码
+一个好的开始方式是阅读已有补全函数。
+在我的Linux系统上这些补全函数在/usr/share/zsh/functions/Completion/Unix、
+/usr/share/zsh/functions/Completion/Linux和一些其它子目录下。
 
-You will notice that the _arguments function is used a lot in these files.
-This is a utility function that makes it easy to write simple completion functions.
-The _arguments function is a wrapper around the compadd builtin function.
-The compadd builtin is the core function used to add completion words to the command line, and control its behaviour.
-However, most of the time you will not need to use compadd, since there are many utility functions such as _arguments
-and _describe which are easier to use.
+你会注意到这些文件频繁使用_arguments函数。
+该函数是一个工具函数，可用于编写简单的补全函数。
+_arguments函数是一个compadd内置函数的包装。
+compadd内置函数是一个核心函数，用于向命令行加入补全词，并控制其行为。
+不过，多数情况下你不需要使用compadd，因为有很多更易于使用的工具函数，如_arguments和_describe。
 
-For very basic completions the _describe function should be adequate
+对于非常基础的补全，_describe函数已经够用了。
 
-** Utility functions
-Here is a list of some of the utility functions that may be of use.
-The full list of utility functions, with full explanations, is available [[https://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-Functions][here]].
-Examples of how to use these functions are given in the next section.
+** 工具函数
+下面是一个工具函数列表，你或许会用到它们。
+工具函数的完整列表及使用方法在[[https://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-Functions][此]]可供查阅。
+这些函数的使用示例在下一节给出。
 
-*** main utility functions for overall completion
-| _alternative     | Can be used to generate completion candidates from other utility functions or shell code.                         |
-| _arguments       | Used to specify how to complete individual options & arguments for a command with unix style options.                             |
-| _describe        | Used for creating simple completions consisting of words with descriptions (but no actions). Easier to use than _arguments |
-| _gnu_generic     | Can be used to complete options for commands that understand the `--help' option.                                                 |
-| _regex_arguments | Creates a function for matching commandline arguments with regular expressions, and then performing actions/completions.          |
-*** functions for performing complex completions of single words
-| _values      | Used for completing arbitrary keywords (values) and their arguments, or comma separated lists of such combinations.                                                  |
-| _combination | Used to complete combinations of values, for example pairs of hostnames and usernames.                                                                               |
-| _multi_parts | Used for completing multiple parts of words separately where each part is separated by some char, e.g. for completing partial filepaths: /u/i/sy -> /usr/include/sys |
-| _sep_parts   | Like _multi_parts but allows different separators at different parts of the completion.                                                                              |
-| _sequence    | Used as a wrapper around another completion function to complete a delimited list of matches generated by that other function.
-*** functions for completing specific types of objects
-| _path_files     | Used to complete filepaths. Take several options to control behaviour.                                    |
-| _files          | Calls _path_files with all options except -g and -/. These options depend on file-patterns style setting. |
-| _net_interfaces | Used for completing network interface names                                                               |
-| _users          | Used for completing user names                                                                            |
-| _groups         | Used for completing group names                                                                           |
-| _options        | Used for completing the names of shell options.                                                           |
-| _parameters     | Used for completing the names of shell parameters/variables (can restrict to those matching a pattern).   |
-*** functions for handling cached completions
-If you have a very large number of completions you can save them in a cache file so that the completions load quickly.
-| _cache_invalid  | indicates whether the completions cache corresponding to a given cache identifier needs rebuilding |
-| _retrieve_cache | retrieves completion information from a cache file                                                 |
-| _store_cache    | store completions corresponding to a given cache identifier in a cache file                        |
-*** other functions
-| _message     | Used for displaying help messages in places where no completions can be generated.                                      |
-| _regex_words | Can be used to generate arguments for the _regex_arguments command. This is easier than writing the arguments manually. |
-| _guard       | Can be used in the ACTION of specifications for _arguments and similar functions to check the word being completed.     |
-*** Actions
-Many of the utility functions such as _arguments, _regex_arguments, _alternative and _values may include an action
-at the end of an option/argument specification. This action indicates how to complete the corresponding argument.
-The actions can take one of the following forms:
-| ( )                               | Argument is required but no matches are generated for it.                                                                                |
-| (ITEM1 ITEM2)                     | List of possible matches                                                                                                                 |
-| ((ITEM1\:'DESC1' ITEM2\:'DESC2')) | List of possible matches, with descriptions. Make sure to use different quotes than those around the whole specification.                |
-| ->STRING                          | Set $state to STRING and continue ($state can be checked in a case statement after the utility function call)                            |
-| FUNCTION                          | Name of a function to call for generating matches or performing some other action, e.g. _files or _message                               |
-| {EVAL-STRING}                     | Evaluate string as shell code to generate matches. This can be used to call a utility function with arguments, e.g. _values or _describe |
-| =ACTION                           | Inserts a dummy word into completion command line without changing the point at which completion takes place.                            |
-Not all action types are available for all utility functions that use them. For example the ->STRING type is not available in the
-_regex_arguments or _alternative functions.
-** Writing simple completion functions using _describe
-The _describe function can be used for simple completions where the order and position of the options/arguments is
-not important. You just need to create an array parameter to hold the options & their descriptions, and then pass
-the parameter name as an argument to _describe. The following example creates completion candidates c and d, with
-the descriptions (note this should be put in a file called _cmd in some directory listed in $fpath).
+*** 用于大部分补全的主要工具函数
+| _alternative     | 从其它工具函数或shell代码生成补全候选。                                |
+| _arguments       | 指定如何补全一命令的各选项和参数（命令选项风格为unix风格）。           |
+| _describe        | 创建由带描述的词汇（但不包含动作）组成的简单补全。比_arguments更简单。 |
+| _gnu_generic     | 为带有“--help”选项的命令补全选项。                                     |
+| _regex_arguments | 创建一先用regex表达式匹配命令行参数再执行动作/补全的函数。             |
+*** 对单个词汇进行复杂补全的工具函数
+| _values      | 补全任意词汇（值）及其参数，或逗号分隔的词汇与参数列表。                           |
+| _combination | 补全值的组合，比如域名和用户名的二元组。                                           |
+| _multi_parts | 对词汇的由符号分隔的多个部分分别补全，比如补全路径：/u/i/sy -> /usr/include/sys    |
+| _sep_parts   | 类似_multi_parts但在补全的不同部分中允许不同的分隔符。                             |
+| _sequence    | 包装另一补全函数，并补全由该函数生成的匹配列表。                                   |
+*** 用于补全特定对象种类的函数
+| _path_files     | 补全文件目录。用多个选项控制行为。                                              |
+| _files          | 使用所有选项调用_path_files，除了-g和-/。这些选项取决于file-patterns风格设置。  |
+| _net_interfaces | 补全网络接口名称。                                                              |
+| _users          | 补全用户名                                                                      |
+| _groups         | 补全组名                                                                        |
+| _options        | 补全shell选项名。                                                               |
+| _parameters     | 补全shell参数/变量名（可用模式匹配限制要补全的参数/变量名）。                   |
+*** 处理已缓存的补全的函数
+如果你有大量的补全，你可以将补全保存于一个缓存文件以快速加载。
+| _cache_invalid  | 指明补全缓存是否需要rebuild，缓存由标识符指定   |
+| _retrieve_cache | 从缓存文件获取补全信息                          |
+| _store_cache    | 储存缓存于缓存文件，缓存由标识符指定            |
+*** 其它函数
+| _message     | 当无补全可生成时显示帮助信息。                                             |
+| _regex_words | 为_regex_arguments命令生成参数。比手写参数更简单。                         |
+| _guard       | 用于_arguments和类似函数的specifications的ACTION中，以检查被补全的词汇。   | TODO 这什么意思？
+*** 动作（Actions）
+许多工具函数，如_arguments、_regex_arguments、_alternative和_values，在选项/参数末尾有一个action。
+这个action指定如何补全对应的参数。
+这些action可以是如下形式之一：
+| ( )                               | 需要提供参数但未生成任何匹配                                                          |
+| (ITEM1 ITEM2)                     | 匹配列表                                                                              |
+| ((ITEM1\:'DESC1' ITEM2\:'DESC2')) | 匹配列表，带有描述。注意引号的使用。TODO 更好的翻译                                   |
+| ->STRING                          | 将$state设为STRING然后继续（可在调用工具函数后用case语句检查$state的值）              |
+| FUNCTION                          | 生成匹配或完成其它操作的函数的函数名，比如_files或_message                            |
+| {EVAL-STRING}                     | 把字符串当作shell代码执行（evaluate）。可用于带参调用工具函数，如_values或_describe   |
+| =ACTION                           | 在补全命令行中插入占位词汇不改变补全点。                                              |
+
+并非所有的action种类都可用于使用action的工具函数。比如->STRING类不可用于_regex_arguments或_alternative函数。
+** 用_describe编写简单的补全函数
+_describe函数可以用于简单的补全，此类补全的选项/参数的位置与顺序无关紧要。
+你只需用一个数组参数储存这些选项和其描述，然后将数组参数的名作为参数传入_describe。
+下面的示例创建补全候选c和d（注意代码文件名应为_cmd，并且文件存于$fpath所列出的目录之下）。
 #+BEGIN_SRC sh
 #compdef cmd
 local -a subcmds
-subcmds=('c:description for c command' 'd:description for d command')
+subcmds=('c:c命令描述' 'd:d命令描述')
 _describe 'command' subcmds
 #+END_SRC
 
-You can use several different lists separated by a double hyphen as follows but note that this mixes the matches under and single heading and is not intended to be used with different types of completion candidates:
+你可以像下面一样使用由双横杠分隔的列表，但注意实操时会混合匹配结果，所以不应用于不同种类的补全候选：
 #+BEGIN_SRC sh
 local -a subcmds topics
-subcmds=('c:description for c command' 'd:description for d command')
-topics=('e:description for e help topic' 'f:description for f help topic')
+subcmds=('c:c命令描述' 'd:d命令的描述')
+topics=('e:e帮助主题的描述' 'f:f帮助主题的描述')
 _describe 'command' subcmds -- topics
 #+END_SRC
 
-If two candidates have the same description, _describe collects them together on the same row and ensures that descriptions are aligned in neatly in columns.
-The _describe function can be used in an ACTION as part of a specification for _alternative, _arguments or _regex_arguments.
-In this case you will have to put it in braces with its arguments, e.g. 'TAG:DESCRIPTION:{_describe 'values' options}'
-** Writing completion functions using _alternative
-Like _describe, this function performs simple completions where the order and position of options/arguments is not important.
-However, unlike _describe, instead of fixed matches further functions may be called to generate the completion candidates. Furthermore, _alternative allows a mix of different types of completion candidates to be mixed.
+如果两个候选有相同的描述，_describe把它们集于一行，并确保描述严格按列对齐。
+_describe函数可用在_alternative、_arguments或_regex_arguments的ACTION中。
+在这种情况下你需要用括号将_describe和参数包起来，比如'TAG:DESCRIPTION:{_describe 'values' options}'
+** 用_alternative编写补全函数
+如同_describe，该函数进行简单补全，其选项/参数的顺序和位置并不重要。
+然而，与_describe的固定匹配不同，_alternative可进一步调用函数生成补全候选。
+此外，_alternative允许混合不同种类的补全候选。
 
-As arguments it takes a list of specifications each in the form 'TAG:DESCRIPTION:ACTION' where TAG is a special tag that identifies the type of completion matches,
-DESCRIPTION is used as a heading to describe the group of completion candidates collectively, and ACTION is one of the action types listed previously (apart from the ->STRING and =ACTION forms).
-For example:
+关于参数，该函数接受一列定义（specification），每项定义的形式为“TAG:DESCRIPTION:ACTION”（即“标签:描述:动作”），其中TAG是一个标识补全匹配种类的特殊标签。
+TODO 确定是标题，确定是除了->STRING和=ACTION之外。
+DESCRIPTION以标题（heading）的形式描述补全候选组，而ACTION是先前列出的动作种类之一（除了->STRING和=ACTION之外）。
+例如：
 #+BEGIN_SRC sh
-_alternative 'arguments:custom arg:(a b c)' 'files:filename:_files'
+_alternative 'arguments:自定义参数:(a b c)' 'files:文件名:_files'
 #+END_SRC
-The first specification adds completion candidates a, b & c, and the second specification calls the _files function for completing filepaths.
+第一个定义增加了补全候选a、b和c，而第二个定义调用_files函数以补全文件目录。
 
-We could split the specifications over several lines with \ and add descriptions to each of the custom args like this:
+我们可以用反斜杠 \ 将不同定义分成几行并给每个自定义参数加入描述文字：
 #+BEGIN_SRC sh
 _alternative \
-  'args:custom arg:((a\:"description a" b\:"description b" c\:"description c"))' \
-  'files:filename:_files'
+  'args:自定义参数:((a\:"描述a" b\:"描述b" c\:"描述c"))' \
+  'files:文件名:_files'
 #+END_SRC
 
-If we want to pass arguments to _files they can simply be included, like this:
+如果我们想向_files传递参数，我们可以直接写在_files后面：
 #+BEGIN_SRC sh
 _alternative \
-  'args:custom arg:((a\:"description a" b\:"description b" c\:"description c"))'\
-  'files:filename:_files -/'
+  'args:自定义参数:((a\:"描述a" b\:"描述b" c\:"描述c"))' \
+  'files:文件名:_files -/'
 #+END_SRC
 
-To use parameter expansion to create our list of completions we must use double quotes to quote the specifications,
-e.g:
+如要用参数展开创建补全列表，必须用双引号将定义括起来，
+如：
 #+BEGIN_SRC sh
 _alternative \
-  "dirs:user directory:($userdirs)" \
-  "pids:process ID:($(ps -A o pid=))"
+  "dirs:用户目录:($userdirs)" \
+  "pids:进程ID:($(ps -A o pid=))"
 #+END_SRC
-In this case the first specification adds the words stored in the $userdirs variable, and the second specification
-evaluates 'ps -A o pid=' to get a list of pids to use as completion candidates. In practice, we would make used of the existing _pids function for this.
+在此例子中第一个定义加入存于$userdirs变量的词汇，第二个定义执行'ps -A o pid='并获取pid表，表用作补全候选。
+实操中，我们使用已有的_pids函数，而不是像上面那样手写。
 
-We can use other utility functions such as _values in the ACTION to perform more complex completions, e.g:
+我们可以在ACTION中使用_values等其它工具函数以完成更复杂的补全，如：
 #+BEGIN_SRC sh
 _alternative \
-  "directories:user directory:($userdirs)" \
-  'options:comma-separated opt: _values -s , letter a b c'
+  "directories:用户目录:($userdirs)" \
+  'options:逗号分隔选项: _values -s , letter a b c'
 #+END_SRC
-this will complete the items in $userdirs, as well as a comma separated list containing a, b &/or c. Note the use of the initial space before _values. This is needed because _values doesn't understand standard compadd options for descriptions.
+该示例补全$userdirs里的项目，以及用逗号分隔的、含有a、b和/或c的列表。
+注意_values前面的空格。空格不可省略，因为_values不能接受标准compadd描述选项。
 
-As with _describe, the _alternative function can itself be used in an ACTION as part of a specification for _arguments
-or _regex_arguments.
-** Writing completion functions using _arguments
-With a single call to the  _arguments function you can create fairly sophisticated completion functions. It is intended to handle typical commands that take a variety of options along with some normal arguments.
-Like the _alternative function, _arguments takes a list of specification strings as arguments.
-These specification strings specify options and any corresponding option arguments (e.g. -f filename),
-or command arguments.
+和_describe一样，_alternative可用作ACTION并作为_arguments或_regex_arguments的一部分。
+** 用_arguments编写补全函数
+只需要调用_arguments函数一次就可以创造出非常智能的补全函数。该函数本身就是用于处理这种带有带参选项的命令的。
+如同_alternative函数，_arguments接受一列定义字符串参数。
+这些定义字符串指定选项和任何对应的选项参数（如：-f 文件名），或命令参数。
 
-Basic option specifications take the form '-OPT[DESCRIPTION]', e.g. like this:
+简单的选项定义用'-OPT[DESCRIPTION]'（即'-选项[描述]'），比如：
 #+BEGIN_SRC sh
-_arguments '-s[sort output]' '--l[long output]' '-l[long output]'
+_arguments '-s[排序后输出]' '--l[更多输出]' '-l[更多输出]'
 #+END_SRC
-Arguments for the option can be specified after the option description in this form '-OPT[DESCRIPTION]:MESSAGE:ACTION',
-where MESSAGE is a message to display and ACTION can be any of the forms mentioned in the ACTIONS section above.
-For example:
+选项参数可在选项描述后指定，形式用'-OPT[DESCRIPTION]:MESSAGE:ACTION'（即'-选项[描述]:消息:动作'）,
+其中MESSAGE是待显示的信息，而ACTION可以是前面的动作（Actions）章节提到的任何形式。
+比如：
 #+BEGIN_SRC sh
-_arguments '-f[input file]:filename:_files'
+_arguments '-f[输入文件]:文件名:_files'
 #+END_SRC
 
-Command argument specifications take the form 'N:MESSAGE:ACTION' where N indicates that it is the Nth command argument,
-and MESSAGE & ACTION are as before. If the N is omitted then it just means the next command argument (after any that have
-already been specified). If a double colon is used at the start (after N) then the argument is optional.
-For example:
+命令参数定义用'N:MESSAGE:ACTION'（即'N:消息:动作'），其中N指定这是第N个命令参数，而MESSAGE和ACTION都和前面的一样。
+如果N被省略，则其仅表示这是（在所有已定义的参数之后的）下一个参数。如果开头（在N后面）用的是双冒号，则参数非必需。
+比如：
 #+BEGIN_SRC sh
-_arguments '-s[sort output]' '1:first arg:_net_interfaces' '::optional arg:_files' ':next arg:(a b c)'
+_arguments '-s[排序后输出]' '1:第一个参数:_net_interfaces' '::可选参数:_files' ':下一个参数:(a b c)'
 #+END_SRC
-here the first arg is a network interface, the next optional arg is a file name, the last arg can be either a, b or c,
-and the -s option may be completed at any position.
+这里第一个参数是网络接口，下一个可选参数是一个文件名，最后一个参数可以是a、b或c，而-s选项可以在任何位置被补全。
 
-The _arguments function allows the full set of ACTION forms listed in the ACTION section above.
-This means that you can use actions for selecting case statement branches like this:
+_arguments函数允许所有ACTION形式（在前面的动作(Actions)章节列出）。
+这表示你可以用动作来选择case语句分支，如：
 #+BEGIN_SRC sh
-_arguments '-m[music file]:filename:->files' '-f[flags]:flag:->flags'
+_arguments '-m[音乐文件]:文件名:->files' '-f[flags]:flag:->flags'
 case "$state" in
     files)
         local -a music_files
@@ -243,180 +240,166 @@ case "$state" in
         ;;
 esac
 #+END_SRC
-In this case paths to music files are completed stepwise descending down directories using the _multi_parts function,
-and the flags are completed as a comma separated list using the _values function.
+在此例子中指向音乐文件的路径被_multi_parts一步步地沿目录下降补全，
+而flags被_values函数按照逗号分隔列表补全。
 
-I have just given you the basics of _arguments specifications here, you can also specify mutually exclusive options,
-repeated options & arguments, options beginning with + instead of -, etc. For more details see the [[https://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-System][official documentation]].
-Also have a look at the tutorials mentioned at the end of this document, and the completion functions in the [[https://github.com/vapniks/zsh-completions/tree/master/src][src directory]].
-** Writing completion functions using _regex_arguments and _regex_words
-If you have a complex command line specification with several different possible argument sequences then
-the _regex_arguments function may be what you need. It typically works well where you have a series of keywords followed by a variable number of arguments.
+我已经介绍了_arguments定义的基础部分，你还可以定义互斥选项、重复选项和参数、以+开头的选项等。有关更多细节，查阅[[https://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-System][官方文档]]。
+同时你也可以看看本文末尾列出的教程，以及[[https://github.com/vapniks/zsh-completions/tree/master/src][src目录]]下的补全函数。
+** 用_regex_arguments和_regex_words编写补全函数
+如果你的命令行定义比较复杂，有多个可能的参数序列，那你可能需要_regex_arguments函数。
+该函数也适用于有一系列跟着多个参数的关键词的情况。
 
-_regex_arguments creates a completion function whose name is given by the first argument.
-Hence you need to first call _regex_arguments to create the completion function, and then call that function,
-e.g. like this:
+_regex_arguments创建名字由第一个参数给出的补全函数。
+因此你需要先调用_regex_arguments来创建补全函数，然后再调用该函数，比如：
 #+BEGIN_SRC sh
 _regex_arguments _cmd OTHER_ARGS..
 _cmd "$@"
 #+END_SRC
 
-The OTHER_ARGS should be sequences of specifications for matching & completing words on the command line.
-These sequences can be separated by '|' to represent alternative sequences of words.
-You can use bracketing to arbitrary depth to specify alternate subsequences, but the brackets must be backslashed like this \( \)
-or quoted like this '(' ')'.
+OTHER_ARGS（即“其它参数”）是一序列用于在命令行上匹配和补全词汇的定义。
+这些序列可被'|'分隔来表示备选词汇序列。
+你可以用任意嵌套深度的括号来指定备选序列，但括号必须带反斜杠前缀，如\( \)，或用引号括起来，如'(' ')'。
 
-For example:
+比如：
 #+BEGIN_SRC sh
-_regex_arguments _cmd SEQ1 '|' SEQ2 \( SEQ2a '|' SEQ2b \)
+_regex_arguments _cmd 序列1 '|' 序列2 \( 序列2a '|' 序列2b \)
 _cmd "$@"
 #+END_SRC
-This specifies a command line matching either SEQ1, or SEQ2 followed by SEQ2a or SEQ2b. You are describing the form arguments to the command take in the form of a regular expression grammar.
+该示例定义一个匹配序列1或序列2后跟着序列2a或序列2b的命令行。这种方式和正则表达式语法类似。
 
-Each specification in a sequence must contain a / PATTERN/ part at the start followed by an optional ':TAG:DESCRIPTION:ACTION'
-part.
+一个序列中的每个定义必须在开头包含一个/ PATTERN/ （即/ 模式/）部分，后跟着可选的':TAG:DESCRIPTION:ACTION'（即':标签:描述:动作'）部分。
 
-Each PATTERN is a regular expression to match a word on the command line. These patterns are processed sequentially
-until we reach a pattern that doesn't match at which point any corresponding ACTION is performed to obtain completions
-for that word. Note that there needs to be a pattern to match the initial command itself.
-See below for further explanation about PATTERNs.
+每个PATTERN是一个匹配一命令行词汇的正则表达式。这些模式按顺序匹配，直到某个模式不匹配，不匹配的模式将执行对应的ACTION（动作）以进行补全。
+注意，一定要有一个匹配命令自身的模式。
+下面有对PATTERN（模式）更详细的解释。
 
-The ':TAG:DESCRIPTION:ACTION' part is interpreted in the same way as for the _alternative function specifications,
-except that it has an extra : at the start, and now all of the possible ACTION formats listed previously are allowed.
+':TAG:DESCRIPTION:ACTION'的使用方法和_alternative相同，只是开头多了个冒号“:”，并且前面列出的所有ACTION格式都可用。
 
-Here is an example:
+例如：
 #+BEGIN_SRC sh
 _regex_arguments _cmd /$'[^\0]##\0'/ \( /$'word1(a|b|c)\0'/ ':word:first word:(word1a word1b word1c)' '|'\
    /$'word11(a|b|c)\0'/ ':word:first word:(word11a word11b word11c)' \( /$'word2(a|b|c)\0'/ ':word:second word:(word2a word2b word2c)'\
    '|' /$'word22(a|b|c)\0'/ ':word:second word:(word22a word22b word22c)' \) \)
 _cmd "$@"
 #+END_SRC
-in this case the first word can be word1 or word11 followed by an a, b or c, and if the first word contains 11 then a second
-word is allowed which can be word2 followed by and a, b, or c, or a filename.
+TODO 英文原文和例子有出入
+在这个例子中第一个词可以是word1（即“词1”，下同）或者word11后紧跟a、b或c，并且如果第一个词含有11，则第二个词可以是word2后紧跟a、b或c，或一个文件名。
 
-If this sounds too complicated a much simpler alternative is to use the _regex_words function for creating
-specifications for _regex_arguments.
-*** Patterns
-You may notice that the / PATTERN/ specs in the previous example don't look like normal regular expressions.
-Often a string parameter in the form $'foo\0' is used. This is so that the \0 in the string is interpreted correctly
-as a null char which is used to separate words in the internal representation. If you don't include the \0 at the end
-of the pattern you may get problems matching the next word. If you need to use the contents of a variable in a pattern,
-you can double quote it so that it gets expanded and then put a string parameter containing a null char afterwards,
-like this: "$somevar"$'\0'
+如果感觉太复杂，你也可以用更简单的_regex_words函数达到相同效果。
+*** 模式
+你可能注意到了上个例子中的/ PATTERN/和普通的正则表达式不太一样。
+通常使用的是形如$'foo\0'的字符串参数。这是为了让\0表示成null字符，而zsh内部用来分隔词汇的也是null字符。
+如果不在末尾包含\0的话，可能会无法匹配下一个词。如果你要把一个变量的值作为模式的一部分，你可以用双括号包起来，
+这样变量就会展开，然后再在后面加个包含null字符的字符串参数，比如："$somevar"$'\0'（somevar即“某变量”）。
 
-The regular expression syntax for patterns seems to be a bit different from normal regular expressions,
-and I can't find documentation anywhere.
-However I have managed to work out what the following special chars are for:
-| *  | wildcard - any number of chars                                            |
-| ?  | wildcard - single char                                                    |
-| #  | zero or more of the previous char (like * in a normal regular expression) |
-| ## | one or more of the previous char (like + in a normal regular expression)  |
+表示模式用的正则表达式语法和正常的正则表达式不太一样，但我也找不到有关的文档。
+不过我还是折腾出这些特殊字符的意义：
+| *  | 通配符 - 任何数量的字符                              |
+| ?  | 通配符 - 单个字符                                    |
+| #  | 零个或更多的上一个字符（和一般正则表达式里的*一样）  |
+| ## | 一个或更多的上一个字符（和一般正则表达式里的+一样）  |
 *** _regex_words
-The _regex_words function makes it much easier to create specifications for _regex_arguments.
-The results of calling _regex_words can be stored in a variable which can then be used instead
-of a specification for _regex_arguments.
+_regex_words函数比_regex_arguments更简单易用。
+调用_regex_words后的结果可以存在变量里。
 
-To create a specification using _regex_words you supply it with a tag followed by a description followed by a list
-of specifications for individual words. These specifications take the form 'WORD:DESCRIPTION:SPEC' where WORD is the
-word to be completed, DESCRIPTION is a description for it, and SPEC can be another variable created by _regex_words
-specifying words that come after the current word or blank if there are no further words.
-For example:
+要用_regex_words创建一个定义（specification），你需要提供一个标签，后跟一段描述，后跟一个定义不同词汇的列表。
+这些定义采用'WORD:DESCRIPTION:SPEC'（即'词汇:描述:定义'）的格式，WORD即待补全的词，DESCRIPTION是对应的描述，
+SPEC可以是由_regex_words创建的另一个变量以指定当前词后的下一个词汇，也可以留空以表示没有更多的词。
+比如：
 #+BEGIN_SRC sh
-_regex_words firstword 'The first word' 'word1a:a word:' 'word1b:b word:' 'word1c:c word'
+_regex_words firstword '第一个词' 'word1a:词a:' 'word1b:词b:' 'word1c:词c'
 #+END_SRC
-the results of this function call will be stored in the $reply array, and so we should store it in another array
-before $reply gets changed again, like this:
+该函数的返回结果将被存入$reply（reply即“回复”、“回应”）数组里，所以我们需要在$reply变化前将结果存进另一个数组里，如：
 #+BEGIN_SRC sh
 local -a firstword
 _regex_words word 'The first word' 'word1a:a word:' 'word1b:b word:' 'word1c:c word'
 firstword="$reply[@]"
 #+END_SRC
-we could then use it with _regex_arguments like this:
+firstword即“第一个词”。
+然后我们可以把结果用在_regex_arguments里，如：
 #+BEGIN_SRC sh
 _regex_arguments _cmd /$'[^\0]##\0'/ "$firstword[@]"
 _cmd "$@"
 #+END_SRC
-Note that I have added an extra pattern for the initial command word itself.
+注意到我给命令自身也加了模式。
 
-Here is a more complex example where we call _regex_words for different words on the command line
+这里还有个更复杂的词汇，我们调用_regex_words以匹配不同词汇
 #+BEGIN_SRC sh
 local -a firstword firstword2 secondword secondword2
-_regex_words word1 'The second word' 'woo:tang clan' 'hoo:not me'
+_regex_words word1 '第二个词' 'woo:鄧族' 'hoo:不关我事'
 secondword=("$reply[@]")
-_regex_words word2 'Another second word' 'yee:thou' 'haa:very funny!'
+_regex_words word2 '另一个第二个词' 'yee:汝' 'haa:很搞笑！'
 secondword2=("$reply[@]")
-_regex_words commands 'The first word' 'foo:do foo' 'man:yeah man' 'chu:at chu'
+_regex_words commands '第一个词' 'foo:做foo' 'man:yeah man' 'chu:at chu' # 译注：作者在自嗨，at chu除了比较像at you外没什么特殊意义
 firstword=("$reply[@]")
-_regex_words word4 'Another first word' 'boo:scare somebody:$secondword' 'ga:baby noise:$secondword'\
- 'loo:go to the toilet:$secondword2'
+_regex_words word4 '另一个第一个词' 'boo:吓死某人:$secondword' 'ga:嘤嘤嘤:$secondword'\
+ 'loo:上厕所:$secondword2'
 firstword2=("$reply[@]")
 
 _regex_arguments _hello /$'[^\0]##\0'/ "${firstword[@]}" "${firstword2[@]}"
 _hello "$@"
 #+END_SRC
-In this case the first word can be one of "foo", "man", "chu", "boo", "ga" or "loo".
-If the first word is "boo" or "ga" then the second word can be "woo" or "hoo",
-and if the first word is "loo" then the second word can be "yee" or "haa", in the other
-cases there is no second word.
+在这个例子中第一个词可以是"foo"、"man"、"chu"、"boo"、"ga"或"loo"。
+如果第一个词是"boo"或"ga"，那下一个词可以是"woo"或"hoo"，
+而如果第一个词是"loo"则第二个词可以是"yee"或"haa"，其它情况下没有第二个词。
 
-For a good example of the usage of _regex_words have a look at the _ip function.
-** complex completions with _values, _sep_parts, & _multi_parts
-The _values, _sep_parts & _multi_parts functions can be used either on their own, or as ACTIONs in specifications for
-_alternative, _arguments or _regex_arguments. The following examples may be instructive.
-See the [[https://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-System][official documentation]] for more info.
+_ip函数是_regex_words的一个好用例。
+** 用_values、_sep_parts和_multi_parts实现复杂补全
+_values、_sep_parts和_multi_parts可以单独使用，也可以作为_alternative、_arguments或_regex_arguments定义里的ACTION。可以看看下面的例子。
+查阅[[https://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-System][官方文档]]以了解更多信息。
 
-Space separated list of mp3 files:
+空格分隔的mp3文件列表：
 #+BEGIN_SRC sh
-_values 'mp3 files' ~/*.mp3
+_values 'mp3文件' ~/*.mp3
 #+END_SRC
 
-Comma separated list of session id numbers:
+逗号分隔的会话id列表：
 #+BEGIN_SRC sh
-_values -s , 'session id' "${(uonzf)$(ps -A o sid=)}"
+_values -s , '会话id' "${(uonzf)$(ps -A o sid=)}"
 #+END_SRC
 
-Completes foo@news:woo, or foo@news:laa, or bar@news:woo, etc:
+补全foo@news:woo、foo@news:laa或bar@news:woo等：
 #+BEGIN_SRC sh
 _sep_parts '(foo bar)' @ '(news ftp)' : '(woo laa)'
 #+END_SRC
 
-Complete some MAC addresses one octet at a time:
+补全MAC地址，一次补全一个八进制数：
 #+BEGIN_SRC sh
 _multi_parts : '(00:11:22:33:44:55 00:23:34:45:56:67 00:23:45:56:67:78)'
 #+END_SRC
 
-** Adding completion words directly using compadd
-For more fine grained control you can use the builtin compadd function to add completion words directly.
-This function has many different options for controlling how completions are displayed and how text on the command line
-can be altered when words are completed. Read the  [[https://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-System][official documentation]] for full details.
-Here I just give a few simple examples.
+** 用compadd直接添加补全词
+你可以使用内置的compadd函数增加补全词，以获得更细致的控制。
+这个函数有各种选项控制如何显示补全以及补全时如何替换命令行上的文字。
+阅读[[https://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-System][官方文档]]以获得更多细节。
+这里我只给出几个简单的示例。
 
-Add some words to the list of possible completions:
+向补全列表里加入若干词汇：
 #+BEGIN_SRC sh
 compadd foo bar blah
 #+END_SRC
 
-As above but also display an explanation:
+同上但显示注释：
 #+BEGIN_SRC sh
-compadd -X 'Some completions' foo bar blah
+compadd -X '一些注释' foo bar blah
 #+END_SRC
 
-As above but automatically insert a prefix of "what_" before the completed word:
+同上但在补全前自动插入"what_"前缀
 #+BEGIN_SRC sh
 compadd -P what_ foo bar blah
 #+END_SRC
 
-As above but automatically insert a suffix of "_todo" after the completed word:
+同上但补全后自动插入"_todo"后缀：
 #+BEGIN_SRC sh
 compadd -S _todo foo bar blah
 #+END_SRC
 
-As above but automatically remove the "_todo" suffix if a blank char is typed after the suffix:
+同上但在后缀后打空格时自动移除"_todo"后缀：
 #+BEGIN_SRC sh
 compadd -P _todo -q foo bar blah
 #+END_SRC
 
-Add words in array $wordsarray to the list of possible completions
+向补全数组$wordsarray（wordsarray即“词数组”）加入词汇
 #+BEGIN_SRC sh
 compadd -a wordsarray
 #+END_SRC
