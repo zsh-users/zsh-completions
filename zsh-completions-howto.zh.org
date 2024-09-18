@@ -437,7 +437,7 @@ _arguments、_alternative、_regex_arguments等的定义处要在正确的地方
 你可以向ACTION（动作）加入另一个空选项（比如\:），如':TAG:DESCRIPTION:((opt1\:"opt1描述" \:))'
 注意这只对在定义参数中使用ACTION的工具函数（_arguments、_regex_arguments等）有效。
 
-* Other resources
-[[https://wikimatze.de/writing-zsh-completion-for-padrino/][Here]] is a nicely formatted short tutorial showing basic usage of the _arguments function,
-and [[https://web.archive.org/web/20190411104837/http://www.linux-mag.com/id/1106/][here]] is a slightly more advanced tutorial using the _arguments function.
-[[https://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-System][Here]] is the zshcompsys man page.
+* 其它资源
+[[https://wikimatze.de/writing-zsh-completion-for-padrino/][这]]是个展示_arguments函数的基本使用方法的教程，短小精悍，
+而[[https://web.archive.org/web/20190411104837/http://www.linux-mag.com/id/1106/][这]]是_arguments函数的稍稍更进阶的教程。
+[[https://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-System][这]]是zshcompsys手册页（man page）。
