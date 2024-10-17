@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Node.js v22.8.0 (https://nodejs.org)
+#  Completion script for Node.js v23.0.0 (https://nodejs.org)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -100,22 +100,26 @@ _arguments -C \
   '--enable-etw-stack-walking[provides heap data to ETW Windows native tracing]' \
   '--enable-fips[enable FIPS crypto at startup]' \
   '--enable-source-maps[source map support]' \
+  '--entry-url[treat the entrypoint as a URL]' \
   '*--env-file=[set environment variables from supplied file]:envfile:_files' \
+  '*--env-file-if-exists=[set environment variables from supplied file if exists]:envfile:_files' \
   '(- 1 *)'{-e,--eval}'[evaluate script]:inline JavaScript' \
   '--experimental-async-context-frame[improve AsyncLocalStorage performance with AsyncContextFrame]' \
   '--experimental-default-type=[set module system to use by default]:module system:(commonjs module)' \
+  '--experimental-eventsource[enable experimental EventSource API]' \
   '--experimental-import-meta-resolve[experimental ES Module import.meta.resolve() support]' \
   '(--loader --experimental-loader)'{--loader,--experimental-loader}'=[Specify the module of a custom ECMAScript Module loader]: :_files' \
-  '--experimental-network-imports[experimental https support for the ES Module loader]' \
+  '--experimental-network-inspection[enable experimental network inspection support]' \
   '--experimental-permission[enable the permission system]' \
   '--experimental-print-required-tla[print pending top-level await]' \
-  '--experimental-require-module[allow loading explicit ES Modules in require()]' \
   '--experimental-sea-config=[generate a blob that can be embedded into the single executable application]: :_files' \
   '--experimental-sqlite[experimental node:sqlite module]' \
   '--experimental-strip-types[experimental type-stripping for TypeScript files]' \
   '--experimental-test-coverage[enable code coverage in the test runner]' \
+  '--experimental-test-isolation=[configures the type of test isolation used in the test runner]:isolation' \
   '--experimental-test-module-mocks[enable module mocking in the test runner]' \
   '--experimental-test-snapshots[enable snapshot testing in the test runner]' \
+  '--experimental-transform-types[enable transformation of TypeScript-onlysyntax into JavaScript code]' \
   '--experimental-vm-modules[experimental ES Module support in vm module]' \
   '--experimental-wasm-modules[experimental ES module support for webassembly modules]' \
   '--experimental-webstorage[experimental Web Storage API]' \
@@ -130,7 +134,6 @@ _arguments -C \
   '--heap-prof-name=[file name of the V8 heap profile generated]: :_files' \
   '--heapsnapshot-near-heap-limit=[Generate heapsnapshots whenever V8 is approaching the heap limit]:limit' \
   '--heapsnapshot-signal=[Generate heap snapshot on specified signal]:signals:_signals -s' \
-  '--huge-max-old-generation-size[increase default maximum heap size with 16GB or more]' \
   '--icu-data-dir=[set ICU data load path to dir (overrides NODE_ICU_DATA) note: linked-in ICU data is present]: :_directories' \
   '--import=[ES module to preload]:module:_node_files' \
   '--input-type=[set module type for string input]:module type :(commonjs module)' \
@@ -149,11 +152,9 @@ _arguments -C \
   '--no-addons[disable loading native addons]' \
   '--no-deprecation[silence deprecation warnings]' \
   '--no-experimental-detect-module[when ambigous modules fail to evaluate, try again to evaluate them as ES modules]' \
-  '--no-experimental-fetch[disable experimental Fetch API]' \
-  '--no-experimental-global-customevent[expose experimental CustomEvent on the global scope]' \
   '--no-experimental-global-navigator[expose experimental Navigator API on the global scope]' \
-  '--no-experimental-global-webcrypto[expose experimental Web Crypto API on the global scope]' \
   '--no-experimental-repl-await[disable experimental await keyword support in REPL]' \
+  '--no-experimental-require-module[allow loading synchronous ES Modules in require()]' \
   '--no-experimental-websocket[experimental WebSocket API (currently set)]' \
   '--no-extra-info-on-fatal-exception[hide extra information on fatal exception that causes exit]' \
   '--no-force-async-hooks-checks[disable checks for async_hooks]' \
@@ -209,7 +210,6 @@ _arguments -C \
   '(--tls-min-v1.0 --tls-min-v1.2 --tls-min-v1.3)--tls-min-v1.1[set default TLS minimum to TLSv1.1]' \
   '(--tls-min-v1.0 --tls-min-v1.1 --tls-min-v1.3)--tls-min-v1.2[set default TLS minimum to TLSv1.2]' \
   '(--tls-max-v1.2 --tls-min-v1.0 --tls-min-v1.1 --tls-min-v1.2)--tls-min-v1.3[set default TLS minimum to TLSv1.3]' \
-  '--trace-atomics-wait[trace Atomics.wait operations]' \
   '--trace-deprecation[show stack traces on deprecations]' \
   '--trace-event-categories[comma separated list of trace event categories to record]: :{_values -s , categories node node.async_hooks node.bootstrap node.perf node.perf.usertiming node.perf.timerify node.fs.sync node.vm.script v8}' \
   '--trace-event-file-pattern[Template string specifying the filepath for the trace-events data, it supports ${rotation} and ${pid} log-rotation id. %2$u is the pid.]:template string' \
