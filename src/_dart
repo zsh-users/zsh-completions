@@ -24,7 +24,7 @@
 # Description
 # -----------
 #
-#  Completion script for dart 3.2.0 (https://dart.dev/)
+#  Completion script for dart 3.5.4 (https://dart.dev/)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -75,7 +75,7 @@ _dart() {
         (create)
           _arguments \
             '(- *)'{-h,--help}'[Print this usage information]' \
-            '(-t --template)'{-t,--template}'[The project template to use]:template:(console package server-shelf web)' \
+            '(-t --template)'{-t,--template}'[The project template to use]:template:(cli console package server-shelf web)' \
             '(--no-pub --pub)--pub[Run "pub get" after the project has been created]' \
             '(--no-pub --pub)--no-pub[Do not run "pub get" after the project has been created]' \
             '--force[Force project generation even if the target directory already exists]' \
@@ -88,6 +88,7 @@ _dart() {
             '(- *)--version[Prints the DevTools version]' \
             '--host=[Hostname to serve DevTools on(defaults to localhost)]:host' \
             '--port=[Port to serve DevTools on, specify 0 to automatically use any available port(defaults to 9100)]:port' \
+            '--dtd-uri=[A URI pointing to a Dart Tooling Daemon]:uri' \
             '(--no-launch-browser --launch-browser)--launch-browser[Launches DevTools in a browser immediately at start]' \
             '(--no-launch-browser --launch-browser)--no-launch-browser[Do not launches DevTools in a browser immediately at start]' \
             '--machine[Sets output format to JSON for consumption in tools]' \
@@ -153,6 +154,7 @@ _dart() {
           _arguments \
             '(- *)'{-h,--help}'[Print this usage information]' \
             '(-r --resident)'{-r,--resident}'[Enable faster startup times with the resident frontend compiler]' \
+            '--resident-compiler-info-file[The path to an info file to use to communicate with a resident frontend compiler]:file:_files' \
             '--observe=[Specify debug port and bind address]:port_address' \
             '--enable-vm-service=[Enable the VM service and listens on the specified port for connections(default port 8181)]:port_address' \
             '(--serve-devtools --no-serve-devtools)--serve-devtools[Serves an instance of the Dart DevTools debugger and profiler]' \
@@ -167,6 +169,19 @@ _dart() {
             '--timeline-recorder=[Selects the timeline recorder to use]:recorder:(none ring endless startup systrace file callback)' \
             '--verbosity[Sets the verbosity level of the compilation]:level:(all error info warning)' \
             '*'{-d,--define=}'[Define an environment declaration]:key_value:' \
+            '--disable-service-auth-codes[Disables the requirement for an authentication code]' \
+            '--enable-service-port-fallback[Use 0 if binding port is failed]' \
+            '--root-certs-file=[The path to a file containing the trusted root certificates]:file:_files' \
+            '--root-certs-cache=[The path to a cache directory containing the trusted root certificates]:_files -/' \
+            '--trace-loading[Enable tracing of library and script loading]' \
+            '--packages=[The path to the package resolution configuration file]:file:_files'\
+            '--write-service-info=[Outputs information necessary to connect to the VM service]:service_info:_files' \
+            '(--no-dds --dds)--dds[Use the Dart Development Service for enhanced debugging functionality]' \
+            '(--no-dds --dds)--no-dds[Not use the Dart Development Service for enhanced debugging functionality]' \
+            '(--no-serve-observatory --serve-observatory)--serve-observatory[Enable hosting Observatory throught the VM service]' \
+            '(--no-serve-observatory --serve-observatory)--no-serve-observatory[Disable hosting Observatory throught the VM service]' \
+            '(--no-print-dtd --print-dtd)--print-dtd[Prints connection details for the Dart Tooling Daemon]' \
+            '(--no-print-dtd --print-dtd)--no-print-dtd[Not print connection details for the Dart Tooling Daemon]' \
             '--enable-experiment=[Enable one or more experimental features]:features:_dart_run_enable_experiment' \
             '*: :_files' \
             && ret=0
@@ -179,6 +194,7 @@ _dart() {
             '*'{-N,--plain-name}'[A plain-text substring of the name of the test to run]:plain_name' \
             '*'{-t,--tags}'[Run only tests with all of the specified tags]:tag' \
             '*'{-x,--exclude-tags}'[Do not run tests with any of the specified tags]:tag' \
+            '--run-skipped[Run skipped tests instead of skipping them]' \
             '(-p --platform)'{-p,--platform}'[The platform on which to run the tests]:platform:(vm chrome firefox edge node experimental-chrome-wasm)' \
             '(-c --compiler)'{-c,--compiler}'[The compiler to use to run tests]:compiler:(dart2js dart2wasm exe kernel source)' \
             '(-P --preset)'{-P,--preset}'[The configuration preset to use]:preset' \
@@ -232,8 +248,12 @@ _dart_compile() {
         (aot-snapshot|exe|jit-snapshot|kernel)
           opts+=(
             '--verbosity[Sets the verbosity level of the compilation]:level:(all error info warning)'
-            '*'{-d,--define=}'[Define an environment declaration]:key_value:'
             '(-p --packages)'{-p,--packages=}'[Get package locations from the specified file instead of .dart_tool/package_config.json]:config:_files'
+          )
+          ;|
+        (aot-snapshot|exe|jit-snapshot|kernel|wasm)
+          opts+=(
+            '*'{-d,--define=}'[Define an environment declaration]:key_value:'
           )
           ;|
         (aot-snapshot|exe)
@@ -242,9 +262,15 @@ _dart_compile() {
             '--target-os[Compile to a specific target operating system]:os:(android fuchsia ios linux macos windows)'
           )
           ;|
-        (aot-snapshot)
+        (aot-snapshot|wasm)
           opts+=(
             '--enable-asserts[Enable assert statements]'
+          )
+          ;|
+        (wasm)
+          opts+=(
+            '(--no-source-maps --source-maps)--source-maps[Generate a source map file]'
+            '(--no-source-maps --source-maps)--no-source-maps[Not generate a source map file]'
           )
           ;;
         (js)
@@ -271,6 +297,7 @@ _dart_compile_subcommands() {
     "jit-snapshot:Compile Dart to a JIT snapshot"
     "js:Compile Dart to JavaScript"
     "kernel:Compile Dart to a kernel snapshot"
+    "wasm:Compile Dart to a WebAssembly/WasmGC module"
   )
   _describe -t commands 'command' commands "$@"
 }
@@ -563,10 +590,16 @@ _dart_run_timeline_streams() {
 (( $+functions[_dart_run_enable_experiment] )) ||
 _dart_run_enable_experiment() {
   local -a features=(
-    class-modifiers const-functions inference-update-2 inline-class
-    macros native-asserts patterns records sealed-class test-experiment variance
+    'const-function:Allow more of the Dart language to be executed in const expression'
+    'macros:Static meta-programming'
+    'native-asserts:Compile and bundle native asserts'
+    'null-aware-elements:Null-aware elements and map entries in collections'
+    'resource-identifiers:Output arguments used by static functions'
+    'test-experiment:Has no effect'
+    'variance:Sound variance'
+    'wildcard-variables:Local declarations and parameters named "_" are non binding'
   )
-  _values -s ',' features $features
+  _describe -t features 'command' features "$@"
 }
 
 (( $+functions[_dart_test_reporter] )) ||
