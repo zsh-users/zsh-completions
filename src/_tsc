@@ -24,7 +24,7 @@
 # Description
 # -----------
 #
-#  Completion script for tsc v5.0.4. (https://www.typescriptlang.org/)
+#  Completion script for tsc v5.6.3. (https://www.typescriptlang.org/)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -34,23 +34,179 @@
 #
 # ------------------------------------------------------------------------------
 
-_arguments \
-  '(- *)'{-h,--help}'[Print help message]' \
-  '(- *)--all[Show all compiler options]' \
-  '(-b --build)'{-b,--build}'[Build one or more projects and their dependencies if out of date]' \
-  '--init[Initializes a TypeScript project and creates a tsconfig.json file]' \
-  '--listFilesOnly[Print names of files that are part of the compilation and then stop processing]' \
-  '--locale[Set the language of the messaging from TypeScript]:locale ' \
-  '(-p --project)'{-p,--project}'[Compile the project given the path to its configuration file]:config:_files' \
-  '--showConfig[Print the final configuration instead of building]' \
-  '(- *)'{-v,--version}"[Print the compiler's version]" \
-  '(-w --watch)'{-w,--watch}'[Watch input files]' \
-  '(-v --verbose)'{-v,--verbose}'[Enable verbose logging]' \
-  '(-d --dry)'{-d,--dry}'[Show what would be built]' \
-  '(-f --force)'{-f,--force}'[Build all projects, including those that appear to be up to date]' \
-  '--clean[Delete the outputs of all projects]' \
+local -a module_types=(
+  none commonjs amd umd system es6/es2015 es2020 es2022 esnext node16 nodenext preserve
+)
+
+local -a bundle_libraries=(
+  es5 es6/es2015 es7/es2016 es2017 es2018 es2019 es2020 es2021 es2022
+  es2023 esnext dom dom.iterable dom.asynciterable webworker
+  webworker.importscripts webworker.iterable webworker.asynciterable
+  scripthost es2015.core es2015.collection es2015.generator
+  es2015.iterable es2015.promise es2015.proxy es2015.reflect
+  es2015.symbol es2015.symbol.wellknown es2016.array.include
+  es2016.intl es2017.date es2017.object es2017.sharedmemory
+  es2017.string es2017.intl es2017.typedarrays es2018.asyncgenerator
+  es2018.asynciterable/esnext.asynciterable es2018.intl es2018.promise
+  es2018.regexp es2019.array es2019.object es2019.string
+  es2019.symbol/esnext.symbol es2019.intl es2020.bigint/esnext.bigint
+  es2020.date es2020.promise es2020.sharedmemory es2020.string
+  es2020.symbol.wellknown es2020.intl es2020.number es2021.promise
+  es2021.string es2021.weakref/esnext.weakref es2021.intl es2022.array
+  es2022.error es2022.intl es2022.object es2022.sharedmemory
+  es2022.string es2022.regexp es2023.array es2023.collection
+  es2023.intl esnext.array esnext.collection esnext.intl
+  esnext.disposable esnext.string esnext.promise esnext.decorators
+  esnext.object esnext.regexp esnext.iterator decorators
+  decorators.legacy
+)
+
+local -a targets=(
+  es5 es6/es2015 es2016 es2017 es2018 es2019 es2020 es2021 es2022 es2023 esnext
+)
+
+local -a watch_modes=(
+  fixedpollinginterval prioritypollinginterval dynamicprioritypolling
+  fixedchunksizepolling usefsevents usefseventsonparentdirectory
+)
+
+local -a opts=(
+  '(- *)--all[Show all compiler options]'
+  '(-b --build)'{-b,--build}'[Build one or more projects and their dependencies if out of date]'
+  '(- *)'{-h,--help,-?}'[Print help message]'
+  '--init[Initializes a TypeScript project and creates a tsconfig.json file]'
+  '--listFilesOnly[Print names of files that are part of the compilation and then stop processing]'
+  '--locale[Set the language of the messaging from TypeScript]:locale'
+  '(-p --project)'{-p,--project}'[Compile the project given the path to its configuration file]:config:_files'
+  '--showConfig[Print the final configuration instead of building]'
+  '(-w --watch)'{-w,--watch}'[Watch input files]'
+  '--allowArbitraryExtensions[Enable importing files with any extension]'
+  '--allowImportingTsExtensions[Allow imports to include TypeScript file extensions]'
+  '--allowUmdGlobalAccess[Allow accessing UMD globals from modules]'
+  '--baseUrl[Specify the base directory to resolve non-relative module names]:url'
+  '(-m --module)'{-m,--module}'[Specify what module code is generated]:type:(($module_types))'
+  '--moduleResolution[Specify how TypeScript looks up a file from a given module specifier]:(node10 node16 nodenext bundler)'
+  '--moduleSuffixes[List of file name suffixes to search when resolving a module]:suffixes'
+  "--noResolve[Disallow 'import's from expanding the number of files TypeScript should add to a project]"
+  '--noUncheckedSideEffectImports[Check side effect imports]'
+  '--paths[Specify a set of entries that re-map imports to additional lookup locations]:paths'
+  '--resolveJsonModule[Enable importing .json files]'
+  "--resolvePackageJsonExports[Use the package.json 'exports' field when resolving package imports]"
+  "--resolvePackageJsonImports[Use the package.json 'imports' field when resolving imports]"
+  '--rootDir[Specify the root folder within your source files]:dir:_files -/'
+  '--rootDirs[Allow multiple folders to be treated as one when resolving modules]:dirs:_files -/'
+  "--typeRoots[Specify multiple folders that act like './node_modules/@types']:dirs:_files -/"
+  '--types[Specify type package names to be included without being referenced in a source file]:packages'
+  "--allowJs[Allow JavaScript files to be a part of your program]"
+  '--checkJs[Enable error reporting in type-checked JavaScript files]'
+  "--maxNodeModuleJsDepth[Specify the maximum folder depth used for checking JavaScript files from 'node_modules']:depth"
+  "--allowSyntheticDefaultImports[Allow 'import x from y' when a module doesn't have a default export]"
+  '--esModuleInterop[Emit additional JavaScript to ease support for importing CommonJS modules]'
+  '--forceConsistentCasingInFileNames[Ensure that casing is correct in imports]'
+  '--isolatedDeclarations[Require sufficient annotation on exports so other tools can trivially generate declaration files]'
+  '--isolatedModules[Ensure that each file can be safely transpiled without relying on other imports]'
+  '--preserveSymlinks[Disable resolving symlinks to their realpath. This correlates to the same flag in node]'
+  '--verbatimModuleSyntax[Do not transform or elide any imports or exports not marked as type-only]'
+  '--allowUnreachableCode[Disable error reporting for unreachable code]'
+  '--allowUnusedLabels[Disable error reporting for unused labels]'
+  "--alwaysStrict[Ensure 'use strict' is always emitted]"
+  "--exactOptionalPropertyTypes[Interpret optional property types as written, rather than adding 'undefined']"
+  '--noFallthroughCasesInSwitch[Enable error reporting for fallthrough cases in switch statements]'
+  '--noImplicitAny[Enable error reporting for expressions and declarations with an implied "any" type]'
+  '--noImplicitOverride[Ensure overriding members in derived classes are marked with an override modifier]'
+  '--noImplicitReturns[Enable error reporting for codepaths that do not explicitly return in a function]'
+  "--noImplicitThis[Enable error reporting when 'this' is given the type 'any']"
+  '--noPropertyAccessFromIndexSignature[Enforces using indexed accessors for keys declared using an indexed type]'
+  '--noUncheckedIndexedAccess[Add "undefined" to a type when accessed using an index]'
+  "--noUnusedLocals[Enable error reporting when local variables aren't read]"
+  "--noUnusedParameters[Raise an error when a function parameter isn't read]"
+  '--strict[Enable all strict type-checking options]'
+  "--strictBindCallApply[Check that the arguments for 'bind', 'call', and 'apply' methods match the original function]"
+  "--strictBuiltinIteratorReturn[Built-in iterators are instantiated with a 'TReturn' type of 'undefined' instead of 'any']"
+  '--strictFunctionTypes[When assigning functions, check to ensure parameters and the return values are subtype-compatible]'
+  "--strictNullChecks[When type checking, take into account 'null' and 'undefined']"
+  '--strictPropertyInitialization[Check for class properties that are declared but not set in the constructor]'
+  "--useUnknownInCatchVariables[Default catch clause variables as 'unknown' instead of 'any']"
+  "--assumeChangesOnlyAffectDirectDependencies[Have recompiles in projects that use 'incremental' and 'watch' mode]"
+  '--composite[Enable constraints that allow a TypeScript project to be used with project references]'
+  '--disableReferencedProjectLoad[Reduce the number of projects loaded automatically by TypeScript]'
+  '--disableSolutionSearching[Opt a project out of multi-project reference checking when editing]'
+  '--disableSourceOfProjectReferenceRedirect[Disable preferring source files instead of declaration files when referencing composite projects]'
+  '(-i --incremental)'{-i,--incremental}'[Save .tsbuildinfo files to allow for incremental compilation of projects]'
+  '--tsBuildInfoFile[Specify the path to .tsbuildinfo incremental compilation file]:buildinfo:_files -g "*.tsbuildinfo"'
+  '(-d --declaration)'{-d,--declaration}'[Generate .d.ts files from TypeScript and JavaScript files in your project]'
+  '--declarationDir[Specify the output directory for generated declaration files]:dir:_files -/'
+  '--declarationMap[Create sourcemaps for d.ts files]'
+  '--downlevelIteration[Emit more compliant, but verbose and less performant JavaScript for iteration]'
+  '--emitBOM[Emit a UTF-8 Byte Order Mark (BOM) in the beginning of output files]'
+  '--emitDeclarationOnly[Only output d.ts files and not JavaScript files]'
+  '--importHelpers[Allow importing helper functions from tslib once per project]'
+  '--inlineSourceMap[Include sourcemap files inside the emitted JavaScript]'
+  '--inlineSources[Include source code in the sourcemaps inside the emitted JavaScript]'
+  '--mapRoot[Specify the location where debugger should locate map files instead of generated locations]:location:_files'
+  '--newLine[Set the newline character for emitting files]:newline:(crlf lf)'
+  '--noEmit[Disable emitting files from a compilation]'
+  "--noEmitHelpers[Disable generating custom helper functions like '__extends' in compiled output]"
+  '--noEmitOnError[Disable emitting files if any type checking errors are reported]'
+  '--outDir[Specify an output folder for all emitted files]:dir:_files -/'
+  '--outFile[Specify a file that bundles all outputs into one JavaScript file]:file:_files'
+  '--preserveConstEnums[Disable erasing "const enum" declarations in generated code]'
+  '--removeComments[Disable emitting comments]'
+  '--sourceMap[Create source map files for emitted JavaScript files]'
+  '--sourceRoot[Specify the root path for debuggers to find the reference source code]:dir:_files -/'
+  '--stripInternal[Disable emitting declarations that have "@internal" in their JSDoc comments]'
+  '--diagnostics[Output compiler performance information after building]'
+  '--explainFiles[Print files read during the compilation including why it was included]'
+  '--extendedDiagnostics[Output more detailed compiler performance information after building]'
+  '--generateCpuProfile[Emit a v8 CPU profile of the compiler run for debugging]:profile'
+  '--generateTrace[Generates an event trace and a list of types]:types'
+  '--listEmittedFiles[Print the names of emitted files after a compilation]'
+  '--listFiles[Print all of the files read during the compilation]'
+  '--noCheck[Disable full type checking]'
+  "--traceResolution[Log paths used during the 'moduleResolution' process]"
+  '--disableSizeLimit[Remove the 20mb cap on total source code size for JavaScript files in TypeScript language server]'
+  '--plugins[Specify a list of language service plugins to include]:plugins'
+  '--emitDecoratorMetadata[Emit design-type metadata for decorated declarations in source files]'
+  '--experimentalDecorators[Enable experimental support for legacy experimental decorators]'
+  '--jsx[Specify what JSX code is generated]:type(preserve react react-native react-jsx react-jsxdev)'
+  "--jsxFactory[Specify the JSX factory function used when targeting React JSX emit]:funcname"
+  "--jsxFragmentFactory[Specify the JSX Fragment reference used for fragments when targeting React JSX emit]:reference"
+  '--jsxImportSource[Specify module specifier used to import the JSX factory functions]'
+  '--lib[Specify a set of bundled library declaration files that describe the target runtime environment]:lib:(($bundle_libraries))'
+  '--moduleDetection[Control what method is used to detect module-format JS files]:method:(legacy auto force)'
+  '--noLib[Disable including any library files, including the default lib.d.ts]'
+  '--reactNamespace[Specify the object invoked for "createElement"]'
+  '(-t --target)'{-t,--target}'[Set the JavaScript language version for emitted JavaScript]:target:(($targets))'
+  '--useDefineForClassFields[Emit ECMAScript-standard-compliant class fields]'
+  '--noErrorTruncation[Disable truncating types in error messages]'
+  '--preserveWatchOutput[Disable wiping the console in watch mode]'
+  "--pretty[Enable color and formatting in TypeScript's output to make compiler errors easier to read]"
+  '--skipDefaultLibCheck[Skip type checking .d.ts files that are included with TypeScript]'
+  '--skipLibCheck[Skip type checking all .d.ts files]'
+  '--watchFile[Specify how the TypeScript watch mode works]:mode:(($watch_modes))'
+  '--watchDirectory[Specify how directories are watched on systems]:mode:(usefsevents fixedpollinginterval dynamicprioritypolling fixedchunksizepolling)'
+  '--fallbackPolling[Specify what approach the watcher should use if the system runs out of native file watchers]:approach:(fixedinterval priorityinterval dynamicpriority fixedchunksize)'
+  '--synchronousWatchDirectory[Synchronously call callbacks and update the state of directory watchers on platforms]'
+  '--excludeDirectories[Remove a list of directories from the watch process]:dirs:_files -/'
+  "--excludeFiles[Remove a list of files from the watch mode's processing]:files:_files"
   '*:: :_files' \
-  && return 0
+)
+
+if (( $+opt_args[--build] )); then
+  opts+=(
+    '(-v --verbose)'{-v,--verbose}"[Enable verbose logging]"
+    '(-d --dry)'{-d,--dry}'[Show what would be built]'
+    '(-f --force)'{-f,--force}'[Build all projects, including those that appear to be up to date]'
+    '--clean[Delete the outputs of all projects]'
+    '--stopBuildOnErrors[Skip building downstream projects on error in upstream project]'
+  )
+else
+  opts+=(
+    '(- *)'{-v,--version}"[Print the compiler's version]"
+  )
+fi
+
+_arguments $opts && return 0
 
 # Local Variables:
 # mode: Shell-Script
