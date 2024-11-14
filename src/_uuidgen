@@ -34,17 +34,25 @@
 #
 # ------------------------------------------------------------------------------
 
-_arguments \
-  '(- *)'{-h,--help}'[display this help]' \
-  '(- *)'{-V,--version}'[display version]' \
-  '(-r --random)'{-r,--random}'[generate random-based uuid]' \
-  '(-t --time)'{-t,--time}'[generate time-based uuid]' \
-  '(-n --namespace)'{-n,--namespace}'[generate hash-based uuid in this namespace]:namespace:(@dns @url @oid @x500)' \
-  '(-N --name)'{-n,--name}'[generate hash-based uuid from this name]:name' \
-  '(-C --count -s --sha1 -m --md5)'{-m,--md5}'[generate md5 hash]' \
-  '(-C --count -s --sha1 -m --md5)'{-C,--count}'[generate more uuids in loop]:count' \
-  '(-C --count -s --sha1 -m --md5)'{-s,--sha1}'[generate sha1 hash]' \
-  '(-x --hex)'{-h,--hex}'[interpret name as hex string]'
+case $OSTYPE in
+  (darwin*)
+    _arguments \
+      '-hdr[emit result in form suitable for copying into a header]'
+    ;;
+  (*)
+    _arguments \
+      '(- *)'{-h,--help}'[display this help]' \
+      '(- *)'{-V,--version}'[display version]' \
+      '(-r --random)'{-r,--random}'[generate random-based uuid]' \
+      '(-t --time)'{-t,--time}'[generate time-based uuid]' \
+      '(-n --namespace)'{-n,--namespace}'[generate hash-based uuid in this namespace]:namespace:(@dns @url @oid @x500)' \
+      '(-N --name)'{-n,--name}'[generate hash-based uuid from this name]:name' \
+      '(-C --count -s --sha1 -m --md5)'{-m,--md5}'[generate md5 hash]' \
+      '(-C --count -s --sha1 -m --md5)'{-C,--count}'[generate more uuids in loop]:count' \
+      '(-C --count -s --sha1 -m --md5)'{-s,--sha1}'[generate sha1 hash]' \
+      '(-x --hex)'{-h,--hex}'[interpret name as hex string]'
+    ;;
+esac
 
 # Local Variables:
 # mode: Shell-Script
