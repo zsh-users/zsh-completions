@@ -1,0 +1,108 @@
+#compdef lscpu
+# ------------------------------------------------------------------------------
+# Copyright (c) 2024 Github zsh-users - https://github.com/zsh-users
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for lscpu v15.0.2 (https://github.com/util-linux/util-linux)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei Yoshida (https://github.com/syohex) <syohex@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+(( $+functions[_lscpu_cpu_column] )) ||
+_lscpu_cpu_column() {
+  local -a columns=(
+    "BOGOMIPS[crude measurement of CPU speed]"
+    "CPU[logical CPU number]"
+    "CORE[logical core number]"
+    "SOCKET[logical socket number]"
+    "CLUSTER[logical cluster number]"
+    "NODE[logical NUMA node number]"
+    "BOOK[logical book number]"
+    "DRAWER[logical drawer number]"
+    "CACHE[shows how caches are shared between CPUs]"
+    "POLARIZATION[CPU dispatching mode on virtual hardware]"
+    "ADDRESS[physical address of a CPU]"
+    "CONFIGURED[shows if the hypervisor has allocated the CPU]"
+    "ONLINE[shows if Linux currently makes use of the CPU]"
+    "MHZ[shows the currently MHz of the CPU]"
+    "SCALMHZ%[ shows scaling percentage of the CPU frequency]"
+    "MAXMHZ[shows the maximum MHz of the CPU]"
+    "MINMHZ[shows the minimum MHz of the CPU]"
+    "MODELNAME[shows CPU model name]"
+  )
+
+  _values -s ',' column $columns
+}
+
+(( $+functions[_lscpu_cache] )) ||
+_lscpu_cache() {
+  local -a columns=(
+    "ALL-SIZE[size of all system caches]"
+    "LEVEL[cache level]"
+    "NAME[cache name]"
+    "ONE-SIZE[size of one cache]"
+    "TYPE[cache type]"
+    "WAYS[ways of associativity]"
+    "ALLOC-POLICY[allocation policy]"
+    "WRITE-POLICY[write policy]"
+    "PHY-LINE[number of physical cache line per cache tag]"
+    "SETS[number of sets in the cache; set lines has the same cache index]"
+    "COHERENCY-SIZE[minimum amount of data in bytes transferred from memory to cache]"
+  )
+
+  _values -s ',' column $columns
+}
+
+_arguments \
+  '(- *)'{-h,--help}'[display this help]' \
+  '(- *)'{-V,--version}'[display version]' \
+  '(-a --all)'{-a,--all}'[print both online and offline CPUs(default for -e)]' \
+  '(-b --online)'{-b,--online}'[print online CPUs only]' \
+  '(-B --bytes)'{-B,--bytes}'[print sizes in bytes rather than in human readable format]' \
+  '-C[info about caches in extended readable format]' \
+  '--cache=-[info about caches in extended readable format]::list:_lscpu_cache' \
+  '(-c --offline)'{-c,--offline}'[print offline CPUs only]' \
+  '(-J --json)'{-J,--json}'[use JSON for default or extended format]' \
+  '-e[print out an extended readable format]' \
+  '--extended=-[print out an extended readable format]::list:_lscpu_cpu_column' \
+  '-p[print out a parsable format]' \
+  '--parse=-[print out a parsable format]::list:_lscpu_cpu_column' \
+  '(-s --sysroot)'{-s,--sysroot}'[use specified directory as system root]:dir:_files -/' \
+  '(-x --hex)'{-x,--hex}'[print hexadecimal masks rather than list of CPUs]' \
+  '(-y --physical)'{-y,--physical}'[print physical instead of logical IDs]' \
+  '--hierarchic=-[use subsections in summary]:when:(auto never always)' \
+  '--output-all[print all available columns for -e, -p or -C]'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
