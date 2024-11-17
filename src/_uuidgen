@@ -39,6 +39,26 @@ case $OSTYPE in
     _arguments \
       '-hdr[emit result in form suitable for copying into a header]'
     ;;
+  (freebsd*)
+    _arguments \
+      '-1[instructs uuidgen to not generate them in batch, but one at a time]' \
+      '-r[create random UUID version 4]' \
+      '-c[create compact UUID without hyphen]' \
+      '-n[number of identifiers generated]:num' \
+      '-o[redirect output to filename instead of stdout]:file:_files'
+    ;;
+  (netbsd*)
+    _arguments \
+      '-1[instructs uuidgen to not generate them in batch, but one at a time]' \
+      '-n[number of identifiers generated]:num' \
+      '-s[output UUIDs as initialized C structures]'
+    ;;
+  (dragonfly*)
+    _arguments \
+      '-1[instructs uuidgen to not generate them in batch, but one at a time]' \
+      '-n[number of identifiers generated]:num' \
+      '-o[redirect output to filename instead of stdout]:file:_files'
+    ;;
   (*)
     _arguments \
       '(- *)'{-h,--help}'[display this help]' \
