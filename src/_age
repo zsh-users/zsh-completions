@@ -1,0 +1,28 @@
+#compdef age
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for neo (https://github.com/FiloSottile/age).
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Hydrargyrum (https://github.com/hydrargyrum)
+#
+# ------------------------------------------------------------------------------
+
+_arguments \
+  -A '-*' \
+  '(-h --help)'{-h,--help}'[show help message and exit]' \
+  '(-e --encrypt -d --decrypt)'{-e,--encrypt}'[Encrypt INPUT to OUTPUT]' \
+  '(-e --encrypt -d --decrypt -a --armor -p --passphrase -r --recipient -R --recipients-file)'{-d,--decrypt}'[Decrypt INPUT to OUTPUT]' \
+  '(-i --identity)'{-i,--identity=}'[Encrypt/Decrypt using the identities at PATH]:IDENTITY:' \
+  '(-o --output)'{-o,--output=}'[Write encrypted/decrypted file to OUTPUT]:OUTPUT:_files' \
+  '(-j --plugin)'{-j,--plugin=}'[Encrypt/Decrypt using the data-less PLUGIN]:PLUGIN:' \
+  '(-r --recipient -d --decrypt)'{-r,--recipient=}'[Encrypt to the explicitly specified RECIPIENT]:RECIPIENT:' \
+  '(-R --recipients-file -d --decrypt)'{-R,--recipients-file=}'[Encrypt to the RECIPIENTS listed in the file at PATH]:RECIPIENTS_FILE:_files' \
+  '(-a --armor -d --decrypt)'{-a,--armor}'[Encrypt to an ASCII-only "armored" encoding]' \
+  '(-p --passphrase -d --decrypt)'{-p,--passphrase}'[Encrypt with a passphrase]' \
+  :INPUT:_files
