@@ -15,7 +15,7 @@
 
 _arguments \
   -A '-*' \
-  '(-h --help)'{-h,--help}'[show help message and exit]' \
+  '(- *)'{-h,--help}'[show help message and exit]' \
   '(-e --encrypt -d --decrypt)'{-e,--encrypt}'[Encrypt INPUT to OUTPUT]' \
   '(-e --encrypt -d --decrypt -a --armor -p --passphrase -r --recipient -R --recipients-file)'{-d,--decrypt}'[Decrypt INPUT to OUTPUT]' \
   '(-i --identity)'{-i,--identity=}'[Encrypt/Decrypt using the identities at PATH]:IDENTITY:' \
