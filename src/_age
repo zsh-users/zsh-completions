@@ -26,3 +26,11 @@ _arguments \
   '(-a --armor -d --decrypt)'{-a,--armor}'[Encrypt to an ASCII-only "armored" encoding]' \
   '(-p --passphrase -d --decrypt)'{-p,--passphrase}'[Encrypt with a passphrase]' \
   :INPUT:_files
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
