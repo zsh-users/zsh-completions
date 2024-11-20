@@ -1,0 +1,36 @@
+#compdef age
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for age 1.1.1 (https://github.com/FiloSottile/age).
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Hydrargyrum (https://github.com/hydrargyrum)
+#
+# ------------------------------------------------------------------------------
+
+_arguments \
+  -A '-*' \
+  '(- *)'{-h,--help}'[show help message and exit]' \
+  '(-e --encrypt -d --decrypt)'{-e,--encrypt}'[Encrypt INPUT to OUTPUT]' \
+  '(-e --encrypt -d --decrypt -a --armor -p --passphrase -r --recipient -R --recipients-file)'{-d,--decrypt}'[Decrypt INPUT to OUTPUT]' \
+  \*{-i,--identity=}'[Encrypt/Decrypt using the identities at PATH]:IDENTITY:_files' \
+  '(-o --output)'{-o,--output=}'[Write encrypted/decrypted file to OUTPUT]:OUTPUT:_files' \
+  '(-j --plugin)'{-j,--plugin=}'[Encrypt/Decrypt using the data-less PLUGIN]:PLUGIN:' \
+  '(-d --decrypt)'\*{-r,--recipient=}'[Encrypt to the explicitly specified RECIPIENT]:RECIPIENT:' \
+  '(-d --decrypt)'\*{-R,--recipients-file=}'[Encrypt to the RECIPIENTS listed in the file at PATH]:RECIPIENTS_FILE:_files' \
+  '(-a --armor -d --decrypt)'{-a,--armor}'[Encrypt to an ASCII-only "armored" encoding]' \
+  '(-p --passphrase -d --decrypt)'{-p,--passphrase}'[Encrypt with a passphrase]' \
+  :INPUT:_files
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
