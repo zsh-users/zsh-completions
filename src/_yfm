@@ -53,13 +53,13 @@ _yfm() {
   typeset -A opt_args
 
   _arguments \
-    '(-i, --input)'{-i,--input}'[Configure path to yfm input directory]:dir:_suggest_dir' \
-    '(-o, --output)'{-o,--output}'[Configure path to yfm output directory]:dir:_suggest_dir' \
+    '(-i --input)'{-i,--input}'[Configure path to yfm input directory]:dir:_suggest_dir' \
+    '(-o --output)'{-o,--output}'[Configure path to yfm output directory]:dir:_suggest_dir' \
     '(--varsPreset)'--varsPreset'[Name of the variable preset used]:TEXT' \
-    '(--vars, -v)'{--vars,-v}'[Values of variables]:TEXT' \
-    '(--strict, -s)'{--strict,-s}'[Launch in strict mode]' \
-    '(--quiet, -q)'{--quiet,-q}'[Start in quiet mode]' \
-    '(--config, -c)'{--config,-c}'[Path to the configuration file]:filename:_files' \
+    '(--vars -v)'{--vars,-v}'[Values of variables]:TEXT' \
+    '(--strict -s)'{--strict,-s}'[Launch in strict mode]' \
+    '(--quiet -q)'{--quiet,-q}'[Start in quiet mode]' \
+    '(--config -c)'{--config,-c}'[Path to the configuration file]:filename:_files' \
     '(--singlePage)'--singlePage'[Build the project as a single HTML file]' \
     '(--output-format)'--output-format'[Generation format]:TEXT' \
     '(--apply-presets)'--apply-presets'[Substitute variable values from presets when building in YFM]:TEXT' \
@@ -106,8 +106,6 @@ _yfm() {
     ;;
   esac
 }
-
-_yfm "$@"
 
 # Local Variables:
 # mode: Shell-Script
