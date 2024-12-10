@@ -53,6 +53,7 @@ _yfm() {
   typeset -A opt_args
 
   _arguments \
+    '(- *)'{-h,--help}'[Show help message]' \
     '(-i --input)'{-i,--input}'[Configure path to yfm input directory]:dir:_suggest_dir' \
     '(-o --output)'{-o,--output}'[Configure path to yfm output directory]:dir:_suggest_dir' \
     '(--varsPreset)'--varsPreset'[Name of the variable preset used]:TEXT' \
@@ -65,7 +66,6 @@ _yfm() {
     '(--apply-presets)'--apply-presets'[Substitute variable values from presets when building in YFM]:TEXT' \
     '(--add-system-meta)'--add-system-meta'[Add variables from the system presets section to metadata files]' \
     '(--remove-hidden-toc-items)'--remove-hidden-toc-items'[Remove hidden pages from the build result]' \
-    '(--version)'--version'[Current version]' \
     '(--lint-disabled)'--lint-disabled'[Should whether to turn off a linter]' \
     '(--build-disabled)'--build-disabled'[Should whether to turn off a build]' \
     '(--add-map-file)'--add-map-file'[hould add all paths of documentation into file.json]' \
