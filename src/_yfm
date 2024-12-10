@@ -52,10 +52,6 @@ _yfm() {
   local context state state_descr line
   typeset -A opt_args
 
-  local -a file_types=(
-    html md
-  )
-
   _arguments \
     '(-i, --input)'{-i,--input}'[Configure path to yfm input directory]:dir:_suggest_dir' \
     '(-o, --output)'{-o,--output}'[Configure path to yfm output directory]:dir:_suggest_dir' \
