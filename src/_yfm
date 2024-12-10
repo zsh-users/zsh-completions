@@ -1,0 +1,122 @@
+#compdef yfm
+# ------------------------------------------------------------------------------
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of the zsh-users nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL ZSH-USERS BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+# 
+# Completion script for diplodoc cli v4.49.1 (https://diplodoc.com/en/)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Egor Lem <guezwhoz@gmail.com> / egorlem.com
+#
+# ------------------------------------------------------------------------------
+
+_commands=(
+  'publish:Publish built documentation in target aws s3 compatible storage'
+  'translate:Translate documentation from source to target language using configured translation provider'
+)
+
+_suggest_dir() {
+  _alternative 'directory::_directories' ':current directory:(.)' && return 0
+}
+
+_yfm_commands() {
+  _describe 'commands' _commands
+}
+
+_yfm() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  local -a file_types=(
+    html md
+  )
+
+  _arguments \
+    '(-i, --input)'{-i,--input}'[Configure path to yfm input directory]:dir:_suggest_dir' \
+    '(-o, --output)'{-o,--output}'[Configure path to yfm output directory]:dir:_suggest_dir' \
+    '(--varsPreset)'--varsPreset'[Name of the variable preset used]:TEXT' \
+    '(--vars, -v)'{--vars,-v}'[Values of variables]:TEXT' \
+    '(--strict, -s)'{--strict,-s}'[Launch in strict mode]' \
+    '(--quiet, -q)'{--quiet,-q}'[Start in quiet mode]' \
+    '(--config, -c)'{--config,-c}'[Path to the configuration file]:filename:_files' \
+    '(--singlePage)'--singlePage'[Build the project as a single HTML file]' \
+    '(--output-format)'--output-format'[Generation format]:TEXT' \
+    '(--apply-presets)'--apply-presets'[Substitute variable values from presets when building in YFM]:TEXT' \
+    '(--add-system-meta)'--add-system-meta'[Add variables from the system presets section to metadata files]' \
+    '(--remove-hidden-toc-items)'--remove-hidden-toc-items'[Remove hidden pages from the build result]' \
+    '(--version)'--version'[Current version]' \
+    '(--lint-disabled)'--lint-disabled'[Should whether to turn off a linter]' \
+    '(--build-disabled)'--build-disabled'[Should whether to turn off a build]' \
+    '(--add-map-file)'--add-map-file'[hould add all paths of documentation into file.json]' \
+    '1: :_yfm_commands' \
+    '*:: :->command_args'
+
+  case $state in
+    command_args)
+      case $words[1] in
+        publish)
+          _arguments \
+            '(--endpoint)'--endpoint'[Endpoint of S3 storage]:url:_urls' \
+            '(--bucket)'--bucket'[Bucket name of S3 storage]' \
+            '(--prefix)'--prefix'[Bucket internal scope of S3 storage]' \
+            '(--access-key-id)'--access-key-id'[Key Id of S3 storage]' \
+            '(--secret-access-key)'--secret-access-key'[Secret key of S3 storage]' \
+            '(--region)'--region'[Region of S3 storage]' \
+            '(--hidden)'--hidden'[Do not upload paths matched by glob]' \
+            '1: :_files' \
+            '*:: :->command_args'
+        ;;
+        
+        translate)
+          _arguments \
+            '(--source)'--source'[Language code of the original document in ISO 639-1 format]:TEXT' \
+            '(--target)'--target'[Language code of the translated document in ISO 639-1 format]:TEXT' \
+            '(--input)'--input'[Source path to the documentation]:dir:_suggest_dir' \
+            '(--target)'--target'[Target path to the translated documentation]:dir:_suggest_dir' \
+            '(--include)'--include'[A set of rules for filtering sent translation files]:filename:_files' \
+            '(--exclude)'--exclude'[A set of rules prohibiting sending files for translation]:filename:_files' \
+            '*:: :->command_args'
+        ;;
+
+        *)
+          _default
+        ;;
+      esac
+    ;;
+  esac
+}
+
+_yfm "$@"
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
