@@ -84,7 +84,7 @@ _yfm() {
   local -a global_flags=(
     '(- *)--help[Show help message]'
     '(- *)--version[Output the version number]'
-    \*{-e,--extensions}'[Include external extention on startup]:extension:_files'
+    \*{-e,--extensions}'[Include external extension on startup]:extension:_files'
     '(-q --quiet)'{--quiet,-q}'[Start in quiet mode]'
     '(-s --strict)'{--strict,-s}'[Launch in strict mode]' \
   )
@@ -130,7 +130,7 @@ _yfm() {
             '*--include[A set of rules for filtering sent translation files]:filename:_files' \
             '*--exclude[A set of rules prohibiting sending files for translation]:filename:_files' \
             \*{-v,--vars}'[Pass list of variables directory to translation]:variable' \
-            '--dry-run[Do not execute traget translation provider, but only calculate required quota]' \
+            '--dry-run[Do not execute target translation provider, but only calculate required quota]' \
             '(-c --config)'{-c,--config}'[Configure path to translate config]:filename:_files' \
             '--auth[Authorization token for Translation API]:token' \
             '--folder[ID of the folder to which you have access]:id' \
