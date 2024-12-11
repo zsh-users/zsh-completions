@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Node.js v23.0.0 (https://nodejs.org)
+#  Completion script for Node.js v23.4.0 (https://nodejs.org)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -211,6 +211,9 @@ _arguments -C \
   '(--tls-min-v1.0 --tls-min-v1.1 --tls-min-v1.3)--tls-min-v1.2[set default TLS minimum to TLSv1.2]' \
   '(--tls-max-v1.2 --tls-min-v1.0 --tls-min-v1.1 --tls-min-v1.2)--tls-min-v1.3[set default TLS minimum to TLSv1.3]' \
   '--trace-deprecation[show stack traces on deprecations]' \
+  '--trace-env[print accesses to the environment variables]' \
+  '--trace-env-js-stack[print accesses to the environment variables and the JavaScript stack trace]' \
+  '--trace-env-native-stack[print accesses to the environment variables and the native stack trace ]' \
   '--trace-event-categories[comma separated list of trace event categories to record]: :{_values -s , categories node node.async_hooks node.bootstrap node.perf node.perf.usertiming node.perf.timerify node.fs.sync node.vm.script v8}' \
   '--trace-event-file-pattern[Template string specifying the filepath for the trace-events data, it supports ${rotation} and ${pid} log-rotation id. %2$u is the pid.]:template string' \
   '--trace-exit[show stack trace when an environment exits]' \
