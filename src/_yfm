@@ -74,26 +74,26 @@ _yfm() {
         publish)
           _arguments \
             '(--endpoint)'--endpoint'[Endpoint of S3 storage]:url:_urls' \
-            '(--bucket)'--bucket'[Bucket name of S3 storage]' \
-            '(--prefix)'--prefix'[Bucket internal scope of S3 storage]' \
-            '(--access-key-id)'--access-key-id'[Key Id of S3 storage]' \
-            '(--secret-access-key)'--secret-access-key'[Secret key of S3 storage]' \
-            '(--region)'--region'[Region of S3 storage]' \
-            '(--hidden)'--hidden'[Do not upload paths matched by glob]' \
+            '(--bucket)'--bucket'[Bucket name of S3 storage]:bucket' \
+            '(--prefix)'--prefix'[Bucket internal scope of S3 storage]:bucket_internal_scope' \
+            '(--access-key-id)'--access-key-id'[Key Id of S3 storage]:key_id' \
+            '(--secret-access-key)'--secret-access-key'[Secret key of S3 storage]:secret_key' \
+            '(--region)'--region'[Region of S3 storage]:region' \
+            '(--hidden)'--hidden'[Do not upload paths matched by glob]:pattern' \
             '1: :_files' \
             '*:: :->command_args'
-        ;;
+          ;;
 
         translate)
           _arguments \
-            '(--source)'--source'[Language code of the original document in ISO 639-1 format]:TEXT' \
-            '(--target)'--target'[Language code of the translated document in ISO 639-1 format]:TEXT' \
+            '(--source)'--source'[Language code of the original document in ISO 639-1 format]:language' \
+            '(--target)'--target'[Language code of the translated document in ISO 639-1 format]:language' \
             '(--input)'--input'[Source path to the documentation]:dir:_yfm_suggest_dir' \
             '(--target)'--target'[Target path to the translated documentation]:dir:_yfm_suggest_dir' \
             '(--include)'--include'[A set of rules for filtering sent translation files]:filename:_files' \
             '(--exclude)'--exclude'[A set of rules prohibiting sending files for translation]:filename:_files' \
             '*:: :->command_args'
-        ;;
+          ;;
 
         *)
           _default
