@@ -601,7 +601,7 @@ _flutter_build() {
         (aar)
           opts+=(
             '--target-platform=[The target platform for which the project is compiled]: :(android-arm android-arm64 android-x86 android-x64)'
-            \*{-P,--android-project-arg}'[Additioanl arguments specified as key=value that are passed to gradle -P option]:arg'
+            \*{-P,--android-project-arg}'[Additional arguments specified as key=value that are passed to gradle -P option]:arg'
           )
           ;;
         (apk|appbundle)
@@ -610,7 +610,7 @@ _flutter_build() {
             '(--no-analyze-size)--analyze-size[Produce additional profile information for artifact output size]'
             '(--analyze-size)--no-analyze-size[Not produce additional profile information for artifact output size]'
             '--code-size-directory=[The location to write code size analysis files]: :_files -/'
-            \*{-P,--android-project-arg}'[Additioanl arguments specified as key=value that are passed to gradle -P option]:arg'
+            \*{-P,--android-project-arg}'[Additional arguments specified as key=value that are passed to gradle -P option]:arg'
             '--no-multidex[the app is not built with multidex support]'
             '--ignore-deprecation[the app should ignore deprecation warnings and continue to build using deprecated APIs]'
             '--split-per-abi[Split the APKs per ABIs]'

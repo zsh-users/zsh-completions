@@ -73,7 +73,7 @@ _vboxmanage() {
             '--ostype=[Specifies the guest OS to run in the VM]: :_vboxostypes' \
             '--register[Registers the VM with your Oracle VM VirtualBox installation]' \
             '--uuid=[Specifies the Universally Unique Identifier(UUID) of the VM]:uuid' \
-            '--ciper=[Specifies the cipher to use for encryption]: :(AES-128 AES-256)' \
+            '--cipher=[Specifies the cipher to use for encryption]: :(AES-128 AES-256)' \
             '--password-id=[Specifies a new password identifier]:password_id' \
             '--password=[Use the --password to supply the encryption password of the VM]: :_files' \
             && ret=0
@@ -287,7 +287,7 @@ _vboxmanage() {
           ;;
         (setproperty)
           _arguments \
-            '1: :(autostartdbpath defaultfrontend hwvirtexclusive launguage logginglevel loghistorycount machinefolder proxymode proxyurl vrdeauthlibrary vrdeextpack websrvauthlibrary)' \
+            '1: :(autostartdbpath defaultfrontend hwvirtexclusive language logginglevel loghistorycount machinefolder proxymode proxyurl vrdeauthlibrary vrdeextpack websrvauthlibrary)' \
             '2:value:_vboxmanage_setproperty_value' \
             && ret=0
           ;;
