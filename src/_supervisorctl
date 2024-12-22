@@ -191,7 +191,7 @@ _supervisorctl_running_procs() {
   _supervisorctl_collect_procs 'RUNNING'
 }
 
-(( $+functions[_supervisorctl_stoped_procs] )) ||
+(( $+functions[_supervisorctl_stopped_procs] )) ||
 _supervisorctl_stopped_procs() {
   _supervisorctl_collect_procs 'STOPPED'
 }

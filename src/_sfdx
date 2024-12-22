@@ -874,7 +874,7 @@ case "$words[1]" in
  ;;
  force:package2:version:get)
  _command_args=(
- '(-i|--package2versionid)'{-i,--package2versionid}'[the package version ID (starts wtih 05i)]' \
+ '(-i|--package2versionid)'{-i,--package2versionid}'[the package version ID (starts with 05i)]' \
  '(-v|--targetdevhubusername)'{-v,--targetdevhubusername}'[username or alias for the dev hub org; overrides default dev hub org]' \
  '(--json)--json[format output as json]' \
  '(--loglevel)--loglevel[logging level for this command invocation (error*,trace,debug,info,warn,fatal)]' \
@@ -904,7 +904,7 @@ case "$words[1]" in
  ;;
  force:package2:version:update)
  _command_args=(
- '(-i|--package2versionid)'{-i,--package2versionid}'[the package version ID (starts wtih 05i)]' \
+ '(-i|--package2versionid)'{-i,--package2versionid}'[the package version ID (starts with 05i)]' \
  '(-n|--name)'{-n,--name}'[the package version name]' \
  '(-d|--description)'{-d,--description}'[the package version description]' \
  '(-b|--branch)'{-b,--branch}'[the package version branch]' \

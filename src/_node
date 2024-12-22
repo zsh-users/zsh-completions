@@ -148,10 +148,10 @@ _arguments -C \
   '--jitless[Disable runtime allocation of executable memory]' \
   '--localstorage-file=[file used to persist localStorage data]:file:_files' \
   '--max-http-header-size=[set the maximum size of HTTP headers]: :number' \
-  '--network-family-autoselection-attempt-timeout=[sets the default value for the network family autoselection attemp timeout]:timeout' \
+  '--network-family-autoselection-attempt-timeout=[sets the default value for the network family autoselection attempt timeout]:timeout' \
   '--no-addons[disable loading native addons]' \
   '--no-deprecation[silence deprecation warnings]' \
-  '--no-experimental-detect-module[when ambigous modules fail to evaluate, try again to evaluate them as ES modules]' \
+  '--no-experimental-detect-module[when ambiguous modules fail to evaluate, try again to evaluate them as ES modules]' \
   '--no-experimental-global-navigator[expose experimental Navigator API on the global scope]' \
   '--no-experimental-repl-await[disable experimental await keyword support in REPL]' \
   '--no-experimental-require-module[allow loading synchronous ES Modules in require()]' \

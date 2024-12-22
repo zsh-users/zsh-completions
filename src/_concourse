@@ -1209,7 +1209,7 @@ _concourse_web_args() {
     '--credhub-client-secret=[client secret for CredHub authorization]:client secret' \
     '--kubernetes-in-cluster[enables the in-cluster client]' \
     '--kubernetes-config-path=[path to Kubernetes config when running ATC outside Kubernetes]: :_files' \
-    '--kubernetes-namespace-prefix=[prefix to use for Kubernetes namespaces under which secrets will be looked up]:prefex' \
+    '--kubernetes-namespace-prefix=[prefix to use for Kubernetes namespaces under which secrets will be looked up]:prefix' \
     '--aws-secretsmanager-access-key=[AWS Access key ID]:access key' \
     '--aws-secretsmanager-secret-key=[AWS Secret Access Key]:secret key' \
     '--aws-secretsmanager-session-token=[AWS Session Token]:session token' \
