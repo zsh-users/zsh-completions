@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Node.js v23.4.0 (https://nodejs.org)
+#  Completion script for Node.js v23.6.0 (https://nodejs.org)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -81,7 +81,7 @@ _arguments -C \
   '--allow-fs-read=[allow permissions to read the filesystem]: :_files' \
   '--allow-fs-write=[allow permissions to write in the filesystem]:_files' \
   '--allow-wasi[allow wasi when any permissions are set]' \
-  '--allow-worker[allow worker threads thwn any permissions are set]' \
+  '--allow-worker[allow worker threads when any permissions are set]' \
   '--build-snapshot[generate a snapshot blob when the process exits]' \
   '--build-snapshot-config=[generate a snapshot blob when the process exits using a JSON configuration in the specified path]:path:_files' \
   {-c,--check}'[syntax check script without executing]' \
@@ -99,26 +99,21 @@ _arguments -C \
   '--dns-result-order=[set default value of verbatim in dns.lookup]: :(ipv4first verbatim)' \
   '--enable-etw-stack-walking[provides heap data to ETW Windows native tracing]' \
   '--enable-fips[enable FIPS crypto at startup]' \
-  '--enable-source-maps[source map support]' \
+  '--enable-source-maps[source map support for stack traces]' \
   '--entry-url[treat the entrypoint as a URL]' \
   '*--env-file=[set environment variables from supplied file]:envfile:_files' \
   '*--env-file-if-exists=[set environment variables from supplied file if exists]:envfile:_files' \
   '(- 1 *)'{-e,--eval}'[evaluate script]:inline JavaScript' \
+  '--experimental-addon-modules[enable experimental import support for addons]' \
   '--experimental-async-context-frame[improve AsyncLocalStorage performance with AsyncContextFrame]' \
-  '--experimental-default-type=[set module system to use by default]:module system:(commonjs module)' \
   '--experimental-eventsource[enable experimental EventSource API]' \
   '--experimental-import-meta-resolve[experimental ES Module import.meta.resolve() support]' \
   '(--loader --experimental-loader)'{--loader,--experimental-loader}'=[Specify the module of a custom ECMAScript Module loader]: :_files' \
   '--experimental-network-inspection[enable experimental network inspection support]' \
-  '--experimental-permission[enable the permission system]' \
   '--experimental-print-required-tla[print pending top-level await]' \
   '--experimental-sea-config=[generate a blob that can be embedded into the single executable application]: :_files' \
-  '--experimental-sqlite[experimental node:sqlite module]' \
-  '--experimental-strip-types[experimental type-stripping for TypeScript files]' \
   '--experimental-test-coverage[enable code coverage in the test runner]' \
-  '--experimental-test-isolation=[configures the type of test isolation used in the test runner]:isolation' \
   '--experimental-test-module-mocks[enable module mocking in the test runner]' \
-  '--experimental-test-snapshots[enable snapshot testing in the test runner]' \
   '--experimental-transform-types[enable transformation of TypeScript-onlysyntax into JavaScript code]' \
   '--experimental-vm-modules[experimental ES Module support in vm module]' \
   '--experimental-wasm-modules[experimental ES module support for webassembly modules]' \
@@ -192,6 +187,7 @@ _arguments -C \
   '--test-coverage-include=[include files from coverage report that match this glob pattern]:pattern' \
   '--test-coverage-lines=[the line coverage minimum threshold]:threshold' \
   '--test-force-exit[force test runner to exit upon completion]' \
+  '--test-isolation=[configurations the type of test isolation used in the test runner]:isolation' \
   '--test-name-pattern=[run tests whose name matches this regular expression]:pattern' \
   '--test-only[run tests with "only" option set]' \
   '*--test-reporter=[report test output using the given reporter]:reporter:(tap spec dot)' \
