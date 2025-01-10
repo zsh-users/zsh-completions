@@ -1,6 +1,6 @@
 #compdef ccache -P -value-,CCACHE_*,-default-
 
-# zsh completion script for ccache 4.6.1
+# zsh completion script for ccache 4.10.2
 
 # Copyright 2018 CERN for the benefit of the LHCb Collaboration.
 
@@ -49,51 +49,55 @@ _ccache_compilers() {
 
 _ccache_booleans() {
   _message 'There are no "false" values, unset variable to disable'
-  local description; description=${1:-boolean}
-  local booleans; booleans=(
-  'true'
-  'yes'
-  )
+  local description=${1:-boolean}
+  local -a booleans=('true' 'yes')
   _describe -t booeans "$description" booleans
-}
-
-(( $+functions[_ccache_compressionlevels] )) ||
-_ccache_compressionlevels() {
-  local -a one_nine
-  one_nine=(1 2 3 4 5 6 7 8 9)
-  _describe -t onetonine "compression level (if using compression)" one_nine
 }
 
 (( $+functions[_ccache_sloppiness] )) ||
 _ccache_sloppiness() {
   _values -s ',' \
-    "file_macro[ignore __FILE__]" \
-    "file_stat_matches[rely on mtimes and ctimes]" \
-    "include_file_ctime[ignore headers' ctime too new]" \
-    "include_file_mtime[ignore headers' mtime too new]" \
-    "no_system_headers[exclude system headers from cache]" \
-    "pch_defines[be sloppy about #defines in pch]" \
-    "time_macros[ignore __date__ and __time__]"
+    'clang_index_store[ignore the clang compiler option -index-store-path and its argument]' \
+    'file_stat_matches[rely on mtimes and ctimes]' \
+    'file_stat_matches_ctime[ignore ctime when file_stat_matches is enabled]' \
+    'gcno_cwd[not hash the current working directory]' \
+    'incbin[pretend the .incbin directive]' \
+    'include_file_ctime[ignore headers ctime too new]' \
+    'include_file_mtime[ignore headers mtime too new]' \
+    'ivfsoverlay[ignore the clang option -ivfsoverlay and its argument]' \
+    'locale[include locale environment variables in the hash]' \
+    'module[enable cache even if -fmodules is used]' \
+    'pch_defines[be sloppy about #defines in pch]' \
+    'random_seed[ignore the -frandom-seed option and its argument]' \
+    'system_headers[only check non-system headers in direct mode]' \
+    'time_macros[ignore __DATE__ and __TIME__]'
 }
 
 (( $+functions[_ccache_compilerchecks] )) ||
 _ccache_compilerchecks() {
-  local -a compiler_check_values
-  compiler_check_values=(
-  'content: the actual compiler binary'
-  'mtime: mtime and size of the compiler'
-  'none: ignore compiler for hashing'
-  'string\:: any hard coded string (pre-computed version)'
-  '%compiler%\ -v:any compiler invocation output'
+  local -a compiler_check_values=(
+    'content:the actual compiler binary'
+    'mtime:mtime and size of the compiler'
+    'none:ignore compiler for hashing'
+    'string\::any hard coded string (pre-computed version)'
+    '%compiler%\ -v:any compiler invocation output'
   )
   _describe -t compilerchecks "compiler information included in the hash" compiler_check_values
 }
 
-(( $+functions[_ccache_dirlevels] )) ||
-_ccache_dirlevels() {
-  local -a one_eight
-  one_eight=(1 2 3 4 5 6 7 8)
-  _describe -t onetoeight "directory levels in the cache directory" one_eight
+(( $+functions[_ccache_compiler_type] )) ||
+_ccache_compiler_type() {
+  local -a compiler_types=(
+    'auto:guess compiler name'
+    'clang:clang-based compiler'
+    'clang-cl:clang-cl'
+    'gcc:gcc-based compiler'
+    'icl:Intel compiler on Windows'
+    'msvc:Microsoft Visual C++'
+    'nvcc:NVCC CUDA compiler'
+    'other:any compiler other than the known types'
+  )
+  _describe -t compiler_types "compiler types" compiler_types
 }
 
 if [[ "$service" = -value-* ]]; then
@@ -105,9 +109,6 @@ if [[ "$service" = -value-* ]]; then
       # all: a single path
       _path_files -/
       ;;
-    *CCACHE_NLEVELS*)
-      _ccache_dirlevels
-      ;;
     *CCACHE_CC*)
       _ccache_compilers
       ;;
@@ -116,9 +117,6 @@ if [[ "$service" = -value-* ]]; then
       ;;
     *CCACHE_*COMPRESS*)
       _ccache_booleans "write compressed cache"
-      ;;
-    *CCACHE_COMPRESSLEVEL*)
-      _ccache_compressionlevels
       ;;
     *CCACHE_EXTENSION*)
       _alternative ':set extension for intermediate files: '
@@ -191,7 +189,7 @@ if [[ "$service" = -value-* ]]; then
       _alternative ":umask value (octal): "
       ;;
     *CCACHE_*UNIFY*)
-      _ccache_booleans "normalise sources prior to processing"
+      _ccache_booleans "normalize sources prior to processing"
       ;;
   esac
 
@@ -199,102 +197,87 @@ if [[ "$service" = -value-* ]]; then
 fi
 
 __ccache_config_keys() {
-  local -a keys
-  keys=(
-  'compression:write compressed cache'
-  'direct_mode:use direct mode'
-  'disable:disable cache usage'
-  'hard_link:create hard links rather than copies'
-  'hash_dir:include the cwd in the hash'
-  'keep_comments_cpp:consider comments in hashing'
-  'read_only:treat cache as read-only'
-  'read_only_direct:retrieve from read-only cache in direct mode'
-  'recache:use cache in write-only mode'
-  'run_second_cpp:pass original rather than preprocessed source code to compiler'
-  'stats:update statistics counters'
-  'unify:normalise sources prior to processing'
-  'base_dir:specify relative to which top level paths are hashed'
-  'temporary_dir:specify where temporary files are kept'
-  'cache_dir:specify where the cache is kept'
-  'compiler:specify compiler'
-  'cache_dir_levels:directory levels in the cache directory'
-  'compiler_check:compiler information included in the hash'
-  'compression_level:cache compression level'
-  'cpp_extension:set extensions for intermediate files'
-  'extra_files_to_hash:additional files to consider in hashing'
-  'ignore_headers_in_manifest:set paths to headers to ignore in hashing'
-  'limit_multiple:cleanup level'
-  'log_file:specify a log file'
-  'max_files:maximum number of files in the cache'
-  'max_size:maximum size of the cache'
-  'path:PATH for compiler lookup (instead of $PATH)'
-  'prefix_command:prefixes for compiler invocation'
-  'prefix_command_cpp:prefixes for preprocessor invocation'
-  'sloppiness:hash files sloppy'
-  'umask:set umask for ccache and child processes (e.g. for sharing cache)'
+  local -a keys=(
+    'absolute_paths_in_stderr:rewrite relative paths in error output to absolute paths'
+    'base_dir:specify relative to which top level paths are hashed'
+    'cache_dir:specify where the cache is kept'
+    'compiler:specify compiler'
+    'compiler_check:compiler information included in the hash'
+    'compiler_type:force a compiler type'
+    'compression:write compressed cache'
+    'compression_level:cache compression level'
+    'cpp_extension:set extensions for intermediate files'
+    'debug:enable debug mode'
+    'debug_dir:specify directory to write debug files'
+    'debug_level:specify the amount of debug information'
+    'depend_mode:enable depend mode'
+    'direct_mode:use direct mode'
+    'disable:disable cache usage'
+    'extra_files_to_hash:additional files to consider in hashing'
+    'file_clone:use file cloning to store and fetch cached compiler results'
+    'hard_link:create hard links rather than copies'
+    'hash_dir:include the cwd in the hash'
+    'ignore_headers_in_manifest:set paths to headers to ignore in hashing'
+    'ignore_options:list of options that ccache will ignore'
+    'inode_cache:cache source file hashes based on device, inode and timestamps'
+    'keep_comments_cpp:consider comments in hashing'
+    'log_file:specify a log file'
+    'max_files:maximum number of files in the cache'
+    'max_size:maximum size of the cache'
+    'msvc_dep_prefix:specify the prefix of included files output for MSVC compiler'
+    'namespace:namespace will be added to the hashed data for each compilation'
+    'path:PATH for compiler lookup (instead of $PATH)'
+    'pch_external_checksum:use .sum file for hash'
+    'prefix_command:prefixes for compiler invocation'
+    'prefix_command_cpp:prefixes for preprocessor invocation'
+    'read_only:treat cache as read-only'
+    'read_only_direct:retrieve from read-only cache in direct mode'
+    'recache:use cache in write-only mode'
+    'remote_only:use remote storage'
+    'remote_storage:specify one or several storage backends'
+    'reshare:write results to remote storage even for local storage cache hits'
+    'run_second_cpp:pass original rather than preprocessed source code to compiler'
+    'sloppiness:hash files sloppy'
+    'stats:update statistics counters'
+    'stats_log:write statistics counter updates to the specified file'
+    'temporary_dir:specify where temporary files are kept'
+    'umask:set umask for ccache and child processes (e.g. for sharing cache)'
   )
   _describe -t configkeys "configuration keys" keys -S '='
 }
 
 if compset -P '--set-config=*='; then
   case $IPREFIX in
-    *=compression= | *=direct_mode= | *=disable= | *=hard_link= | *=hash_dir= | *=keep_comments_cpp= | *=read_only= | *=read_only_direct= | *=recache= | *=run_second_cpp= | *=stats= | *=unify= )
-      local booleans; booleans=(
-      'true'
-      'false'
-      )
+     ( *=absolute_paths_in_stderr= | *=compression= | *=debug= | *=depend_mode= | *=direct_mode= | *=disable= | *=file_clone= | *=hard_link= | *=hash_dir= | *=inode_cache= | *=keep_comments_cpp= | *=read_only= | *=read_only_direct= | *=recache= | *=run_second_cpp= | *=stats= | *=unify= )
+      local -a booleans=('true' 'false')
       _describe -t booleans 'boolean' booleans
       ;;
-    *=base_dir= | *=temporary_dir= | *=cache_dir=)
+    (*=base_dir= | *=cache_dir= | *=debug_dir= | *=temporary_dir=)
       _path_files -/
       ;;
-    *=compiler=)
+    (*=compiler=)
       _ccache_compilers
       ;;
-    *=cache_dir_levels=)
-      _ccache_dirlevels
-      ;;
-    *=compiler_check=)
+    (*=compiler_check=)
       _ccache_compilerchecks
       ;;
-    *=compression_level=)
-      _ccache_compressionlevels
+    (*=compiler_type=)
+      _ccache_compiler_type
       ;;
-    *=cpp_extension=)
-      _alternative ':set extension for intermediate files: '
-      ;;
-    *=extra_files_to_hash=)
+    (*=extra_files_to_hash=)
       local sep=:
       compset -P "*${sep}"
       compset -S "${sep}*" || suf="$sep"
 
       _files "" -r "${sep}"' /\t\t\-' "$@"
       ;;
-    *=ignore_headers_in_manifest=)
+    ( *=ignore_headers_in_manifest= | *=path= )
       _dir_list
       ;;
-    *=limit_multiple=)
-      _alternative ":clean up down to level (e.g. 0.8): "
-      ;;
-    *=log_file=)
+    (*=log_file= | *=stats_log= )
       _path_files -g "*(/) *.log"
       ;;
-    *=max_files=)
-      _alternative ":maximum number of files in the cache (0= no limit): "
-      ;;
-    *=max_size=)
-      _alternative ':maximum cache size (0= no limit) with suffix k,M,G,T or Ki,Mi,Gi,Ti: '
-      ;;
-    *=path=)
-      _alternative ':PATH for compiler lookup (instead of $PATH):_dir_list'
-      ;;
-    *=prefix_command=)
-      _alternative ':prefixes for compiler invocation: '
-      ;;
-    *=prefix_command_cpp=)
-      _alternative ':prefixes for preprocessor invocation: '
-      ;;
-    *=sloppiness=)
+    (*=sloppiness=)
       _ccache_sloppiness
       ;;
     *=umask=)
@@ -316,9 +299,10 @@ elif [[ $words[2] == -* ]]; then
     '(-F --max-files=)'{-F,--max-files=}'[set maximum number of files in cache]:number of files in cache: ' \
     '(-M --max-size=)'{-M,--max-size=}'[set maximum size of cache]:cache size: ' \
     '(-X --recompress)'{-X,--recompress}'[recompress the cache to level LEVEL]:level' \
-    \*{-o,--set-config}'[set configuration item KEY to value VAL]:key_val' \
+    '--recompress-threads[use up to THREADS threads when recompressing the cache]:threads' \
+    '(-x --show-compression)'{-x,--show-compression}'[show compression statistics]' \
     '(-p --show-config)'{-p,--show-config}'[show current configuration options]' \
-    '--show-log-stats[print statistics counters from the stas log in human-readable format]' \
+    '--show-log-stats[print statistics counters from the stats log in human-readable format]' \
     '(-s --show-stats)'{-s,--show-stats}'[show statistics summary]' \
     '(-v --verbose)'{-v,--verbose}'[increase verbosity]' \
     '(-z --zero-stats)'{-z,--zero-stats}'[zero statistics counters]' \
@@ -329,10 +313,13 @@ elif [[ $words[2] == -* ]]; then
     '--trim-recompress-threads[use up to THREADS threads when recompressing]:threads' \
     '--checksum-file[print the checksum of the file at PATH]: :_files' \
     '--extract-result[extract file data stored in result file at PATH to the current working directory]' \
+    '--format[specify format for --print-log-stats and --print-stats]:format:(tab json)' \
     '(-k --get-config)'{-k,--get-config}'[print the value of configuration key]:key' \
     '--hash-file[print the hash of the file at PATH]: :_files' \
     '--inspect[print result/manifest file at PATH in human-readable format]' \
-    '--print-stats[print statistics counter IDs and corresponding values in machine-parsable format]'
+    '--print-log-stats[print statistics counter IDs and corresponding values from the stats log]' \
+    '--print-stats[print statistics counter IDs and corresponding values in machine-parsable format]' \
+    '--print-version[print version only]'
 elif [[ $CURRENT -eq 2 ]]; then
   _ccache_compilers
 else
