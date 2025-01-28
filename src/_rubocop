@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for rubocop 1.65.0 (https://github.com/rubocop/rubocop)
+#  Completion script for rubocop 1.71.0 (https://github.com/rubocop/rubocop)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -66,7 +66,9 @@ _arguments \
   '--only-recognized-file-types[Inspect files given on the command line only if they are listed in configuration]' \
   '--ignore-parent-exclusion[Prevent from inheriting "AllCops/Exclude" from parent folders]' \
   '--ignore-unrecognized-cops[Ignore unrecognized cops or departments in the config]' \
+  '--force-default-config[Use default configuration even if configuration files are present in the directory tree]' \
   '(-s --stdin)'{-s,--stdin}'[Pipe source from STDIN, using FILE in offense reports]: :_files' \
+  '--editor-mode[Optimize real-time feedback in editors, adjusting behaviors for editing experience]' \
   '(-P --parallel --no-parallel)'{-p,--parallel}'[Use available CPUs to execute inspection in parallel]' \
   '(-P --parallel --no-parallel)--no-parallel[Execute not parallel]' \
   '--raise-cop-error[Raise cop-related errors with cause and location]' \
