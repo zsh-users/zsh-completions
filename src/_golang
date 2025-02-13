@@ -30,7 +30,7 @@
 # Description
 # -----------
 #
-#  Completion script for go 1.23.0 (https://go.dev/).
+#  Completion script for go 1.24.0 (https://go.dev/).
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -81,7 +81,7 @@ __go_runtimedebug() {
     'tracebackancestors[set ancestor goroutines to be printed in goroutine creation stacks]:int'
     'asyncpreemptoff[disable signal-based asynchronous goroutine preemption.]:boolean:(1 0)'
   )
-  _values -s ',' -S '=' "runtime debug behaviour" $vars[@]
+  _values -s ',' -S '=' "runtime debug behavior" $vars[@]
 }
 
 __go_gcdebugflags() {
@@ -102,7 +102,7 @@ __go_gcdebugflags() {
     'export[print export data]' \
     'pctab[print named pc-value table]:pc-value:(pctospadj pctofile pctoline pctoinline pctopcdata)' \
     'locationlists[print information about DWARF location list creation]' \
-    'typecheckinl[eager typechecking of inline function bodies]' \
+    'typecheckinl[eager type-checking of inline function bodies]' \
     'dwarfinl[print information about DWARF inlined function creation]' \
     'softfloat[force compiler to emit soft-float code]' \
     'defer[print information about defer compilation]' \
@@ -214,7 +214,7 @@ __go_envvarvals() {
       _values "module mode" off on auto
       ;;
     # commands
-    (AR|CC|CXX|FC|GCCGO)
+    (AR|CC|CXX|FC|GCCGO|GOAUTH|GOCACHEPROG)
       _command_names -e
       ;;
     # directories
@@ -288,6 +288,9 @@ __go_envvarvals() {
     (GOSUMDB)
       _message "e.g. sum.golang.org+<publickey> https://sum.golang.org"
       ;;
+    (GOFIPS140)
+      _values 'FIPS version' off latest
+      ;;
   esac
 }
 
@@ -312,7 +315,7 @@ __go_packages() {
 __go_fix_names() {
   local -a fix_names=(
     'buildtag[remove +build comments from modules using Go 1.18 or later]'
-    'cftype[fixes initialzers and casts of C.*Ref and JNI types]'
+    'cftype[fixes initializers and casts of C.*Ref and JNI types]'
     'context[Change imports of golang.org/x/net/context to context]'
     'egl[fixes initializers of EGLDisplay]'
     'eglconf[fixes initializers of EGLConfig]'
@@ -401,6 +404,7 @@ case $state in
       (build)
         _arguments \
           '-o[force build to write to named output file or directory]:file or directory:_files' \
+          '-json[emit build output in JSON suitable for automated processing]' \
           ${build_flags[@]} \
           ${mod_flags[@]} \
           '*:importpaths:__go_packages'
@@ -436,11 +440,14 @@ case $state in
           "GO111MODULE[controls whether the go command runs in module-aware mode]:value"
           "GCCGO[gccgo command to run.]:gccgo command"
           "GOARCH[architecture, or processor, for which to compile code.]:architecture"
+          "GOAUTH[controls authentication for go-import and HTTPS module mirror interactions]:command"
           "GOBIN[directory where 'go install' installs to]:go install target dir"
           "GOCACHE[directory to store cached information]:go build cache dir"
+          "GOCACHEPROG[a command that implements an external go build cache]:command"
           "GOMODCACHE[module cache directory]:path"
           "GODEBUG[enable runtime debug facilities]:runtime debug settings"
           "GOENV[location of the go environment configuration file]:configuration file"
+          "GOFIPS140[the FIPS-140 cryptography mode to use when building binaries]"
           "GOFLAGS[default go command line flags]:space separated default command line flags"
           "GOINSECURE[module prefixes that are fetched insecurely]:comma separated module prefixes"
           "GOOS[target operating system]:operating system"
@@ -554,18 +561,17 @@ case $state in
       (get)
         # no mod_flags for get
         _arguments \
-          '-d[instructs get to stop after downloading the packages]' \
-          '-f[force get -u not to verify that each package has been checked from vcs]' \
-          '-fix[run the fix tool on the downloaded packages]' \
-          '-insecure[permit fetching/resolving custom domains]' \
           '-t[also download the packages required to build tests]' \
           '-u[use the network to update the named packages]' \
+          '-tool[instructs go to add a matching tool line to go.mod for each listed package]' \
           ${build_flags[@]} \
           '*:importpaths:__go_packages'
         ;;
 
       (install)
-        _arguments ${build_flags[@]} \
+        _arguments \
+          ${build_flags[@]} \
+          '-json[emit install output in JSON suitable for automated processing]' \
           '*:importpaths:__go_packages'
         ;;
 
@@ -928,8 +934,8 @@ case $state in
                   '-buildid[record id as Go toolchain build id]:id' \
                   '-buildmode[set build mode]:mode' \
                   '-c[dump call graph]' \
-                  '-capturehostobjs[capture host object files loading duraing internal linking to specified dir]:dir:_path_files -/' \
-                  '-checklinkname[check linkname symbol references]' \
+                  '-capturehostobjs[capture host object files loading during internal linking to specified dir]:dir:_path_files -/' \
+                  '-checklinkname[check link-name symbol references]' \
                   '-compressdwarf[compress DWARF if possible]' \
                   '-cpuprofile[write cpu profile to file]:file:_files' \
                   '-d[disable dynamic executable]' \
