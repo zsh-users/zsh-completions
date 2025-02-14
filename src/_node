@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Node.js v23.6.0 (https://nodejs.org)
+#  Completion script for Node.js v23.8.0 (https://nodejs.org)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -224,6 +224,7 @@ _arguments -C \
   '--use-bundled-ca[use bundled CA store (default)]' \
   '--use-largepages=[re-map the Node.js static code to large memory pages at startup]:mode:(off on silent)' \
   "--use-openssl-ca[use OpenSSL's default CA store]" \
+  "--use-system-ca[Use system's CA store]" \
   '(- 1 *)--v8-options[print v8 command line options]' \
   "--v8-pool-size=[set v8's thread pool size]:number" \
   "--watch[run in watch mode]" \
