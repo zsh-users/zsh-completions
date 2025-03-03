@@ -40,7 +40,7 @@ local -a module_types=(
 
 local -a bundle_libraries=(
   es5 es6/es2015 es7/es2016 es2017 es2018 es2019 es2020 es2021 es2022
-  es2023 esnext dom dom.iterable dom.asynciterable webworker
+  es2023 es2024 esnext dom dom.iterable dom.asynciterable webworker
   webworker.importscripts webworker.iterable webworker.asynciterable
   scripthost es2015.core es2015.collection es2015.generator
   es2015.iterable es2015.promise es2015.proxy es2015.reflect
@@ -62,7 +62,7 @@ local -a bundle_libraries=(
 )
 
 local -a targets=(
-  es5 es6/es2015 es2016 es2017 es2018 es2019 es2020 es2021 es2022 es2023 esnext
+  es5 es6/es2015 es2016 es2017 es2018 es2019 es2020 es2021 es2022 es2023 es2024 esnext
 )
 
 local -a watch_modes=(
