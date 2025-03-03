@@ -24,7 +24,7 @@
 # Description
 # -----------
 #
-#  Completion script for tsc v5.6.3. (https://www.typescriptlang.org/)
+#  Completion script for tsc v5.8.2. (https://www.typescriptlang.org/)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -35,8 +35,8 @@
 # ------------------------------------------------------------------------------
 
 local -a module_types=(
-  none commonjs amd umd system es6/es2015 es2020 es2022 esnext node16 nodenext preserve
-)
+  none commonjs amd umd system es6/es2015 es2020 es2022 esnext node16 node18 nodenext preserve
+) 
 
 local -a bundle_libraries=(
   es5 es6/es2015 es7/es2016 es2017 es2018 es2019 es2020 es2021 es2022
@@ -189,6 +189,8 @@ local -a opts=(
   '--synchronousWatchDirectory[Synchronously call callbacks and update the state of directory watchers on platforms]'
   '--excludeDirectories[Remove a list of directories from the watch process]:dirs:_files -/'
   "--excludeFiles[Remove a list of files from the watch mode's processing]:files:_files"
+  "--libReplacement[Enable library replacement]:boolean:(true false)"
+  "--erasableSyntaxOnly[Ensures that runtime constructs which are not part of ECMAScript are not allowed]:boolean:(true false)"
   '*:: :_files' \
 )
 
