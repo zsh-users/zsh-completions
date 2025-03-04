@@ -189,8 +189,8 @@ local -a opts=(
   '--synchronousWatchDirectory[Synchronously call callbacks and update the state of directory watchers on platforms]'
   '--excludeDirectories[Remove a list of directories from the watch process]:dirs:_files -/'
   "--excludeFiles[Remove a list of files from the watch mode's processing]:files:_files"
-  "--libReplacement[Enable library replacement]:boolean:(true false)"
-  "--erasableSyntaxOnly[Ensures that runtime constructs which are not part of ECMAScript are not allowed]:boolean:(true false)"
+  "--libReplacement[Enable library replacement]"
+  "--erasableSyntaxOnly[Ensures that runtime constructs which are not part of ECMAScript are not allowed]"
   '*:: :_files' \
 )
 
