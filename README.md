@@ -61,6 +61,14 @@ Add `zinit light zsh-users/zsh-completions` to your `~/.zshrc`.
 
         rm -f ~/.zcompdump; compinit
 
+Second Solution:
+zsh-completions as a plugin, they suggest manually adding its source directory to fpath before sourcing oh-my-zsh.sh.
+This ensures Zsh loads the completion files only once, improving performance.
+Recommended Fix:
+Instead of the existing method, they propose adding this line:
+
+fpath=($ZSH/custom/plugins/zsh-completions/src $fpath)
+
 ### Contributing
 
 Contributions are welcome, see [CONTRIBUTING](https://github.com/zsh-users/zsh-completions/blob/master/CONTRIBUTING.md).
