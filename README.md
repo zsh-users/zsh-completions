@@ -3,8 +3,9 @@ zsh-completions ![GitHub release](https://img.shields.io/github/release/zsh-user
 
 **Additional completion definitions for [Zsh](https://www.zsh.org/).**
 
-*This projects aims at gathering/developing new completion scripts that are not available in Zsh yet. The scripts may be contributed to the Zsh project when stable enough.*
+*This project aims at gathering/developing new completion scripts that are not available in Zsh yet. The scripts may be contributed to the Zsh project when stable enough.*
 
+---
 
 ## Usage
 
@@ -24,6 +25,7 @@ zsh-completions ![GitHub release](https://img.shields.io/github/release/zsh-user
 | NetBSD | [pkgsrc](https://ftp.netbsd.org/pub/pkgsrc/current/pkgsrc/shells/zsh-completions/README.html)  |
 | FreeBSD | [shells/zsh-completions](https://www.freshports.org/shells/zsh-completions)  |
 
+---
 
 ### Using zsh frameworks
 
@@ -33,39 +35,61 @@ Add `antigen bundle zsh-users/zsh-completions` to your `~/.zshrc`.
 
 #### [oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh)
 
-* Clone the repository inside your oh-my-zsh repo:
+To avoid issues with redundant `.zcompdump` cache generation (see [#603](https://github.com/zsh-users/zsh-completions/issues/603)), do **not** load `zsh-completions` as a standard plugin.  
+Instead, follow this optimized approach:
 
-        git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions
+1. Clone the repository into your custom plugins directory:
 
-* Add it to `FPATH` in your `.zshrc` by adding the following line before `source "$ZSH/oh-my-zsh.sh"`:
+```bash
+git clone https://github.com/zsh-users/zsh-completions.git \
+  ${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions
+```
 
-        fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src
+2. Update your `~/.zshrc` configuration **before** sourcing oh-my-zsh:
 
-Note: adding it as a regular Oh My ZSH! plugin will not work properly (see [#603](https://github.com/zsh-users/zsh-completions/issues/603)).
+```bash
+fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src
+autoload -U compinit && compinit
+source "$ZSH/oh-my-zsh.sh"
+```
+
+This prevents `compinit` from being called twice and significantly improves shell startup time.
 
 #### [zinit](https://github.com/zdharma-continuum/zinit)
 
 Add `zinit light zsh-users/zsh-completions` to your `~/.zshrc`.
 
+---
+
 ### Manual installation
 
 * Clone the repository:
 
-        git clone https://github.com/zsh-users/zsh-completions.git
+```bash
+git clone https://github.com/zsh-users/zsh-completions.git
+```
 
 * Include the directory in your `$fpath`, for example by adding in `~/.zshrc`:
 
-        fpath=(path/to/zsh-completions/src $fpath)
+```bash
+fpath=(path/to/zsh-completions/src $fpath)
+```
 
 * You may have to force rebuild `zcompdump`:
 
-        rm -f ~/.zcompdump; compinit
+```bash
+rm -f ~/.zcompdump; compinit
+```
+
+---
 
 ### Contributing
 
 Contributions are welcome, see [CONTRIBUTING](https://github.com/zsh-users/zsh-completions/blob/master/CONTRIBUTING.md).
 
+---
 
 ## License
-Completions use the Zsh license, unless explicitly mentioned in the file header.
+
+Completions use the Zsh license, unless explicitly mentioned in the file header.  
 See [LICENSE](https://github.com/zsh-users/zsh-completions/blob/master/LICENSE) for more information.
