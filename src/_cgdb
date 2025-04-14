@@ -1,0 +1,28 @@
+#compdef cgdb
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for cgdb (https://github.com/cgdb/cgdb).
+#  Modified from rejected https://github.com/cgdb/cgdb/pull/337/
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Wu, Zhenyu <wuzhenyu@ustc.edu>
+#
+# ------------------------------------------------------------------------------
+
+# cgdb -- <TAB>
+if ((${${words[1, CURRENT]}[(I)--]})) && [[ ${words[CURRENT]} != -- ]]; then
+  _gdb
+# cgdb <TAB> or cgdb <TAB> -- or cgdb --<TAB>
+else
+  _arguments -s \
+    "(- : *)"{-v,--version}"[Print version information and then exit.]" \
+    "(- : *)"{-h,--help}"[Print help (this message) and then exit.]" \
+    -d"[Set debugger to use.]" \
+    -w"[Wait for debugger to attach before starting.]" \
+    --
+fi
