@@ -3,7 +3,7 @@
 # Description
 # -----------
 #
-#  Completion script for pre-commit (https://github.com/pre-commit/pre-commit/).
+#  Completion script for pre-commit 4.2.0 (https://github.com/pre-commit/pre-commit/).
 #  Modified from rejected https://github.com/pre-commit/pre-commit/pull/2506
 #
 # ------------------------------------------------------------------------------
@@ -15,7 +15,7 @@
 # ------------------------------------------------------------------------------
 
 _pre_commit_commands() {
-  local _commands=(
+  local commands=(
     "autoupdate:Auto-update pre-commit config to the latest repos' versions"
     "clean:Clean out pre-commit files"
     "gc:Clean unused cached repos"
@@ -30,8 +30,9 @@ _pre_commit_commands() {
     "uninstall:Uninstall the pre-commit script"
     "validate-config:Validate .pre-commit-config.yaml files"
     "validate-manifest:Validate .pre-commit-hooks.yaml files"
+    "help:Show help for a specific command"
   )
-  _describe 'pre-commit commands' _commands
+  _describe 'pre-commit commands' commands
 }
 
 _pre_commit_options=(
@@ -46,6 +47,7 @@ _pre_commit_autoupdate_options=(
   "--bleeding-edge[Update to the bleeding edge of 'HEAD' instead of the latest tagged version]"
   "--freeze[Store 'frozen' hashes in 'rev' instead of tag names]"
   "*--repo[Only update this repository -- may be specified multiple times]:repos:"
+  {-j,--jobs}"[Number of threads to use]:jobs"
 )
 
 _pre_commit_clean_options=(
@@ -68,7 +70,7 @@ _pre_commit_init_templatedir_options=(
   "--color[Whether to use color in output. Defaults to 'auto']:color:(auto always never)"
   {-c,--config}"[Path to alternate config file]:config:_files -g '*.yaml'"
   "--no-allow-missing-config[Assume cloned repos should have a 'pre-commit' config]"
-  "*"{-t,--hook-type}"[which hook type to install]:hook_types:(pre-commit pre-merge-commit pre-push prepare-commit-msg commit-msg post-commit post-checkout post-merge post-rewrite)"
+  "*"{-t,--hook-type}"[which hook type to install]:hook_types:(commit-msg post-checkout post-commit post-merge post-rewrite pre-commit pre-merge-commit pre-push pre-rebase prepare-commit-msg)"
   ":The directory in which to write the hook script.:_files -/"
 )
 
@@ -78,7 +80,7 @@ _pre_commit_install_options=(
   {-c,--config}"[Path to alternate config file]:config:_files -g '*.yaml'"
   {-f,--overwrite}"[Overwrite existing hooks / remove migration mode]"
   "--install-hooks[Whether to install hook environments for all environments in the config file]"
-  "*"{-t,--hook-type}"[which hook type to install]:hook_types:(pre-commit pre-merge-commit pre-push prepare-commit-msg commit-msg post-commit post-checkout post-merge post-rewrite)"
+  {-t,--hook-type}"[which hook type to install]:hook_type:(commit-msg post-checkout post-commit post-merge post-rewrite pre-commit pre-merge-commit pre-push pre-rebase prepare-commit-msg)"
   "--allow-missing-config[Hook scripts will permit a missing configuration file]"
 )
 
@@ -102,11 +104,13 @@ _pre_commit_run_options=(
   {--all-files,-a}"[Run on all the files in the repo]"
   "--files[Specific filenames to run hooks on]:files:_files"
   "--show-diff-on-failure[When hooks fail, run 'git diff' directly afterward]"
-  "--hook-stage[The stage during which the hook is fired]:hook_stage:(commit merge-commit prepare-commit-msg commit-msg post-commit manual post-checkout push post-merge post-rewrite)"
+  "--hook-stage[The stage during which the hook is fired]:hook_stage:(commit-msg post-checkout post-commit post-merge post-rewrite pre-commit pre-merge-commit pre-push pre-rebase prepare-commit-msg manual)"
   "--remote-branch[Remote branch ref used by 'git push']:remote_branch:"
   "--local-branch[Local branch ref used by 'git push']:local_branch:"
   {--from-ref,--source,-s}"[the original ref in a 'from_ref...to_ref' diff expression]:from_ref:"
   {--to-ref,--origin,-o}"[the destination ref in a 'from_ref...to_ref' diff expression]:to_ref:"
+  "--pre-rebase-upstream[the upstream from which the series was forked]:pre_rebase_upstream"
+  "--pre-rebase-branch[the branch being rebased and is not set when rebasing the current branch]:pre_rebase_branch"
   "--commit-msg-filename[Filename to check when running during 'commit-msg']:commit_msg_filename:"
   "--prepare-commit-message-source[Source of the commit message]:prepare_commit_message_source:"
   "--commit-object-name[Commit object name]:commit_object_name:"
@@ -132,11 +136,13 @@ _pre_commit_try_repo_options=(
   {--all-files,-a}"[Run on all the files in the repo]"
   "--files[Specific filenames to run hooks on]:files:_files"
   "--show-diff-on-failure[When hooks fail, run 'git diff' directly afterward]"
-  "--hook-stage[The stage during which the hook is fired]:hook_stage:(commit merge-commit prepare-commit-msg commit-msg post-commit manual post-checkout push post-merge post-rewrite)"
+  "--hook-stage[The stage during which the hook is fired]:hook_stage:(commit-msg post-checkout post-commit post-merge post-rewrite pre-commit pre-merge-commit pre-push pre-rebase prepare-commit-msg manual)"
   "--remote-branch[Remote branch ref used by 'git push']:remote_branch:"
   "--local-branch[Local branch ref used by 'git push']:local_branch:"
   {--from-ref,--source,-s}"[the original ref in a 'from_ref...to_ref' diff expression]:from_ref:"
   {--to-ref,--origin,-o}"[the destination ref in a 'from_ref...to_ref' diff expression]:to_ref:"
+  "--pre-rebase-upstream[the upstream from which the series was forked]:pre_rebase_upstream"
+  "--pre-rebase-branch[the branch being rebased and is not set when rebasing the current branch]:pre_rebase_branch"
   "--commit-msg-filename[Filename to check when running during 'commit-msg']:commit_msg_filename:"
   "--prepare-commit-message-source[Source of the commit message]:prepare_commit_message_source:"
   "--commit-object-name[Commit object name]:commit_object_name:"
@@ -153,7 +159,7 @@ _pre_commit_uninstall_options=(
   "(- : *)"{-h,--help}"[show this help message and exit]"
   "--color[Whether to use color in output. Defaults to 'auto']:color:(auto always never)"
   {-c,--config}"[Path to alternate config file]:config:_files -g '*.yaml'"
-  "*"{-t,--hook-type}"[which hook type to uninstall]:hook_types:(pre-commit pre-merge-commit pre-push prepare-commit-msg commit-msg post-commit post-checkout post-merge post-rewrite)"
+  "*"{-t,--hook-type}"[which hook type to uninstall]:hook_types:(commit-msg post-checkout post-commit post-merge post-rewrite pre-commit pre-merge-commit pre-push pre-rebase prepare-commit-msg)"
 )
 
 _pre_commit_validate_config_options=(
