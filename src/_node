@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Node.js v23.8.0 (https://nodejs.org)
+#  Completion script for Node.js v24.0.0 (https://nodejs.org)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -49,7 +49,7 @@ _node_files() {
     fi
   done
 
-  _files -g "*.(js|mjs)"
+  _files -g "*.(js|mjs|ts|mts)"
 }
 
 _node_args() {
@@ -93,6 +93,7 @@ _arguments -C \
   '--cpu-prof-name=[file name of the V8 profile generated with --cpu-prof]: :_files' \
   '--diagnostic-dir=[set dir for all output files(default: current working directory)]:dir:_files -/' \
   '--disable-proto=[disable Object.prototype.__proto__]:mode:(delete throw)' \
+  '--disable-sigusr1[disable inspector thread to be listening for SIGUSR1 signal]' \
   '*--disable-warning=[silence specific process warnings]:warn type' \
   '--disable-wasm-trap-handler[disable trap-handler-based WebAssembly bound checks]' \
   '--disallow-code-generation-from-strings[disallow eval and friends]' \
@@ -105,7 +106,8 @@ _arguments -C \
   '*--env-file-if-exists=[set environment variables from supplied file if exists]:envfile:_files' \
   '(- 1 *)'{-e,--eval}'[evaluate script]:inline JavaScript' \
   '--experimental-addon-modules[enable experimental import support for addons]' \
-  '--experimental-async-context-frame[improve AsyncLocalStorage performance with AsyncContextFrame]' \
+  '--experimental-config-file=[set config file from supplied file]:file:_files' \
+  '--experimental-default-config-file[set config file from default config file]' \
   '--experimental-eventsource[enable experimental EventSource API]' \
   '--experimental-import-meta-resolve[experimental ES Module import.meta.resolve() support]' \
   '(--loader --experimental-loader)'{--loader,--experimental-loader}'=[Specify the module of a custom ECMAScript Module loader]: :_files' \
@@ -150,6 +152,8 @@ _arguments -C \
   '--no-experimental-global-navigator[expose experimental Navigator API on the global scope]' \
   '--no-experimental-repl-await[disable experimental await keyword support in REPL]' \
   '--no-experimental-require-module[allow loading synchronous ES Modules in require()]' \
+  '--no-experimental-sqlite[disable experimental node sqlite module]' \
+  '--no-experimental-strip-types[disable experimental type-stripping for TypeScript files]' \
   '--no-experimental-websocket[experimental WebSocket API (currently set)]' \
   '--no-extra-info-on-fatal-exception[hide extra information on fatal exception that causes exit]' \
   '--no-force-async-hooks-checks[disable checks for async_hooks]' \
