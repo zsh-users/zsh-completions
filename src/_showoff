@@ -35,7 +35,7 @@
 # -------
 #
 #  * Bruno Michel (https://github.com/nono)
-#  * Shoehi Yoshida (https://github.com/nono)
+#  * Shohei Yoshida (https://github.com/nono)
 #
 # ------------------------------------------------------------------------------
 
@@ -76,78 +76,78 @@ _showoff() {
     '*:: :->args' \
       && ret=0
 
-    case $state in
-      (args)
-        case $line[1] in
-          (add|new)
-            _arguments \
-              '(-d --dir)'{-d,--dir}='[Slide dir (where to put a new slide file)]:directory:_files -/' \
-              '(-n --name)'{-n,--name}='[Slide name (name of the new slide file)]:basename' \
-              {-s,--source}='[Include code from the given file as the slide body]:file:_files' \
-              '(-t --style --type)'{-t,--style,--type}='[Slide Type/Style (default: title)]:style' \
-              '(-u --nonumber)'{-u,--nonumber}"[Don't number the slide, use the given name verbatim]" \
-              '1:title' && ret=0
-            ;;
-          (create|init)
-            _arguments \
-              '(-d --slidedir)'{-d,--slidedir}='[Sample slide directory name (default: one)]:arg' \
-              '(-n --nosamples)'{-n,--nosamples}="[Don't create sample slides]" \
-              '1:dir_name' && ret=0
-            ;;
-          (help)
-            _arguments \
-              '-c[List commands one per line, to assist with shell completion]' \
-              '1: :_showoff_help' && ret=0
-            ;;
-          (heroku)
-            _arguments \
-              '(-f --force)'{-f,--force}'[force overwrite of existing Gemfile, .gems and config.ru files if they exist]' \
-              '(-p --password)'{-p,--password}='[add password protection to your heroku site(default: none)]' \
-              '1:heroku_name' && ret=0
-            ;;
-          (info)
-            _arguments \
-              '(-f --file)'{-f,--file}='[alternate json filename]: :_files -g "*.json"' \
-              '(-j --json)'{-j,--json}'[render output as json]' \
-              && ret=0
-            ;;
-          (pdf|static)
-            _arguments \
-              '(-f --file --pres_file)'{-f,--file,--pres_file}='[JSON file used to describe presentation(default: showoff.json)]: :_files -g "*.json"' \
-              '(-l --lang --language --locale)'{-l,--lang,--language,--locale}'[Language code to generate(default: none)]' \
-              '1:name' \
-              && ret=0
-            ;;
-          (serve)
-            _arguments \
-              '(-S --standalone)'{-S,--standalone}'[Run in standalone mode with no audience interaction]' \
-              '(-f --file --pres_file)'{-f,--file,--pres_file}='[JSON file used to describe presentation(default: showoff.json)]: :_files -g "*.json"' \
-              '--git_branch=[Branch of git repository to use(default: none)]:branch' \
-              '--git_path=[Path of the presentation within the git repository(default: none)]:path' \
-              '(-h --host)'{-h,--host}='[Host or ip to run on(default: 0.0.0.0)]' \
-              '--nocache[Disable content caching]'\
-              '--nosleep[Prevent the computer from sleeping during your presentation]' \
-              '(-p --port)'{-p,--port}='[Port on which to run(default: 9090)]' \
-              '(-r --review)'{-r,--review}'[Enable code review]'\
-              '(-s --ssl)'{-s,--ssl}'[Run via HTTPS]' \
-              '--ssl_certificate=[Path to SSL certificate]: :_files' \
-              '--ssl_private_key=[Path to SSL private key]: :_files' \
-              '(-u --url --git_url)'{-u,--url,--git_url}='[GIT URL to a repository containing the presentation]:url' \
-              '(-v --verbose)'{-v,--verbose}'[Show verbose messaging]' \
-              '(-x --execute --executecode)'{-x,--execute,--executecode}'[Enable remote code execution]' \
-              '1: :_files -/' && ret=0
-            ;;
-          (skeleton|validate)
-            _arguments \
-              '(-f --file)'{-f,--file}'=[alternate json filename(default: none)]: :_files -g "*.json"' \
-              && ret=0
-            ;;
-          *)
-            (( ret )) && _message 'no more arguments'
-            ;;
-        esac
-        ;;
-    esac
+  case $state in
+    (args)
+      case $line[1] in
+        (add|new)
+          _arguments \
+            '(-d --dir)'{-d,--dir}='[Slide dir (where to put a new slide file)]:directory:_files -/' \
+            '(-n --name)'{-n,--name}='[Slide name (name of the new slide file)]:basename' \
+            {-s,--source}='[Include code from the given file as the slide body]:file:_files' \
+            '(-t --style --type)'{-t,--style,--type}='[Slide Type/Style (default: title)]:style' \
+            '(-u --nonumber)'{-u,--nonumber}"[Don't number the slide, use the given name verbatim]" \
+            '1:title' && ret=0
+          ;;
+        (create|init)
+          _arguments \
+            '(-d --slidedir)'{-d,--slidedir}='[Sample slide directory name (default: one)]:arg' \
+            '(-n --nosamples)'{-n,--nosamples}="[Don't create sample slides]" \
+            '1:dir_name' && ret=0
+          ;;
+        (help)
+          _arguments \
+            '-c[List commands one per line, to assist with shell completion]' \
+            '1: :_showoff_help' && ret=0
+          ;;
+        (heroku)
+          _arguments \
+            '(-f --force)'{-f,--force}'[force overwrite of existing Gemfile, .gems and config.ru files if they exist]' \
+            '(-p --password)'{-p,--password}='[add password protection to your heroku site(default: none)]' \
+            '1:heroku_name' && ret=0
+          ;;
+        (info)
+          _arguments \
+            '(-f --file)'{-f,--file}='[alternate json filename]: :_files -g "*.json"' \
+            '(-j --json)'{-j,--json}'[render output as json]' \
+            && ret=0
+          ;;
+        (pdf|static)
+          _arguments \
+            '(-f --file --pres_file)'{-f,--file,--pres_file}='[JSON file used to describe presentation(default: showoff.json)]: :_files -g "*.json"' \
+            '(-l --lang --language --locale)'{-l,--lang,--language,--locale}'[Language code to generate(default: none)]' \
+            '1:name' \
+            && ret=0
+          ;;
+        (serve)
+          _arguments \
+            '(-S --standalone)'{-S,--standalone}'[Run in standalone mode with no audience interaction]' \
+            '(-f --file --pres_file)'{-f,--file,--pres_file}='[JSON file used to describe presentation(default: showoff.json)]: :_files -g "*.json"' \
+            '--git_branch=[Branch of git repository to use(default: none)]:branch' \
+            '--git_path=[Path of the presentation within the git repository(default: none)]:path' \
+            '(-h --host)'{-h,--host}='[Host or IP to run on(default: 0.0.0.0)]' \
+            '--nocache[Disable content caching]'\
+            '--nosleep[Prevent the computer from sleeping during your presentation]' \
+            '(-p --port)'{-p,--port}='[Port on which to run(default: 9090)]' \
+            '(-r --review)'{-r,--review}'[Enable code review]'\
+            '(-s --ssl)'{-s,--ssl}'[Run via HTTPS]' \
+            '--ssl_certificate=[Path to SSL certificate]: :_files' \
+            '--ssl_private_key=[Path to SSL private key]: :_files' \
+            '(-u --url --git_url)'{-u,--url,--git_url}='[GIT URL to a repository containing the presentation]:url' \
+            '(-v --verbose)'{-v,--verbose}'[Show verbose messaging]' \
+            '(-x --execute --executecode)'{-x,--execute,--executecode}'[Enable remote code execution]' \
+            '1: :_files -/' && ret=0
+          ;;
+        (skeleton|validate)
+          _arguments \
+            '(-f --file)'{-f,--file}'=[alternate json filename(default: none)]: :_files -g "*.json"' \
+            && ret=0
+          ;;
+        *)
+          (( ret )) && _message 'no more arguments'
+          ;;
+      esac
+      ;;
+  esac
 
   return ret
 }
