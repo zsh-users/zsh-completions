@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for The Uncomplicated Firewall (ufw). (https://launchpad.net/ufw).
+#  Completion script for The Uncomplicated Firewall (ufw) v0.36.2. (https://launchpad.net/ufw).
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -38,108 +38,132 @@
 #
 # ------------------------------------------------------------------------------
 
-
 _ufw_logging() {
+  local params additional second
+  second=$words[2]
 
-    local params additional second
-    second=$words[2]
+  if [ ! -z $second ]; then
+    return
+  fi
 
-    if [ ! -z $second ]; then
-        return
-    fi
+  params=("on" "off")
+  additional=("low" "medium" "high" "full")
 
-    params=(
-      "on"
-      "off"
-    )
-
-    additional=(
-      "low"
-      "medium"
-      "high"
-      "full"
-    )
-
-    _describe -t params 'on/off' params
-    _describe -t additional 'level' additional
+  _describe -t params 'on/off' params
+  _describe -t additional 'level' additional
 }
 
-
 _ufw_delete() {
-    local rules complrules second
+  local rules complrules second
 
-    second=$words[2]
+  second=$words[2]
 
-    if [ ! -z $second ]; then
-        return
-    fi
+  if [ ! -z $second ]; then
+    return
+  fi
 
-    complrules=()
-    rules=("${(f)$(ufw status | tr -s ' ' | tail -n +5 | tr -s '\n')}")
+  complrules=()
+  rules=("${(f)$(ufw status | tr -s ' ' | tail -n +5 | tr -s '\n')}")
 
-    for ((i=1; i<=${#rules[@]}; i++)); do
-        complrules+=("$i:$rules[i]");
-    done
+  for ((i=1; i<=${#rules[@]}; i++)); do
+    complrules+=("$i:$rules[i]");
+  done
 
-    _describe -t complrules 'Rules' complrules
+  _describe -t complrules 'Rules' complrules
+}
+
+_ufw_app() {
+  local ret=1
+
+  local -a subcmds=(
+    "list:list application profiles"
+    "info:show information on profile"
+    "update:update profile"
+    "default:set default application profile"
+  )
+
+  _arguments \
+    "1: :{_describe 'command' subcmds}" \
+    && ret=0
+
+  return ret
+}
+
+(( $+functions[_flutter_pub_token_subcommand] )) ||
+_flutter_pub_token_subcommand() {
+  local -a subcommands=(
+
+  )
+  _describe -t subcommands 'subcommand' subcommands "$@"
 }
 
 _ufw() {
-    local curcontext="$curcontext" ret=1
-    local -a state line commands
+  local curcontext="$curcontext" ret=1
+  local -a state line commands
 
-    commands=(
-      "enable:enable the firewall"
-      "disable:disable the firewall"
-      "default:set default policy"
-      "logging:set logging level"
-      "allow:add allow rule"
-      "deny:add deny rule"
-      "reject:add reject rule"
-      "limit:add limit rule"
-      "delete:delete rule"
-      "insert:insert rule at position"
-      "route:add route rule"
-      "reload:reload firewall"
-      "reset:reset firewall"
-      "status:show firewall status"
-      "show:show firewall report"
-      "version:display version information"
-      "prepend:add rule before all of the same type"
-    )
+  commands=(
+    "enable:enable the firewall"
+    "disable:disable the firewall"
+    "default:set default policy"
+    "logging:set logging level"
+    "allow:add allow rule"
+    "deny:add deny rule"
+    "reject:add reject rule"
+    "limit:add limit rule"
+    "delete:delete rule"
+    "insert:insert rule at position"
+    "route:add route rule"
+    "reload:reload firewall"
+    "reset:reset firewall"
+    "status:show firewall status"
+    "show:show firewall report"
+    "version:display version information"
+    "prepend:add rule before all of the same type"
+    "app:application profile command"
+  )
 
-    _arguments -C -s -S -n \
-        '(- 1 *)'--version"[display version information]: :->full" \
-        '(- 1 *)'{-h,--help}'[display usage information]: :->full' \
-        '(- 1 *)'--dry-run"[don't modify anything, just show the changes]: :->cmds" \
-        '1:cmd:->cmds' \
-        '*:: :->args' && ret=0
+  _arguments -C -s -S -n \
+    '(- 1 *)'--version"[display version information]: :->full" \
+    '(- 1 *)'{-h,--help}'[display usage information]: :->full' \
+    '(- 1 *)'--dry-run"[don't modify anything, just show the changes]: :->cmds" \
+    '1:cmd:->cmds' \
+    '*:: :->args' && ret=0
 
-    case "$state" in
-      (cmds)
-          _describe -t commands 'commands' commands
+  case "$state" in
+    (cmds)
+      _describe -t commands 'commands' commands
       ;;
-      (args)
-         local cmd
-         cmd=$words[1]
-         case "$cmd" in
-             (logging)
-                 _ufw_logging && ret=0
-             ;;
-             (delete)
-                 _ufw_delete && ret=0
-             ;;
-             (*)
-                 _default && ret=0
-             ;;
-         esac
+    (args)
+      local cmd
+      cmd=$words[1]
+      case "$cmd" in
+        (logging)
+          _ufw_logging && ret=0
+          ;;
+        (delete)
+          _ufw_delete && ret=0
+          ;;
+        (app)
+          _ufw_app && ret=0
+          ;;
+        (*)
+          _default && ret=0
+          ;;
+      esac
       ;;
-      (*)
+    (*)
       ;;
-    esac
+  esac
 
-    return ret
+  return ret
 }
 
-_ufw
+_ufw "$@"
 
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
