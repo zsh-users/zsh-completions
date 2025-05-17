@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for shallow-backup: https://github.com/alichtman/shallow-backup
+#  Completion script for shallow-backup v6.4: https://github.com/alichtman/shallow-backup
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -38,30 +38,30 @@
 #
 # ------------------------------------------------------------------------------
 
-
 _shallow-backup() {
-    _arguments \
-      '(- 1 *)'{-h,--help}'[Show help and exit]' \
-      '(- 1 *)'{-v,--version}'[Print version]' \
-      '--add-dot[Add a dotfile or dotfolder to config by path]:PATH:_files' \
-      '--backup-all[Full back up]' \
-      '--backup-configs[Back up app config files]' \
-      '--backup-dots[Back up dotfiles]' \
-      '--backup-fonts[Back up installed fonts]' \
-      '--backup-packages[Back up package libraries]' \
-      '--delete-config[Delete config file]' \
-      '--destroy-backup[Delete backup directory]' \
-      '--dry-run[Do not backup or reinstall any files, just give verbose output]' \
-      '--new-path[Input a new back up directory path]:PATH:_files -/' \
-      '--no-new-backup-path-prompt[Skip setting new back up directory path prompt]' \
-      '--no-splash[Do not display splash screen]' \
-      '--reinstall-all[Full reinstallation]' \
-      '--reinstall-configs[Reinstall configs]' \
-      '--reinstall-dots[Reinstall dotfiles and dotfolders]' \
-      '--reinstall-fonts[Reinstall fonts]' \
-      '--reinstall-packages[Reinstall packages]' \
-      '--remote[Set remote URL for the git repo]':url \
-      '--show[Display config file]'
+  _arguments \
+    '(- 1 *)'{-h,--help}'[Show help and exit]' \
+    '(- 1 *)'{-v,--version}'[Print version]' \
+    '--add-dot[Add a dotfile or dotfolder to config by path]:PATH:_files' \
+    '--backup-all[Full back up]' \
+    '--backup-configs[Back up app config files]' \
+    '--backup-dots[Back up dotfiles]' \
+    '--backup-fonts[Back up installed fonts]' \
+    '--backup-packages[Back up package libraries]' \
+    '--delete-config[Delete config file]' \
+    '--destroy-backup[Delete backup directory]' \
+    '--dry-run[Do not backup or reinstall any files, just give verbose output]' \
+    '--new-path[Input a new back up directory path]:PATH:_files -/' \
+    '--no-new-backup-path-prompt[Skip setting new back up directory path prompt]' \
+    '--no-splash[Do not display splash screen]' \
+    '--reinstall-all[Full reinstallation]' \
+    '--reinstall-configs[Reinstall configs]' \
+    '--reinstall-dots[Reinstall dotfiles and dotfolders]' \
+    '--reinstall-fonts[Reinstall fonts]' \
+    '--reinstall-packages[Reinstall packages]' \
+    '--remote[Set remote URL for the git repo]':url \
+    '--edit[Open config file in $EDITOR]' \
+    '--show[Display config file]'
 }
 
 _shallow-backup
