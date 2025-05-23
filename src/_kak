@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for kak 2022.10.31 (https://github.com/mawww/kakoune)
+#  Completion script for kak 2024.05.18 (https://github.com/mawww/kakoune)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -57,7 +57,7 @@ _kak() {
     "-f[enter in 'filter mode':select the whole file, then execute keys]:keys" \
     '-i[backup the files on which a filter is applied using the given suffix]:suffix' \
     '-q[in filter mode, do not print any errors]' \
-    '-ui[set the type of user interface to use (ncurses, dummy, or json)]:ui_type:(ncurses dummy json)' \
+    '-ui[set the type of user interface to use (terminal, dummy, or json)]:ui_type:(terminal dummy json)' \
     '-l[list existing sessions]:session_id:_kak_sessions' \
     '-clear[clear dead sessions]' \
     '-debug[initial debug option value]:arg' \
