@@ -24,7 +24,7 @@
 # Description
 # -----------
 #
-#  Completion script for clang-check v15.0.2 (https://clang.llvm.org/docs/ClangCheck.html)
+#  Completion script for clang-check v20.1.2 (https://clang.llvm.org/docs/ClangCheck.html)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -37,6 +37,8 @@
 _arguments \
   '(- *)--help[Display available options]' \
   '(- *)--help-hidden[Display available more options]' \
+  '(- *)--help-list[Display list of available options]' \
+  '(- *)--help-list-hidden[Display list of more available options]' \
   '(- *)--version[Display the version of this program]' \
   '--analyze[Run static analysis engine]' \
   '--analyzer-output-path=[Write output to file]: :_files' \
@@ -49,6 +51,8 @@ _arguments \
   '--fix-what-you-can[Apply fix-it advice even in the presence of unfixable errors]' \
   '--fixit[Apply fix-it advice to the input source]' \
   '-p[Build directory where compile_commands.json is]: :_files -/' \
+  '--print-all-options[Print all option values after command line parsing]' \
+  '--print-options[Print non-default options after command line parsing]' \
   '--syntax-tree-dump[dump the syntax tree]' \
   '--tokens-dump[dump the preprocessed tokens]' \
   '*: :_files'

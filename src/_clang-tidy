@@ -41,12 +41,14 @@ _arguments \
   '(- *)--help-hidden[Display available more options]' \
   '(- *)--help-list[Display list of available options]' \
   '(- *)--help-list-hidden[Display list of more available options]' \
+  '--allow-no-checks[Allow empty enabled checks]' \
   '--checks=[Comma-separated list of globs with optional "-" prefix]:checks' \
   '--config=[Specifies a configuration in YAML/JSON format]:conf' \
   '--config-file=[Specify the path of .clang-tidy or custom config-file]: :_files' \
   '--dump-config[Dumps configuration in the YAML format to stdout]' \
   '--enable-check-profile[Enable per-check timing profiles, and print a report to stderr]' \
   '--enable-module-headers-parsing[Enable preprocessor-level module header parsing for C++20 and above]' \
+  '--exclude-header-filter=[Regular expression of headers to exclude diagnostics from]:filter' \
   '--explain-config[For each enabled check explains, where it is enabled]' \
   '--export-fixes=[YAML file to store suggested fixes in]: :_files' \
   '*--extra-arg[Additional argument to append to the compiler command line]:arg' \
@@ -54,16 +56,19 @@ _arguments \
   '--fix[Apply suggested fixes]' \
   '--fix-errors[Apply suggested fixes even if compilation errors were found]' \
   '--fix-notes[If a warning has no fix, but a single fix can be found through an associated diagnostic node, apply the fix]' \
-  '--format-style=[Style for formatting code around applied fixes]: :(llvm google webkit mozilla)' \
+  '--format-style=[Style for formatting code around applied fixes]: :(none file llvm google webkit mozilla)' \
   '--header-filter=[Regular expression matching the names of the headers to output diagnostics from]:regexp' \
   '--line-filter=[List of files with line ranges to filter the warnings]' \
   '(- *)--list-checks[List all enabled checks and exit]' \
   '--load=[Load the specified plugin]: :_files' \
   '-p[Build directory where compile_commands.json is]: :_files -/' \
+  '--print-all-options[Print all option values after command line parsing]' \
+  '--print-options[Print non default options after command line parsing]' \
   '--quiet[Run clang-tidy in quiet mode]' \
   '--store-check-profile=[These per-TU profiles are instead stored as JSON]:prefix' \
   '--system-headers[Display the errors from system headers]' \
   '--use-color[Use colors in diagnostics]' \
+  '(- *)--version[Display the version of this program]' \
   '--verify-config[Check the config files to ensure each check and option is recognized]' \
   '--vfsoverlay=[Overlay the virtual filesystem described by file over the real file system]: :_files' \
   '--warnings-as-errors=[Upgrades warning to errors]:check' \
