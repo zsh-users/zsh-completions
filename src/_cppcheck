@@ -40,7 +40,7 @@
 # Notes
 # -----
 #
-#  Created for Cppcheck version 2.12 (https://github.com/danmar/cppcheck)
+#  Created for Cppcheck version 2.17.1 (https://github.com/danmar/cppcheck)
 #
 # ------------------------------------------------------------------------------
 
@@ -50,13 +50,17 @@ _cppcheck_files() {
 
 _cppcheck() {
   local check_ids='(all warning style performance portability information unusedFunction missingInclude)'
+  local platforms='(unix32 unix64 win32A win32W win64 avr8 elbrus-e1cp pic8 pic8-enhanced pic16 mips32 native unspecified)'
+  local coding_standards='(normal autosar cert-c-2016 cert-cpp-2016 misra-c-2012 misra-c-2023 misra-cpp-2008 misra-cpp-2023)'
 
   _arguments \
     "--addon=[Execute addon]" \
     "--addon-python=[Specify the python interpreter]: :_files" \
     "--cppcheck-build-dir=[Analysis output directory]:directory:_files -/" \
     "--check-config[Check cppcheck configuration]" \
+    "--check-level=[Configure how much valueflow analysis you want]:level:(reduced normal exhaustive)" \
     "--check-library[Show information when library files have incomplete info]" \
+    "--checkers-report=[Write a report of all the active checkers to the given file]:file:_files" \
     "--clang=[Use clang parser instead of the builtin Cppcheck parser]: :_files" \
     "--config-exclude=[Path to be excluded from configuration checking]:directory:_files -/" \
     "--config-exclude-files=[A file that contains a list of config-excludes]:file:_files" \
@@ -72,8 +76,10 @@ _cppcheck() {
     "--exitcode-suppressions=[Used when certain messages should be displayed but should not cause a non-zero exitcode]:_files" \
     "*--file-filter=[Analyze only those files matching the given filter str]:filter" \
     "--file-list=[Specify the files to check in a text file]:_files" \
-    '(-f --force)'{-f,--force}"[Force checking of all configurations in files]" \
-    '(- 1 *)'{-h,--help}"[Print this help]" \
+    "(-f --force)"{-f,--force}"[Force checking of all configurations in files]" \
+    "(--fsigned-char --funsigned-char)--fsigned-char[Treat char type as signed]" \
+    "(--fsigned-char --funsigned-char)--funsigned-char[Treat char type as unsigned]" \
+    "(- 1 *)"{-h,--help}"[Print this help]" \
     "-I[A file that contains a list of config-excludes]:directory:_files -/" \
     "--include-file=[Specify directory paths to search for included header files in a text file]:file:_files" \
     "--include=[Force inclusion of a file before the checked file]:file:_files" \
@@ -83,26 +89,34 @@ _cppcheck() {
     "-j[Number of threads to do the checking simultaneously]::num" \
     "-l[No new threads should be started if the load average is exceeds this value]::load_avg" \
     {-x,--language=}"[Forces cppcheck to check all files as the given language]:language:(c c++)" \
+    "--library=[Load config file that contains information about types and functions]:config:_files" \
     "--max-configs=[Maximum number of configurations to check in a file]" \
     "--max-ctu-depth=[Maximum depth in whole program analysis]:num" \
     "--output-file=[File to save results]:file:_files" \
+    "--output-format=[Specify the output format]:format:(text sarif xml)" \
+    "--platform=[Specified platform specific types and sizes]:platform:$platforms" \
     "--plist-output=[Generate Clang-plist output files in folder]:_files" \
     "--project=[Run Cppcheck on project]:file:_files" \
     "--project-configuration=[Limit the configuration cppcheck should check]:configuration" \
     "--platform=[Set platform specific types and sizes]:platforms:(unix32 unix64 win32A win32W win64 avr8 elbrus-e1cp pic8 pic8-enhanced pic16 mips32 native unspecified)" \
-    '(-q --quiet)'{-q,--quiet}"[Do not show progress reports]" \
+    "(-q --quiet)"{-q,--quiet}"[Do not show progress reports]" \
     {-rp,--relative-paths}"=[Use relative paths in output (separated with ;)]:_files" \
     "--report-progress[Report progress messages while checking a file]" \
+    "--report-type=[Add guideline and classification fields for specified coding standard]:standard:$coding_standards" \
+    "--rule=[Match regular expression]:rule" \
+    "--rule-file=[Use given rule file]:file:_files" \
+    "--showtime=[show timing information]:type:(none file file-total summary top5_file top5_summary top5)" \
     "--std=[Set standard]:std:(c89 c99 c11 c++03 c++11 c++14 c++17 c++20)" \
     "--suppress=[Suppress warnings (format: \[error id\]:\[filename\]:\[line\])]" \
     "--suppressions-list=[Suppress warnings listed in the file]:_files" \
     "--suppress-xml=[Suppress warnings listed in a xml file]:_files" \
     "--template=[Format the error messages]" \
     "--template-location=[Format the error message location]" \
+    "*-U[Undefine preprocessor symbol]:symbol" \
     "(-v --verbose)"{-v,--verbose}"[Output more detailed error information]" \
     "--version[Print out version number]" \
     "--xml[Write results in xml format to stderr]" \
-    '*: :_cppcheck_files'
+    "*: :_cppcheck_files"
 }
 
 _cppcheck "$@"
