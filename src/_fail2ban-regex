@@ -44,7 +44,7 @@ _arguments -A "-*" -n \
   '--print-all-ignored[print all ignored lines, no matter how many]' \
   '(-t --log-traceback)'{-t,--log-traceback}'[enrich log-messages with compressed tracebacks]' \
   '--full-traceback[enrich log-messages with full, uncompressed tracebacks]:' \
-  '1:file:_files -g *.log' \
+  '1:file:_files -g \*.log' \
   '2:file:_files -W /etc/fail2ban/filter.d -g \*\.\(conf\|local\)' \
   '3:file:_files -W /etc/fail2ban/filter.d -g \*\.\(conf\|local\)'
 
