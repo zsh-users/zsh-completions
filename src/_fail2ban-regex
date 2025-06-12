@@ -1,0 +1,57 @@
+#compdef fail2ban-regex
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for fail2ban-regex (https://www.fail2ban.org/).
+#  Environment:
+#    Linux 6.14.10-arch1-1 x86_64 GNU/Linux
+#    zsh 5.9 (x86_64-pc-linux-gnu)
+#    fail2ban 1.1.0-7
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Jesse Ayala <jesserayala95@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+integer NORMARG
+
+_arguments -A "-*" -n \
+  '--version[show program''s version number]' \
+  '(-h --help)'{-h,--help}'[display the help message]' \
+  '(-c --config)'{-c,--config=}'[set alternate config directory]:directory:_files -/' \
+  '(-d --datepattern)'{-d,--datepattern=}'[set custom pattern used to match date/times]:DATEPATTERN' \
+  '(--timezone= --TZ=)'{--timezone=,--TZ=}'[set time-zone used by convert time format]:TIMEZONE' \
+  '(-e --encoding=)'{-e,--encoding=}'[use different encoding from system locale]:ENCODING' \
+  '(-r --raw)'{-r,--raw}'[raw hosts,don''t resolve dns]' \
+  '--usedns=[DNS specified replacement of tags <HOST> in regexp]::((yes\:matches all form of hosts no\:IP addresses only))' \
+  '(-L --maxlines=)'{-L,--maxlines}'[maxlines for multi-line regex]:MAXLINES' \
+  '(-m --journalmatch=)'{-m,--journalmatch=}'[journalctl style matches overriding filter file; "systemd-journal" only]:JOURNALMATCH' \
+  '(-l --log-level=)'{-l,--log-level}'[log level for the Fail2Ban logger to use]:LOG_LEVEL' \
+  '-V[get version in machine-readable short format]' \
+  '--verbosity=[set numerical level of verbosity]:(0 1 2 3 4)' \
+  '(--verbose-date --VD)'{--verbose-date,--VD}'[verbose date patterns/regex in output]' \
+  '(-D --debuggex)'{-D,--debuggex}'[produce debuggex.com urls for debugging there]' \
+  '--no-check-all[disable check for all regexes]' \
+  '(-o --out)'{-o,--out}'[set token to print failure information only (row, id, ip, msg, host, ip4, ip6, dns, matches, ...)]:out' \
+  '--print-no-missed[do not print any missed lines]' \
+  '--print-no-ignored[do not print any ignored lines]' \
+  '--print-all-matched[print all matched lines]' \
+  '--print-all-missed[print all missed lines, no matter how many]' \
+  '--print-all-ignored[print all ignored lines, no matter how many]' \
+  '(-t --log-traceback)'{-t,--log-traceback}'[enrich log-messages with compressed tracebacks]' \
+  '--full-traceback[enrich log-messages with full, uncompressed tracebacks]:' \
+  '1:file:_files -g \*.log' \
+  '2:file:_files -W /etc/fail2ban/filter.d -g \*\.\(conf\|local\)' \
+  '3:file:_files -W /etc/fail2ban/filter.d -g \*\.\(conf\|local\)'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: set et sw=2 ts=2 ft=zsh:
