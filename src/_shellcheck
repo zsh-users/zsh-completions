@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for shellcheck (https://github.com/koalaman/shellcheck)
+#  Completion script for shellcheck v0.10.0 (https://github.com/koalaman/shellcheck)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -43,12 +43,14 @@ _arguments \
   {-C,--color=}'[specify color]:color:(auto always never)' \
   {-i,--include=}'[consider only given types of warnings]:error code' \
   {-e,--exclude=}'[exclude given types of warnings]:error code' \
+  '--extended-analysis=[perform dataflow analysis]:bool:(true false)' \
   {-f,--format=}'[specify output format]:format:(checkstyle diff gcc json json1 quiet tty)' \
   '--list-optional[list checks disabled by default]' \
   "--norc[don't look for .shellcheckrc files]" \
+  '--rcfile=[specify configuration file over searching for one]:rcfile:_files' \
   {-o,--enable=}"[give list of optional checks to enable (or 'all')]:error code" \
   {-P,--source-path=}'[specify path when looking for sourced files]:_files -/' \
-  {-s,--shell=}'[specify dialect]:dialect:(sh bash dash ksh)' \
+  {-s,--shell=}'[specify dialect]:dialect:(sh bash dash ksh busybox)' \
   {-S,--severity=}'[specify minimum severity of errors to consider]:severity:(error warning info style)' \
   {-V,--version}'[print version information]' \
   {-W,--wiki-link-count=}'[specify number of wiki links to show, when applicable]:number' \
