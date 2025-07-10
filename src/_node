@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Node.js v24.0.0 (https://nodejs.org)
+#  Completion script for Node.js v24.4.0 (https://nodejs.org)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -232,6 +232,7 @@ _arguments -C \
   '(- 1 *)--v8-options[print v8 command line options]' \
   "--v8-pool-size=[set v8's thread pool size]:number" \
   "--watch[run in watch mode]" \
+  '--watch-kill-signal=[kill signal to send to the process on watch mode restarts]:signal:_signals -s' \
   "--watch-path=[path to watch]: :_node_files" \
   '--watch-preserve-output[preserve outputs on watch mode restart]' \
   '--zero-fill-buffers[automatically zero-fill all newly allocated Buffer and SlowBuffer instances]' \
