@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for CMake 3.25.0 (https://cmake.org).
+#  Completion script for CMake 3.31.0 (https://cmake.org).
 #
 # -------------------------------------------------------------------------
 # Authors
@@ -77,6 +77,7 @@ local -a cmake_build_options=(
 
   '--preset=[Specify a configure preset]:preset:_cmake_presets'
   '--list-presets[List available presets]'
+  '--workflow[Run a workflow preset]'
 
   '-E[CMake command mode]:command:_cmake_command_help'
 
@@ -94,6 +95,7 @@ local -a cmake_build_options=(
 
   '--graphviz=[Generate graphviz of dependencies, see CMakeGraphVizOptions.cmake for more]:graphviz output:_files'
   '--system-information[Dump information about this system]::system information output:_files'
+  '--print-config-dir[Print CMake config directory for user-wide FileAPI queries]'
 
   '--log-level=[Set the verbosity of messages from CMake files]:log level:(ERROR WARNING NOTICE STATUS VERBOSE DEBUG TRACE)'
   '--log-context[Prepend log messages with context, if given]'
@@ -101,6 +103,8 @@ local -a cmake_build_options=(
   '--debug-trycompile[Do not delete the try_compile build tree. Only useful on one try_compile at a time]'
   '--debug-output[Put cmake in a debug mode]'
   '--debug-find[Put cmake find in a debug mode]'
+  '--debug-find-pkg=[Limit cmake debug-find to the comma-separated list of packages]:packages'
+  '--debug-find-var=[Limit cmake debug-find to the comma-separated list of result variables]:variables'
 
   '(--trace-expand)--trace[Put cmake in trace mode]'
   '(--trace)--trace-expand[Put cmake in trace mode with variable expansion]'
