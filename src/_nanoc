@@ -23,7 +23,7 @@
 # Description
 # -----------
 #
-#  Completion script for nanoc 4.12.16 (https://nanoc.app/)
+#  Completion script for nanoc 4.13.5 (https://nanoc.app/)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -94,7 +94,8 @@ case $state in
         args=(
           {-W,--watch}'[watch for changes and recompile when needed]'
           "--diff[generate diff]"
-          )
+          "--focus=[compile only items matching the given pattern]:pattern"
+        )
         ;;
       create-site)
         args=(
@@ -108,22 +109,21 @@ case $state in
           {-L,--list}"[list available locations to deploy to]"
           {-n,--dry-run}"[show what would be deployed]"
           {-t,--target=}"[specify the location to deploy to (default:\`default\`)]:target"
-          )
+        )
         ;;
       prune)
-        args=(
+        args+=(
           {-n,--dry-run}"[print files to be deleted instead of actually deleting them]"
           {-y,--yes}"[confirm deletion]"
-          )
+        )
         ;;
       shell)
         args=(
           {-p,--preprocess}"[run preprocessor]"
-          )
+        )
         ;;
       show-data|show-plugins|show-rules)
-        args=(
-          )
+        args=()
         ;;
       view)
         args=(
@@ -131,7 +131,7 @@ case $state in
           {-L,--live-reload}"[reload on changes]"
           {-o,--host=}"[specify the host to listen on(default: 127.0.0.1)]:host"
           {-p,--port=}"[specify the port to listen on(default: 3000)]:port"
-          )
+        )
       ;;
     esac
 
