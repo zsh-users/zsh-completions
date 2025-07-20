@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Bundler 2.4.1 (https://bundler.io/).
+#  Completion script for Bundler 2.7.0 (https://bundler.io/).
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -199,6 +199,8 @@ case $state in
           '--github=-[specify the github source for the added gem]:github' \
           '--branch=-[specify the git branch for the added gem]:branch' \
           '--ref=-[specify the git ref for the added gem]' \
+          "--glob=[specify the location of a dependency's .gemspec, expanded within Ruby]:glob" \
+          '--quiet[do not print progress information to the starndard output]' \
           '--skip-install[adds the gem to the Gemfile but does not install it]' \
           '--optimistic[adds optimistic declaration of version]' \
           '--strict[adds strict declaration of version]' \
@@ -277,6 +279,7 @@ case $state in
           '--full-index[fall back to using the single file index of all gems]' \
           '--add-platform=-[add a new platform to the lockfile, re-resolving for the addition of that platform]' \
           '--remove-platform=-[remove a platform from the lockfile]' \
+          '--normalize-platforms[normalize lockfile platforms]' \
           '--patch[if updating, prefer updating only to next patch version]' \
           '--minor[if updating, prefer updating only to next minor version]' \
           '--major[if updating, prefer updating  to next major version(default)]' \
@@ -296,6 +299,7 @@ case $state in
       init)
         _arguments \
           '--gemspec=-[use the specified .gemspec to create the Gemfile]: :_files' \
+          '--gemfile=[use the specified name for the gamfile instead of Gemfile]:name' \
           && ret=0
         ;;
       gem)
@@ -308,9 +312,12 @@ case $state in
           '(--ext --no-ext)--no-ext[do not add extension code]' \
           '(--no-mit --mit)--mit[add an MIT license to a LICENSE.txt file in the root of the generated project]' \
           '(--mit --no-mit)--no-mit[do not create a LICENSE.txt]' \
-          '(-t --test)'{-t,--test}=-'[specify the test framework]: :(minitest rspec test-unit)' \
-          '--ci=-[specify the continuous integration service]: :(github travis gitlab circle)' \
-          '--linter=-[specify the linter and code formatter]: :(rubocop standard)' \
+          '(-t --test --no-test)'{-t,--test}=-'[specify the test framework]: :(minitest rspec test-unit)' \
+          '(-t --test --no-test)--no-test[do not use a test framework]' \
+          '(--ci --no-ci)--ci=-[specify the continuous integration service]: :(github travis gitlab circle)' \
+          '(--ci --no-ci)--no-ci[do not use a continuous integration service]' \
+          '(--linter --no-linter)--linter=-[specify the linter and code formatter]: :(rubocop standard)' \
+          '(--linter --no-linter)--no-linter[do not add a linter]' \
           '(-e --edit)'{-e,--edit}=-'[open the resulting GEM_NAME.gemspec in EDITOR]' \
           '1::gem_name:' \
           && ret=0
