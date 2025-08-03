@@ -35,11 +35,13 @@
 # ------------------------------------------------------------------------------
 
 _arguments -s \
+  '--shmem[Create a shared memory segment]' \
+  '--queue[Create a message queue]' \
+  '--semaphore[Create a semaphore array]' \
+  '--size[Size of shared memory segment (in bytes)]:size (bytes): ' \
+  '--mode[Permissions for the resource (octal)]:permissions (e.g. 0600): ' \
   '--help[Display help message and exit]' \
-  '--version[Display version information and exit]' \
-  '-M+[Create a shared memory segment of given size in bytes]:size (bytes)' \
-  '-Q[Create a message queue]' \
-  '-S+[Create a semaphore array with given number of elements]:number of elements'
+  '--version[Display version information and exit]'
 
 # Local Variables:
 # mode: Shell-Script
