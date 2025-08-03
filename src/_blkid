@@ -1,0 +1,59 @@
+#compdef blkid
+# ------------------------------------------------------------------------------
+# Copyright (c) 2016 Github zsh-users - https://github.com/zsh-users
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of the zsh-users nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL ZSH-USERS BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# Description
+# -----------
+#
+# Completion for blkid (locate/print block device attributes) from util-linux
+# https://man7.org/linux/man-pages/man8/blkid.8.html
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#  * Aditi Sharma (https://github.com/Aditi76117)
+# ------------------------------------------------------------------------------
+
+_arguments \
+  '(-h --help)'{-h,--help}'[display help message and exit]' \
+  '(-V --version)'{-V,--version}'[display version information and exit]' \
+  '(-c --cache)'{-c+,--cache=}'[specify cache file]:cache file:_files' \
+  '(-o --output)'{-o+,--output=}'[specify output format]:format:(full value device export udev)' \
+  '--output-uuid[print only UUIDs]' \
+  '--output-label[print only labels]' \
+  '--match-token=[search for devices with specific tokens]:token (e.g. UUID= or LABEL=)' \
+  '--match-tag=[search for devices with a tag name]:tag name' \
+  '--probe[use low-level probing on devices]' \
+  '--match-types=[limit probing to specific filesystem types]:filesystem types' \
+  '(-d --no-encoding)'{-d,--no-encoding}'[do not encode non-printable characters]' \
+  '--list-one[print only the first device found]' \
+  '*:device:_files -g /dev'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et

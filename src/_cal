@@ -1,0 +1,69 @@
+#compdef cal
+# ------------------------------------------------------------------------------
+# Copyright (c) 2016 Github zsh-users - https://github.com/zsh-users
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of the zsh-users nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL ZSH-USERS BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# Description
+# -----------
+#
+# Completion for cal (calendar display) from util-linux
+# https://man7.org/linux/man-pages/man1/cal.1.html
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#  * Aditi Sharma (https://github.com/Aditi76117)
+# ------------------------------------------------------------------------------
+
+_arguments \
+  '(-h --help)'{-h,--help}'[display help message and exit]' \
+  '(-V --version)'{-V,--version}'[display version information and exit]' \
+  '(-j --julian)'{-j,--julian}'[display Julian days (days numbered from Jan 1)]' \
+  '(-m --monday)'{-m,--monday}'[weeks start on Monday]' \
+  '(-s --sunday)'{-s,--sunday}'[weeks start on Sunday]' \
+  '(-y --year)'{-y,--year}'[display the whole year]' \
+  '(-3 --three)'{-3,--three}'[display previous, current and next month]' \
+  '(-1 --one)'{-1,--one}'[display only current month (default)]' \
+  '(-A --after)'{-A+,--after=}'[months to display after current]:months after' \
+  '(-B --before)'{-B+,--before=}'[months to display before current]:months before' \
+  '(-C --center)'{-C+,--center=}'[months to display before and after current]:months around' \
+  '*::arguments:->args'
+
+case $state in
+  args)
+    # Allow optional [month] [year] arguments
+    if (( CURRENT == 2 )); then
+      _message 'optional month (1-12)'
+    elif (( CURRENT == 3 )); then
+      _message 'optional year (e.g. 2025)'
+    fi
+    ;;
+esac
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
