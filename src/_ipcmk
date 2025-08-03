@@ -50,3 +50,7 @@ _arguments -s \
 # sh-basic-offset: 2
 # End:
 # vim: ft=zsh sw=2 ts=2 et
+
+# Note: This script is useful only on systems with `ipcmk` (typically Linux).
+# macOS does not include this command.
+
