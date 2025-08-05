@@ -28,19 +28,21 @@
 # Description
 # -----------
 #
-# Completion script for chmem - configure memory
+# Completion script for chmem, util-linux 2.40.2 (https://github.com/util-linux/util-linux/)
+# - configure memory
 #
 # Author:
 #   *Aditi Sharma (https://github.com/Aditi76117)
 # ------------------------------------------------------------------------------
 
 _arguments -s \
-  '--enable[Enable memory section]:memory section (e.g., 0x1234)' \
-  '--disable[Disable memory section]:memory section (e.g., 0x1234)' \
-  '--blocks[Specify blocks instead of section numbers]' \
-  '--verbose[Enable verbose mode]' \
-  '--help[Display help message and exit]' \
-  '--version[Display version information and exit]'
+  '(-b --blocks)'{-b,--blocks}'[Use a BLOCKRANGE parameter instead of RANGE or SIZE]' \
+  '(-d --disable)'{-d,--disable}'[Set the specified RANGE, SIZE, or BLOCKRANGE of memory offline]' \
+  '(-e --enable)'{-e,--enable}'[Set the specified RANGE, SIZE, or BLOCKRANGE of memory online]' \
+  '(-z --zone)'{-z,--zone}'[Select the memory ZONE where to set the specified RANGE, SIZE, or BLOCKRANGE of memory online or offline]' \
+  '(-v --verbose)'{-v,--verbose}'[Verbose mode]' \
+  '(- *)'{-h,--help}'[Display help text and exit]' \
+  '(- *)'{-V,--version}'[Print version and exit ]'
 
 # Local Variables:
 # mode: Shell-Script
