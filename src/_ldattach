@@ -28,24 +28,34 @@
 # Description
 # -----------
 #
-# Completion script for ldattach - attach a line discipline to a serial line
+# Completion script for ldattach 2.40.2(https://github.com/util-linux/util-linux/)
+# - attach a line discipline to a serial line
 #
 # Author:
 #   * Aditi Sharma (https://github.com/Aditi76117)
 # ------------------------------------------------------------------------------
 
-_arguments -s \
-  '--debug[Enable debugging output]' \
-  '--eightbits[Use 8-bit characters]' \
-  '--evenparity[Use even parity]' \
-  '--oddparity[Use odd parity]' \
-  '--noparity[Use no parity]' \
-  '--nohangup[Do not hang up on close]' \
-  '--speed[Specify baud rate]:baud rate (e.g., 9600)' \
-  '--wait-slave[Wait for slave device to appear]' \
-  '--help[Display help message and exit]' \
-  '--version[Display version information and exit]' \
-  '*::device:->device'
+typeset -A opt_args
+local context state line
+
+local curcontext="$curcontext"
+
+_arguments -s -C \
+  '(-1,--onestopbit)'{-1,--onestopbit}'[Set the number of stop bits of the serial line to one]' \
+  '(-2,--twostopbits)'{-2,--twostopbits}'[Set the number of stop bits of the serial line to two]' \
+  '(-7,--sevenbits)'{-7,--sevenbits}'[Set the character size of the srial line to 7 bits]' \
+  '(-8,--eightbits)'{-8,--eightbits}'[Set the character size of the srial line to 8 bits]' \
+  '(-d --debug)'{-d,--debug}'[Enable debugging output]' \
+  '(-e --evenparity)'{-e,--evenparity}'[Set the parity of the serial line to even]' \
+  '(-i --iflag)'{-i,--iflag}'[Set the specified bits in the c_iflag word of the serial line]:value' \
+  '(-n --noparity)'{-n,--noparity}'[Set the parity of the serial line to none]' \
+  '(-o --oddparity)'{-o,--oddparity}'[Set the parity of the serial line to odd]' \
+  '(-s --speed)'{-s,--speed}'[Set the speed(the baud rate) of the serial line]:value' \
+  '(-C --intro-command)'{-C,--intro-command}'[An intro command before the invocation of ldattach]:command' \
+  '(-p --pause)'{-p,--pause}'[Sleep for given seconds before the invocation of ldattach]:value' \
+  '(- *)'{-h,--help}'[Display help text and exit]'\
+  '(- *)'{-V,--version}'[Print version and exit]' \
+  '2::device:->device'
 
 # Complete device argument
 case $state in
