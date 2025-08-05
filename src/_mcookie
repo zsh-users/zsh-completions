@@ -28,17 +28,19 @@
 # Description
 # -----------
 #
-# Completion script for mcookie - generate random 128-bit hexadecimal numbers
+# Completion script for mcookie 2.40.2 (https://github.com/util-linux/util-linux)
+#  - generate random 128-bit hexadecimal numbers
 #
 # Author:
 #   * Aditi Sharma (https://github.com/Aditi76117)
 # ------------------------------------------------------------------------------
 
-_arguments -s \
-  '--max-size[Set maximum length of output]:number' \
-  '--verbose[Print entropy source and random seed info]' \
-  '--help[Display help message and exit]' \
-  '--version[Display version information and exit]'
+_arguments \
+  {-f,--file}'[Use file as as cookie seed]:file:_files' \
+  {-m,--max-size}'[Set maximum length of output]:number' \
+  {-v,--verbose}'[Print entropy source and random seed info]' \
+  '(- *)'{-h,--help}'[Display help message and exit]' \
+  '(- *)'{-V,--version}'[Display version information and exit]'
 
 # Local Variables:
 # mode: Shell-Script
