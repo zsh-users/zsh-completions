@@ -28,25 +28,25 @@
 # Description
 # -----------
 #
-# Completion script for ipcrm - remove System V IPC objects
+# Completion script for ipcrm, util-linux 2.40.2 (https://github.com/util-linux/util-linux/)
+# - remove System V IPC objects
 #
 # Author:
 #   * Aditi Sharma (https://github.com/Aditi76117)
 # ------------------------------------------------------------------------------
 
 _arguments -s \
-  '--all[Remove all resources of specified type]' \
-  '--all=msg[Remove all message queues]' \
-  '--all=shm[Remove all shared memory segments]' \
-  '--all=sem[Remove all semaphores]' \
-  '--msgid[Remove message queue by id]:msgid: ' \
-  '--shmid[Remove shared memory segment by id]:shmid: ' \
-  '--semid[Remove semaphore by id]:semid: ' \
-  '--msgkey[Remove message queue by key]:msgkey: ' \
-  '--shmkey[Remove shared memory segment by key]:shmkey: ' \
-  '--semkey[Remove semaphore by key]:semkey: ' \
-  '--help[Display help message and exit]' \
-  '--version[Display version information and exit]'
+  '(-a --all)'{-a,--all}'-[Remove all resources]:resource:(shm msg sem)' \
+  '(-M --shmem-key)'{-M,--shmem-key}'[Remove the shared memory segment created with shemkey]:shmkey' \
+  '(-m --shmem-id)'{-m,--shmem-id}'[Remove the shared memory segment identified by shmid]:shmid' \
+  '(-Q --queue-key)'{-Q,--queue-key}'[Remove the message queue created with msgkey]:msgkey' \
+  '(-q --queue-id)'{-q,--queue-id}'[Remove the message queue identified by msgid]:msgid' \
+  '(-S --semaphore-key)'{-S,--semaphore-key}'[Remove the semaphore created with semkey]:semkey' \
+  '(-s --semaphore-id)'{-s,--semaphore-id}'[Remove the semaphore identified by semid]' \
+  '(- *)'{-h,--help}'[Display help text and exit]' \
+  '(- *)'{-V,--version}'[Print version and exit]' \
+  '1:type:(shm msg sem)' \
+  '*:id'
 
 # Local Variables:
 # mode: Shell-Script
