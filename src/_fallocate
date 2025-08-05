@@ -28,7 +28,8 @@
 # Description
 # -----------
 #
-# Completion for fallocate (preallocate space to a file) from util-linux
+# Completion for fallocate, util-linux 2.40.2 (https://github.com/util-linux/util-linux/)
+# - preallocate or deallocate space to a file
 # https://man7.org/linux/man-pages/man1/fallocate.1.html
 # ------------------------------------------------------------------------------
 # Authors
@@ -37,16 +38,18 @@
 # ------------------------------------------------------------------------------
 
 _arguments \
-  '(-h --help)'{-h,--help}'[display help message and exit]' \
-  '(-V --version)'{-V,--version}'[display version information and exit]' \
-  '(-l --length)'{-l+,--length=}'[specify length of the allocation]:length (e.g. 1G, 512M)' \
-  '(-o --offset)'{-o+,--offset=}'[start offset for allocation]:offset (e.g. 0, 1K)' \
-  '--dig-holes[detect and punch holes in the range]' \
-  '--punch-hole[punch holes (deallocate space)]' \
-  '--collapse-range[remove a range of bytes and move later bytes forward]' \
-  '--zero-range[zero and optionally deallocate space]' \
-  '--keep-size[do not extend file size beyond current size]' \
-  '--insert-range[insert space into file shifting existing data]' \
+  '(-c --collapse-range)'{-c,--collapse-range}'[Removes a byte range from a file without leaving a hole]' \
+  '(-d --dig-holes)'{-d,--dig-holes}'[Detect and dig holes]' \
+  '(-i --insert-range)'{-i,--insert-range}'[Insert a hole of length bytes from offset]' \
+  '(-l --length)'{-l+,--length}'[Specifies the length of the range, in bytes]:bytes' \
+  '(-n --keep-size)'{-n,--keep-size}'[Do not modify the apparent length of the file]' \
+  '(-o --offset)'{-o+,--offset}'[Specifies the beginning offset of the range, in bytes]:offset' \
+  '(-p --punch-hole)'{-p,--punch-hole}'[Deallocates space in the byte range starting at offset and continuing for length bytes]' \
+  '(-v --verbose)'{-v,--verbose}'[Enable verbose mode]' \
+  '(-x --posix)'{-p,--posix}'[Enable POSIX operation mode]' \
+  '(-z --zero-range)'{-z,--zero-range}'[Zeroes space in the byte range starting at offset and continuing for length bytes]' \
+  '(- *)'{-h,--help}'[Display help text and exit]' \
+  '(- *)'{-V,--version}'[Print version and exit ]' \
   '*:filename:_files'
 
 # Local Variables:
