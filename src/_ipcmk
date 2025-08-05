@@ -28,20 +28,20 @@
 # Description
 # -----------
 #
-# Completion script for ipcmk - create various IPC resources
+# Completion script for ipcmk, util-linux 2.40.2 (https://github.com/util-linux/util-linux/)
+# - create various IPC resources
 #
 # Author:
 #   * Aditi Sharma (https://github.com/Aditi76117)
 # ------------------------------------------------------------------------------
 
 _arguments -s \
-  '--shmem[Create a shared memory segment]' \
-  '--queue[Create a message queue]' \
-  '--semaphore[Create a semaphore array]' \
-  '--size[Size of shared memory segment (in bytes)]:size (bytes): ' \
-  '--mode[Permissions for the resource (octal)]:permissions (e.g. 0600): ' \
-  '--help[Display help message and exit]' \
-  '--version[Display version information and exit]'
+  '(-M --shmem)'{-M,--shmem}'[Create a shared memory segment of size bytes]:size' \
+  '(-Q --queue)'{-Q,--queue}'[Create a message queue]' \
+  '(-S --semaphore)'{-S,--semaphore}'[Create a semaphore array with number of elements]:number' \
+  '(-p --mode)'{-p,--mode}'[Access permissions for the resource]:mode' \
+  '(- *)'{-h,--help}'[Display help text and exit]' \
+  '(- *)'{-V,--version}'[Print version and exit ]' \
 
 # Local Variables:
 # mode: Shell-Script
@@ -53,4 +53,3 @@ _arguments -s \
 
 # Note: This script is useful only on systems with `ipcmk` (typically Linux).
 # macOS does not include this command.
-
