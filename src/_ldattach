@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-# Completion script for ldattach 2.40.2(https://github.com/util-linux/util-linux/)
+# Completion script for ldattach, util-linux 2.40.2 (https://github.com/util-linux/util-linux/)
 # - attach a line discipline to a serial line
 #
 # Author:

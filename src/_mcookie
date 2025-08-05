@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-# Completion script for mcookie 2.40.2 (https://github.com/util-linux/util-linux)
+# Completion script for mcookie, util-linux 2.40.2 (https://github.com/util-linux/util-linux/)
 #  - generate random 128-bit hexadecimal numbers
 #
 # Author:

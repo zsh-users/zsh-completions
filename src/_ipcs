@@ -28,25 +28,28 @@
 # Description
 # -----------
 #
-# Completion script for ipcs - show information on IPC facilities
+# Completion script for ipcs, util-linux 2.40.2 (https://github.com/util-linux/util-linux/)
+# - show information on IPC facilities
 #
 # Author:
 #   * Aditi Sharma (https://github.com/Aditi76117)
 # ------------------------------------------------------------------------------
 
 _arguments -s \
-  '-m[List shared memory segments]' \
-  '-q[List message queues]' \
-  '-s[List semaphore arrays]' \
-  '-a[List all facilities]' \
-  '-c[Show creator and owner]' \
-  '-l[Show limits]' \
-  '-p[Show PIDs]' \
-  '-t[Show times]' \
-  '-u[Show summary]' \
-  '--human[Print sizes in human-readable format]' \
-  '--help[Display help message and exit]' \
-  '--version[Display version information and exit]'
+  '(-i --id)'{-i,--id}'[Show full details on just one resource element identified by id]:id' \
+  '(- *)'{-h,--help}'[Display help text and exit]' \
+  '(- *)'{-V,--version}'[Print version and exit]' \
+  '(-m --shmems)'{-m,--shmems}'[Write information about active shared memory segments]' \
+  '(-q --queues)'{-q,--queues}'[Write information about active message queues]' \
+  '(-s --semaphores)'{-s,--semaphores}'[Write information about active semaphore sets]' \
+  '(-a --all -s --semaphores -q --queues -m --shmems)'{-a,--all}'[Write information about all three resources]' \
+  '(-c --creator)'{-c,--creator}'[Show creator and owner]' \
+  '(-l --limits)'{-l,--limits}'[Show resource limits]' \
+  '(-p --pid)'{-p,--pid}'[Show PIDs of creator and last operator]' \
+  '(-t --time)'{-t,--time}'[Write time information]' \
+  '(-u --summary)'{-u,--summary}'[Show status summary]' \
+  '(--human -b --bytes)'{-b,--bytes}'[Print the sizes in bytes rather than in a human-readable format]' \
+  '(--human -b --bytes)--human[Print sizes in human-readable format]'
 
 # Local Variables:
 # mode: Shell-Script
