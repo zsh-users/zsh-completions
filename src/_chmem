@@ -42,7 +42,7 @@ _arguments -s \
   '(-z --zone)'{-z,--zone}'[Select the memory ZONE where to set the specified RANGE, SIZE, or BLOCKRANGE of memory online or offline]' \
   '(-v --verbose)'{-v,--verbose}'[Verbose mode]' \
   '(- *)'{-h,--help}'[Display help text and exit]' \
-  '(- *)'{-V,--version}'[Print version and exit ]'
+  '(- *)'{-V,--version}'[Print version and exit]'
 
 # Local Variables:
 # mode: Shell-Script

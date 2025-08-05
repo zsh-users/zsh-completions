@@ -49,7 +49,7 @@ _arguments \
   '(-x --posix)'{-p,--posix}'[Enable POSIX operation mode]' \
   '(-z --zero-range)'{-z,--zero-range}'[Zeroes space in the byte range starting at offset and continuing for length bytes]' \
   '(- *)'{-h,--help}'[Display help text and exit]' \
-  '(- *)'{-V,--version}'[Print version and exit ]' \
+  '(- *)'{-V,--version}'[Print version and exit]' \
   '*:filename:_files'
 
 # Local Variables:

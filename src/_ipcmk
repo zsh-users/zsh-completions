@@ -41,7 +41,7 @@ _arguments -s \
   '(-S --semaphore)'{-S,--semaphore}'[Create a semaphore array with number of elements]:number' \
   '(-p --mode)'{-p,--mode}'[Access permissions for the resource]:mode' \
   '(- *)'{-h,--help}'[Display help text and exit]' \
-  '(- *)'{-V,--version}'[Print version and exit ]'
+  '(- *)'{-V,--version}'[Print version and exit]'
 
 # Local Variables:
 # mode: Shell-Script
