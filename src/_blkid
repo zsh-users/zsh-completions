@@ -1,0 +1,68 @@
+#compdef blkid
+# ------------------------------------------------------------------------------
+# Copyright (c) 2016 Github zsh-users - https://github.com/zsh-users
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of the zsh-users nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL ZSH-USERS BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# Description
+# -----------
+#
+# Completion for blkid, util-linux 2.40.2 (https://github.com/util-linux/util-linux/)
+# - locate/print block device attributes
+# https://man7.org/linux/man-pages/man8/blkid.8.html
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#  * Aditi Sharma (https://github.com/Aditi76117)
+# ------------------------------------------------------------------------------
+
+_arguments \
+  '(-c --cache-file)'{-c+,--cache-file}'[Read from cachefile instead of reading from the default cache file]:cache file:_files' \
+  '(-d --no-encoding)'{-d,--no-encoding}"[Don't encode non-printing characters]" \
+  '(-D --no-part-details)'{-D,--no-part-details}"[Don't print information from partition table in low-level probing mode]" \
+  '(-g --garbage-collect)'{-g,--garbage-collect}'[Perform a garbage collection on the blkid cache]' \
+  '(-H --hint)'{-H,--hint}'[Set probing hint]:setting' \
+  '(-i --info)'{-i,--info}'[Display information about I/O limits]' \
+  '(-k --list-filesystems)'{-k,--list-filesystems}'[List all known filesystems and RAIDS and exits]' \
+  '(-l --list-one)'{-l,--list-one}'[Look up only one device that matches with the --match-token option]' \
+  '(-L --label)'{-L+,--label}'[Look up the device that uses this filesystem label]:label' \
+  '(-n --match-types)'{-n+,--match-types}'[Restrict the probing functions to the specified comma-separated list of superblock types]:list' \
+  '(-o --output)'{-o+,--output}'[Use the specified output format]:format:(full value list device udev export)' \
+  '(-O --offset)'{-O+,--offset}'[Probe at the given offset]:offset' \
+  '(-p --probe)'{-p,--probe}'[Switch to low-level superblock probing mode]' \
+  '(-s --match-tag)'{-m+,--match-tag}'[Show only the tags that match tag]:tag' \
+  '(-S --size)'{-S,--size}'[Override the size of device/file]' \
+  '(-t --match-token)'{-t+,--match-token}'[Search for block devices with tokens named NAME that have the VALUE]:name' \
+  '(-u --usages)'{-u,--usages}'[Restrict the probing functions to the specified comma-separated list of usage types]:list' \
+  '(-U --uuid)'{-U,--uuid}'[Look up the device that uses this filesystem uuid]:uuid' \
+  '(- *)'{-h,--help}'[Display help text and exit]' \
+  '(- *)'{-V,--version}'[Print version and exit]' \
+  '*:device:_files -g /dev'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et

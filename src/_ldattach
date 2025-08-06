@@ -1,0 +1,73 @@
+#compdef ldattach
+# ------------------------------------------------------------------------------
+# Copyright (c) 2016 Github zsh-users - https://github.com/zsh-users
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of the zsh-users nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL ZSH-USERS BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+# Completion script for ldattach, util-linux 2.40.2 (https://github.com/util-linux/util-linux/)
+# - attach a line discipline to a serial line
+#
+# Author:
+#   * Aditi Sharma (https://github.com/Aditi76117)
+# ------------------------------------------------------------------------------
+
+typeset -A opt_args
+local context state line
+
+local curcontext="$curcontext"
+
+_arguments -s -C \
+  '(-1,--onestopbit)'{-1,--onestopbit}'[Set the number of stop bits of the serial line to one]' \
+  '(-2,--twostopbits)'{-2,--twostopbits}'[Set the number of stop bits of the serial line to two]' \
+  '(-7,--sevenbits)'{-7,--sevenbits}'[Set the character size of the srial line to 7 bits]' \
+  '(-8,--eightbits)'{-8,--eightbits}'[Set the character size of the srial line to 8 bits]' \
+  '(-d --debug)'{-d,--debug}'[Enable debugging output]' \
+  '(-e --evenparity)'{-e,--evenparity}'[Set the parity of the serial line to even]' \
+  '(-i --iflag)'{-i,--iflag}'[Set the specified bits in the c_iflag word of the serial line]:value' \
+  '(-n --noparity)'{-n,--noparity}'[Set the parity of the serial line to none]' \
+  '(-o --oddparity)'{-o,--oddparity}'[Set the parity of the serial line to odd]' \
+  '(-s --speed)'{-s,--speed}'[Set the speed(the baud rate) of the serial line]:value' \
+  '(-C --intro-command)'{-C,--intro-command}'[An intro command before the invocation of ldattach]:command' \
+  '(-p --pause)'{-p,--pause}'[Sleep for given seconds before the invocation of ldattach]:value' \
+  '(- *)'{-h,--help}'[Display help text and exit]'\
+  '(- *)'{-V,--version}'[Print version and exit]' \
+  '2::device:->device'
+
+# Complete device argument
+case $state in
+  device)
+    _files -g '/dev/tty*'
+  ;;
+esac
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
