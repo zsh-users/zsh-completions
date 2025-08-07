@@ -1,0 +1,60 @@
+#compdef uuidd
+# ------------------------------------------------------------------------------
+# Copyright (c) 2025 Github zsh-users - https://github.com/zsh-users
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for uuidd 2.40.2 (https://github.com/util-linux/util-linux)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei Yoshida (https://github.com/syohex) <syohex@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+_arguments \
+  '(-C --cont-clock)'{-C,--cont-clock=-}'[activate continuous clock handling for time based UUIDs]:time' \
+  '(-d --debug)'{-d,--debug}'[run uuidd in debugging mode]' \
+  '(-F --no-fork)'{-F,--no-fork}'[do not daemonize using a double-fork]' \
+  '(-k --kill)'{-k,--kill}'[if currently a uuidd daemon is running, kill it]' \
+  '(-n --uuids)'{-n,--uuids}'[request a bulk response of number UUIDs]:number' \
+  '(-P --no-pid -p --pid)'{-P,--no-pid}'[do not create a pid file]' \
+  '(-P --no-pid -p --pid)'{-p,--pid}'[specify the path name where the pid file should be written]:path:_files' \
+  '(-q --quiet)'{-q,--quiet}'[suppress some failure messages]' \
+  '(-r --random)'{-r,--random}'[connect to running uuid daemon and request to return a random-based UUID]' \
+  '(-S --socket-activation -s --socket)'{-S,--socket-activation}'[do not create a socket]' \
+  '(-S --socket-activation -s --socket)'{-s,--socket}'[make uuidd use this path name for the unix-domain socket]:sokect:_files' \
+  '(-T --timeout)'{-T,--timeout}'[make uuidd exit after number seconds of inactivity]:seconds' \
+  '(-t --time)'{-t,--time}'[connect to running uuid daemon and request to return a time-based UUID]' \
+  '(- *)'{-h,--help}'[display help text and exit]' \
+  '(- *)'{-V,--version}'[print version and exit]'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
