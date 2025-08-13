@@ -30,7 +30,7 @@
 # Description
 # -----------
 #
-#  Completion script for go 1.24.0 (https://go.dev/).
+#  Completion script for go 1.25.0 (https://go.dev/).
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -428,6 +428,7 @@ case $state in
           '-all[show all the documentation for the package]' \
           '-c[respect case when matching symbols]' \
           '-cmd[treat a command (package main) like a regular package]' \
+          '-http[serve HTML docs over HTTP]' \
           '-short[one-line representation for each symbol]' \
           '-src[show the full source code for the symbol]' \
           '-u[show docs for unexported and exported symbols and methods]' \
@@ -946,6 +947,8 @@ case $state in
                   '-extld[use linker when linking in external mode]:linker' \
                   '-extldflags[pass flags to external linker]:flags' \
                   '-f[ignore version mismatch]' \
+                  '-fipso[write fips module to file]:file:_files' \
+                  '-funcalign[set function align to N bytes]:byte' \
                   '-g[disable go package data checks]' \
                   '-h[halt on error]' \
                   '-importcfg[read import configuration from file]:config:_files' \
@@ -1118,6 +1121,7 @@ case $state in
         _arguments \
           '-m[print each executable embedded module version information]' \
           '-v[report unrecognized files]' \
+          '-json[print each executable embedded module version in JSON format]' \
           '*:files:_files'
         ;;
 
