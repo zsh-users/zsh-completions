@@ -24,7 +24,7 @@
 # Description
 # -----------
 #
-#  Completion script for dart 3.5.4 (https://dart.dev/)
+#  Completion script for dart 3.9.0 (https://dart.dev/)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -45,7 +45,7 @@ _dart() {
     '(- *)--version[Print the Dart SDK version]' \
     '(--enable-analytics --disable-analytics --suppress-analytics)--enable-analytics[Enable analytics]' \
     '(--enable-analytics --disable-analytics --suppress-analytics)--disable-analytics[Disable analytics]' \
-    '(--enable-analytics --disable-analytics --suppress-analytics)--suppress-analytics[Disapply analytics for this "dart *" run without changing the analytics configuration]' \
+    '(--enable-analytics --disable-analytics --suppress-analytics)--suppress-analytics[Disallow analytics for this "dart *" run without changing the analytics configuration]' \
     '(- *)'{-h,--help}'[Print this usage information]' \
     '1: :_dart_subcommands' \
     '*::arg:->args' \
@@ -94,6 +94,8 @@ _dart() {
             '--machine[Sets output format to JSON for consumption in tools]' \
             '--record-memory-profile=[Start devtools headlessly and write memory profiling samples to the indicated file]:file:_files' \
             '--app-size-base=[Path to the base app size file used for app size]' \
+            '(--no-disable-cors --disable-cors)--disable-cors[Disable CORS]' \
+            '(--no-disable-cors --disable-cors)--no-disable-cors[Do not disable CORS]' \
             '*:server_uri :' \
             && ret=0
           ;;
@@ -123,13 +125,8 @@ _dart() {
             '--show[Set which filenames to print]:show type:(all changed none)' \
             '--summary[Show the specified summary after formatting]:summary type:(line none profile)' \
             '--set-exit-if-changed[Return exit code 1 if there are any formatting changes]' \
-            '--fix[Apply all style fixes]' \
-            '--fix-doc-comments[Use triple slash for documentation comments]' \
-            '--fix-function-typedefs[Use new syntax for function type typedefs]' \
-            '--fix-named-default-separator[Use "=" as the separator before named parameter default values]' \
-            '--fix-optional-const[Remove "const" keyword inside constant context]' \
-            '--fix-optional-new[Remove "new" keyword]' \
-            '--fix-single-cascade-statements[Remove unnecessary single cascades from expression statements]' \
+            '--page-width[Try to keep lines no longer than this(defaults to 80)]:width' \
+            '--trailing-commas[How trailing commas in input affect formatting]:style:(automate preserve)' \
             '(-i --indent)'{-i,--indent}'[Add this many spaces of leading indentation]' \
             '--follow-links[Follow links to files and directories]' \
             '(- *)--version[Show dart_style version]' \
@@ -164,6 +161,7 @@ _dart() {
             '--warn-on-pause-with-no-debugger[Print a warning when an isolate pauses with no attached debugger when running with --enable-vm-service]' \
             '--timeline-streams=[Enables recording for specific timeline streams]:stream:_dart_run_timeline_streams' \
             '--pause-isolates-on-start[Pause isolates on start when running with --enable-vm-service]' \
+            '--profile-microtasks[Record information about each microtask]' \
             '(--enable-asserts --no-enable-asserts)--enable-asserts[Enable assert statements]' \
             '(--enable-asserts --no-enable-asserts)--no-enable-asserts[Do not enable assert statements]' \
             '--timeline-recorder=[Selects the timeline recorder to use]:recorder:(none ring endless startup systrace file callback)' \
@@ -201,7 +199,6 @@ _dart() {
             '(-j --concurrency)'{-j,--concurrency}'[The number of concurrent test suites run(defaults to 1)]:concurrency' \
             '--total-shards[The total number of invocations of the test runner being run]:number' \
             '--shard-index[The index of this test runner invocation]:index' \
-            '--pub-serve=[The port of a pub serve instance serving "test/"]:port' \
             '(--ignore-timeouts --timeout)--timeout[The default test timeout]:timeout' \
             '(--ignore-timeouts --timeout)--ignore-timeouts[Ignore all timeouts]' \
             '--pause-after-load[Pause for debugging before any tests execute]' \
@@ -211,6 +208,8 @@ _dart() {
             '(--no-chain-stack-traces --chain-stack-traces)--no-chain-stack-traces[Do not use chained stack traces to provide greater exception]' \
             '--no-retry[Do not rerun tests that have retry set]' \
             '--test-randomize-ordering-seed[Use the specified seed to randomize the execution order of test cases]:seed' \
+            '(--no-fail-test --fail-test)--fail-test[Stop running tests after the first failure]' \
+            '(--no-fail-test --fail-test)--no-fail-test[Do not stop running tests after the first failure]' \
             '(-r --reporter)'{-r,--reporter=}'[Set how to print test results]:reporter:_dart_test_reporter' \
             '--file-reporter[Enable an additional reporter writing test results to a file]:reporter_file' \
             '--verbose-trace[Emit stack traces with core library frames]' \
@@ -256,6 +255,11 @@ _dart_compile() {
             '*'{-d,--define=}'[Define an environment declaration]:key_value:'
           )
           ;|
+        (aot-snapshot|exe|kernel)
+          opts+=(
+            '--depfile=[Path to output Ninja depfile]:file:_files'
+          )
+          ;|
         (aot-snapshot|exe)
           opts+=(
             '(-S --save-debugging-info)'{-S,--save-debugging-info=}'[Remove debugging information from the output and save it separately to the specified file]:file:_files'
@@ -265,6 +269,14 @@ _dart_compile() {
         (aot-snapshot|wasm)
           opts+=(
             '--enable-asserts[Enable assert statements]'
+          )
+          ;|
+        (kernel)
+          opts+=(
+            '(--no-link-platform --link-platform)--link-platform[Include the platform kernel in the resulting kernel file]'
+            '(--no-link-platform --link-platform)--no-link-platform[Do not include the platform kernel in the resulting kernel file]'
+            '(--no-embed-sources --embed-sources)--embed-sources[Embed source files in the generated kernel component]'
+            '(--no-embed-sources --embed-sources)--no-embed-sources[Do not embed source files in the generated kernel component]'
           )
           ;|
         (wasm)
@@ -360,13 +372,19 @@ _dart_pub() {
         (publish)
           opts+=(
             '(-f --force)'{-f,--force}'[Publish without confirmation if there are no errors]'
+            '--skip-validation[Publish without validation and resolution]'
           )
           ;|
         (upgrade)
           opts+=(
+            '--tighten[Updates lower bounds in pubspec.yaml to match the resolved version]'
+            '--unlock-transitive[Also upgrades the transitive dependencies of the listed dependencies]'
             '--major-versions[Upgrades packages to their latest resolvable versions and updates pubspec.yaml]'
           )
           ;|
+        (bump)
+          _dart_pub_bump && return 0
+          ;;
         (cache)
           _dart_pub_cache && return 0
           return 1
@@ -417,6 +435,7 @@ _dart_pub() {
 _dart_pub_subcommands() {
   local -a commands=(
     "add:Add dependencies to 'pubspec.yaml'"
+    "bump:Increases the version number of the current package"
     "cache:Work with the system cache"
     "deps:Print package dependencies"
     "downgrade:Downgrade the current package's dependencies to oldest versions"
@@ -428,7 +447,43 @@ _dart_pub_subcommands() {
     "publish:Publish the current package to pub.dev"
     "remove:Removes dependencies from 'pubspec.yaml'"
     "token:Manage authentication tokens for hosted pub repositories"
+    "unpack:Downloads a package and unpacks it in place"
     "upgrade:Upgrade the current package's dependencies to latest versions"
+    "workspace:Work with the pub workspace"
+  )
+  _describe -t commands 'command' commands "$@"
+}
+
+(( $+functions[_dart_pub_bump] )) ||
+_dart_pub_bump() {
+  local ret=1
+
+  _arguments -C \
+    '(- *)'{-h,--help}'[Print this usage information]' \
+    '1: :_dart_pub_bump_subcommands' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      local -a opts=(
+        '(- *)'{-h,--help}'[Print this usage information]'
+        '(-n --dry-run)'{-n,--dry-run}'[Report what would change, but do not change anything]'
+      )
+      _arguments "$opts[@]" && ret=0
+    ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_dart_pub_bump_subcommands] )) ||
+_dart_pub_bump_subcommands() {
+  local -a commands=(
+    'breaking:Increment to the next breaking version(eg. 0.1.2 -> 0.2.0)'
+    'major:Increment the major version number(eg. 3.1.2 -> 4.0.0)'
+    'minor:Increment the minor version number(eg. 3.1.2 -> 3.2.0)'
+    'patch:Increment the patch version number(eg. 3.1.2 -> 3.1.3)'
   )
   _describe -t commands 'command' commands "$@"
 }
@@ -512,7 +567,7 @@ _dart_pub_global() {
           opts+=(
             '(--enable-asserts --no-enable-asserts)--enable-asserts[Enable assert statements]'
             '(--enable-asserts --no-enable-asserts)--no-enable-asserts[Do not enable assert statements]'
-            '*--enable-experiment=[Runs the executable in a VM with the given experiments enabled]'
+            '*--enable-experiment=[Runs the executable in a VM with the given experiments enabled]:experiment'
           )
           ;;
       esac
@@ -581,6 +636,38 @@ _dart_pub_token_subcommands() {
   _describe -t commands 'command' commands "$@"
 }
 
+(( $+functions[_dart_pub_workspace] )) ||
+_dart_pub_workspace() {
+  local ret=1
+
+  _arguments -C \
+    '(- *)'{-h,--help}'[Print this usage information]' \
+    '1: :_dart_pub_workspace_subcommands' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      local -a opts=(
+        '(- *)'{-h,--help}'[Print this usage information]'
+        '--json[Output information in a json format]'
+      )
+      _arguments "$opts[@]" && ret=0
+    ;;
+  esac
+
+  return $ret
+}
+
+(( $+functions[_dart_pub_workspace_subcommands] )) ||
+_dart_pub_workspace_subcommands() {
+  local -a commands=(
+    'list:List all packages in the workspace and their directory'
+  )
+  _describe -t commands 'command' commands "$@"
+}
+
+
 (( $+functions[_dart_run_timeline_streams] )) ||
 _dart_run_timeline_streams() {
   local -a streams=(all API Compiler CompilerVerbose Dart Debugger Embedder GC Isolate VM)
@@ -590,14 +677,20 @@ _dart_run_timeline_streams() {
 (( $+functions[_dart_run_enable_experiment] )) ||
 _dart_run_enable_experiment() {
   local -a features=(
+    'augumentations:Augumentations - enhancing declarations from outside'
     'const-function:Allow more of the Dart language to be executed in const expression'
+    'dot-shorthands:Shorter dot syntax for static accesses'
+    'enhanced-parts:Generalize parts to be nested and have exports/imports'
+    'getter-setter-error:Stop reporting errors about mismatching types in a getter/setter pair'
+    'inference-update-4:A bundle of updates to type inference'
     'macros:Static meta-programming'
     'native-asserts:Compile and bundle native asserts'
     'null-aware-elements:Null-aware elements and map entries in collections'
-    'resource-identifiers:Output arguments used by static functions'
+    'record-use:Output arguments used by static functions'
+    'sound-flow-analysis:Assume sound null safety when computing type promotion, reachability, definite assignment'
     'test-experiment:Has no effect'
+    'unquoted-imports:Shorter import syntax'
     'variance:Sound variance'
-    'wildcard-variables:Local declarations and parameters named "_" are non binding'
   )
   _describe -t features 'command' features "$@"
 }
@@ -607,8 +700,10 @@ _dart_test_reporter() {
   local -a reporters=(
     "compact:A single line, updated continuously"
     "expanded:A separate line for each update"
+    "failures-only:A separate line for failing tests with no output for passing tests"
     "github:A custom reporter for GitHub Actions"
     "json:A machine-readable format"
+    "silent:A reporter with no output"
   )
   _describe -t reporters 'reporter' reporters "$@"
 }
