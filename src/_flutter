@@ -25,7 +25,7 @@
 # Description
 # -----------
 #
-#  Completion script for the Flutter.io sdk's cli tool 3.24.4 (https://flutter.dev)
+#  Completion script for the Flutter.io sdk's cli tool 3.35.1 (https://flutter.dev)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -69,6 +69,7 @@ _flutter() {
     '--show-test-device=[List the special "flutter-tester" device in device listings]' \
     '--show-web-server-device=[List the special "web-server" device in device listings]' \
     '--ci[Enable a set of CI-specific test debug settings]' \
+    '--debug-logs-dir[Path to a directory where logs for debugging may be added]' \
     '1: :_flutter_root_commands' \
     '*::arg:->args' \
     && ret=0
@@ -105,7 +106,7 @@ _flutter() {
         (assemble)
           _arguments \
             '(- *)'{-h,--help}'[Print this usage information]' \
-            {-d,--define=}'[Allows passing configuration to a target]: :' \
+            \*{-d,--define=}'[Allows passing configuration to a target]:configuration' \
             '--performance-measurement-file[Output individual target performance to a JSON file]' \
             {-i,--input=}'[Allows passing additional input]: :' \
             '--depfile=[A file path where a depfile will be written]: :_path_files' \
@@ -460,7 +461,7 @@ _flutter() {
              '(-o --out)'{-o,--out=}'[Location to write the screenshot]: :_files' \
              '--vm-service-url=[The VM Service URL to which to connect]' \
              '--type=[The type of screenshot to retrieve]:type:(device skia)' \
-             '--device-timeout=[Time in seconds to wait for devices to attach]:seconds:' \
+             '--device-timeout=[Time in seconds to wait for devices to attach]:seconds' \
              '--device-connection=[Discover devices based on connection type]:type:_flutter_device_connection_types' \
             && ret=0
           ;;
@@ -468,6 +469,7 @@ _flutter() {
           _arguments \
              '(- *)'{-h,--help}'[Print this usage information]' \
              '(-d --debug-info)'{-d,--debug-info=}'[A path to the symbols file generated with "--split-debug-info"]: :_files' \
+             '(-u --unit-id-debug-info)'{-d,--unit-id-debug}'[A loading unit id and the path to the symbols file]:id' \
              '(-i --input)'{-i,--input=}'[A file path containing a Dart stack trace]: :_files' \
              '(-o --output)'{-o,--output=}'[A file path for a symbolized stack trace to be written to]: :_files' \
             && ret=0
@@ -505,6 +507,7 @@ _flutter() {
             {-r,--reporter=}'[Set how to print test results]: :(compact expanded github json silent)' \
             '--file-reporter[Enable an additional reporter writing test results to a file]' \
             '--timeout=[The default test timeout, specified either in seconds (e.g. "60s"). Defaults to "30s"]:seconds:' \
+            '--ignore-timeouts[Ignore all timeouts]' \
             '--wasm[Compile to WebAssembly rather than JavaScript]' \
             '(--no-dds --dds)--dds[Enable the Dart Developer Service]' \
             '(--no-dds --dds)--no-dds[Disable the Dart Developer Service]' \
@@ -601,7 +604,7 @@ _flutter_build() {
         (aar)
           opts+=(
             '--target-platform=[The target platform for which the project is compiled]: :(android-arm android-arm64 android-x86 android-x64)'
-            \*{-P,--android-project-arg}'[Additional arguments specified as key=value that are passed to gradle -P option]:arg'
+            *{-P,--android-project-arg}'[Additional arguments specified as key=value that are passed to gradle -P option]:arg'
           )
           ;;
         (apk|appbundle)
@@ -610,7 +613,7 @@ _flutter_build() {
             '(--no-analyze-size)--analyze-size[Produce additional profile information for artifact output size]'
             '(--analyze-size)--no-analyze-size[Not produce additional profile information for artifact output size]'
             '--code-size-directory=[The location to write code size analysis files]: :_files -/'
-            \*{-P,--android-project-arg}'[Additional arguments specified as key=value that are passed to gradle -P option]:arg'
+            *{-P,--android-project-arg}'[Additional arguments specified as key=value that are passed to gradle -P option]:arg'
             '--no-multidex[the app is not built with multidex support]'
             '--ignore-deprecation[the app should ignore deprecation warnings and continue to build using deprecated APIs]'
             '--split-per-abi[Split the APKs per ABIs]'
@@ -889,7 +892,9 @@ _flutter_pub() {
             '(- *)'{-h,--help}'[Print this usage information]' \
             '--offline[Use cached packages instead of accessing the network]' \
             '(-n --dry-run)'{-n,--dry-run}'[Report what dependencies would change but do not change any]' \
+            '--tighten[Updates lower bounds in pubspec.yaml to match the resolved version]' \
             '--precompile[Build executables in immediate dependencies]' \
+            '--unlock-transitive[Also upgrades the transitive dependencies of the listed dependencies]' \
             '--major-versions[Upgrades packages to their latest resolvable versions]' \
             '(-C --directory)'{-C,--directory=}'[Run this in the given directory]:dir:_files -/' \
             && ret=0
