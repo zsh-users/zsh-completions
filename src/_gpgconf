@@ -25,7 +25,7 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 # Description:
-#     Completions for gpgconf (configuration utility provided with GnuPG
+#     Completions for gpgconf (configuration utility provided with GnuPG 2.4.4
 #     <https://gnupg.org>)
 #
 # Authors:
@@ -62,6 +62,9 @@ _arguments \
     '--apply-profile[update configuration files using the specified file]:configuration file:_path_files' \
     '--status-fd[write status info to the specified file descriptor]:file descriptor' \
     '--homedir[specify an alternative gnupg configuration home directory]:directory:_directories' \
+    '--chuid[change the current user to uid which may either be a number or a name]:uid' \
+    '(--lock --unlock)--unlock[remove a stale lock file hold for file]:name' \
+    '(--lock --unlock)--lock[name of file protected by the lock]:name' \
     '(-o --output)'{-o,--output}'[write output to the specified file]:output file:_path_files' \
     '(-v --verbose)'{-v,--verbose}'[verbose]' \
     '(-q --quiet)'{-q,--quiet}'[quiet]' \
