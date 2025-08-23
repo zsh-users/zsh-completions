@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for vnstat 2.10
+#  Completion script for vnstat 2.13 (https://github.com/vergoh/vnstat)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -44,7 +44,9 @@ typeset -A opt_args
 local period="-d --days -h --hours -m --months -w --weeks"
 
 _arguments -C : \
+  '--95th[show 95th percentile output for the ongoing month]' \
   '--add[create database entry for interface specified]' \
+  '--alert[show alert, use different exit status]:params' \
   '(-b --begin)'{-b,--begin}'[begin the list output with a specific date]:date:' \
   '--config[specify alternate configuration file]:file:_files' \
   "($period)"{-d,--days}'[show traffic for days]' \
@@ -53,6 +55,7 @@ _arguments -C : \
   "($period)"{-w,--weeks}'[show traffic for 7 days]' \
   "($period)"{-y,--years}'[show traffic statistics for the last year]' \
   "($period)"{-5,--fiveminutes}'[show traffic statistic with a 5 minute resolution for the last hours]' \
+  '--db[use file as database file instead of searching for a database]:db:_files' \
   '--dbdir[specify database directory]:directory:_files -/' \
   '--dbiflist[List interfaces currently in the database]::mode:->dbiflist' \
   '(-D --debug)'{-D,--debug}'[show additional debug output]' \
@@ -68,9 +71,10 @@ _arguments -C : \
   '(-l --live)'{-l,--live}'[display current transfer rate]:mode:->live' \
   '--json[show database content in json format]' \
   '--locale[specify locale]:locale:' \
+  '--merge[merge interface data from source database to destination database]:src_dst' \
   '--nick[set nickname for alias]:nickname:' \
   '--oneline[traffic summary in one-line, parseable format]' \
-  '(-q --query)'{-q,--query}'[force database query mode]' \
+  '(-q --query)'{-q,--query}'[force database query mode]::query:->query' \
   '--remove[delete the database entry for the interface specified]' \
   '--rename[rename the interface specified in the database with new name]' \
   '(-r --reset)'{-r,--reset}'[reset internal counters]' \
@@ -113,6 +117,11 @@ case "$state" in
       '0[one line verbose format]' \
       '1[one interface per line]' \
       && ret=0
+    ;;
+  (query)
+    _values 'query mode' \
+      'a[short summary output]' \
+      's[regular summary output]' && ret=0
     ;;
 esac
 
