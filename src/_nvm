@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for nvm v0.39.2 (https://github.com/nvm-sh/nvm).
+#  Completion script for nvm v0.40.3 (https://github.com/nvm-sh/nvm).
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -67,87 +67,89 @@ __nvm() {
             '--no-progress[Disable the progress bar on any downloads]' \
             '--alias=[After installing, set the alias specified to the version specified]' \
             '--default[After installing, set default alias to the version specified]' \
+            '--save[After installing, write the specified version to .nvmrc]' \
             '1::version:__nvm_versions' \
             && ret=0
           ;;
         (uninstall)
-          _arguments -C \
-            '--lts=[When installing, only select from LTS versions]::lts_name' \
+          _arguments \
+            '--lts=-[When installing, only select from LTS versions]::lts_name' \
             '1: :__nvm_installed_versions' \
             && ret=0
           ;;
         (use)
-          _arguments -C \
+          _arguments \
             '--silent[Silences stdout/stderr output]' \
-            '--lts=[When installing, only select from LTS versions]::lts_name' \
+            '--lts=-[When installing, only select from LTS versions]::lts_name' \
             '1: :__nvm_installed_versions' \
             '*: :_normal' \
             && ret=0
           ;;
         (exec)
-          _arguments -C \
+          _arguments \
             '--silent[Silences stdout/stderr output]' \
-            '--lts=[When installing, only select from LTS versions]::lts_name' \
+            '--lts=-[When installing, only select from LTS versions]::lts_name' \
             '1: :__nvm_installed_versions' \
             '*: :_normal' \
             && ret=0
           ;;
         (run)
-          _arguments -C \
+          _arguments \
             '--silent[Silences stdout/stderr output]' \
-            '--lts=[When installing, only select from LTS versions]::lts_name' \
+            '--lts=-[When installing, only select from LTS versions]::lts_name' \
             '1: :__nvm_installed_versions' \
             '*: :_normal' \
             && ret=0
           ;;
         (ls)
-          _arguments -C \
+          _arguments \
             '--no-colors[Suppress colored output]' \
             '--no-alias[Suppress `nvm alias` output]' \
             && ret=0
           ;;
         (ls-remote)
-          _arguments -C \
+          _arguments \
             '--silent[Silences stdout/stderr output]' \
-            '--lts=[When installing, only select from LTS versions]::lts_name' \
+            '--lts=-[When installing, only select from LTS versions]::lts_name' \
             '--no-colors[Suppress colored output]' \
             && ret=0
           ;;
         (version-remote)
-          _arguments -C \
-            '--lts=[When installing, only select from LTS versions]::lts_name' \
+          _arguments \
+            '--lts=-[When installing, only select from LTS versions]::lts_name' \
             '1: :__nvm_versions' \
             && ret=0
           ;;
         (deactivate)
-          _arguments -C \
+          _arguments \
             '--silent=[Silences stdout/stderr output]' \
             && ret=0
           ;;
         (alias)
-          _arguments -C \
+          _arguments \
             '1:name' \
             '2:version:__nvm_installed_versions' \
             && ret=0
           ;;
         (unalias)
-          _arguments -C \
+          _arguments \
             '1:version:__nvm_installed_versions' \
             && ret=0
           ;;
         (reinstall-package)
-          _arguments -C \
+          _arguments \
             '--silent=[Silences stdout/stderr output]' \
             '1: :__nvm_installed_versions' \
             && ret=0
           ;;
         (which)
-          _arguments -C \
+          _arguments \
+            '--silent[Silences stdout/stderr output when a version is omitted]' \
             '1: : _alternative "version:version:__nvm_installed_versions" "current: :(current)"' \
             && ret=0
           ;;
         (cache)
-          _arguments -C \
+          _arguments \
             '1: :__nvm_cache_subcommands' \
             && ret=0
           ;;
