@@ -3,7 +3,7 @@
 # Description
 # -----------
 #
-#  Completion script for chatblade (https://github.com/npiv/chatblade)
+#  Completion script for chatblade 0.7.0 (https://github.com/npiv/chatblade)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -20,9 +20,11 @@ _chatblade() {
 
   args+=(
     '(- *)'{-h,--help}'[show this help message and exit]'
+    '(- *)--version[display the chatblade version]'
     '--openai-api-key[the OpenAI API key can also be set as env variable OPENAI_API_KEY]:key'
+    '--openai-base-url[a custom URL to use the openAI against a local or custom model]:key'
     '--temperature[temperature (openai setting)]:temperature'
-    '(-c --chat-gpt)'{-c,--chat-gpt}'[chat GPT model 3.5/4 shorthand or full qualified model name, can also be set via env variable OPENAI_API_MODEL]:chat GPT model:(3.5 4)'
+    '(-c --chat-gpt)'{-c,--chat-gpt}'[chat GPT model 3.5/4 shorthand or full qualified model name, can also be set via env variable OPENAI_API_MODEL]:chat GPT model:(3.5 4 4o mini o1 o1mini)'
     '(-i --interactive)'{-i,--interactive}'[start an interactive chat session. This will implicitly continue the conversation]'
     '(-s --stream)'{-s,--stream}'[Stream the incoming text to the terminal]'
     '(-t --tokens)'{-t,--tokens}'[display what *would* be sent, how many tokens, and estimated costs]'
