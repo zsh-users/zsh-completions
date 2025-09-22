@@ -345,10 +345,10 @@ _vboxmanage() {
             ':machine:_vboxmachines'
           ;;
         (controlvm)
-          local -a subcommands=(${(@f)"$(vboxmanage $words[1] | perl -wln -e 'm{^\s+([a-z][a-z-]+)} and print $1')"})
+          local -a subcommands=(${(@f)"$(vboxmanage $words[1] | perl -wln -e 'm{VBoxManage controlvm.*?\s+([a-z][a-z-]+)(?:\s|$)} and print $1')"})
           _arguments \
-            '1:commands:'"($subcommands)" \
-            ':machine:_vboxmachines'
+            '1:machine:_vboxmachines' \
+            '2:commands:'"($subcommands)"
           ;;
       esac
       ;;
