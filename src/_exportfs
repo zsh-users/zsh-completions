@@ -37,15 +37,22 @@
 #  * Timofey Titovets <nefelim4ag@gmail.com>
 #
 # ------------------------------------------------------------------------------
-_exportfs() {
-  _values -w 'option' \
-    '(-i)-a[Export or unexport all directories]' \
-    '(-a -r -u)-i[Ignore the /etc/exports file and files under /etc/exports.d directory]' \
-    '(-i)-r[Reexport  all  directories]' \
-    '(-i)-u[Unexport one or more directories]' \
-    '-f[Flush everything out of export table]' \
-    '-o[option1,option2.. Specify a list of export options]' \
-    '-s[Display the current export list suitable for /etc/exports]' \
-    '-v[Be verbose]'
-}
-_exportfs "$@"
+
+_arguments \
+  '(-d --debug)'{-d,--debug}'[Turn on debugging]:kind:(all auth call general parse)' \
+  '(-i)-a[Export or unexport all directories]' \
+  '(-a -r -u)-i[Ignore the /etc/exports file and files under /etc/exports.d directory]' \
+  '-o[Specify a list of export options in the same manner as in exports]:option' \
+  '(-i)-r[Reexport all directories]' \
+  '(-i)-u[Unexport one or more directories]' \
+  "-f[Flush everything out of kernel's export table]" \
+  '-v[Be verbose]' \
+  '-s[Display the current export list suitable for /etc/exports]'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
