@@ -51,7 +51,7 @@ _arguments -s -C \
   '(-n --noparity)'{-n,--noparity}'[Set the parity of the serial line to none]' \
   '(-o --oddparity)'{-o,--oddparity}'[Set the parity of the serial line to odd]' \
   '(-s --speed)'{-s,--speed}'[Set the speed(the baud rate) of the serial line]:value' \
-  '(-C --intro-command)'{-C,--intro-command}'[An intro command before the invocation of ldattach]:command' \
+  '(-c --intro-command)'{-c,--intro-command}'[An intro command before the invocation of ldattach]:command' \
   '(-p --pause)'{-p,--pause}'[Sleep for given seconds before the invocation of ldattach]:value' \
   '(- *)'{-h,--help}'[Display help text and exit]'\
   '(- *)'{-V,--version}'[Print version and exit]' \
