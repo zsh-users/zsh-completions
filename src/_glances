@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for glances (https://nicolargo.github.io/glances/).
+#  Completion script for glances 4.3.3 (https://nicolargo.github.io/glances/).
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -42,8 +42,10 @@
 _glances() {
   _arguments \
     '(- *)'{-h,--help}'[show this help message and exit]' \
+    '--print-completion[print shell completion script]:shell:(bash zsh tcsh)' \
     '(- *)'{-V,--version}"[show program's version number and exit]" \
-    '(-C,--config)'{-C,--config}'[path to the configuration file]: :_files' \
+    '(-d --debug)'{-d,--debug}'[enable debug mode]' \
+    '(-C --config)'{-C,--config}'[path to the configuration file]: :_files' \
     '(--modules-list --module-list)'{--modules-list,--module-list}'[display modules list and exit]' \
     '(--disable-plugin --disable-plugins)'{--disable-plugin,--disable-plugins}'[disable plugin(comma separated list or all)]:plugin' \
     '(--enable-plugin --enable-plugins)'{--enable-plugin,--enable-plugins}'[enable plugin(comma separated list)]:plugin' \
@@ -62,7 +64,8 @@ _glances() {
     '--disable-bg[disable background colors in the terminal]' \
     '--enable-irq[enable IRQ mode]' \
     '--enable-process-extended[enable extended stats on top process]' \
-    '(--separator --enable-separator)'{--separator,--enable-separator}'[enable separator in the UI]' \
+    '--disable-separator[disable separator in the UI]' \
+    '--disable-cursor[disable cursor in the UI]' \
     '--sort-process[sort processes]: :(cpu_percent memory_percent username cpu_times io_counters name)' \
     '(--programs --program)'{--programs,--program}'[Accumulate processes by program]' \
     '--export[enable export module]:module' \
@@ -70,11 +73,12 @@ _glances() {
     '--export-csv-overwrite[overwrite existing CSV file]' \
     '--export-json-file[file path for JSON exporter]: :_files' \
     '--export-graph-path[Folder for Graph exporter]: :_files -/' \
+    '--export-process-filter[set the export process filter]:filters' \
     '(-c --client)'{-c,--client}'[connect to a Glances server]:host:_hosts' \
     '(-s --server)'{-s,--server}'[run Glances in server mode]' \
     '--browser[start the client browser]' \
     '--disable-autodiscover[disable autodiscover feature]' \
-    '(-p --port)'{-p,--port}'[define the client/server TCP port]' \
+    '(-p --port)'{-p,--port}'[define the client/server TCP port]:port' \
     '(-B --bind)'{-B,--bind}'[bind server to the given IPv4/IPv6 address or hostname]:host:_hosts' \
     '--username[define a client/server username]' \
     '--password[define a client/server password]' \
