@@ -25,7 +25,7 @@
 # Description
 # -----------
 #
-#  Completion script for emacs 29. (https://www.gnu.org/software/emacs/)
+#  Completion script for emacs 31. (https://www.gnu.org/software/emacs/)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -59,12 +59,14 @@ _arguments \
   '--init-directory=[use DIR when looking for the Emacs init files]: :_files -/' \
   '(-Q --quick)'{-Q,--quick}'[equivalent to -q --no-site-file --no-site-lisp --no-splash --no-x-resources]' \
   '--script[run FILE as an Emacs Lisp script]: :_files' \
+  '-x[same as -Q --script]' \
   '(-t --terminal)'{-t,--terminal}'[use DEVICE for terminal IO]: :_files' \
   '(-u --user)'{-u,--user}'[load ~USER/.emacs instead of your own]' \
   \*{-L,--directory}'[prepend DIR to load-path(with :DIR, append DIR)]: :_files -/' \
   {--eval,--execute}'[evaluate Emacs Lisp expression EXPR]:expr' \
   \*{--file,--find-file,--visit}'[visit FILE]: :_files' \
   \*{-f,--funcall}'[call Emacs Lisp function FUNC with no arguments]:func' \
+  '--insert[insert contents of FILE into current buffer]:file:_files' \
   '--kill[exit without asking for confirmation]' \
   \*{-l,--load}'[load Emacs Lisp FILE using the load function]: :_files' \
   '(-bg --background-color)'{-bg,--background-color}'[window background color]:color' \
@@ -94,7 +96,6 @@ _arguments \
   '(- *)--help{display help and exit}' \
   '(- *)--version[output version information and exit]' \
   '*: :_files'
-
 
 # Local Variables:
 # mode: Shell-Script

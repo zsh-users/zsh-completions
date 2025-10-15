@@ -24,7 +24,7 @@
 # Description
 # -----------
 #
-#  Completion script for ts-node v10.9.1. (https://github.com/TypeStrong/ts-node)
+#  Completion script for ts-node v10.9.2. (https://github.com/TypeStrong/ts-node)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -41,6 +41,7 @@ _arguments \
   '(-e --eval)'{-e,--eval}'[Evaluate code]:code' \
   '(-p --print)'{-p,--print}'[Print result of "--eval"]' \
   '*'{-r,--require}'[Require a node module before execution]:path:_files' \
+  '(-i --interactive)'{-i,--interactive}'[Open the REPL even if stdin does not appear to be a terminal]' \
   '--esm[Bootstrap with the ESM loader, enabling full ESM support]' \
   '--swc[Use the faster swc transpiler]' \
   '(- *)--showConfig[Print resolved configuration and exit]' \

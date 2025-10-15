@@ -73,6 +73,7 @@ _protoc() {
     '--js_out=[Generate JavaScript source]:out_dir:_files -/' \
     '--objc_out=[Generate Objective C header and source]:out_dir:_files -/' \
     '--php_out=[Generate PHP source file]:out_dir:_files -/' \
+    '--pyi_out=[Generate python pyi stub]:out_dir:_files -/' \
     '--python_out=[Generate Python source file]:out_dir:_files -/' \
     '--ruby_out=[Generate Ruby source file]:out_dir:_files -/' \
     '--rust_out=[Generate Rust sources]:out_dir:_files -/' \
