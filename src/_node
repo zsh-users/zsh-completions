@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Node.js v24.4.0 (https://nodejs.org)
+#  Completion script for Node.js v25.0.0 (https://nodejs.org)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -69,10 +69,7 @@ _node_scripts() {
   _describe 'scripts' scripts
 }
 
-local curcontext="$curcontext" state line ret=1
-typeset -A opt_args
-
-_arguments -C \
+_arguments \
   '-[script read from stdin (default; interactive mode if a tty)]' \
   '--[indicate the end of node options]' \
   '--abort-on-uncaught-exception[aborting instead of exiting causes a core file to be generated for analysis]' \
@@ -80,6 +77,8 @@ _arguments -C \
   '--allow-child-process[allow use of child process when any permissions are set]' \
   '--allow-fs-read=[allow permissions to read the filesystem]: :_files' \
   '--allow-fs-write=[allow permissions to write in the filesystem]:_files' \
+  '--allow-inspector[allow use of inspector when any permissions are set]' \
+  '--allow-net[allow use of network when any permissions are set]' \
   '--allow-wasi[allow wasi when any permissions are set]' \
   '--allow-worker[allow worker threads when any permissions are set]' \
   '--build-snapshot[generate a snapshot blob when the process exits]' \
@@ -110,16 +109,17 @@ _arguments -C \
   '--experimental-default-config-file[set config file from default config file]' \
   '--experimental-eventsource[enable experimental EventSource API]' \
   '--experimental-import-meta-resolve[experimental ES Module import.meta.resolve() support]' \
+  '--experimental-inspector-network-resource[experimental load network resources via the inspector]' \
   '(--loader --experimental-loader)'{--loader,--experimental-loader}'=[Specify the module of a custom ECMAScript Module loader]: :_files' \
   '--experimental-network-inspection[enable experimental network inspection support]' \
   '--experimental-print-required-tla[print pending top-level await]' \
+  '--experimental-quic[experimental QUIC support]' \
   '--experimental-sea-config=[generate a blob that can be embedded into the single executable application]: :_files' \
   '--experimental-test-coverage[enable code coverage in the test runner]' \
   '--experimental-test-module-mocks[enable module mocking in the test runner]' \
   '--experimental-transform-types[enable transformation of TypeScript-onlysyntax into JavaScript code]' \
   '--experimental-vm-modules[experimental ES Module support in vm module]' \
-  '--experimental-wasm-modules[experimental ES module support for webassembly modules]' \
-  '--experimental-webstorage[experimental Web Storage API]' \
+  '--experimental-worker-inspection[experimental worker inspection support]' \
   '--expose-gc[expose gc extension]' \
   '--force-context-aware[disable loading non-context-aware addons]' \
   '--force-fips[force FIPS crypto]' \
@@ -145,8 +145,10 @@ _arguments -C \
   '--jitless[Disable runtime allocation of executable memory]' \
   '--localstorage-file=[file used to persist localStorage data]:file:_files' \
   '--max-http-header-size=[set the maximum size of HTTP headers]: :number' \
+  "--max-old-space-size-percentage=[set V8's max old space size as a percentage of available memory]:memory" \
   '--network-family-autoselection-attempt-timeout=[sets the default value for the network family autoselection attempt timeout]:timeout' \
   '--no-addons[disable loading native addons]' \
+  '--no-async-context-frame[improve AsyncLocalStorage performance with AsyncContextFrame]' \
   '--no-deprecation[silence deprecation warnings]' \
   '--no-experimental-detect-module[when ambiguous modules fail to evaluate, try again to evaluate them as ES modules]' \
   '--no-experimental-global-navigator[expose experimental Navigator API on the global scope]' \
@@ -158,7 +160,9 @@ _arguments -C \
   '--no-extra-info-on-fatal-exception[hide extra information on fatal exception that causes exit]' \
   '--no-force-async-hooks-checks[disable checks for async_hooks]' \
   '--no-global-search-paths[disable global module search paths]' \
+  '--no-network-family-autoselection[disable network address family autodetection algorithm]' \
   '--no-warnings[silence all process warnings]' \
+  '--no-webstorage[disable Web Storage API]' \
   '--node-memory-debug[run with extra debug checks for memory leaks in Node.js itself]' \
   '--openssl-config=[load OpenSSL configuration from the specified file (overrides OPENSSL_CONF)]:file:_files' \
   '--openssl-legacy-provider[enable OpenSSL 3.0 legacy provider]' \
@@ -191,11 +195,13 @@ _arguments -C \
   '--test-coverage-include=[include files from coverage report that match this glob pattern]:pattern' \
   '--test-coverage-lines=[the line coverage minimum threshold]:threshold' \
   '--test-force-exit[force test runner to exit upon completion]' \
+  '--test-global-setup=[specify the path to the global setup file]:file:_files' \
   '--test-isolation=[configurations the type of test isolation used in the test runner]:isolation' \
   '--test-name-pattern=[run tests whose name matches this regular expression]:pattern' \
   '--test-only[run tests with "only" option set]' \
   '*--test-reporter=[report test output using the given reporter]:reporter:(tap spec dot)' \
   '*--test-reporter-destination=[report given reporter to the given destination]:destination:_files' \
+  '--test-rerun-failures=[specify the path to the rerun state file]:state file:_files' \
   '--test-shard=[run test at specific shard]:shard' \
   '--test-skip-pattern=[run tests whose name do not match this regular expression]' \
   '--test-timeout=[specify test runner timeout]' \
@@ -238,9 +244,7 @@ _arguments -C \
   '--zero-fill-buffers[automatically zero-fill all newly allocated Buffer and SlowBuffer instances]' \
   '(- 1 *)'{-h,--help}'[print node command line options]' \
   '(- 1 *)'{-v,--version}'[print Node.js version]' \
-  '*: :_node_args' && ret=0
-
-return ret
+  '*: :_node_args'
 
 # Local Variables:
 # mode: Shell-Script
