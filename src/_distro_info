@@ -1,0 +1,59 @@
+#compdef distro-info ubuntu-distro-info debian-distro-info
+#
+# ------------------------------------------------------------------------------
+# Copyright (c) 2025 Github zsh-users - https://github.com/zsh-users
+# All rights reserved.
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion for distro-info
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei YOSHIDA (https://github.com/syohex)
+#
+# ------------------------------------------------------------------------------
+
+_arguments \
+  '(- *)'{-h,--help}'[display help message and exit]' \
+  '--date=[data for calculating the version]:date' \
+  '(-a --all)'{-a,--all}'[list all known versions]' \
+  '(-y --days)'{-y,--days=}'[display number of days until specified version reaches the specified milestone]:milestone:(created release eol eol-server)' \
+  '(-d --devel)'{-d,--devel}'[latest development version]' \
+  '--series=[series to calculate the version for]:series' \
+  '(-s --stable)'{-s,--stable}'[latest stable version]' \
+  '--supported[list of all supported version, including development releases]' \
+  '--unsupported[list of all unsupported stable versions]' \
+  '(-c --codename)'{-c,--codename}'[print the codename(default)]' \
+  '(-r --release)'{-r,--release}'[print the release version]' \
+  '(-f --fullname)'{-f,--fullname}'[print the full name]'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
