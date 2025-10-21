@@ -1,0 +1,78 @@
+#compdef swapon
+# ------------------------------------------------------------------------------
+# Copyright (c) 2025 Github zsh-users - https://github.com/zsh-users
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for swapon v2.41 (https://github.com/util-linux/util-linux)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei Yoshida (https://github.com/syohex) <syohex@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+(( $+functions[_swapon_column] )) ||
+_swapon_column() {
+  local -a columns=(
+    "NAME[device file or partition path]"
+    "TYPE[type of the device]"
+    "SIZE[size of the swap area]"
+    "USED[bytes in use]"
+    "PRIO[swap priority]"
+    "UUID[swap uuid]"
+    "LABEL[swap label]"
+  )
+
+  _values -s ',' column $columns
+}
+
+_arguments \
+  '(-a --all)'{-a,--all}'[enable all swaps from /etc/fstab]' \
+  '(-d --discard)'{-d,--discard=-}'[enable swap discards, if supported by device]:policy:(once pages)' \
+  '(-e --ifexists)'{-e,--ifexists}'[silently skip devices that do not exist]' \
+  '(-f --fixpgsz)'{-f,--fixpgsz}'[reinitialize the swap space if necessary]' \
+  \*{-o,--options}'[comma-separated list of swap options]:options' \
+  '(-p --priority)'{-p,--priority}'[specify the priority of the swap device]:priority' \
+  '(-s --summary)'{-s,--summary}'[display summary about used swap devices]' \
+  '(-T --fstab)'{-T,--fstab}'[alternative file to /etc/fstab]:path:_files' \
+  '--show=-[display summary in definable table]:column:_swapon_column' \
+  '--noheadings[do not print table heading(with --show)]' \
+  '--raw[use the raw output format(with --show)]' \
+  '--bytes[display swap size in bytes in --show output]' \
+  '(-v --verbose)'{-v,--verbose}'[verbose mode]' \
+  '(- *)'{-h,--help}'[display help message]' \
+  '(- *)'{-V,--version}'[display version]' \
+  '-L[synonym for LABEL=<label>]:label' \
+  '-U[synonym for UUID=<uuid>]:uuid' \
+  '*::file:_files'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
