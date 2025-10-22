@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Ruby on Rails 7.2.0 (https://rubyonrails.org/).
+#  Completion script for Ruby on Rails 8.1.0 (https://rubyonrails.org/).
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -296,7 +296,7 @@ _rails_new() {
     '(-r --ruby)'{-r,--ruby=}'[Path to the Ruby binary of your choice]:path:_files' \
     '(-b --builder)'{-b,--builder=}'[Path to a application builder(can be a filesystem path or URL)]: :_rails_path_or_url' \
     '(-m --template)'{-m,--template=}'[Path to an application template(can be a filesystem path or URL)]: :_rails_path_or_url' \
-    '(-d --database)'{-d,--database=}'[Preconfigure for selected database]:database:(mysql trilogy oracle postgresql sqlite3 frontbase ibm_db sqlserver jdbcmysql jdbcsqlite3 jdbcpostgresql jdbc)' \
+    '(-d --database)'{-d,--database=}'[Preconfigure for selected database]:database:(mysql trilogy oracle postgresql sqlite3 frontbase ibm_db sqlserver jdbcmysql jdbcsqlite3 jdbcpostgresql jdbc mariadb-mysql mariadb-trilogy)' \
     --skip-gemfile"[Don't create a Gemfile]" \
     --skip-bundle"[Don't run bundle install]" \
     '(-G --skip-git)'{-G,--skip-git}'[Skip git init]' \
@@ -320,6 +320,7 @@ _rails_new() {
     --skip-dev-gems'[Skip development gems(e.g. web-console)]' \
     --skip-rubocop'[Skip RuboCop setup]' \
     --skip-brakeman'[Skip brakeman setup]' \
+    --skip-bundler-audit'[Skip bundler-audit setup]' \
     --skip-ci'[Skip GitHub CI files]' \
     --dev'[Setup the application with Gemfile pointing to your Rails checkout]' \
     --devcontainer'[Generate devcontainer files]' \
