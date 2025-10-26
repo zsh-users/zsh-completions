@@ -1,0 +1,107 @@
+#compdef lslogins
+# ------------------------------------------------------------------------------
+# Copyright (c) 2025 Github zsh-users - https://github.com/zsh-users
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for lslogins v2.41 (https://github.com/util-linux/util-linux)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei Yoshida (https://github.com/syohex) <syohex@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+(( $+functions[_lslogins_output_columns] )) ||
+_lslogins_output_columns() {
+  local -a columns=(
+    "USER[user name]"
+    "UID[user ID]"
+    "GECOS[full user name]"
+    "HOMEDIR[home directory]"
+    "SHELL[login shell]"
+    "NOLOGIN[log in disabled by nologin(8) or pam_nologin(8)]"
+    "PWD-LOCK[password defined, but locked]"
+    "PWD-EMPTY[password not defined]"
+    "PWD-DENY[login by password disabled]"
+    "PWD-METHOD[password encryption method]"
+    "GROUP[primary group name]"
+    "GID[primary group ID]"
+    "SUPP-GROUPS[supplementary group names]"
+    "SUPP-GIDS[supplementary group IDs]"
+    "LAST-LOGIN[date of last login]"
+    "LAST-TTY[last tty used]"
+    "LAST-HOSTNAME[hostname during the last session]"
+    "FAILED-LOGIN[date of last failed login]"
+    "FAILED-TTY[where did the login fail?]"
+    "HUSHED[user's hush settings]"
+    "PWD-WARN[days user is warned of password expiration]"
+    "PWD-CHANGE[date of last password change]"
+    "PWD-MIN[number of days required between changes]"
+    "PWD-MAX[max number of days a password may remain unchanged]"
+    "PWD-EXPIR[password expiration date]"
+    "CONTEXT[the user's security context]"
+    "PROC[number of processes run by the user]"
+  )
+
+  _values -s ',' column $columns
+}
+
+_arguments \
+  '(- *)'{-h,--help}'[display this help]' \
+  '(- *)'{-V,--version}'[display version]' \
+  '(-a --acc-expiration)'{-a,--acc-expiration}'[display info about passwords expiration]' \
+  '(-c --colon-separate)'{-c,--colon-separate}'[display data in a format similar to /etc/passwd]' \
+  '(-e --export)'{-e,--export}'[display in an export-able output format]' \
+  '(-f --failed)'{-f,--failed}"[display data about the user's last failed logins]" \
+  '(-G --supp-groups)'{-G,--supp-groups}'[display information about groups]' \
+  '(-g --groups)'{-g,--groups=}'[display users belonging to the given group]:group:_groups' \
+  '(-L --last)'{-L,--last}"[show info about the user's last login sessions]" \
+  '(-l --logins)'{-l,--logins}'[display only users from the given logins]:logins' \
+  '(-n --newline)'{-n,--newline}'[display each piece of information on a new line]'\
+  '--noheadings[do not print headings]' \
+  '--truncate[do not truncate output]' \
+  '(-o --output)'{-o,--output=-}'[output columns]:columns:_lslogins_output_columns' \
+  '(-o --output --output-all)--output-all[output all columns]' \
+  '(-p --pwd)'{-p,--pwd}'[display information related to login by password]' \
+  '(-r --raw)'{-r,--raw}'[display in raw mode]' \
+  '(-s --system-accs)'{-s,--system-accs}'[display system accounts]' \
+  '--time-format=[display dates format]:type:(short full iso)' \
+  '(-u --user-accs)'{-u,--user-accs}'[display user accounts]' \
+  '(-y --shell)'{-y,--shell}'[use column names to be usable as shell variable identifiers]' \
+  '(-Z --context)'{-Z,--context}'[display SELinux contexts]' \
+  '(-z --print0)'{-z,--print0}'[delimit user entries with a nul character]' \
+  '--wtmp-file[set an alternate path for wtmp]:path:_files' \
+  '--btmp-file[set an alternate path for btmp]:path:_files' \
+  '--lastlog[set an alternate path for lastlog]:path:_files' \
+  '--lastlog2[set an alternate path for lastlog2]:path:_files'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
