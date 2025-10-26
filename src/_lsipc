@@ -1,0 +1,125 @@
+#compdef lsipc
+# ------------------------------------------------------------------------------
+# Copyright (c) 2025 Github zsh-users - https://github.com/zsh-users
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for lsipc v2.41 (https://github.com/util-linux/util-linux)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei Yoshida (https://github.com/syohex) <syohex@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+(( $+functions[_lsipc_output_columns] )) ||
+_lsipc_output_columns() {
+  local -a columns=(
+    "ID[Resource ID]"
+    "OWNER[Owner's username or UID]"
+    "PERMS[Permissions]"
+    "CUID[Creator UID]"
+    "CUSER[Creator user]"
+    "CGID[Creator GID]"
+    "CGROUP[Creator group]"
+    "UID[User ID]"
+    "USER[User name]"
+    "GID[Group ID]"
+    "GROUP[Group name]"
+    "CTIME[Time of the last change]"
+
+    # Generic POSIX columns:
+    "NAME[POSIX resource name]"
+    "MTIME[Time of last action]"
+
+    # System V Shared-memory columns (--shmems):
+    "SIZE[Segment size]"
+    "NATTCH[Number of attached processes]"
+    "STATUS[Status]"
+    "ATTACH[Attach time]"
+    "DETACH[Detach time]"
+    "COMMAND[Creator command line]"
+    "CPID[PID of the creator]"
+    "LPID[PID of last user]"
+
+    # System V Message-queue columns (--queues):
+    "USEDBYTES[Bytes used]"
+    "MSGS[Number of messages]"
+    "SEND[Time of last msg sent]"
+    "RECV[Time of last msg received]"
+    "LSPID[PID of the last msg sender]"
+    "LRPID[PID of the last msg receiver]"
+
+    # System V Semaphore columns (--semaphores):
+    "NSEMS[Number of semaphores]"
+    "OTIME[Time of the last operation]"
+
+    # POSIX Semaphore columns (--posix-semaphores):
+    "SVAL[Semaphore value]"
+
+    # Summary columns (--global):
+    "RESOURCE[Resource name]"
+    "DESCRIPTION[Resource description]"
+    "LIMIT[System-wide limit]"
+    "USED[Currently used]"
+    "USE%[Currently use percentage]"
+  )
+
+  _values -s ',' column $columns
+}
+
+_arguments \
+  '(- *)'{-h,--help}'[display this help]' \
+  '(- *)'{-V,--version}'[display version]' \
+  '(-m --shmems)'{-m,--shmems}'[shared memory segments]' \
+  '(-M --posix-shmems)'{-M,--posix-shmems}'[POSIX shared memory segments]' \
+  '(-q --queues)'{-q,--queues}'[POSIX shared memory segments]' \
+  '(-Q --posix-mqueues)'{-Q,--posix-mqueues}'[POSIX message queues]' \
+  '(-s --semaphores)'{-s,--semaphores}'[semaphores]' \
+  '(-S --posix-semaphores)'{-S,--posix-semaphores}'[POSIX semaphores]' \
+  '(-g --global)'{-g,--global}'[info about system-wide usage]' \
+  \*{-i,--id}'[System V resource identified by id]:id' \
+  \*{-N,--name}'[POSIX resource identified by name]:name' \
+  '--noheadings[do not print headings]' \
+  '--notruncate[do not truncate output]' \
+  '(-b --bytes)'{-b,--bytes}'[print SIZE in bytes rather]' \
+  '(-c --creator)'{-c,--creator}'[show creator and owner]' \
+  '(-e --export)'{-e,--export}'[display in the export-able output format]' \
+  '(-J --json)'{-J,--json}'[use the JSON output format]' \
+  '(-n --newline)'{-n,--newline}'[display each piece of information on a new line]' \
+  '(-l --list)'{-l,--list}'[force list output format]' \
+  '(-o --output)'{-o,--output=-}'[define the columns to output]:columns:_lsipc_output_columns' \
+  '(-P --numeric-perms)'{-p,--numeric-perms}'[print numeric permissions]' \
+  '(-r --raw)'{-r,--raw}'[display in raw mode]' \
+  '(-t --time)'{-t,--time}'[show attach, detach and change times]' \
+  '(-y --shell)'{-y,--shell}'[use column names to be usable as shell variables]'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
