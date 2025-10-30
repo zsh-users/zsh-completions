@@ -1,0 +1,52 @@
+#compdef chpasswd
+# ------------------------------------------------------------------------------
+# Copyright (c) 2025 Github zsh-users - https://github.com/zsh-users
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for chpasswd v4.17 (https://github.com/shadow-maint/shadow)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei Yoshida (https://github.com/syohex) <syohex@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+_arguments \
+  '(- *)'{-h,--help}'[display this help]' \
+  '(-c --crypt-method)'{-c,--crypt-method}'[use the specified method to encrypt the passwords]:method:(DES MD5 SHA256 SHA512 YESCRYPT NONE)' \
+  '(-e --encrypted)'{-e,--encrypted}'[supplied passwords are in encrypted form]' \
+  '(-m --md5)'{-m,--md5}'[use MD5 encryption instead of DES]' \
+  '(-R --root)'{-R,--root}'[apply changes in the specified CHROOT_DIR directory]:dir:_files -/' \
+  '(-P --prefix)'{-P,--prefix}'[apply changes to configuration files under the specified directory PREFIX_DIR]:dir:_files -/' \
+  '(-s --sha-rounds)'{-s,--sha-rounds}'[use the specified number of rounds to encrypt the passwords]:rounds'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
