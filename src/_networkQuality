@@ -24,7 +24,7 @@
 # Description
 # -----------
 #
-#  Completion script for networkQuality on macOS
+#  Completion script for networkQuality on macOS 26
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -35,13 +35,21 @@
 # ------------------------------------------------------------------------------
 
 _arguments \
+  '-b[Show Bonjour advertised networkQuality servers]' \
+  '-B[Run against specified Bonjour instance]:name' \
   '-C[Use custom configuration URL or path]:url_or_path' \
+  '-f[Force usage of a specific protocol selection]:option:(h1 h2 h3 L4S noL4S)' \
   '-I[Bind test to interface]:interface:_net_interfaces' \
+  '-M[Maximum runtime in seconds]:seconds' \
   '-r[Connect to host or IP]:host' \
-  '-c[Produce computer-readable output]' \
+  '-S[Create a networkQuality server-instance running locally on the specified port]:port' \
+  '-c[Produce computer-readable output]:file:_files' \
+  '-d[Do not run a download test(implies -s)]' \
   '-h[Show help]' \
   '-k[Disable verification of the server identity via TLS]' \
+  '-p[Use iCloud Private Relay]' \
   '-s[Run tests sequentially instead of parallel upload/download]' \
+  '-u[Do not run an upload test(implies -s)]' \
   '-v[Verbose output]'
 
 # Local Variables:
