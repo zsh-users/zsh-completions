@@ -1,0 +1,79 @@
+#compdef zramctl
+# ------------------------------------------------------------------------------
+# Copyright (c) 2025 Github zsh-users - https://github.com/zsh-users
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for zramctl v2.41 (https://github.com/util-linux/util-linux)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei Yoshida (https://github.com/syohex) <syohex@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+(( $+functions[_zramctl_output_columns] )) ||
+_zramctl_output_columns() {
+  local -a columns=(
+    "NAME[zram device name]"
+    "DISKSIZE[limit on the uncompressed amount of data]"
+    "DATA[uncompressed size of stored data]"
+    "COMPR[compressed size of stored data]"
+    "ALGORITHM[the selected compression algorithm]"
+    "STREAMS[number of concurrent compress operations]"
+    "ZERO-PAGES[empty pages with no allocated memory]"
+    "TOTAL[all memory including allocator fragmentation and metadata overhead]"
+    "MEM-LIMIT[memory limit used to store compressed data]"
+    "MEM-USED[memory zram have been consumed to store compressed data]"
+    "MIGRATED[number of objects migrated by compaction]"
+    "COMP-RATIO[compression ratio: DATA/TOTAL]"
+    "MOUNTPOINT[where the device is mounted]"
+  )
+
+  _values -s ',' column $columns
+}
+
+_arguments \
+  '(- *)'{-h,--help}'[display this help]' \
+  '(- *)'{-V,--version}'[display version]' \
+  '(-a --algorithm)'{-a,--algorithm}'[compression algorithm to use]:algorithm:(lzo lz4 lz4hc deflate 842 zstd)' \
+  '(-b --bytes)'{-b,--bytes}'[print sizes in bytes rather than in human readable format]:bytes' \
+  '(-f --find)'{-f,--find}'[find a free device]' \
+  '(-n --noheadings)'{-n,--noheadings}'[do not print headings]' \
+  '(-o --output)'{-o,--output}'[output columns]:columns:_zramctl_output_columns' \
+  '(-o --output --output-all)--output-all[output all columns]' \
+  '(-p --algorithm-params)'{-p,--algorithm-params}'[algorithm parameters to use]' \
+  '--raw[use raw status output format]' \
+  '(-r --reset)'{-r,--reset}'[reset all specified devices]' \
+  '(-s --size)'{-s,--size}'[device size]:size' \
+  '(-t --streams)'{-t,--streams}'[number of compression streams]:number'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
