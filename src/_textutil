@@ -1,0 +1,78 @@
+#compdef textutil
+# ------------------------------------------------------------------------------
+# Copyright (c) 2025 Github zsh-users - https://github.com/zsh-users
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for textutil command macOS 26
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei Yoshida (https://github.com/syohex)
+#
+# ------------------------------------------------------------------------------
+
+local -a format=(txt html rtf rtfd doc docx wordml odt webarchive)
+
+_arguments -S \
+  '-help[Show the usage information for the command and exit]' \
+  '-info[Display information about the specified files]' \
+  '-convert[Convert the specified files to the indicated format and write]:format:'"($format)" \
+  '-cat[Read the specified files, concatenate them in the indicated format]:format:'"($format)" \
+  '-extension[Specify an extension to be used for output files]:ext' \
+  '-output[Specify the file name to be used for the first output file]:path:_files' \
+  '-stdin[Specify that input should be read from stdin rather than from files]' \
+  '-stdout[Specify that the first output file should go to stdout]' \
+  '-encoding[Specify the encoding to be used for plain text or HTML output files]:encode' \
+  '-inputencoding[Force all plain text input files to be interpreted using the specified encoding]' \
+  '-format[Force all input files to be interpreted using the indicated format]:format:'"($format)" \
+  '-font[Specify the name of the font to be used for converting plain to rich text]:font' \
+  '-fontsize[Specify the size in points of the font to be used for converting plain to rich text]:size' \
+  '-noload[Do not load subsidiary resources]' \
+  '-nostore[Do not write out subsidiary resources]' \
+  '-baseurl[Specify a base URL to be used for relative URLs]:url' \
+  '-timeout[Specify the time in seconds to wait for resources to load]' \
+  '-textsizemultiplier[Specify a numeric factor by which to multiply font sizes]' \
+  '-excludeelements[Specify which HTML elements should not used in generated HTML]:tags' \
+  '-prefixspaces[Specify the number of spaces by which to indent nested elements]:spaces' \
+  '-strip[Do not copy metadata from input files to output files]' \
+  '-title[Specify the title metadata attribute for output files]:title' \
+  '-author[Specify the author metadata attribute for output files]:author' \
+  '-subject[Specify the subject metadata attribute for output files]:subject' \
+  '-keywords[Specify the keywords metadata attribute for output files]:keywords' \
+  '-comment[Specify the comment metadata attribute for output files]:comment' \
+  '-editor[Specify the editor metadata attribute for output files]:editor' \
+  '-company[Specify the company metadata attribute for output files]:company' \
+  '-creationtime[Specify the creation time metadata attribute for output files]:creation_time' \
+  '-modificationtime[Specify the modification time metadata attribute for output files]:modification_time' \
+  '*:: :_files'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et

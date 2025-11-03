@@ -24,7 +24,7 @@
 # Description
 # -----------
 #
-#  Completion script for screencapture command
+#  Completion script for screencapture command macOS 26
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -46,7 +46,6 @@ _arguments \
   '-p[screen capture will use the default settings for capture]' \
   '-M[screen capture output will go to a new Mail message]' \
   '-P[screen capture output will open in Preview or QuickTime Player]' \
-  '-I[screen capture output will open in Messages]' \
   '-B[screen capture output will open in app with bundle ID]:bundle_id:' \
   '(-b -i -w -W)-s[only allow mouse selection mode]' \
   '-S[in window capture mode, capture the screen not the window]' \
