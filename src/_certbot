@@ -1,0 +1,262 @@
+#compdef certbot
+# ------------------------------------------------------------------------------
+# Copyright (c) 2025 Github zsh-users - https://github.com/zsh-users
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for certbot 5.1.0 (https://github.com/certbot/certbot)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei Yoshida (https://github.com/syohex) <syohex@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+_certbot() {
+  typeset -A opt_args
+  local context state line
+  local curcontext="$curcontext"
+  local ret=1
+
+  _arguments -C -A "-*" \
+    '(- *)'{-h,--help}'[Print help message]:topic:_certbot_help_topics' \
+    '(- *)--version[Print version and exit]' \
+    '1: :_certbot_subcommands' \
+    '*::arg:->args' \
+    && ret=0
+
+  case "$state" in
+    (args)
+      local -a opts=(
+        '(- *)'{-h,--help}'[Show help message and exit]'
+        '(-c --config)'{-c,--config}'[Path to config file]:config_file:_files'
+      )
+      case $words[1] in
+        (run|certonly|renew|enhance|certificates|delete|reconfigure)
+          opts+=(
+            '--cert-name[Certificate name to apply]:name'
+          )
+          ;|
+        (run|certonly|renew|reconfigure)
+          opts+=(
+            '--deploy-hook[Command to be run once for each successfully issued certificate]:hook'
+          )
+          ;|
+        (run|certonly|renew)
+          opts+=(
+            '(-q --quiet)'{-q,--quiet}'[Silence all output except errors]'
+            '--required-profile[Request the given profile name from the ACME server]:profile'
+            '--preferred-profile[Request the given profile name from the ACME server]:profile'
+            '--preferred-chain[Set the preferred certificate chain]:chain'
+          )
+          ;|
+        (run|certonly|enhance|certificates)
+          opts+=(
+            '(-d --domains --domain)'{-d,--domains,--domain}'[Domain names to include]'
+          )
+          ;|
+        (run|certonly|enhance|register)
+          opts+=(
+            '--force-interactive[Force Certbot to be interactive even not in a terminal]'
+          )
+          ;|
+        (run|certonly|enhance)
+          opts+=(
+            '(-n --non-interactive --noninteractive)'{-n,--non-interactive,--noninteractive}'[Run without ever asking for user input]'
+          )
+          ;|
+        (run|certonly|register)
+          opts+=(
+            '--eab-kid[Key identifier for External Account Binding]:eab_kid'
+            '--eab-hmac-key[HMAC key for External Account Binding]:eab_hmac_key'
+            '--eab-hmac-alg[HMAC algorithm for External Account Binding(default: HS256)]:algorithm:(HS256 HS384 HS512)'
+          )
+          ;|
+        (run|certonly)
+          opts+=(
+            '(--keep-until-expiring --keep --reinstall)'{--keep-until-expiring,--keep,--reinstall}'[Always keep the existing one until it is due for renewal]'
+
+            '--debug-challenges[After setting up challenges, wait for user input before submitting to CA]'
+
+            '--issuance-timeout[How many seconds Certbot will wait for the server to issue a certificate]:seconds'
+            '--apache[Obtain and install certificates using Apache]'
+            '--nginx[Obtain and install certificates using Nginx]'
+          )
+          ;|
+        (certonly|renew|reconfigure)
+          opts+=(
+            '--run-deploy-hooks[run any applicable deploy hooks]'
+          )
+          ;|
+        (certonly|renew)
+          opts+=(
+            "--dry-run[Perform a test run against the Let's Encrypt staging server]"
+            '--allow-subset-of-names[When performing domain validation, do not consider it a failure]'
+            '--preferred-challenges[A sorted, comma delimited list of the preferred challenge]:challenges'
+          )
+          ;|
+        (run|revoke)
+          opts+=(
+            '(--test-cert --staging)'{--test-cert,--staging}"[Use the Let's Encrypt staging server to obtain or revoke test]"
+          )
+          ;|
+        (certonly|revoke)
+          opts+=(
+            '--cert-path[Path to where certificate is saved]:cert:_files'
+          )
+          ;|
+        (certonly|reconfigure)
+          opts+=(
+            '--webroot[Obtain certificates by placing files in a webroot directory]'
+          )
+          ;|
+        (certonly)
+          opts+=(
+            '--csr[Path to a Certificate Signing Request (CSR) in DER or PEM format]:csr:_files'
+            '--standalone[Obtain certificates using a "standalone" webserver]'
+            '--manual[Provide laborious manual instructions for obtaining a certificate]'
+            '--dns-cloudflare[Obtain certificates using a Cloudflare DNS TXT record]'
+            '--dns-digitalocean[Obtain certificates using a DigitalOcean DNS TXT record]'
+            '--dns-dnsimple[Obtain certificates using a DNSimple DNS TXT record]'
+            '--dns-dnsmadeeasy[Obtain certificates using a DNS Made Easy DNS TXT record]'
+            '--dns-gehirn[Obtain certificates using a Gehirn DNS TXT record]'
+            '--dns-google[Obtain certificates using a Google Cloud DNS TXT record]'
+            '--dns-linode[Obtain certificates using a Linode DNS TXT record]'
+            '--dns-luadns[Obtain certificates using a LuaDNS DNS TXT record]'
+            '--dns-nsone[Obtain certificates using a NS1 DNS TXT record]'
+            '--dns-ovh[Obtain certificates using a OVH DNS TXT record]'
+            '--dns-rfc2136[Obtain certificates using a BIND DNS TXT record]'
+            '--dns-route53[Obtain certificates using a Route53 DNS TXT record]'
+            '--dns-sakuracloud[Obtain certificates using a Sakura Cloud DNS TXT record]'
+          )
+          ;|
+        (renew|reconfigure)
+          opts+=(
+            '--pre-hook[Command to be run before obtaining any certificates]:pre_hook'
+            '--post-hook[Command to be run after attempting to obtain/renew certificates]:post_hook'
+          )
+          ;|
+        (renew)
+          opts+=(
+            '(--force-renewal --renew-by-default)'{--force-renewal,--renew-by-default}'[renew now regardless of whether it is near expiry]'
+            '--disable-hook-validation[Disable command validation for hook commands]'
+            "--no-directory-hooks[Disable running executables found in Certbot's hook directories]"
+            '--disable-renew-updates[Disable automatic updates to your server configuration]'
+            '--no-autorenew[Disable auto renewal of certificates]'
+          )
+          ;|
+        (enhance)
+          opts+=(
+            '--redirect[Automatically redirect all HTTP traffic to HTTPS]'
+            '--hsts[Add Strict-Transport-Security header to every HTTP response]'
+            '--uir[Add "Content-Security-Policy: upgrade-insecure-requests" header to every HTTP response]'
+            '--auto-hsts[Gradually increasing max-age value for HTTP Strict Transport Security security header]'
+          )
+          ;|
+        (revoke)
+          opts+=(
+            '--reason[Specify reason for revoking certificates]:reason:(unspecified keycompromise affiliationchanged superseded cessationofoperation)'
+            '(--delete-after-revoke --no-delete-after-revoke)--delete-after-revoke[Delete certificates after revoking them]'
+            '(--delete-after-revoke --no-delete-after-revoke)--no-delete-after-revoke[Do not delete certificates after revoking them]'
+            '--key-path[Path to private key for certificates instructions or revocation]:key_path:_files'
+          )
+          ;|
+        (reconfigure)
+          opts+=(
+            '(-a --authenticator)'{-a,--authenticator}'[Authenticator plugin name]:plugin'
+            '(-i --installer)'{-i,--installer}'[Installer plugin name]:plugin'
+          )
+          ;|
+        (register|unregister|update_account)
+          opts+=(
+            '(-m --email)'{-m,--email}'[Email used for registration and recovery contact]:email')
+          ;|
+        (register|update_account)
+          opts+=(
+            '(--eff-email --no-eff-email)--eff-email[Share your e-mail address with EFF]'
+            '(--eff-email --no-eff-email)--no-eff-email[Do not share your email address with EFF]'
+          )
+          ;|
+        (unregister)
+          opts+=(
+            '--account[Account ID to use]:account_id'
+          )
+          ;|
+        (show_account)
+          opts+=(
+            '--server[ACME Directory Resource URI]:server'
+          )
+          ;|
+      esac
+
+      _arguments "$opts[@]" && ret=0
+      ;;
+  esac
+
+  return ret
+}
+
+(( $+functions[_certbot_subcommands] )) ||
+_certbot_subcommands() {
+  local -a commands=(
+    "run:Obtain & install a certificate in your current webserver"
+    "certonly:Obtain or renew a certificate, but do not install it"
+    "renew:Renew all previously obtained certificates that are near"
+    "enhance:Add security enhancements to your existing configuration"
+    "certificates:Display information about certificates you have from Certbot"
+    "revoke:Revoke a certificate (supply --cert-name or --cert-path)"
+    "delete:Delete a certificate (supply --cert-name)"
+    "reconfigure:Update a certificate's configuration (supply --cert-name)"
+    "register:Create an ACME account"
+    "unregister:Deactivate an ACME account"
+    "update_account:Update an ACME account"
+    "show_account:Display account details"
+  )
+  _describe -t commands 'command' commands "$@"
+}
+
+(( $+functions[_certbot_help_topics] )) ||
+_certbot_help_topics() {
+  local -a topics=(
+    # topics
+    all automation commands paths security testing
+    # subcommands
+    run certonly renew enhance certificates revoke delete reconfigure register unregister
+    update_account show_account
+    # plugins
+    nginx apache standalone webroot
+  )
+  _values topics  $topics
+}
+
+_certbot "$@"
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
