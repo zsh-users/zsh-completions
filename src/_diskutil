@@ -1,0 +1,634 @@
+#compdef diskutil
+# ------------------------------------------------------------------------------
+# Copyright (c) 2025 Github zsh-users - https://github.com/zsh-users
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for diskutil command macOS 26
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei Yoshida (https://github.com/syohex)
+#
+# ------------------------------------------------------------------------------
+
+_diskutil() {
+  typeset -A opt_args
+  local context state line
+  local curcontext="$curcontext"
+  local ret=1
+
+  _arguments  \
+    '1: :_diskutil_subcommands' \
+    '*::arg:->args' \
+    && ret=0
+
+  case "$state" in
+    (args)
+      case $words[1] in
+        (list)
+          _arguments \
+            '-plist[output plist instead of normal user-readable output]' \
+            '1:: :(internal external)' \
+            '2:: :(physical virtual)' \
+            && ret=0
+          ;;
+        (info)
+          _arguments \
+            '-plist[output plist instead of normal user-readable output]' \
+            '-all[output all disks]' \
+            && ret=0
+          ;;
+        (listFilesystems)
+          _arguments \
+            '-plist[output plist instead of normal user-readable output]' \
+            && ret=0
+          ;;
+        (unmount|unmountDisk|eject|disableJournal|disableJournal)
+          _alternative 'force: :(force)' 'device: :_files' \
+            && ret=0
+          ;;
+        (mount)
+          _arguments \
+            '-mountOptions[mount options]:option' \
+            '-mountPoint[mount point]:path:_files -/' \
+            '*:: :_diskutil_mount_args' \
+            && ret=0
+          ;;
+        (moveJournal)
+          _alternative 'internal: :(internal)' 'device: :_files' \
+            && ret=0
+          ;;
+        (eraseDisk)
+          _arguments \
+            '-noEFI[do not create EFI partition]' \
+            '1:format:_diskutil_file_systems' \
+            '2:name' \
+            '*:: :_diskutil_erasedisk_args' \
+            && ret=0
+          ;;
+        (eraseVolume)
+          _arguments \
+            '1:format:_diskutil_file_systems' \
+            '2:name' \
+            '*:: :_diskutil_erasedisk_args' \
+            && ret=0
+          ;;
+        (zeroDisk)
+          _alternative 'force: :(force)' 'short: :(short)' 'device: :_files' \
+            && ret=0
+          ;;
+        (secureErase)
+          _arguments \
+            '1:format:_diskutil_secure_erase_args' \
+            '*:: :_files' \
+            && ret=0
+          ;;
+        (partitionDisk)
+          _arguments \
+            '-noEFI[do not create EFI partition on the target disk]' \
+            '*:: :_files' \
+            && ret=0
+          ;;
+        (resizeVolume)
+          _arguments \
+            '-plist[emit a property list instead of user-formatted output]' \
+            '*:: :_files' \
+            && ret=0
+          ;;
+        (APFS)
+          _diskutil_APFS && ret=0
+          ;;
+        (appleRAID)
+          _diskutil_appleRAID && ret=0
+          ;;
+        (coreStorage)
+          _diskutil_corestorage && ret=0
+          ;;
+        (image)
+          _diskutil_image && ret=0
+          ;;
+        (*)
+          _arguments \
+            '*:: :_files' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return ret
+}
+
+(( $+functions[_diskutil_subcommands] )) ||
+_diskutil_subcommands() {
+  local -a commands=(
+    "list:List disks"
+    "info:Get detailed information about a specific whole disk or partition"
+    "activity:Continuously display system-wide disk manipulation activity"
+    "listFilesystems:Show the file system personalities available for formatting"
+    "unmount:Unmount a single volume"
+    "unmountDisk:Given a disk containing a partition map, unmount all of its volumes"
+    "eject:Eject a disk"
+    "mount:Mount a single volume"
+    "mountDisk:Mount all mountable and UI-browsable volumes on the give partition map"
+    "rename:Rename a volume"
+    "enableJournal:Enable journaling on an HFS+ volume"
+    "disableJournal:Disable journaling on an HFS+ volume"
+    "moveJournal:Create a 512MB Apple_Journal partiton"
+    "enableOwnership:Enable ownership a volume"
+    "disableOwnership:Disable ownership of a volume"
+    "verifyVolume:Verify the file system data structures of a volume"
+    "repairVolume:Repair the file system data structures of a volume"
+    "verifyDisk:Verify the partition map layout of a whole disk intended for booting or data use"
+    "repairDisk:Repair the partition map layout of a whole disk intended for booting or data use"
+    "eraseDisk:Erase an existing disk"
+    "eraseVolume:Write out a new empty file system volume"
+    "reformat:Erase an existing volume by writing out a new empty file system"
+    "eraseOptical:Erase optical media"
+    "zeroDisk:Erase a device, writing zeros to the media"
+    "randomDisk:Erase a whole disk, writing random data to the media"
+    "secureErase:Erase, using a secure method"
+    "partitionDisk:Partition a disk, removing all volumes"
+    "resizeVolume:Non-destructively resize a volume"
+    "splitPartition:Destructively split a volume into multiple partitions"
+    "mergePartitions:Merge two or more partitions on a disk"
+    "addPartition:Create a new partition following an existing partition"
+    "APFS:Apple APFS is a system of virtual volumes"
+    "appleRAID:create, manipulate, destroy AppleRAID volumes"
+    "coreStorage:gather information/remove CoreStorage volumes"
+    "image:manipulate DiskImages framework with StorageKit framework"
+  )
+  _describe -t commands 'command' commands "$@"
+}
+
+(( $+functions[_diskutil_mount_args] )) ||
+_diskutil_mount_args() {
+  local ret=1
+
+  local -a attributes=(
+    'readonly[the file system is mounted read only]'
+    'nobrowse[the file system is mounted with a recommendation to prevent display]'
+  )
+
+  _alternative \
+    'attributes: :_values -w attributes $attributes' \
+    'device: :_files' && ret=0
+
+  return ret
+}
+
+(( $+functions[_diskutil_erasedisk_args] )) ||
+_diskutil_erasedisk_args() {
+  local ret=1
+
+  _alternative \
+    'type: :(APM MBR GPT)' \
+    'device: :_files' && ret=0
+
+  return ret
+}
+
+(( $+functions[_diskutil_secure_erase_args] )) ||
+_diskutil_secure_erase_args() {
+  local ret=1
+
+  local -a levels=(
+    '0[Single-pass zero fill erase]'
+    '1[Single-pass random fill erase]'
+    '2[Seven-pass erase]'
+    '3[Gutmann algorithm 35-pass erase]'
+    '4[Three-pass erase, consisting of two random fills plus a final zero fill]'
+  )
+
+  _alternative \
+    'freespace: :(freespace)' \
+    'level: :_values level $levels' && ret=0
+
+  return ret
+}
+
+(( $+functions[_diskutil_file_systems] )) ||
+_diskutil_file_systems() {
+  local file_systems=(
+    'APFSX:Case-sensitive APFS'
+    'APFS:APFS'
+    'ExFAT:ExFat'
+    'FREE:Free Space'
+    'MS-DOS:FAT'
+    'FAT32:FAT32'
+    'HFS+:MacOS Extended HFS+'
+    'HFSX:Case-sensitive Mac OS Extended HFS+'
+    'JHFSX:Case-sensitive and journaled Mac OS Extended HFS+'
+    'JHFS+:Journaled Mac OS Extended HFS+'
+  )
+
+  _describe -t file_systems 'file_system' file_systems "$@"
+}
+
+(( $+functions[_diskutil_APFS] )) ||
+_diskutil_APFS() {
+  local ret=1
+
+  _arguments -C \
+    '1: :_diskutil_APFS_subcommands' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (list|resizeContainer|listCryptoUsers|listSnapshots)
+          _arguments \
+            '-plist[emit a property list instead of user-formatted output]' \
+            '*:: :_files' \
+            && ret=0
+          ;;
+        (convert)
+          _arguments \
+            '-dryrun[all calculations, checks, some data moving is performed but your disk is left as valid HFS]' \
+            '-prebootSource[staging directory of macOS boot items]' \
+            '*:: :_files' \
+            && ret=0
+          ;;
+        (deleteContainer)
+          _arguments \
+            '-force[Activate an alternate last-resort mode]' \
+            '*:: :_files' \
+            && ret=0
+          ;;
+        (addVolume)
+          _arguments \
+            '-passprompt[will be prompted interactively for a passphrase]' \
+            '-passphrase[passphrase]:passphrase' \
+            '-stdinpassphrase[read passphrase from standard input]' \
+            '-passphraseHint[passphrase hint]:hint' \
+            '-reserve[guarantee a minimum amount of space for your volume]:reserve' \
+            "-quota[limit your volume's file usage to a maximum amount]:quota" \
+            '-role[meta-data flags from APFS Volume Roles]:roles' \
+            '-groupWith[become a member of the same APFS Volume Group]' \
+            '-sibling[sibling group device]:group_device' \
+            '-nomount[leave volume unmounted]' \
+            '-mountpoint[mountpoint path]:path:_files' \
+            '*:: :_files' \
+            && ret=0
+          ;;
+        (eraseVolume)
+          _arguments \
+            '-passprompt[will be prompted interactively for a passphrase]' \
+            '-passphrase[passphrase]:passphrase' \
+            '-stdinpassphrase[read passphrase from standard input]' \
+            '-passphraseHint[passphrase hint]:hint' \
+            '-role[meta-data flags from APFS Volume Roles]:roles' \
+            '-groupWith[become a member of the same APFS Volume Group]' \
+            '-sibling[sibling group device]:group_device' \
+            '*:: :_files' \
+            && ret=0
+          ;;
+        (unlockVolume)
+          _arguments \
+            '-user[cryptographic user]:user' \
+            '-recoverykeychain[key chain file]:path:_files' \
+            '-passphrase[passphrase]:passphrase' \
+            '-stdinpassphrase[read passphrase from standard input]' \
+            '-nomount[leave volume unmounted]' \
+            '-mountpoint[mountpoint path]:path:_files' \
+            '-systemreadwrite[mount read/write]' \
+            '-verify[test passphrase correctness without affecting the locked or unlocked state]' \
+            '-plist[emit a property list instead of user-formatted output]' \
+            '*:: :_files' \
+            && ret=0
+          ;;
+        (changePassphrase)
+          _arguments \
+            '-user[cryptographic user]:user' \
+            '-oldPassphrase[old passphrase]:old_passphrase' \
+            '-oldStdinpassphrase[read old passphrase from standard input]' \
+            '-newPassphrase[new passphrase]:new_passphrase' \
+            '-newStdinpassphrase[read new passphrase from standard input]' \
+            '*:: :_files' \
+            && ret=0
+          ;;
+        (setPassphraseHint)
+          _arguments \
+            '-user[cryptographic user]:user' \
+            '-hint[hint message]:hint' \
+            '-clear[clear any existing hint]' \
+            '*:: :_files' \
+            && ret=0
+          ;;
+        (encryptVolume)
+          _arguments \
+            '-user[cryptographic user]:user' \
+            '-passphrase[passphrase]:passphrase' \
+            '-stdinpassphrase[read passphrase from standard input]' \
+            '*:: :_files' \
+            && ret=0
+          ;;
+        (decryptVolume)
+          _arguments \
+            '-user[cryptographic user]:user' \
+            '-recoverykeychain[key chain file]:path:_files' \
+            '-passphrase[passphrase]:passphrase' \
+            '-stdinpassphrase[read passphrase from standard input]' \
+            '*:: :_files' \
+            && ret=0
+          ;;
+        (deleteSnapshot)
+          _arguments \
+            '-user[cryptographic user]:user' \
+            '-xid[transaction ID]:xid' \
+            '-name[snapshort name]:name' \
+            '-wait[wait for removing snapshot]' \
+            '*:: :_files' \
+            && ret=0
+          ;;
+        (updatePreboot)
+          _arguments \
+            '-od[open directory path]:dir:_files -/' \
+            '*:: :_files' \
+            && ret=0
+          ;;
+      esac
+    ;;
+  esac
+
+  return ret
+}
+
+(( $+functions[_diskutil_APFS_subcommands] )) ||
+_diskutil_APFS_subcommands() {
+  local -a commands=(
+    'list:Display APFS objects as a tree'
+    'convert:Convert an HFS volume to an APFS Container with a single APFS Volume'
+    'create:Create an empty APFS Container and add one APFS Volume with the given name'
+    'createContainer:Create an empty APFS Container'
+    'deleteContainer:Destroy an existing APFS Container'
+    'resizeContainer:Resize an existing APFS Container'
+    'addVolume:Add a new APFS Volume to an existing APFS Container'
+    'deleteVolume:Remove the given APFS Volume from its APFS Container'
+    'deleteVolumeGroup:Remove all APFS Volumes from the APFS Container'
+    'eraseVolume:Erase the contents of an existing APFS Volume'
+    'changeVolumeRole:Change the role metadata flags of an existing APFS Volume'
+    'unlockVolume:Unlock the mount an encrypted and locked APFS Volume or verify a passphrase'
+    'lockVolume:Unmount and lock an encrypted unlocked APFS Volume'
+    'listCryptoUsers:Show all cryptographic users and special-purpose users'
+    'changePassphrase:Change the passphrase of the user associated with the given APFS Volume'
+    'setPassphraseHint:Set an arbitrary hint string to aid recall of a passphrase'
+    'encryptVolume:Start encryption of a currently-unencrypted APFS Volume'
+    'decryptVolume:Start decryption of a currently-encrypted APFS Volume'
+    'listSnapshots:Show all APFS Snapshots associated with the given APFS Volume'
+    'deleteSnapshot:Remove the given APFS Snapshot from its APFS Volume'
+    'listGroups:Display the relationships among APFS Volumes which are defined by APFS Volume Groups'
+    'defragment:Manage automatic background defragmentation at the APFS Container or Volume level'
+    "updatePreboot:Update the target volume's associated Preboot Volume"
+    'syncPatchUsers:Perform a specific repair of APFS cryptographic user lock records'
+  )
+  _describe -t commands 'command' commands "$@"
+}
+
+(( $+functions[_diskutil_appleRAID] )) ||
+_diskutil_appleRAID() {
+  local ret=1
+
+  _arguments -C \
+    '1: :_diskutil_appleRAID_subcommands' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (list)
+          _arguments \
+            '-plist[emit a property list instead of user-formatted output]' \
+            '*:: :_files' \
+            && ret=0
+          ;;
+        (create)
+          _arguments \
+            '1:command:(mirror stripe concat)' \
+            '*:: :_files' \
+            && ret=0
+          ;;
+        (add)
+          _arguments \
+            '1:type:(member spare)' \
+            '*:: :_files' \
+            && ret=0
+          ;;
+        (enable)
+          _arguments \
+            '1:command:(mirror concat)' \
+            '*:: :_files' \
+            && ret=0
+          ;;
+        (update)
+          _arguments \
+            '1:key:(AutoRebuild SetTimeout)' \
+            '2:value' \
+            '*:: :_files' \
+            && ret=0
+          ;;
+      esac
+    ;;
+  esac
+
+  return ret
+}
+
+(( $+functions[_diskutil_appleRAID_subcommands] )) ||
+_diskutil_appleRAID_subcommands() {
+  local -a commands=(
+    'list:Display AppleRAID volumes with current status and associated member disks'
+    'create:Create a new RAID set consisting of multiple disks and/or RAID sets'
+    'delete:Destroy an existing RAID set'
+    'repairMirror:Repair a degraded mirror'
+    'add:Add a new member or hot spare to an existing RAID set'
+    'remove:Remove a member or spare from an existing RAID set'
+    'enable:Convert a non-RAID disk partition into an RAID set'
+    'update:Update the key-value parameters of an existing RAID set'
+  )
+  _describe -t commands 'command' commands "$@"
+}
+
+(( $+functions[_diskutil_corestorage] )) ||
+_diskutil_corestorage() {
+  local ret=1
+
+  _arguments -C \
+    '1: :_diskutil_corestorage_subcommands' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (list|info)
+          _arguments \
+            '-plist[emit property list instead of the formatted tree output]' \
+            '*:: :_files' \
+            && ret=0
+          ;;
+        (unlockVolume)
+          _arguments \
+            '-nomount[not mount automatically]' \
+            '-stdinpassphrase[read password from standard input]' \
+            '-passphrase[passphrase]:passphrase' \
+            '-recoverykeychain[a path to keychain file]:file:_files' \
+            '*:: :_files' \
+            && ret=0
+          ;;
+      esac
+    ;;
+  esac
+
+  return ret
+}
+
+(( $+functions[_diskutil_corestorage_subcommands] )) ||
+_diskutil_corestorage_subcommands() {
+  local -a commands=(
+    'list:Display a tree view of the CoreStorage world'
+    'info:Display properties of the CoreStorage object'
+    'delete:Delete a CoreStorage logical volume group'
+    'unlockVolume:Unlock a logical volume and file system'
+  )
+  _describe -t commands 'command' commands "$@"
+}
+
+(( $+functions[_diskutil_image] )) ||
+_diskutil_image() {
+  local ret=1
+
+  _arguments -C \
+    '--stdinpassphrase[read the passphrase from stdin]' \
+    '--verbose[enable verbose output]' \
+    '--plist[produce output in a plist format]' \
+    '1: :_diskutil_image_subcommands' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (attach)
+          _arguments \
+            '--readOnly[disk image is attached read-only]' \
+            '--nobrowse[hide the mounted volume in the disk image from GUI applications]' \
+            '--mountPoint[path to mount the image]:mount_point:_files -/' \
+            '--mountOptions[comma separated mount options]:option' \
+            '--mountPolicy[mount policy]:policy:(noMount autoMount forceMount)' \
+            '--noMount[skip any mount attempts and only attach the disk image]' \
+            '*--shadow[shadow file path]:file:_files' \
+            '*:: :_files' \
+            && ret=0
+          ;;
+        (info)
+          _arguments \
+            '--extra[additional information will be retrieved for some image types]' \
+            && ret=0
+          ;;
+        (create)
+          _diskutil_image_create && ret=0
+          ;;
+        (resize)
+          _arguments \
+            '(-s --size)'{-s,--size}'[new size of the disk image]:size' \
+            '--image-only[only resize the disk image and adjust a secondary GPT table to the new size]' \
+            && ret=0
+          ;;
+      esac
+    ;;
+  esac
+
+  return ret
+}
+
+(( $+functions[_diskutil_image_subcommands] )) ||
+_diskutil_image_subcommands() {
+  local -a commands=(
+    'attach:Attach a disk image as a device'
+    'info:Print out information includes about a disk image'
+    'chpass:Change the passphrase of a given encrypted image'
+    'create:Create a disk image'
+    'resize:Resizes an existing disk image represented by given URL'
+  )
+  _describe -t commands 'command' commands "$@"
+}
+
+(( $+functions[_diskutil_image_create] )) ||
+_diskutil_image_create() {
+  local ret=1
+
+  _arguments -C \
+    '1: :_diskutil_image_create_subcommands' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (blank)
+          _arguments \
+            '--format[disk format]:format:(RAW ASIF USDB)' \
+            '--size[disk size]:size' \
+            '--volumeName[volume name]:name' \
+            '-fs[create a file system in the specified format]:format:(APFS ExFAT MS-DOS)' \
+            '*:: :_files' \
+            && ret=0
+          ;;
+        (from)
+          _arguments \
+            '--format[disk format]:format:(RAW UDRO UDZO ULFO ULMO ASIF UDSB)' \
+            '--shadow[path to the shadow file]:path:_files' \
+            '*:: :_files' \
+            && ret=0
+          ;;
+      esac
+    ;;
+  esac
+
+  return ret
+}
+
+(( $+functions[_diskutil_image_create_subcommands] )) ||
+_diskutil_image_create_subcommands() {
+  local -a commands=(
+    'blank:create a blank disk image'
+    'from:create a disk image from source'
+  )
+  _describe -t commands 'command' commands "$@"
+}
+
+_diskutil "$@"
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
