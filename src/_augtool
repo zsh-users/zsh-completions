@@ -1,0 +1,68 @@
+#compdef augtool
+# ------------------------------------------------------------------------------
+# Copyright (c) 2025 Github zsh-users - https://github.com/zsh-users
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+# * Redistributions of source code must retain the above copyright
+# notice, this list of conditions and the following disclaimer.
+# * Redistributions in binary form must reproduce the above copyright
+# notice, this list of conditions and the following disclaimer in the
+# documentation and/or other materials provided with the distribution.
+# * Neither the name of the zsh-users nor the
+# names of its contributors may be used to endorse or promote products
+# derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL ZSH-USERS BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+# Completion script for augtool 1.14.1 (https://augeas.net/)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei Yoshida (https://github.com/syohex) <syohex@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+_arguments \
+  '(- *)'{-h,--help}'[show help message]' \
+  '(- *)--version[print version information and exit]' \
+  '(-c --typecheck)'{-c,--typecheck}'[type check lenses]' \
+  '(-b --backup)'{-b,--backup}'[preserve the original files with extension ".augsave"]' \
+  '(-n --new)'{-n,--new}'[save changes in file with extension ".augnew"]' \
+  '(-r --root)'{-r,--root=}'[use directory as the root of the filesystem]:dir:_files -/' \
+  \*{-I,--include=}'[add directory to the module loadpath]:dir:_files -/' \
+  '(-t --transform)'{-t,--transform=}'[add a file transform]:xfm' \
+  \*{-l,--load-file=}'[load an individual file into the tree]:file:_files' \
+  \*{-f,--file=}'[read commands from file]:file:_files' \
+  '(-i --interactive)'{-i,--interactive}'[read commands from the terminal]' \
+  '(-e --echo)'{-e,--echo}'[echo the commands before printing command file output]' \
+  '(-s --autosave)'{-s,--autosave}'[automatically save all changes at the end of the session]' \
+  '(-S --nostdinc)'{-S,--nostdinc}'[do not search any of the default directories for lenses]' \
+  '(-L --noload)'{-L,--noload}'[do not load any files on startup]' \
+  '(-A --noautoload)'{-A,--noautoload}'[do not load any lens modules]' \
+  '--span[load span positions for nodes in the tree]' \
+  '--timing[print how long executing each command take in milliseconds]'\
+  '*:: :_files'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
