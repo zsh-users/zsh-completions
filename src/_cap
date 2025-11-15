@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Capistrano 3.17.1 (https://capistranorb.com/)
+#  Completion script for Capistrano 3.19.2 (https://capistranorb.com/)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -46,22 +46,24 @@ _arguments -C \
   '--backtrace=[Enable full backtrace]: :(stderr stdout)' \
   '--comments[Show commented tasks only]' \
   '--job-stats[Display job statistics]:level' \
+  '--rules[Trace the rules resolution]' \
   '--suppress-backtrace[Suppress backtrace lines matching regexp PATTERN]:pattern' \
   '(-A --all)'{-A,--all}'[Show all tasks, even uncommented ones]' \
   '(-B --build-all)'{-B,--build-all}'[Build all prerequisites, including those which are up-to-date]' \
   '(-C --directory)'{-C,--directory}'[Change to DIRECTORY before doing anything]: :_files -/' \
   '(-D --describe)'{-D,--describe}'[Describe the tasks, then exit]:pattern' \
-  '(-E --execute-continue)'{-E,--execute-continue}'[Execute Ruby code and exit]:code' \
+  '(-e --execute)'{-e,--execute}'[Execute some Ruby code and exit]:code' \
+  '(-E --execute-continue)'{-E,--execute-continue}'[Execute Ruby code and continue with task processing]:code' \
   '(-f --rakefile)'{-f,--rakefile}'[Use FILENAME as the rakefile to search for]: :_files' \
   '(-G --no-system --nosystem)'{-G,--no-system,--nosystem}'[Use standard project Rakefile search paths, ignore system wide rakefiles]' \
   '(-g --system)'{-g,--system}'[Using system wide rakefiles]' \
   '(-I --libdir)'\*{-I,--libdir}'[Include LIBDIR in the search path for required modules]: :_files -/' \
-  '(-j --jobs)'{-j,--jobs}'[Specifies the maximum number of tasks to execute in parallel]:num' \
+  '(-j --jobs)'{-j-,--jobs-}'[Specifies the maximum number of tasks to execute in parallel]:num' \
   '(-m --multitask)'{-m,--multitask}'[Treat all tasks as multitasks]' \
   '(-N --no-search --nosearch)'{-N,--no-search,--nosearch}'[Do not search parent directories for the Rakefile]' \
   '(-P --prereqs)'{-P,--prereqs}'[Display the tasks and dependencies, then exit]' \
   '--execute-print[Execute some Ruby code, print the result, then exit]:code' \
-  '--require[Require MODULE before executing rakefile]:module' \
+  '*--require[Require MODULE before executing rakefile]:module' \
   '(-R --rakelibdir --rakelib)'{-R,--rakelibdir,--rakelib}'[Auto-import any .rake files in RAKELIBDIR]: :_files -/' \
   '(-t --trace)'{-t,--trace}'[Turn on invoke/execute tracing, enable full backtrace]: :(stderr stdout)' \
   '(-T --tasks)'{-T,--tasks}'[Display the tasks with descriptions]::pattern' \
