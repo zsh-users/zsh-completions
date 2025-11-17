@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-# Completion script for ghc (https://www.haskell.org/ghc/)
+# Completion script for ghc 9.10.3 (https://www.haskell.org/ghc/)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -39,580 +39,1018 @@
 #
 # ------------------------------------------------------------------------------
 
-local state
-local WORDS
-
 #
 # ghci
 #
 
-_ghc_ghci () { _ghc_compiler }
+_ghc_ghci() {
+  local -a ghci_flags=(
+    "-fshow-loaded-modules[Show the names of modules that GHCi loaded after a :load command]"
+    "-fprint-bind-result[Turn on printing of binding results in GHCi]"
+    "-fimplicit-import-qualified[Put in scope qualified identifiers for every loaded module]"
+    "-fno-it[No longer set the special variable it]"
+    "-interactive-print[Select the function to use for printing evaluated expressions]:name"
+    "-fbreak-points[Insert breakpoints in the GHCi debugger]"
+    "-fprint-evld-with-show[Instruct :print to use Show instances where possible]"
+    "-fghci-hist-size=[Set the number of entries GHCi keeps for :history]:size"
+    "-fbreak-on-exception[Break on any exception thrown]"
+    "-fbreak-on-error[Break on uncaught exceptions and errors]"
+    "-flocal-ghci-history[Use current directory for the GHCi command history file]"
+    "-fghci-leak-check[(Debugging only) check for space leaks when loading new modules in GHCi]"
+    "-ignore-dot-ghci[Disable reading of .ghci files]"
+    "-ghci-script[Read additional .ghci files]"
+    "-fexternal-interpreter[Run interpreted code in a separate process]"
+    "-XExtendedDefaultRules[Use GHCi's extended default rules in a normal module]"
+  )
+
+  _arguments \
+    $ghci_flags[@] \
+    '*:: :_files'
+}
 
 #
 # ghc
 #
 
-_ghc_compiler ()
+_ghc_compiler()
 {
-    _arguments \
-        "-no-hs-main[Don't assume this program contains main]" \
-        "-no-user-package-conf[Don't load the user's package config file]" \
-        '(- *)'{--help,-\?}'[Show help information]' \
-        '*-I-[Add directory to path for #include files]:directory:_files -/' \
-        '*-X-[Language flags]:flag:_ghc_language_flags' \
-        '*-d-[Debugging options]:flag:_ghc_debugging_options' \
-        '*-f-[Compiler options]:flag:_ghc_compiler_flags' \
-        '*-hide-package[Hide package]:Package:_ghc_pkg_list_packages' \
-        '*-trust[Expose package and set it to be trusted]:Package:_ghc_pkg_list_packages' \
-        '*-distrust[Expose package and set it to be distrusted]:Package:_ghc_pkg_list_packages' \
-        '*-distrust-all[Distrust all packages by default]' \
-        '*-i-[Add directory to import path]:directory:->ghc_include_directory' \
-        '*-package[Expose package]:Package:_ghc_pkg_list_packages' \
-        '*:file:_files -g \*.\{lhs,hs,hc,c,s\}' \
-        '--info[Display information about the compiler]' \
-        '--show-options[Display the supported command line options]' \
-        '--interactive[Interactive mode]' \
-        '--make[Compile and link a complete Haskell program]:file:_files -g "*.{lhs,hs,hc,c,s}"' \
-        '--numeric-version[Display GHC version (numeric only)]' \
-        '--print-libdir[Display GHC library directory]' \
-        '--show-iface[Show interface]:file:_files -g "*.hi"' \
-        {--supported-languages,--supported-extensions}'[Display the supported language extensions]' \
-        '-C[Stop after generating C]' \
-        '-E[Stop after generating preprocessed, de-litted Haskell]' \
-        '-H[Minimum heap size]:size:' \
-        '-M[Output Makefile rules]' \
-        '-O-[Enable optimization]:level:(0 1 2)' \
-        '-Rghc-timing[Summarise timing stats for GHC]' \
-        '-S[Stop after generating assembler]' \
-        '-V[Display GHC version]' \
-        '-W[Enable normal warnings]' \
-        '-Wall[Enable almost all warnings]' \
-        '-Werror[Make warnings fatal]' \
-        '-Wwarn[Make warnings non-fatal]' \
-        '-c[Stop after generating object files]' \
-        '-eventlog[Enable runtime event tracing]' \
-        '-debug[Use the debugging runtime]' \
-        "-dylib-install-name[On Darwin/macOS only, set the install name]" \
-        '-dynamic[Use dynamic Haskell libraries]' \
-        '-dynamic-too[Build dynamic object files as well as static object files during compilation]' \
-        '-dynosuf[Set the output suffix for dynamic object files]' \
-        '-dynload[Select one of a number of modes for finding shared libraries at runtime]' \
-        '--mk-dll[DLL-creation mode (Windows only)]' \
-        '-framework-path[On Darwin/macOS/iOS only, add dir to the list of directories searched for frameworks]' \
-        '-shared[Generate a shared library (as opposed to an executable)]' \
-        '-staticlib[On Darwin/macOS/iOS only, generate a standalone static library (as opposed to an executable)]' \
-        '-e[Evaluate expression]' \
-        '-hide-all-packages[Hide all packages by default]' \
-        '-hpcdir[Directory to deposit .mix files during compilation (default is .hpc)]' \
-        '-n[Do a dry run]' \
-        '-o[Set output filename]:file:_files' \
-        '-outputdir[Set output directory]:directory:_files -/' \
-        '-package-name[Compile to be part of package]' \
-        '-hide-all-packages[Hide all packages by default]' \
-        '-package-db[Add file to the package db stack]:file:_files' \
-        '-clear-package-db[Clear the package db stack]' \
-        '-msse2[(x86 only) Use SSE2 for floating point]' \
-        '-monly-\[432\]-regs[(x86 only) give some registers back to the C compiler]' \
-        '-no-global-package-db[Remove the global package db from the stack]' \
-        '-global-package-db[Add the global package db to the stack]' \
-        "-no-user-package-db[Remove the user's package db from the stack]" \
-        "-user-package-db[Add the user's package db to the stack]" \
-        "-no-auto-link-packages[Don't automatically link in the base and rts packages]" \
-        '-optL[pass option to the literate pre-processor]' \
-        '-optP[pass option to cpp (with -cpp only)]' \
-        '-optF[pass option to the custom pre-processor]' \
-        '-optc[pass option to the C compiler]' \
-        '-optlo[pass option to the LLVM optimiser]' \
-        '-optlc[pass option to the LLVM compiler]' \
-        '-optm[pass option to the mangler]' \
-        '-opta[pass option to the assembler]' \
-        '-optl[pass option to the linker]' \
-        '-optdll[pass option to the DLL generator]' \
-        '-optwindres[pass option to windres.]' \
-        '-prof[Turn on profiling]' \
-        '-pgmL[Use cmd as the literate pre-processor]' \
-        '-pgmP[Use cmd as the C pre-processor (with -cpp only)]' \
-        '-pgmc[Use cmd as the C compiler]' \
-        '-pgms[Use cmd as the splitter]' \
-        '-pgml[Use cmd as the linker]' \
-        '-pgmdll[Use cmd as the DLL generator]' \
-        '-pgmF[Use cmd as the pre-processor (with -F only)]' \
-        '-pgmwindres[Use cmd as the program for embedding manifests on Windows]' \
-        '-pgmlibtool[Use cmd as the command for libtool (with -staticlib only)]' \
-        '-rtsopts[Only a minimum of safe options can be given to RTS]' \
-        '-rtsopts=[Control whether the RTS behavior can be tweaked via command-line flags and the GHCRTS environment variable (none, some, or all)]' \
-        '-with-rtsopts=[Set the default RTS options]' \
-        '-threaded[Use the threaded runtime]' \
-        '-ticky[Turn on ticky-ticky profiling]' \
-        '-tmpdir[Set the directory for temporary files]:directory:_files -/' \
-        '-v-[Control verbosity]:level:(0 1 2 3 4 5)' \
-        '-w[Disable all warnings]' \
-        '-x[Override default behaviour for source files]:suffix:(hs lhs hc c s o hspp)' \
-        '-hcsuf[Set the suffix to use for intermediate]:suffix:' \
-        '-hidir[Set directory for interface files]:directory:_files -/' \
-        '-hisuf[Set the suffix to use for interface files]:suffix:' \
-        '-odir[Set directory for object files]:directory:_files -/' \
-        '-ohi[Set the filename in which to put the interface]:filename:_files -/' \
-        '-osuf[Set the output file suffix]:suffix:' \
-        '-stubdir[Redirect FFi stub files]:directory:_files -/' \
-        '-dumpdir[Redirect dump files]:directory:_files -/' \
-        '-outputdir[Set output directory]:directory:_files -/' \
-        '-keep-hc-files[Retain intermediate .hc files]' \
-        '-keep-llvm-files[Retain intermediate LLVM .ll files]' \
-        '-keep-s-files[Retain intermediate .s files]' \
-        '-keep-raw-s-files[Retain intermediate .raw_s files]' \
-        '-keep-tmp-files[Retain all intermediate temporary files]' \
-        '-static[Use static Haskell libraries]' \
-        '-split-objs[Split objects (for libraries)]' \
-        '-no-link[Omit linking]' \
-        '-main-is[Set main module and function]:function:' \
-        '*-L-[Add dir to the list of directories searched for libraries]:directory:_files -/' \
-        '*-l-[Link in library]:library:->library'
+  typeset -A opt_args
+  local context state line
 
-    [[ -n "$state" ]] &&
-    case "$state" in
-        ghc_include_directory) _ghc_include_directory ;;
-        library)
-            _wanted libraries expl library \
-                compadd - \
-                ${^=LD_LIBRARY_PATH:-/usr/lib /usr/local/lib}/lib*.(a|so*)(:t:fr:s/lib//) \
-                && ret=0
-    esac
+  local curcontext="$curcontext"
+  local ret=1
+
+  # https://ghc.gitlab.haskell.org/ghc/doc/users_guide/_sources/using.rst.txt
+  local -a using_flags=(
+    "--interactive[Interactive mode ]"
+    "--run[Run a Haskell program]:file:_files"
+    "--make[Build a multi-module Haskell program, automatically figuring out dependencies]"
+    "-e[Evaluate the given expr]:expr"
+    "-E[Stop after preprocessing]"
+    "-C[Stop after generating C]"
+    "-S[Stop after generating assembly]"
+    "-c[Stop after generating object]"
+    "--merge-objs[Merge a set of objects into a GHCi library]"
+    "-M[generate dependency information suitable for use in a Makefile]"
+    "--frontend[run GHC with the given frontend plugin]:plugin"
+    "-shared[Create a shared object]"
+    "(- *)--help[Display help]"
+    "--show-iface[display the contents of an interface file]:file:_files -g '*.hi'"
+    {--supported-extensions,--supported-languages}"[display the supported language extensions]"
+    "--show-options[display the supported command line options]"
+    "--info[display information about the compiler]"
+    "--version[display GHC version]"
+    "--numeric-version[display GHC version (numeric only)]"
+    "--print-booter-version[display bootstrap compiler version]"
+    "--print-build-platform[display platform on which GHC was built]"
+    "--print-c-compiler-flags[C compiler flags used to build GHC]"
+    "--print-c-compiler-link-flags[C linker flags used to build GHC]"
+    "--print-debug-on[print whether GHC was built with -DDEBUG]"
+    "--print-global-package-db[display GHC's global package database directory]"
+    "--print-have-interpreter[display whether GHC was built with interactive support]"
+    "--print-have-native-code-generator[display whether target platform has NCG support]"
+    "--print-host-platform[display host platform of GHC]"
+    "--print-leading-underscore[display use of leading underscores on symbol names]"
+    "--print-libdir[display GHC library directory]"
+    "--print-ld-flags[display linker flags used to compile GHC]"
+    "--print-object-splitting-supported[display whether GHC supports object splitting]"
+    "--print-project-git-commit-id[display Git commit id GHC is built from]"
+    "--print-project-version[display GHC version]"
+    "--print-rts-ways[display which way RTS was built]"
+    "--print-stage[display stage number of GHC]"
+    "--print-support-smp[display whether GHC was compiled with SMP support]"
+    "--print-tables-next-to-code[display whether GHC was compiled with --enable-tables-next-to-code]"
+    "--print-target-platform[display target platform of GHC]"
+    "--print-unregisterised[display whether this GHC was built in unregisterised mode]"
+    "-j[When compiling with --make, compile n modules in parallel]:num"
+    "-jsem[When compiling with --make, coordinate with other processes through the semaphore]"
+    "-unit[Specify the options to build a specific unit]:file:_files"
+    "-working-dir[Specify the directory a unit is expected to be compiled in]:dir:_files -/"
+    "-this-package-name[The name of the package which this module would be part of when installed]:unit_id"
+    "-hidden-module[A module which should not be visible outside its unit]:module_name"
+    "-reexported-module[A module which should be reexported from this unit]:module_name"
+    "-x[Override default behaviour for source files]:suffix"
+    "-v[Verbose mode equivalent to -v3]"
+    "-v0[Disable all non-essential messages]"
+    "-v1[Minimal verbosity]"
+    "-v2[Print the name of each compilation phase]"
+    "-v3[Same as -v2 except that in addition the full command line for each compilation phase]"
+    "-v4[Same as -v3 except that intermediate program representation is also printed]"
+    "-fprint-potential-instances[display all available instances in type error messages]"
+    "-fhide-source-paths[hide module source and object paths]"
+    "-fprint-unicode-syntax[Use unicode syntax when printing expressions, types and kinds]"
+    "-fprint-explicit-foralls[Print explicit forall quantification in types]"
+    "-fprint-explicit-kinds[Print explicit kind foralls and kind arguments in types]"
+    "-fprint-explicit-coercions[Print coercions in types]"
+    "-fprint-axiom-incomps[Display equation incompatibilities in closed type families]"
+    "-fprint-equality-relations[Distinguish between equality relations when printing]"
+    "-fprint-expanded-synonyms[In type errors, also print type-synonym-expanded types]"
+    "-fprint-redundant-promotion-ticks[Print redundant DataKinds promotion ticks]"
+    "-fprint-typechecker-elaboration[Print extra information from typechecker]"
+    "-fdefer-diagnostics[Defer and group diagnostic messages by severity]"
+    "-fdiagnostics-as-json[Output diagnostics in Json format specified by JSON schema]"
+    "-fdiagnostics-color=⟨always|auto|never⟩[Use colors in error messages]"
+    "-fdiagnostics-show-caret[Whether to show snippets of original source code]"
+    "-fshow-error-context[Whether to show textual information about error context]"
+    "-fprint-error-index-links=f[Whether to emit diagnostic codes as ANSI hyperlinks to the Haskell Error Index]:type:(always auto never)"
+    "-ferror-spans[Output full span in error messages]"
+    "-fkeep-going[Continue compilation as far as possible on errors]"
+    "-freverse-errors[Output errors in reverse order]"
+    "-Rghc-timing[Summarise timing stats for GHC]"
+    "-mavx[(x86 only) Enable support for AVX SIMD extensions]"
+    "-mavx2[(x86 only) Enable support for AVX2 SIMD extensions]"
+    "-mavx512cd[(x86 only) Enable support for AVX512-CD SIMD extensions]"
+    "-mavx512er[(x86 only) Enable support for AVX512-ER SIMD extensions]"
+    "-mavx512f[(x86 only) Enable support for AVX512-F SIMD extensions]"
+    "-mavx512pf[(x86 only) Enable support for AVX512-PF SIMD extensions]"
+    "-msse[(x86 only) Use SSE for floating-point operations]"
+    "-msse2[(x86 only) Use SSE2 for floating-point operations]"
+    "-msse3[(x86 only) Use SSE3 for floating-point operations]"
+    "-msse4[(x86 only) Use SSE4 for floating-point operations]"
+    "-msse4.2[(x86 only) Use SSE4.2 for floating-point operations]"
+    "-mbmi[(x86 only) Use BMI1 for bit manipulation operations]"
+    "-mbmi2[(x86 only) Use BMI2 for bit manipulation operations]"
+    "-mfma[Use native FMA instructions for fused multiply-add floating-point operations]"
+    "-haddock[Parse Haddock comments and include them in the interface file it produces]"
+    "-ghcversion-file ⟨path to ghcversion.h⟩[Use this ghcversion.h file]:version_file:_files"
+    "-H[Set the minimum size of the heap to the given size]:size"
+  )
+
+  # https://ghc.gitlab.haskell.org/ghc/doc/users_guide/_sources/debug-info.rst.txt
+  local -a debug_info_flags=(
+    "-g-[Produce DWARF debug information in compiled object files]:level:(0 1 2)"
+    "-finfo-table-map[Embed a lookup table in the generated binary]"
+    "-finfo-table-map-with-stack[Include info tables for STACK closures in the info table map]"
+    "-fno-info-table-map-with-stack[Omit info tables for STACK closures from the info table map]"
+    "-finfo-table-map-with-fallback[Include info tables with no source location information]"
+    "-fno-info-table-map-with-fallback[Omit info tables with no source location information]"
+    "-fdistinct-constructor-tables[Generate a fresh info table for each usage of a data constructor]"
+  )
+
+  # https://ghc.gitlab.haskell.org/ghc/doc/users_guide/_sources/debugging.rst.txt
+  local -a debugging_flags=(
+    "-ddump-to-file[Dump to files instead of stdout]"
+    "-ddump-file-prefix=[Set the prefix of the filenames used for debugging output]:prefix"
+    "-fdump-with-ways[Include the tag of the enabled ways in the extension of dump files]"
+    "-dshow-passes[Print out each pass name as it happens]"
+    "-dipe-stats[Show statistics about IPE information]"
+    "-dfaststring-stats[Show statistics for fast string usage when finished]"
+    "-ddump-faststrings[Dump the whole FastString table when finished]"
+    "-dppr-debug[Turn on debug printing (more verbose)]"
+    "-ddump-timings[Dump per-pass timing and allocation statistics]"
+    "-ddump-parsed[Dump parse tree]"
+    "-ddump-parsed-ast[Dump parser output as a syntax tree]"
+    "-dkeep-comments[Include comments in the parser]"
+    "-ddump-if-trace[Trace interface files]"
+    "-ddump-tc-trace[Trace typechecker]"
+    "-ddump-rn-trace[Trace renamer]"
+    "-ddump-ec-trace[Trace exhaustiveness checker]"
+    "-ddump-cs-trace[Trace constraint solver]"
+    "-ddump-rn-stats[Renamer stats]"
+    "-ddump-rn[Dump renamer output]"
+    "-ddump-rn-ast[Dump renamer output as a syntax tree]"
+    "-ddump-tc[Dump typechecker output]"
+    "-ddump-tc-ast[Dump typechecker output as a syntax tree]"
+    "-ddump-hie[Dump the hie file syntax tree]"
+    "-ddump-splices[Dump TH spliced expressions, and what they evaluate to]"
+    "-dth-dec-file[Dump evaluated TH declarations into '*.th.hs' files]"
+    "-ddump-types[Dump type signatures]"
+    "-ddump-deriv[Dump deriving output]"
+    "-ddump-call-arity[Dump output of the call arity analysis pass]"
+    "-ddump-core-stats[Print a one-line summary of the size of the Core program]"
+    "-ddump-ds[Dump desugarer output]"
+    "-ddump-exitify[Dump output of the exitification pass]"
+    "-ddump-simpl-iterations[Dump output from each simplifier iteration]"
+    "-ddump-simpl-stats[Dump simplifier stats]"
+    "-ddump-simpl-trace[Dump trace messages in simplifier]"
+    "-dverbose-core2core[Show output from each core-to-core pass]"
+    "-ddump-spec[Dump specialiser output]"
+    "-ddump-spec-constr[Dump specialiser output from SpecConstr]"
+    "-ddump-rules[Dump rewrite rules]"
+    "-ddump-rule-firings[Dump rule firing info]"
+    "-ddump-rule-rewrites[Dump detailed rule firing info]"
+    "-drule-check=⟨str⟩[Dump information about potential rule application]"
+    "-dinline-check=⟨str⟩[Dump information about inlining decisions]"
+    "-ddump-simpl[Dump final simplifier output]"
+    "-ddump-inlinings[Dump inlinings performed by the simplifier]"
+    "-ddump-verbose-inlinings[Dump all considered inlinings]"
+    "-ddump-dmdanal[Dump demand analysis output]"
+    "-ddump-dmd-signatures[Dump top-level demand signatures]"
+    "-ddump-cpranal[Dump CPR analysis output]"
+    "-ddump-cpr-signatures[Dump CPR signatures]"
+    "-ddump-cse[Dump CSE output]"
+    "-ddump-full-laziness[Dump full laziness pass output]"
+    "-ddump-float-in[Dump float in output]"
+    "-ddump-liberate-case[Dump liberate case output]"
+    "-ddump-static-argument-transformation[Dump static argument transformation output]"
+    "-ddump-worker-wrapper[Dump worker-wrapper output]"
+    "-ddump-occur-anal[Dump occurrence analysis output]"
+    "-ddump-prep[Dump prepared core]"
+    "-ddump-late-cc[Dump core with late cost centres added]"
+    "-ddump-view-pattern-commoning[Dump commoned view patterns]"
+    "-ddump-stg-from-core[Show CoreToStg output]"
+    "-dverbose-stg2stg[Show output from each STG-to-STG pass]"
+    "-ddump-stg-unarised[Show unarised STG]"
+    "-ddump-stg-cg[Show output after Stg2Stg]"
+    "-ddump-stg-tags[Show output of the tag inference pass.]"
+    "-ddump-stg-final[Show output of last STG pass.]"
+    "-ddump-cmm-verbose-by-proc[Show output from main C-\\- pipeline passes (grouped by proc)]"
+    "-ddump-cmm-verbose[Write output from main C-\\- pipeline passes to files]"
+    "-ddump-cmm-from-stg[Dump STG-to-C-\\- output]"
+    "-ddump-cmm-raw[Dump raw C-\\-]"
+    "-ddump-cmm-cfg[Dump the results of the C-\\- control flow optimisation pass]"
+    "-ddump-cmm-thread-sanitizer[Dump the results of the C-\\- ThreadSanitizer elaboration pass]"
+    "-ddump-cmm-cbe[Dump the results of common block elimination]"
+    "-ddump-cmm-switch[Dump the results of switch lowering passes]"
+    "-ddump-cmm-proc[Dump the results of proc-point analysis]"
+    "-ddump-cmm-sp[Dump the results of the C-\\- stack layout pass]"
+    "-ddump-cmm-sink[Dump the results of the C-\\- sinking pass]"
+    "-ddump-cmm-caf[Dump the results of the C-\\- CAF analysis pass]"
+    "-ddump-cmm-procmap[Dump the results of the C-\\- proc-point map pass]"
+    "-ddump-cmm-split[Dump the results of the C-\\- proc-point splitting pass]"
+    "-ddump-cmm-info[Dump the results of the C-\\- info table augmentation pass.]"
+    "-ddump-cmm-cps[Dump the results of the CPS pass]"
+    "-ddump-cmm[Dump the final C-\\- output]"
+    "-ddump-cfg-weights[Dump the assumed weights of the CFG.]"
+    "-ddump-llvm[Dump LLVM intermediate code.]"
+    "-ddump-c-backend[Dump C code produced by the C (unregisterised) backend]"
+    "-ddump-cmm-opt[Dump the results of C-\\- to C-\\- optimising passes]"
+    "-ddump-opt-cmm[Dump the results of C-\\- to C-\\- optimising passes]"
+    "-ddump-asm-conflicts[Dump register conflicts from the register allocator]"
+    "-ddump-asm-native[Dump initial assembly]"
+    "-ddump-asm-liveness[Dump assembly augmented with register liveness]"
+    "-ddump-asm-regalloc[Dump the result of register allocation]"
+    "-ddump-asm-regalloc-stages[Dump the build/spill stages of the register allocator]"
+    "-ddump-asm-stats[Dump statistics from the register allocator]"
+    "-ddump-asm[Dump final assembly]"
+    "-ddump-js[Dump final JavaScript code]"
+    "-ddisable-js-minifier[Generate pretty-printed JavaScript code instead of minified code]"
+    "-ddisable-js-c-sources[Disable the link with C sources compiled to JavaScript]"
+    "-ddump-bcos[Dump interpreter byte code]"
+    "-ddump-debug[Dump generated DWARF debug information]"
+    "-ddump-rtti[Trace runtime type inference]"
+    "-ddump-foreign[Dump foreign export stubs]"
+    "-ddump-ticked[Dump the code instrumented by HPC]"
+    "-ddump-mod-map[Dump the state of the module mapping database]"
+    "-dppr-user-length[Set the depth for printing expressions in error msgs]"
+    "-dppr-cols=⟨n⟩[Set the width of debugging output]"
+    "-dppr-case-as-let[Print single alternative case expressions as strict lets]"
+    "-dhex-word-literals[Print values of type Word# in hexadecimal]"
+    "-dno-debug-output[Suppress unsolicited debugging output]"
+    "-dsuppress-all[In dumps, suppress everything (except for uniques) that is suppressible]"
+    "-dsuppress-ticks[Suppress 'ticks' in the pretty-printer output]"
+    "-dsuppress-uniques[Suppress the printing of uniques in debug output]"
+    "-dsuppress-idinfo[Suppress extended information about identifiers where they are bound]"
+    "-dsuppress-unfoldings[Suppress the printing of the stable unfolding of a variable]"
+    "-dsuppress-module-prefixes[Suppress the printing of module qualification prefixes]"
+    "-dsuppress-timestamps[Suppress timestamps in dumps]"
+    "-dsuppress-type-signatures[Suppress type signatures]"
+    "-dsuppress-type-applications[Suppress type applications]"
+    "-dsuppress-coercions[Suppress the printing of coercions in Core dumps to make them shorter]"
+    "-dsuppress-coercion-types[Suppress the printing of coercion types]"
+    "-dsuppress-var-kinds[Suppress the printing of variable kinds]"
+    "-dsuppress-stg-free-vars[Suppress the printing of closure free variable lists in STG output]"
+    "-dsuppress-core-sizes[Suppress the printing of core size stats per binding]"
+    "-dsuppress-stg-reps[Suppress rep annotations on STG args]"
+    "-dlint[Enable several common internal sanity checkers]"
+    "-dcore-lint[Turn on internal sanity checking]"
+    "-dlinear-core-lint[Turn on internal sanity checking]"
+    "-dstg-lint[STG pass sanity checking]"
+    "-dcmm-lint[C-\\- pass sanity checking]"
+    "-dasm-lint[ASM pass sanity checking]"
+    "-fllvm-fill-undef-with-garbage[Intruct LLVM to fill dead STG registers with garbage]"
+    "-falignment-sanitisation[Compile with alignment checks for all info table dereferences]"
+    "-fproc-alignment[Align functions at given boundary]"
+    "-fcatch-nonexhaustive-cases[Add a default error alternative to case expressions]"
+    "-forig-thunk-info[Generate stg_orig_thunk_info stack frames on thunk entry]"
+    "-fcheck-prim-bounds[Instrument array primops with bounds checks]"
+    "-fcmm-thread-sanitizer[Enable ThreadSanitizer instrumentation of memory accesses]"
+    "-dinitial-unique=[Start UniqSupply allocation]:supply"
+    "-dunique-increment=[Set the increment for the generated Unique's]:i"
+    "-dno-typeable-binds[Don't generate bindings for Typeable methods]"
+    "-dtag-inference-checks[Affirm tag inference results are correct at runtime]"
+    "-funoptimized-core-for-interpreter[Disable optimizations with the interpreter]"
+  )
+
+  # https://ghc.gitlab.haskell.org/ghc/doc/users_guide/_sources/packages.rst.txt
+  local -a packages_flags=(
+    "*-package[Expose package]:_ghc_pkg_list_packages"
+    "*-package-id[Expose package by id]:id"
+    "-hide-all-packages[Hide all packages by default]"
+    "*-hide-package[Hide package]:package:_ghc_pkg_list_packages"
+    "*-ignore-package[Ignore package]:package:_ghc_pkg_list_packages"
+    "-no-auto-link-packages[Don't automatically link in the base and rts packages]"
+    "-this-unit-id[Compile to be part of unit]:id"
+    "*-trust[Expose package and set it to be trusted]:package:_ghc_pkg_list_packages"
+    "*-distrust[Expose package and set it to be distrusted]:package:_ghc_pkg_list_packages"
+    "-distrust-all-packages[Distrust all packages by default]"
+    "-package-db[Add file to the package db stack]:file:_files"
+    "-no-global-package-db[Remove the global package db from the stack]"
+    "-no-user-package-db[Remove the user's package db from the stack]"
+    "-clear-package-db[Clear the package db stack]"
+    "-global-package-db[Add the global package db to the stack]"
+    "-user-package-db[Add the user's package db to the stack]"
+    "-package-env[Use the specified package environment]:file:_files"
+  )
+
+  # https://ghc.gitlab.haskell.org/ghc/doc/users_guide/_sources/phases.rst.txt
+  local -a phases_flags=(
+    "-pgmL[Literate pre-processor command]:cmd"
+    "-pgmP[C pre-processor command]:cmd"
+    "-pgmJSP[JavaScript C-pre-processor command]:cmd"
+    "-pgmCmmP[C-- C pre-processor command]:cmd"
+    "-pgmc[C compilercommand]:cmd"
+    "-pgmcxx[C++ compiler command]:cmd"
+    "-pgmlo[LLVM optimiser command]:cmd"
+    "-pgmlc[LLVM compiler command]:cmd"
+    "-pgmlas[LLVM assembler command]:cmd"
+    "-pgms[splitter command]:cmd"
+    "-pgma[assembler command]:cmd"
+    "-pgml[linker command]:cmd"
+    "-pgmlm[linker command when merging object files]:cmd"
+    "-pgmF[pre-processor command when -F is specified]:cmd"
+    "-pgmotool[inspect mach-o dylibs command]:cmd"
+    "-pgminstall_name_tool[command to inject runpath into mach-o dylibs on macOS]:command"
+    "-pgmwindres[command for embedding manifests on Windows]:command"
+    "-pgmi[external interpreter command]:command"
+    "-optL[literate pre-processor options]:options"
+    "-optP[cpp options]:options"
+    "-optJSP[JavaScript C pre-processor options]:options"
+    "-optCmmP[C-- C pre-processor options]:options"
+    "-optF[custom pre-processor options]:options"
+    "-optc[C compiler options]:options"
+    "-pgml-supports-no-pie[Indicate that the linker supports -no-pie]"
+    "-optcxx[C++ compiler options]:options"
+    "-optlo[LLVM optimiser options]:options"
+    "-optlc[LLVM compiler options]:options"
+    "-optlas[LLVM assembler options]:options"
+    "-opta[assembler options]:options"
+    "-optl[linker options]:options"
+    "-optlmption⟩[linker options when merging object files]:options"
+    "-optwindres[windres options]:options"
+    "-opti[options of the interpreter sub-process]:options"
+    "-cpp[Run the C pre-processor on Haskell source files]"
+    "*-D[Define a symbol in the C pre-processor]:symbol"
+    "*-U[Undefine a symbol in the C pre-processor]:symbol"
+    "*-I[Directories for #include files]:dir:_files -/"
+    "-F[Enable the use of a pre-processor]"
+    "-fasm[Use the native code generator]"
+    "-fllvm[Compile using the LLVM code generator]"
+    "-fno-code[Omit code generation]"
+    "-fwrite-interface[Always write interface files]"
+    "-fwrite-if-simplified-core[Write an interface file containing the simplified core of the module]"
+    "-fobject-code[Generate object code]"
+    "-fbyte-code[Generate byte-code]"
+    "-fbyte-code-and-object-code[Generate object code and byte-code]"
+    "-fPIC[Generate position-independent code (where available)]"
+    "-fexternal-dynamic-refs[Generate code for linking against dynamic libraries]"
+    "-fPIE[Generate code for a position-independent executable (where available)]"
+    "-dynamic[Build dynamically-linked object files and executables]"
+    "-dynamic-too[Build dynamic object files *as well as* static object files during compilation]"
+    "-fexpose-internal-symbols[Produce symbols for all functions, including internal functions]"
+    "-fprefer-byte-code[Use byte-code if it is available to evaluate TH splices]"
+    "*-l[Link in library]:lib:->library"
+    "-c[Stop after generating object file]"
+    "-framework[Link in the framework]:name"
+    "-staticlib[Generate a standalone static library]"
+    "*-L[Directories for searching libraries]:dir:_files -/"
+    "-fuse-rpaths[Set the rpath based on -L flags]"
+    "*-framework-path ⟨dir⟩[Directories searched for frameworks on Darwin/OS X/iOS]:dir:_files -/"
+    "-fsplit-sections[Split sections for link-time dead-code stripping]"
+    "-static[Use static Haskell libraries]"
+    "-dynamic[Build dynamically-linked object files and executables]"
+    "-shared[Generate a shared library (as opposed to an executable)]"
+    "-dynload[Selects one of a number of modes for finding shared libraries at runtime]"
+    "-flink-rts[Link the runtime when generating a shared or static library]"
+    "-main-is[Set main module and function]:thing"
+    "-no-hs-main[Don't assume this program contains main]"
+    "-debug[Use the debugging runtime]"
+    "-threaded[Use the threaded runtime]"
+    "-single-threaded[Use the single-threaded runtime]"
+    "-eventlog[Enable runtime event tracing]"
+    "-rtsopts=[Control whether the RTS behaviour]:flag:(none some all ignore ignoreAll)"
+    "-with-rtsopts=[Default RTS options]:options"
+    "-no-rtsopts-suggestions[Don't print RTS suggestions about linking with]"
+    "-fno-gen-manifest[Do not generate a manifest file (Windows only)]"
+    "-fno-embed-manifest[Do not embed the manifest in the executable (Windows only)]"
+    "-fno-shared-implib[Don't generate an import library for a DLL (Windows only)]"
+    "-dylib-install-name[Set the install name]:name:_files"
+    "-rdynamic[add all symbols, not only used ones, to the dynamic symbol table]"
+    "-fwhole-archive-hs-libs[Inserts the flag '-Wl,--whole-archive' before any -l flags]"
+    "-pie[Instruct the linker to produce a position-independent executable]"
+    "-no-pie[Don't instruct the linker to produce a position-independent executable]"
+    "-fkeep-cafs[Do not garbage-collect CAFs (top-level expressions) at runtime]"
+    "-fcompact-unwind[Instruct the linker to produce a __compact_unwind section.]"
+  )
+
+  local -a profiling_flags=(
+    "-prof[Turn on profiling]"
+    "-fno-prof-count-entries[Do not collect entry counts]"
+    "-fprof-callers=[Auto-add SCCs to all call-sites of the named function]:name"
+    "-fprof-auto[Auto-add SCCs to all bindings not marked INLINE]"
+    "-fprof-auto-top[Auto-add SCCs to all top-level bindings not marked INLINE]"
+    "-fprof-auto-exported[Auto-add SCCs to all exported bindings not marked INLINE]"
+    "-fprof-auto-calls[Auto-add SCCs to all call sites]"
+    "-fprof-late[Auto-add SCCs to all top level bindings *after* the core pipeline has run]"
+    "-fprof-late-inline[Auto-add SCCs to all top level bindings *after* the optimizer has run and retain them when inlining]"
+    "-fprof-late-overloaded[Auto-add SCCs to all top level overloaded bindings *after* the core pipeline has run]"
+    "-fprof-late-overloaded-calls[Auto-add SCCs to all call sites that include dictionary arguments *after* the core pipeline has run]"
+    "-fprof-cafs[Auto-add SCCs to all CAFs]"
+    "-fprof-manual[Process manual 'SCC' annotations]"
+    "-fhpc[Turn on Haskell program coverage instrumentation]"
+    "-hpcdir=[Set the directory where GHC places '.mix' files]:dir:_files -/"
+    "-ticky[Turn on ticky-ticky profiling]"
+    "-ticky-allocd[Track the number of times each closure type is allocated]"
+    "-ticky-dyn-thunk[Track allocations of dynamic thunks]"
+    "-ticky-LNE[Treat join point binders similar to thunks/functions]"
+    "-ticky-tag-checks[Emit dummy ticky counters to record how many tag-inference checks tag inference avoided]"
+    "-ticky-ap-thunk[Don't use standard AP thunks on order to get more reliable entry counters]"
+  )
+
+  # https://ghc.gitlab.haskell.org/ghc/doc/users_guide/_sources/separate_compilation.rst.txt
+  local -a separate_compilation_flags=(
+    "*-i-[import path directories]:dir:->ghc_include_directory"
+    "-o[set output filename]:file:_files"
+    "-dyno[set dynamic output filename]:file:_files"
+    "-odir[set directory for object files]:dir:_files -/"
+    "-ohi[set the filename in which to put the interface]:file:_files"
+    "-dynohi[set the filename in which to put the dynamic interface]:file:_files"
+    "-hidir[set directory for interface files]:dir:_files -/"
+    "-hiedir[set directory for extended interface files]:dir:_files -/"
+    "-stubdir[redirect FFI stub files]:dir:_files -/"
+    "-dumpdir[redirect dump files]:dir:_files -/"
+    "-outputdir[set output directory]:dir:_files -/"
+    "-osuf[set the output file suffix]:suffix"
+    "-dynosuf[set the dynamic output file suffix]:suffix"
+    "-hisuf[set the suffix to use for interface files]:suffix"
+    "-dynhisuf[set the suffix to use for dynamic interface files]:suffix"
+    "-hiesuf[set the suffix to use for extended interface files]:suffix"
+    "-hcsuf[set the suffix to use for intermediate C files]:suffix"
+    "-keep-hc-file[Retain intermediate .hc files]"
+    "-keep-hi-files[Retain intermediate .hi files]"
+    "-keep-hscpp-file[Retain intermediate .hscpp files]"
+    "-keep-llvm-file[Retain intermediate LLVM .ll files]"
+    "-keep-o-files[Retain intermediate .o files]"
+    "-keep-s-file[Retain intermediate .s files]"
+    "-keep-tmp-files[Retain all intermediate temporary files]"
+    "-tmpdir[set the directory for temporary files]:dir:_files -/"
+    "-ddump-hi[Dump the new interface to stdout]"
+    "-ddump-hi-diffs[Show the differences vs. the old interface]"
+    "-ddump-minimal-imports[Dump a minimal set of imports]"
+    "--show-iface[interface file]:file:_files"
+    "-fwrite-ide-info[Write out extended interface files]"
+    "-fvalidate-ide-info[Perform some sanity checks on the extended interface files]"
+    "-fforce-recomp[Turn off recompilation checking]"
+    "-fignore-optim-changes[Do not recompile modules just to match changes to optimisation flags]"
+    "-fignore-hpc-changes[Do not recompile modules just to match changes to HPC flags]"
+    "-ddump-mod-cycles[Dump module cycles]"
+    "-dep-makefile[Makefile path]:file:_files"
+    "-dep-suffix[Make dependencies that declare that files with suffix]:suffix"
+    "-exclude-module=[exclude module]:file:_files"
+    "-include-pkg-deps[Regard modules imported from packages as unstable]"
+    "-include-cpp-deps[Include preprocessor dependencies]"
+  )
+
+  # https://ghc.gitlab.haskell.org/ghc/doc/users_guide/_sources/using-concurrent.rst.txt
+  local -a concurrent_flags=(
+    "-feager-blackholing[Turn on eager blackholing]"
+  )
+
+  # https://ghc.gitlab.haskell.org/ghc/doc/users_guide/_sources/using-optimisation.rst.txt
+  local -a optimization_flags=(
+    "-O-[Set optimization level]:num:(0 1 2)"
+    "-fcore-constant-folding[Enable constant folding in Core]"
+    "-fcase-merge[Enable case-merging]"
+    "-fcase-folding[Enable constant folding in case expressions]"
+    "-fcall-arity[Enable call-arity optimisation]"
+    "-fexitification[Enables exitification optimisation]"
+    "-fcmm-elim-common-blocks[Enable Cmm common block elimination]"
+    "-fcmm-sink[Enable Cmm sinking]"
+    "-fcmm-static-pred[Enable static control flow prediction]"
+    "-fcmm-control-flow[Enable control flow optimisation in the Cmm backend]"
+    "-fasm-shortcutting[Enable shortcutting on assembly]"
+    "-fblock-layout-cfg[Use the new cfg based block layout algorithm]"
+    "-fblock-layout-weights[Sets edge weights used by the new code layout algorithm]"
+    "-fblock-layout-weightless[Ignore cfg weights for code layout]"
+    "-fcpr-anal[Turn on Constructed Product Result analysis]"
+    "-fcse[Enable common sub-expression elimination]"
+    "-fstg-cse[Enable common sub-expression elimination on the STG]"
+    "-fspec-eval[Enables speculative evaluation]"
+    "-fspec-eval-dictfun[Enables speculative evaluation of dictionary functions]"
+    "-fdicts-cheap[Make dictionary-valued expressions seem cheap to the optimiser]"
+    "-fdicts-strict[Make dictionaries strict]"
+    "-fdo-eta-reduction[Enable eta-reduction]"
+    "-fdo-lambda-eta-expansion[Enable lambda eta-expansion]"
+    "-fdo-clever-arg-eta-expansion[Enable sophisticated argument eta-expansion]"
+    "-feager-blackholing[Turn on eager blackholing]"
+    "-fexcess-precision[Enable excess intermediate precision]"
+    "-fexpose-all-unfoldings[Expose all unfoldings, even for very large or recursive functions]"
+    "-ffloat-in[Turn on the float-in transformation]"
+    "-ffull-laziness[Turn on full laziness (floating bindings outwards)]"
+    "-fignore-asserts[Ignore assertions in the source]"
+    "-fignore-interface-pragmas[Ignore pragmas in interface files]"
+    "-fkeep-auto-rules[Keep all 'auto' rules, generated by specialisation]"
+    "-flate-dmd-anal[Run demand analysis again]"
+    "-fliberate-case[Turn on the liberate-case transformation]"
+    "-fliberate-case-threshold=[Set the size threshold for the liberate-case]:threshold"
+    "-floopification[Turn saturated self-recursive tail-calls into local jumps in the generated assmbly]"
+    "-fmax-inline-alloc-size=[Set the maximum size of inline array allocations]:size"
+    "-fmax-inline-memcpy-insns=[Inline 'memcpy' calls if they would generate no more than 'n' insns]:insns"
+    "-fmax-inline-memset-insns=[Inline 'memset' calls if they would generate no more than 'n' insns]:insns"
+    "-fmax-relevant-binds=[Set the maximum number of bindings to display in type error messages]:num"
+    "-fmax-uncovered-patterns=[Set the maximum number of patterns to display in warnings about non-exhaustive ones]:nums"
+    "-fmax-simplifier-iterations=[Set the max iterations for the simplifier]:num"
+    "-flocal-float-out[Enable local floating definitions out of let-binds]"
+    "-flocal-float-out-top-level[Enable local floating to float top-level bindings]"
+    "-fmax-worker-args=[Maximum number of value arguments for a worker]:workers"
+    "-fno-opt-coercion[Turn off the coercion optimiser]"
+    "-fno-pre-inlining[Turn off pre-inlining]"
+    "-fno-state-hack[Turn off the 'state hack' whereby any lambda with a real-world]"
+    "-fomit-interface-pragmas[Don't generate interface pragmas]"
+    "-fomit-yields[Omit heap checks when no allocation is being performed]"
+    "-fpedantic-bottoms[Make GHC be more precise about its treatment of bottom]"
+    "-fregs-graph[Use the graph colouring register allocator for register]"
+    "-fregs-iterative[Use the iterative coalescing graph colouring register allocator]"
+    "-fsimplifier-phases=[Set the number of phases for the simplifier]:phases"
+    "-fsimpl-tick-factor=[Set the percentage factor for simplifier ticks]:factor"
+    "-fdmd-unbox-width=[Boxity analysis pretends that returned records with this many fields can be unboxed]:width"
+    "-fspec-constr[Turn on the SpecConstr transformation]"
+    "-fspec-constr-keen[Specialize a call with an explicit constructor argument]"
+    "-fspec-constr-count=[Set to ⟨n⟩ the maximum number of specialisations created by the SpecConstr transformation]:count"
+    "-fspec-constr-threshold=[Set the size threshold for the SpecConstr]:threshold"
+    "-fspecialise[Turn on specialisation of overloaded functions]"
+    "-fspecialise-aggressively[Turn on specialisation of overloaded functions regardless of size]"
+    "-fcross-module-specialise[Turn on specialisation of overloaded functions imported from other modules]"
+    "-fpolymorphic-specialisation[Allow specialisation to abstract over free type variables]"
+    "-flate-specialise[Run a late specialisation pass]"
+    "-fspecialise-incoherents[Enable specialisation on incoherent instances]"
+    "-finline-generics[Annotate methods of derived Generic and Generic1 instances with inline pragmas]"
+    "-finline-generics-aggressively[Annotate methods of all derived Generic and Generic1 instances with inline pragmas]"
+    "-fsolve-constant-dicts[When solving constraints, try to eagerly solve super classes]"
+    "-fstatic-argument-transformation[Turn on the static argument transformation]"
+    "-fstg-lift-lams[Enable late lambda lifting on the STG intermediate]"
+    "-fstg-lift-lams-known[Allow turning known into unknown calls while performing]"
+    "-fstg-lift-lams-non-rec-args=[Create top-level non-recursive functions with at most <n> parameters]:num"
+    "-fstg-lift-lams-rec-args=[Create top-level recursive functions with at most <n> parameters]:num"
+    "-fstrictness[Turn on demand analysis]"
+    "-fstrictness-before=[Run an additional demand analysis before simplifier phase ⟨n⟩ parameters]"
+    "-funbox-small-strict-fields[Flatten strict constructor fields with a pointer-sized]"
+    "-funbox-strict-fields[Flatten strict constructor fields]"
+    "-funfolding-creation-threshold=[Tweak unfolding settings]:threshold"
+    "-funfolding-dict-discount=[Tweak unfolding settings]:num"
+    "-funfolding-fun-discount=[Tweak unfolding settings]:num"
+    "-funfolding-use-threshold=[Tweak unfolding settings]:threshold"
+    "-funfolding-case-threshold=[Reduce inlining for cases nested deeper than n]:threshold"
+    "-funfolding-case-scaling=[Apply a penalty of (inlining_cost * '1/n') for each level of case nesting]:penalty"
+    "-fworker-wrapper[Enable the worker/wrapper transformation]"
+    "-fworker-wrapper-cbv[Enable w/w splits for wrappers whos sole purpose is evaluating arguments]"
+    "-fbinary-blob-threshold=[Tweak assembly generator for binary blobs]:size"
+  )
+
+  # https://ghc.gitlab.haskell.org/ghc/doc/users_guide/_sources/packages-warnings.rst.txt
+  local -a warnings_flags=(
+    "-Wdefault[enable default flags]"
+    "-W[enable normal warnings]"
+    "-Wall[enable almost all warnings]"
+    "-Weverything[enable all warnings supported by GHC]"
+    "-Wcompat[enable future compatibility warnings]"
+    "-w[disable all warnings]"
+    "-fshow-warning-groups[show which group an emitted warning belongs to]"
+    "*-Werror=-[make warnings fatal]:flag"
+    "*-Wwarn=-[make warnings non-fatal]:flag"
+    "*-Wno-error=[make a specific warning non-fatal]:flag"
+    "-Wunrecognised-warning-flags[throw a warning when an unrecognised -W... flag]"
+    "-Wcompat-unqualified-imports[Report unqualified imports of core libraries]"
+    "-Wprepositive-qualified-module[Report imports with a leading/prepositive 'qualified']"
+    "-Wtyped-holes[Report warnings when errors are]"
+    "-Wdeferred-type-errors[Report warnings when deferred type errors are enabled]"
+    "-Wdeferred-out-of-scope-variables[Report warnings when variable out-of-scope errors are]"
+    "-Wpartial-type-signatures[warn about holes in partial type signatures when]"
+    "-fhelpful-errors[Make suggestions for mis-spelled names.]"
+    "-Wunrecognised-pragmas[warn about uses of pragmas that GHC doesn't recognise]"
+    "-Wmisplaced-pragmas[warn about uses of file header pragmas in the module body]"
+    "-Wmissed-specialisations[warn when specialisation of an imported, overloaded function fails.]"
+    "-Wall-missed-specialisations[warn when specialisation of any overloaded function fails.]"
+    "-Wextended-warnings[warn about uses of functions & types that have WARNING or DEPRECATED pragmas]"
+    ## TODO
+    # "-Wx-[warn about uses of functions & types that have WARNING pragmas with the given category]:category"
+    "-Wdeprecations[warn about uses of functions & types that have DEPRECATED pragmas]"
+    "-Wwarnings-deprecations[warn about uses of functions & types that have DEPRECATED pragmas]"
+    "-Wnoncanonical-monad-instances[warn when Applicative or Monad instances have noncanonical definitions]"
+    "-Wnoncanonical-monoid-instances[warn when Semigroup or Monfoid instances have noncanonical definitions]"
+    "-Wdeprecated-flags[warn about uses of commandline flags that are deprecated]"
+    "-Wunsupported-calling-conventions[warn about use of an unsupported calling convention]"
+    "-Wdodgy-foreign-imports[warn about dodgy foreign imports]"
+    "-Wdodgy-exports[warn about dodgy exports]"
+    "-Wdodgy-imports[warn about dodgy imports]"
+    "-Woverflowed-literals[warn about literals that will overflow their type]"
+    "-Wempty-enumerations[warn about enumerations that are empty]"
+    "-Wderiving-defaults[warn about default deriving when using both]"
+    "-Wduplicate-constraints[warn when a constraint appears duplicated in a type signature]"
+    "-Wredundant-constraints[Have the compiler warn about redundant constraints in type signatures.]"
+    "-Wduplicate-exports[warn when an entity is exported multiple times]"
+    "-Widentities[warn about uses of Prelude numeric conversions that are probably the identity (and hence could be omitted)]"
+    "-Wimplicit-lift[warn about implicit lift in Template Haskell quotes]"
+    "-Wimplicit-prelude[warn when the Prelude is implicitly imported]"
+    "-Wincomplete-patterns[warn when a pattern match could fail]"
+    "-Wincomplete-uni-patterns[warn when a pattern match in a lambda expression]"
+    "-fmax-pmcheck-models=[soft limit on the number of parallel models]:models"
+    "-Wincomplete-record-updates[warn when a record update could fail]"
+    "-Wincomplete-record-selectors[warn when a record selector application could fail]"
+    "-Wmissing-deriving-strategies[warn when a deriving clause is missing a deriving strategy]"
+    "-Wmissing-fields[warn when fields of a record are uninitialised]"
+    "-Wmissing-export-lists[warn when a module declaration does not explicitly list all exports]"
+    "-Wmissing-import-lists[warn when an import declaration does not explicitly list all the names brought into scope]"
+    "-Wmissing-methods[warn when class methods are undefined]"
+    "-Wmissing-signatures[warn about top-level functions without signatures]"
+    "-Wmissing-exported-signatures[warn about top-level functions without signatures]"
+    "-Wmissing-local-signatures[warn about polymorphic local bindings without signatures]"
+    "-Wmissing-pattern-synonym-signatures[warn when pattern synonyms do not have type signatures]"
+    "-Wmissing-kind-signatures[warn when type declarations don't have kind signatures nor CUSKs]"
+    "-Wmissing-poly-kind-signatures[warn when inferred polykinded type or class declaration don't have kind signatures nor CUSKs]"
+    "-Wmissing-exported-pattern-synonym-signatures[warn about pattern synonyms without signatures, only if they are exported]"
+    "-Wname-shadowing[warn when names are shadowed]"
+    "-Worphans[warn when the module contains orphan instance declarations or rewrite rules]"
+    "-Woverlapping-patterns[warn about overlapping patterns]"
+    "-Winaccessible-code[warn about inaccessible code]"
+    "-Wstar-is-type[warn when * is used to mean Data.Kind.Type]"
+    "-Wstar-binder[warn about binding the (*) type operator despite]"
+    "-Wsimplifiable-class-constraints[Warn about class constraints in a type signature that can be simplified using a top-level instance declaration]"
+    "-Wtabs[warn if there are tabs in the source file]"
+    "-Wtype-defaults[warn when defaulting happens]"
+    "-Wmonomorphism-restriction[warn when the Monomorphism Restriction is applied]"
+    "-Wunsupported-llvm-version[Warn when using -fllvm with an unsupported version of LLVM]"
+    "-Wmissed-extra-shared-lib[Warn when GHCi can't load a shared li.]"
+    "-Wunticked-promoted-constructors[warn if promoted constructors are not ticked]"
+    "-Wunused-binds[warn about bindings that are unused. Alias for]"
+    "-Wunused-top-binds[warn about top-level bindings that are unused]"
+    "-Wunused-local-binds[warn about local bindings that are unused]"
+    "-Wunused-pattern-binds[warn about pattern match bindings that are unused]"
+    "-Wunused-imports[warn about unnecessary imports]"
+    "-Wunused-matches[warn about variables in patterns that aren't used]"
+    "-Wunused-do-bind[warn about do bindings that appear to throw away values of types other than ()]"
+    "-Wunused-type-patterns[warn about unused type variables which arise from patterns in in type family and data family instances]"
+    "-Wunused-foralls[warn about type variables in user-written forall that are unused]"
+    "-Wunused-record-wildcards[Warn about record wildcard matches when none of the bound variables are used.]"
+    "-Wredundant-bang-patterns[Warn about redundant bang patterns]"
+    "-Wredundant-record-wildcards[Warn about record wildcard matches when the wildcard binds no patterns]"
+    "-Wredundant-strictness-flags[Warn about redundant strictness flags]"
+    "-Wwrong-do-bind[warn about do bindings that appear to throw away monadic values]"
+    "-Winline-rule-shadowing[Warn if a rewrite RULE might fail to fire]"
+    "-Wcpp-undef[warn on uses of the #if directive on undefined identifiers]"
+    "-Wunbanged-strict-patterns[warn on pattern bind of unlifted variable]"
+    "-Wmissing-home-modules[warn when encountering a home module imported]"
+    "-Wpartial-fields[warn when defining a partial record field]"
+    "-Wunused-packages[warn when package is requested on command line, but not needed]"
+    "-Winvalid-haddock[warn when a Haddock comment occurs in an invalid position]"
+    "-Woperator-whitespace-ext-conflict[warn on uses of infix operators that would be parsed differently]"
+    "-Woperator-whitespace[warn on prefix, suffix, and tight infix uses of infix operators]"
+    "-Wderiving-typeable[warn when Typeable is derived]"
+    "-Wambiguous-fields[warn about ambiguous field selectors or updates]"
+    "-Wunicode-bidirectional-format-characters[warn about the usage of unicode bidirectional layout override characters]"
+    "-Wgadt-mono-local-binds[warn when pattern matching on a GADT without MonoLocalBinds]"
+    "-Wtype-equality-out-of-scope[warn when type equality a ~ b is used despite being out of scope]"
+    "-Wtype-equality-requires-operators[warn when type equality a ~ b is used despite being out of scope]"
+    "-Wloopy-superclass-solve[*(deprecated)* warn when creating potentially-loopy superclass constraint evidence]"
+    "-Wterm-variable-capture[warn when an implicitly quantified type variable captures a term's name]"
+    "-Wmissing-role-annotations[warn when type declarations don't have role annotations]"
+    "-Wimplicit-rhs-quantification[warn when type variables on the RHS of a type synonym are implicitly quantified]"
+    "-Wdeprecated-type-abstractions[warn when type abstractions in constructor patterns are used without enabling TypeApplications]"
+    "-Wincomplete-export-warnings[warn when some but not all of exports for a name are warned about]"
+    "-Wbadly-staged-types[warn when type binding is used at the wrong TH stage.]"
+    "-Winconsistent-flags[warn when command line options are inconsistent in some way.]"
+    "-Wdata-kinds-tc[warn when an illegal use of a type or kind without]"
+    "-Wdefaulted-exception-context[warn when an Control.Exception.Context.ExceptionContext implicit parameter is defaulted to]"
+  )
+
+  local -a extension_flags=(
+    "-XCPP[Enable the C Preprocessor]"
+    "-XAllowAmbiguousTypes[Allow the user to write ambiguous types]"
+    "-XApplicativeDo[Enable Applicative do-notation desugaring]"
+    "-XArrows[Enable arrow notation extension]"
+    "-XBinaryLiterals[Enable support for binary literals]"
+    "-XBlockArguments[Allow do blocks and other constructs as function arguments.]"
+    "-XConstrainedClassMethods[Enable constrained class methods]"
+    "-XConstraintKinds[Enable a kind of constraints]"
+    "-XGHC2024[Use GHC's set of default language extensions from 2024]"
+    "-XGHC2021[Use GHC's set of default language extensions from 2021]"
+    "-XHaskell2010[Use the Haskell 2010 language edition]"
+    "-XDataKinds[Enable datatype promotion]"
+    "-XListTuplePuns[Enable punning for list, tuple and sum types]"
+    "-XDatatypeContexts[Allow contexts on data types]"
+    "-XDefaultSignatures[Enable default signatures.]"
+    "-XDeriveAnyClass[Enable deriving for any class.]"
+    "-XDeriveFunctor[Enable deriving for the Functor class]"
+    "-XDeriveFoldable[Enable deriving for the Foldable class]"
+    "-XDeriveTraversable[Enable deriving for the Traversable class]"
+    "-XDeriveDataTypeable[Enable deriving for the Data class]"
+    "-XDeriveLift[Enable deriving for the Lift class]"
+    "-XDerivingStrategies[Enables deriving strategies.]"
+    "-XDerivingVia[Enable deriving instances via types of the same runtime representation]"
+    "-XDisambiguateRecordFields[Enable record field disambiguation]"
+    "-XDuplicateRecordFields[Allow definition of record types with identically-named fields]"
+    "-XEmptyCase[Allow empty case alternatives]"
+    "-XEmptyDataDeriving[Allow deriving instances of standard type classes for empty data types]"
+    "-XExistentialQuantification[Enable liberalised type synonyms]"
+    "-XExplicitForAll[Enable explicit universal quantification]"
+    "-XExplicitNamespaces[Enable using the keyword type to specify the namespace of entries in imports and exports]"
+    "-XExtendedLiterals[Enable numeric literal postfix syntax for unboxed integers]"
+    "-XForeignFunctionInterface[Enable foreign function interface]"
+    "-XUnliftedFFITypes[Enable unlifted FFI types]"
+    "-XGHCForeignImportPrim[Enable prim calling convention. Intended for internal use only]"
+    "-XInterruptibleFFI[Enable interruptible FFI]"
+    "-XCApiFFI[Enable the CAPI calling convention]"
+    "-XFieldSelectors[Control visibility of field selector functions]"
+    "-XFlexibleContexts[Remove some restrictions on class contexts]"
+    "-XFunctionalDependencies[Enable functional dependencies]"
+    "-XGADTs[Enable generalised algebraic data types]"
+    "-XGADTSyntax[Enable generalised algebraic data type syntax]"
+    "-XTransformListComp[Enable generalised list comprehensions]"
+    "-XDeriveGeneric[Enable deriving for the Generic class]"
+    "-XHexFloatLiterals[Enable support for hexadecimal floating point literals]"
+    "-XImplicitParams[Enable Implicit Parameters]"
+    "-XImportQualifiedPost[ImportQualifiedPost allows the syntax import M qualified]"
+    "-XImpredicativeTypes[Enable impredicative types]"
+    "-XTypeSynonymInstances[Enable type synonyms in instance heads]"
+    "-XFlexibleInstances[Enable flexible instances]"
+    "-XUndecidableInstances[Enable undecidable instances]"
+    "-XOverlappingInstances[Enable overlapping instances]"
+    "-XIncoherentInstances[Enable incoherent instances]"
+    "-XInstanceSigs[Enable instance signatures]"
+    "-XKindSignatures[Enable kind signatures]"
+    "-XLambdaCase[Enable lambda-case expressions]"
+    "-XMonoLocalBinds[Enable do not generalise local bindings]"
+    "-XLexicalNegation[Use whitespace to determine whether the minus sign stands for negation or subtraction]"
+    "-XLiberalTypeSynonyms[Enable liberalised type synonyms]"
+    "-XLinearTypes[Enable linear types]"
+    "-XMagicHash[Allow '#' as a postfix modifier on identifiers]"
+    "-XMonadComprehensions[Enable monad comprehensions]"
+    "-XNoMonomorphismRestriction[Disable the monomorphism restriction]"
+    "-XMultiParamTypeClasses[Enable multi parameter type classes]"
+    "-XMultiWayIf[Enable multi-way if-expressions]"
+    "-XNegativeLiterals[Enable support for negative literals]"
+    "-XGeneralisedNewtypeDeriving[Enable newtype deriving]"
+    "-XNPlusKPatterns[Enable support for n+k patterns]"
+    "-XEmptyDataDecls[Allow definition of empty data types]"
+    "-XNumDecimals[Enable support for 'fractional' integer literals]"
+    "-XNumericUnderscores[Enable support for numeric underscores]"
+    "-XOverloadedLabels[Enable overloaded labels]"
+    "-XOverloadedLists[Enable overloaded lists]"
+    "-XOverloadedRecordDot[Record '.' syntax]"
+    "-XOverloadedRecordUpdate[Record '.' syntax record updates]"
+    "-XOverloadedStrings[Enable overloaded string literals]"
+    "-XPackageImports[Enable package-qualified imports]"
+    "-XParallelListComp[Enable parallel list comprehensions]"
+    "-XPartialTypeSignatures[Enable partial type signatures]"
+    "-XNamedWildCards[Enable named wildcards.]"
+    "-XNoPatternGuards[Disable pattern guards]"
+    "-XPatternSynonyms[Enable pattern synonyms]"
+    "-XTypeInType[Deprecated. Enable kind polymorphism and datatype promotion]"
+    "-XPolyKinds[Enable kind polymorphism]"
+    "-XCUSKs[Enable detection of complete user-supplied kind signatures]"
+    "-XStandaloneKindSignatures[Allow the use of standalone kind signatures]"
+    "-XStarIsType[Treat '*' as Data.Kind.Type]"
+    "-XUnboxedTuples[Enable the use of unboxed tuple syntax]"
+    "-XUnboxedSums[Enable unboxed sums]"
+    "-XUnliftedNewtypes[Enable unlifted newtypes]"
+    "-XUnliftedDatatypes[Enable unlifted data types]"
+    "-XQualifiedDo[Enable qualified do-notation desugaring]"
+    "-XQuantifiedConstraints[Allow forall quantifiers in constraints]"
+    "-XRankNTypes[Enable rank-N types]"
+    "-XRank2Types[Enable rank-2 types]"
+    "-XDeepSubsumption[Enable deep subsumption]"
+    "-XNoImplicitPrelude[Don't implicitly import Prelude]"
+    "-XRebindableSyntax[Employ rebindable syntax]"
+    "-XPostfixOperators[Enable postfix operators]"
+    "-XNamedFieldPuns[Enable record puns]"
+    "-XRecordWildCards[Enable record wildcards]"
+    "-XRecursiveDo[Enable recursive do (mdo) notation]"
+    "-XRequiredTypeArguments[Enable required type arguments in terms]"
+    "-XRoleAnnotations[Enable role annotations]"
+    "-XSafe[Enable the  Safe mode]"
+    "-XTrustworthy[Enable the Trustworthy mode]"
+    "-XUnsafe[Enable Unsafe mode.]"
+    "-XScopedTypeVariables[Enable lexically-scoped type variables]"
+    "-XStandaloneDeriving[Enable standalone deriving]"
+    "-XStaticPointers[Enable static pointers]"
+    "-XBangPatterns[Enable bang patterns]"
+    "-XStrictData[Enable default strict datatype fields]"
+    "-XStrict[Make bindings in the current module strict by default]"
+    "-XTemplateHaskell[Enable Template Haskell]"
+    "-XTemplateHaskellQuotes[Enable quotation subset of Template Haskell]"
+    "-XQuasiQuotes[Enable quasiquotation]"
+    "-XNoTraditionalRecordSyntax[Disable support for traditional record syntax]"
+    "-XTupleSections[Enable tuple sections]"
+    "-XTypeAbstractions[Enable type abstraction syntax in patterns and type variable binders]"
+    "-XTypeApplications[Enable type application syntax in terms and types]"
+    "-XTypeData[Enable type data declarations]"
+    "-XTypeFamilies[Enable type families]"
+    "-XTypeFamilyDependencies[Enable injective type families]"
+    "-XTypeOperators[Enable type operators]"
+    "-XUndecidableSuperClasses[Allow all superclass constraints]"
+    "-XUnicodeSyntax[Enable unicode syntax]"
+    "-XViewPatterns[Enable view patterns]"
+  )
+
+  _arguments \
+    $using_flags[@] \
+    $debug_info_flags[@] \
+    $debugging_flags[@] \
+    $package_flags[@] \
+    $phases_flags[@] \
+    $profiling_flags[@] \
+    $separate_compilation_flags[@] \
+    $concurrent_flags[@] \
+    $optimization_flags[@] \
+    $warnings_flags[@] \
+    $extension_flags[@] \
+    "*:: :_files" \
+    && ret=0
+
+  case $state in
+    (ghc_include_directory)
+      _ghc_include_directory && ret=0
+      ;;
+    (library)
+      _wanted libraries expl library \
+              compadd - \
+              ${^=LD_LIBRARY_PATH:-/usr/lib /usr/local/lib}/lib*.(a|so*)(:t:fr:s/lib//) \
+        && ret=0
+      ;;
+  esac
+
+  return ret
 }
 
-
-_ghc_include_directory ()
+_ghc_include_directory()
 {
-    compset -P '*:'
-    compset -S ':*'
-    _path_files -r': ' -/
+  compset -P '*:'
+  compset -S ':*'
+  _path_files -r': ' -/
 }
 
-_ghc_compiler_flags ()
-{
-    local _ghc_compiler_flags_list
-    _ghc_compiler_flags_list=(
-        'ghci-hist-size:Set the number of entries GHCi keeps for \:history'
-        'print-explicit-foralls:Print explicit forall quantification in types'
-        'print-explicit-kinds:Print explicit kind foralls and kind arguments in types'
-        {no-,}'break-on-error:Break on uncaught exceptions and errors'
-        {no-,}'break-on-exception:Break on any exception thrown'
-        {no-,}'case-merge:Enable case-merging'
-        {no-,}'defer-type-errors:Defer as many type errors as possible until runtime'
-        {no-,}'dicts-strict:Make dictionaries strict'
-        {no-,}'do-eta-reduction:Enable eta-reduction'
-        {no-,}'do-lambda-eta-expansion:Enable lambda eta-reduction'
-        'eager-blackholing:Turn on eager blackholing'
-        {no-,}'enable-rewrite-rules:Switch on all rewrite rules (including rules generated by automatic specialisation of overloaded functions)'
-        'error-spans:Output full span in error messages'
-        'ext-core:Generate .hcr external Core file'
-        'force-recomp:Turn off recompilation checking'
-        {no-,}'float-in:Turn on the float-in transformation'
-        {no-,}'full-laziness:Turn on full laziness (floating bindings outwards)'
-        {no-,}'fun-to-thunk:Allow worker-wrapper to convert a function closure into a thunk if the function does not use any of its arguments. Off by default.'
-        {no-,}'glasgow-exts:Enable most language extensions'
-        {no-,}'helpful-errors:Make suggestions for mis-spelled names'
-        'history-size:Set simplification history size'
-        {no-,}'ignore-asserts:Ignore assertions in the source'
-        {no-,}'ignore-interface-pragmas:Ignore pragmas in interface files'
-        {no-,}'loopification:Turn saturated self-recursive tail-calls into local jumps in the generated assembly'
-        {no-,}'late-dmd-anal:Run demand analysis again, at the end of the simplification pipeline'
-        {no-,}'liberate-case:Turn on the liberate-case transformation'
-        'liberate-case-threshold=:Set the size threshold for the liberate-case transformation (default 200)'
-        'no-liberate-case-threshold:Set the size threshold for the liberate-case transformation (default 200)'
-        {no-,}'max-relevant-bindings=N:Set the maximum number of bindings to display in type error messages (default 6).'
-        'max-worker-args=:If a worker has that many arguments, none will be unpacked anymore (default 10)'
-        'max-simplifier-iterations=:Set the max iterations for the simplifier'
-        'no-asm-mangling:Turn off assembly mangling'
-        'no-black-holing:Turn off black holing'
-        "no-hi-version-check:Don't complain about .hi file mismatches"
-        'no-implicit-import-qualified:Turn off implicit qualified import of everything in GHCi'
-        'no-print-bind-contents:Turn off printing of binding contents in GHCi'
-        'no-opt-coercion:Turn off the coercion optimiser'
-        'no-ghci-history:Do not use the load/store the GHCi command history from/to ghci_history'
-        'no-ghci-sandbox:Turn off the GHCi sandbox. Means computations are run in the main thread, rather than a forked thread'
-        'no-gen-manifest:Do not generate a manifest file (Windows only)'
-        'no-embed-manifest:Do not embed the manifest in the executable (Windows only)'
-        "no-shared-implib:Don't generate an import library for a DLL (Windows only)"
-        'no-pre-inlining:Turn off pre-inlining'
-        'no-state-hack:Turn off the "state hack" whereby any lambda with a real-world state token as argument is considered to be single-entry'
-        {no-,}'print-bind-result:Turn on printing of binding results in GHCi'
-        {no-,}'print-evld-with-show:Enable usage of Show instances in \:print'
-        'unregisterised:Unregisterised compilation'
-        'asm:Use the native code generator'
-        'via-C:Compile via C'
-        'no-code:Omit code generation'
-        'byte-code:Generate byte-code'
-        'object-code:Generate object code'
-        'hpc:Turn on Haskell program coverage instrumentation'
-        'PIC:Generate position-independent code'
-        'plugin=:Load a plugin exported by a given module'
-        'plugin-opt=:Give arguments to a plugin module'
-        'context-stack=:Set the limit for context reduction (default is 20)'
-        'type-function-depth=:Set the limit for type function reductions (default is 200)'
-        'force-recomp:Turn off recompilation checking'
-        {no-,}"omit-interface-pragmas:Don't generate interface pragmas"
-        'package-trust:Enable Safe Haskell trusted package requirement for trustworthy modules'
-        {no-,}'pedantic-bottoms:Make GHC be more precise about its treatment of bottom'
-        {no-,}'disambiguate-record-fields:Enable record field disambiguation'
-        {no-,}'irrefutable-tuples:Make tuple pattern matching irrefutable'
-        {no-,}'vectorise:Enable vectorisation of nested data parallelism'
-        {no-,}'avoid-vect:Enable vectorisation avoidance'
-        {no-,}'excess-precision:Enable excess intermediate precision'
-        {no-,}'prof-auto:Auto-add SCCs to all bindings not marked INLINE'
-        {no-,}'prof-auto-top:Auto-add SCCs to all top-level bindings not marked INLINE'
-        {no-,}'prof-auto-exported:Auto-add SCCs to all exported bindings not marked INLINE'
-        {no-,}'prof-cafs:Auto-add SCCs to all CAFs'
-        {no-,}'prof-count-entries:Collect entry counts'
-        'simplifier-phases:Set the number of phases for the simplifier (default 2)'
-        'simpl-tick-factor=:Set the percentage factor for simplifier ticks (default 100)'
-        {no-,}'spec-constr:Turn on the SpecConstr transformation'
-        {no-,}'spec-constr-threshold=:Set the size threshold for the SpecConstr transformation (default 200)'
-        {no-,}'spec-constr-count=:Set the maximum number of specialisations that will be created for any one function by the SpecConstr transformation (default 3)'
-        'strictness=before=:Run an additional strictness analysis before a simplifier phase'
-        {no-,}'static-argument-transformation:Turn on the static argument transformation'
-        {no-,}'unbox-strict-fields:Flatten strict constructor fields'
-        {no-,}'unbox-small-strict-fields:Flatten strict constructor fields with a pointer-sized representation'
-        {no-,}'unfolding-creation-threshold:Tweak unfolding settings'
-        {no-,}'unfolding-fun-discount:Tweak unfolding settings'
-        {no-,}'unfolding-keeness-factor:Tweak unfolding settings'
-        {no-,}'unfolding-use-threshold:Tweak unfolding settings'
-        {no-,}'warn-warnings-deprecations:Warn about uses of functions & types that have warnings or deprecated pragmas'
-        {no-,}'warn-deprecated-flags:Warn about uses of commandline flags that are deprecated'
-        {no-,}'warn-duplicate-exports:Warn when an entity is exported multiple times'
-        {no-,}'warn-hi-shadowing:Warn when a .hi file in the current directory shadows a library'
-        {no-,}'warn-implicit-prelude:Warn when the Prelude is implicitly imported'
-        {no-,}'warn-incomplete-patterns:Warn when a pattern match could fail'
-        {no-,}'warn-incomplete-record-updates:Warn when a record update could fail'
-        {no-,}'warn-missing-fields:Warn when fields of a record are uninitialised'
-        {no-,}'warn-missing-methods:Warn when class methods are undefined'
-        {no-,}'warn-missing-signatures:Warn about top-level functions without signatures'
-        {no-,}'warn-duplicate-constraints:Warn when a constraint appears duplicated in a type signature'
-        {no-,}'warn-identities:Warn about uses of Prelude numeric conversions that are probably the identity (and hence could be omitted)'
-        {no-,}'warn-incomplete-uni-patterns:Warn when a pattern match in a lambda expression or pattern binding could fail'
-        {no-,}'warn-lazy-unlifted-bindings:(Deprecated) warn when a pattern binding looks lazy but must be strict'
-        {no-,}'warn-missing-import-lists:Warn when an import declaration does not explicitly list all the names brought into scope'
-        {no-,}'warn-missing-local-sigs:Warn about polymorphic local bindings without signatures'
-        {no-,}'warn-monomorphism-restriction:Warn when the Monomorphism Restriction is applied'
-        {no-,}'warn-name-shadowing:Warn when names are shadowed'
-        {warn-orphans,warn-auto-orphans}':Warn when the module contains orphan instance declarations or rewrite rules'
-        {no-,}'warn-overlapping-patterns:Warn about overlapping patterns'
-        {no-,}'warn-tabs:Warn if there are tabs in the source file'
-        {no-,}'warn-type-defaults:Warn when defaulting happens'
-        {no-,}"warn-unrecognised-pragmas:Warn about uses of pragmas that GHC doesn't recognise"
-        {no-,}'warn-unused-binds:Warn about bindings that are unused'
-        {no-,}'warn-unused-imports:Warn about unnecessary imports'
-        {no-,}"warn-unused-matches:Warn about variables in patterns that aren't used"
-        {no-,}'warn-unused-do-bind:Warn about do bindings that appear to throw away values of types other than ()'
-        {no-,}'warn-wrong-do-bind:Warn about do bindings that appear to throw away monadic values that you should have bound instead'
-        {no-,}'warn-unsafe:Warn if the module being compiled is regarded to be unsafe'
-        {no-,}'warn-safe:Warn if the module being compiled is regarded to be safe'
-        {no-,}'warn-amp:Warn on definitions conflicting with the Applicative-Monad Proposal (AMP)'
-        {no-,}'warn-typed-holes:Enable holes in expressions'
-        )
-    _describe -t flags 'ghc' _ghc_compiler_flags_list || compadd "$@"
-}
-
-_ghc_debugging_options ()
-{
-    local _ghc_debugging_options_list
-    _ghc_debugging_options_list=(
-        "dump-hi:Dump the new interface to stdout"
-        "dump-hi-diffs:Show the differences vs. the old interface"
-        "dump-minimal-imports:Dump a minimal set of imports"
-        "core-lint:Turn on internal sanity checking"
-        "dump-asm:Dump assembly"
-        "dump-bcos:Dump interpreter byte code"
-        "dump-cmm:Dump C-- output"
-        "dump-cpranal:Dump output from CPR analysis"
-        "dump-cse:Dump CSE output"
-        "dump-deriv:Dump deriving output"
-        "dump-ds:Dump desugarer output"
-        'dump-flatC:Dump "flat" C'
-        "dump-foreign:Dump foreign export stubs"
-        "dump-hpc:Dump after instrumentation for program coverage"
-        "dump-inlinings:Dump inlining info"
-        "dump-occur-anal:Dump occurrence analysis output"
-        "dump-opt-cmm:Dump the results of C-- to C-- optimising passes"
-        "dump-parsed:Dump parse tree"
-        "dump-prep:Dump prepared core"
-        "dump-rn:Dump renamer output"
-        "dump-rules:Dump rules"
-        "dump-simpl:Dump final simplifier output"
-        "dump-simpl-phases:Dump output from each simplifier phase"
-        "dump-simpl-iterations:Dump output from each simplifier iteration"
-        "dump-spec:Dump specialiser output"
-        "dump-splices:Dump TH spliced expressions"
-        "dump-stg:Dump final STG"
-        "dump-stranal:Dump strictness analyser output"
-        "dump-tc:Dump typechecker output"
-        "dump-types:Dump type signatures"
-        "dump-worker-wrapper:Dump worker-wrapper output"
-        "dump-if-trace:Trace interface files"
-        "dump-tc-trace:Trace typechecker"
-        "dump-to-file:Dump to files instead of stdout"
-        "dump-core-stats:Print a one-line summary of the size of the Core program at the end of the optimisation pipeline"
-        "dump-llvm:Dump LLVM intermediate code"
-        "dump-rule-firings:Dump rule firing info"
-        "dump-rule-rewrites:Dump detailed rule firing info"
-        "dump-vect:Dump vectoriser input and output"
-        "dump-strsigs:Dump strictness signatures"
-        "dump-vt-trace:Trace vectoriser"
-        "dump-rn-trace:Trace renamer"
-        "dump-rn-stats:Renamer stats"
-        "dump-simpl-stats:Dump simplifier stats"
-        "suppress-all:In core dumps, suppress everything (except for uniques) that is suppressible"
-        "suppress-uniques:Suppress the printing of uniques in debug output (easier to use diff)"
-        "suppress-idinfo:Suppress extended information about identifiers where they are bound"
-        "suppress-module-prefixes:Suppress the printing of module qualification prefixes"
-        "suppress-type-signatures:Suppress type signatures"
-        "suppress-type-applications:Suppress type applications"
-        "suppress-coercions:Suppress the printing of coercions in Core dumps to make them shorter"
-        "no-debug-output:Suppress unsolicited debugging output"
-        "ppr-debug:Turn on debug printing (more verbose)"
-        "ppr-noprags:Don't output pragma info in dumps"
-        "ppr-user-length:Set the depth for printing expressions in error msgs"
-        "ppr-colsNNN:Set the width of debugging output. For example -dppr-cols200"
-        "ppr-case-as-let:Print single alternative case expressions as strict lets"
-        "source-stats:Dump haskell source stats"
-        "cmm-lint:C-- pass sanity checking"
-        "stg-lint:STG pass sanity checking"
-        "stg-stats:Dump STG stats"
-        "verbose-core2core:Show output from each core-to-core pass"
-        "verbose-stg2stg:Show output from each STG-to-STG pass"
-        "show-passes:Print out each pass name as it happens"
-        "faststring-stats:Show statistics for fast string usage when finished"
-    )
-    _describe -t flags 'ghc' _ghc_debugging_options_list || compadd "$@"
-}
-
-
-_ghc_language_flags ()
-{
-    local _ghc_language_flags_list
-    _ghc_language_flags_list=(
-        "AllowAmbiguousTypes:Allow the user to write ambiguous types, and the type inference engine to infer them"
-        "Arrows:Enable arrow notation extension"
-        "AutoDeriveTypeable:Automatically derive Typeable instances for every datatype and type class declaration"
-        "BangPatterns:Enable bang patterns"
-        "ConstraintKinds:Enable a kind of constraints"
-        "CPP:Enable the C preprocessor"
-        "ConstrainedClassMethods:Enable constrained class methods"
-        "DataKinds:Enable datatype promotion"
-        "DefaultSignatures:Enable default signatures"
-        "DeriveDataTypeable:Enable deriving for the Data and Typeable classes"
-        "DeriveGeneric:Enable deriving for the Generic class"
-        "DisambiguateRecordFields:Enable record field disambiguation"
-        "EmptyCase:Allow empty case alternatives"
-        "EmptyDataDecls:Enable empty data declarations"
-        "ExistentialQuantification:Enable existential quantification"
-        "ExplicitForAll:Enable explicit universal quantification"
-        "ExplicitNamespaces:Enable using the keyword type to specify the namespace of entries in imports and exports"
-        "ExtendedDefaultRules:Use GHCi's extended default rules in a normal module"
-        "FlexibleContexts:Enable flexible contexts"
-        "FlexibleInstances:Enable flexible instances"
-        "ForeignFunctionInterface:Enable foreign function interface"
-        "FunctionalDependencies:Enable functional dependencies"
-        "GADTs:Enable generalised algebraic data types"
-        "GADTSyntax:Enable generalised algebraic data type syntax"
-        "GeneralizedNewtypeDeriving:Enable newtype deriving"
-        "Generics:Enable generic classes"
-        "ImplicitParams:Enable Implicit Parameters"
-        "ImpredicativeTypes:Enable impredicative types"
-        "IncoherentInstances:Enable incoherent instances"
-        "InterruptibleFFI:Enable interruptible FFI"
-        "KindSignatures:Enable kind signatures"
-        "LambdaCase:Enable lambda-case expressions"
-        "LiberalTypeSynonyms:Enable liberalised type synonyms"
-        "MonadComprehensions:Enable monad comprehensions"
-        "MonoLocalBinds:Enable do not generalise local bindings"
-        "MultiParamTypeClasses:Enable multi parameter type classes"
-        "MultiWayIf:Enable multi-way if-expressions"
-        "NamedFieldPuns:Enable record puns"
-        "NegativeLiterals:Enable support for negative literals"
-        "NewQualifiedOperators:Enable new qualified operator syntax"
-        "NoImplicitPrelude:Don't implicitly import Prelude"
-        "NoMonoPatBinds:Make pattern bindings polymorphic"
-        "NoMonomorphismRestriction:Disable the monomorphism"
-        "NoNPlusKPatterns:Disable support for n+k patterns"
-        "NoTraditionalRecordSyntax:Disable support for traditional record syntax (as supported by Haskell 98) C {f = x}"
-        "NullaryTypeClasses:Enable nullary (no parameter) type classes"
-        "NumDecimals:Enable support for 'fractional' integer literals"
-        "OverlappingInstances:Enable overlapping instances"
-        "OverloadedLists:Enable overloaded lists"
-        "OverloadedStrings:Enable overloaded string literals"
-        "PArr:Enable parallel arrays"
-        "PackageImports:Enable package-qualified imports"
-        "ParallelArrays:Enable parallel arrays"
-        "ParallelListComp:Enable parallel list comprehensions"
-        "PatternGuards:Enable pattern guards"
-        "PolyKinds:Enable kind polymorphism"
-        "PolymorphicComponents:Enable polymorphic components for data constructors"
-        "QuasiQuotes:Enable quasiquotation"
-        "Rank2Types:Enable rank-2 types"
-        "RankNTypes:Enable rank-N types"
-        "RebindableSyntax:Employ rebindable syntax"
-        "RecordWildCards:Enable record wildcards"
-        "RecursiveDo:Enable recursive do (mdo) notation"
-        "RelaxedPolyRec:Relaxed checking for mutually-recursive polymorphic functions"
-        "Safe:Enable the Safe Haskell Safe mode"
-        "ScopedTypeVariables:Enable lexically-scoped type variables"
-        "StandaloneDeriving:Enable standalone deriving"
-        "TemplateHaskell:Enable Template Haskell"
-        "TransformListComp:Enable transform list comprehensions"
-        "TypeFamilies:Enable type families"
-        "TypeOperators:Enable type operators"
-        "TypeSynonymInstances:Enable type synonyms"
-        "Trustworthy:Enable the Safe Haskell Trustworthy mode"
-        "UnboxedTuples:Enable unboxed tuples"
-        "UndecidableInstances:Enable undecidable instances"
-        "UnicodeSyntax:Enable unicode syntax"
-        "UnliftedFFITypes:Enable unlifted FFI types"
-        "Unsafe:Enable Safe Haskell Unsafe mode"
-        "ViewPatterns:Enable view patterns"
-        'MagicHash:Allow "#" as a postfix modifier on identifiers'
-    )
-    _describe -t flags 'ghc' _ghc_language_flags_list || compadd "$@"
-}
 
 #
 # ghc-pkg
 #
 
-_ghc_pkg ()
-{
-    WORDS=()
-    for w in $words[1,(($CURRENT - 1))]; do
-        if [[ $w != --* ]]; then WORDS+=$w; fi
-    done
-    _arguments '*:command:_ghc_pkg_command'
+_ghc_pkg() {
+  typeset -A opt_args
+  local context state line
+
+  local curcontext="$curcontext"
+  local ret=1
+
+  _arguments -C \
+    '(- *)'{-h,--help}'[Print this usage information]' \
+    '1: :_ghc_pkg_subcommands' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      local -a options=(
+        "--user[use current user's package database]"
+        '--global[user the global package database]'
+        {-f,--package-db=}'[use the specified package database]:database:_files'
+        '--global-package-db[location of the global package database]:dir:_files -/'
+        '(--no-user-package-db --user-package-db)--no-user-package-db[never read the user package database]'
+        '(--no-user-package-db --user-package-db)--user-package-db=[location of the user package database]:database:_files'
+        '--force[ignore missing dependencies, directories and libraries]'
+        '--force-files[ignore missing directories and libraries only]'
+        '--enable-multi-instance[allow registering multiple instances of the same package version]'
+        '--expand-env-vars[expand environment variables in input package descriptions]'
+        '(--expand-pkgroot --no-expand-pkgroot)--expand-pkgroot[expand pkgroot-relative paths in output package descriptions]'
+        '(--expand-pkgroot --no-expand-pkgroot)--no-expand-pkgroot[preserve pkgroot-relative paths in output package descriptions]'
+        '(- *)'{-?,--help}'[display this help and exit]'
+        '(- *)'{-V,--version}'[output version information and exit]'
+        '--simple-output[print output in easy-to-parse format for some commands]'
+        '--show-unit-ids[print unit-ids instead of package identifiers]'
+        '--names-only[only print package names, not versions]'
+        '--ignore-case[ignore case for substring matching]'
+        {--ipid,--unit-id}'[interpret package arguments as unit IDs]'
+        {-V,--verbose=-}'[verbosity level]:level:(0 1 2)'
+      )
+
+      case $words[1] in
+        (init|register|update)
+          options+=('*: :_files')
+          ;;
+        (unregister|expose|hide|trust|distrust|list|latest|describe)
+          options+=('*: :_ghc_pkg_list_packages')
+          ;;
+        (field)
+          options+=('*: :_ghc_pkg_field')
+          ;;
+        (find-module)
+          options+=('*: :_ghc_pkg_find-module')
+          ;;
+      esac
+
+      _arguments $options && ret=0
+    ;;
+  esac
+
+  return ret
 }
 
-_ghc_pkg_command()
-{
-    local -a _ghc_pkg_cmds
-    _ghc_pkg_cmds=(
-        "register:Register the package using package description"
-        "update:Register the package (overwriting existing package)"
-        "unregister:Unregister the specified package"
-        "expose:Expose the specified package"
-        "hide:Hide the specified package"
-        "list:List registered packages"
-        "find-module:List registered packages exposing module"
-        "latest:Prints the highest registered version of a package"
-        "check:Check the consistency of package dependencies and list broken packages"
-        "describe:Give the registered description for the specified package"
-        "field:Extract the specified field of the package description"
-        "dump:Dump the registered description for every package"
-    )
+_ghc_pkg_subcommands() {
+  local -a subcommands=(
+    "init:Create and initialize a package database at the given location"
+    "register:Register the package using package description"
+    "update:Register the package (overwriting existing package)"
+    "unregister:Unregister the specified package"
+    "check:Check consistency of dependencies in the package database"
+    "expose:Expose the specified package"
+    "hide:Hide the specified package"
+    "trust:Trust the specified package"
+    "distrust:Distruct the specified package"
+    "list:List registered packages"
+    "find-module:List registered packages exposing module"
+    "latest:Prints the highest registered version of a package"
+    "describe:Give the registered description for the specified package"
+    "field:Extract the specified field of the package description"
+    "dot:Generate a graph of the package dependencies in a form suitable"
+    "dump:Dump the registered description for every package"
+    "recache:Regenerate the package database cache"
+  )
 
-    if (( $#WORDS == 1 )); then
-	_describe -t commands 'command' _ghc_pkg_cmds || compadd "$@"
+  _describe -t subcommands 'subcommand' subcommands "$@"
+}
+
+_ghc_pkg_field() {
+  _ghc_pkg_available_packages
+
+  _arguments \
+    '1:package:_values $_ghc_pkg_packages' \
+    '2:field:_ghc_pkg_field_fields'
+}
+
+_ghc_pkg_field_fields() {
+  # https://ghc.gitlab.haskell.org/ghc/doc/users_guide/_sources/packages.rst.txt
+  local -a fields=(
+    name id version license license-file copyright maintainer stability
+    homepage package-url description category author exposed exposed-modules
+    hidden-modules reexposed-modules trusted import-dirs library-dirs hs-libraries
+    extra-libraries include-dirs includes depends hugs-options cc-options ld-options
+    framework-dirs frameworks haddock-interfaces haddock-html
+  )
+
+  _values -s ',' $fields
+}
+
+_ghc_pkg_find-module()
+{
+  if ( [[ ${+_ghc_modules} -eq 0 ]] || _cache_invalid GHC_MODULES ) && ! _retrieve_cache GHC_MODULES;
+  then
+    if (( $+commands[perl] )); then
+      _ghc_modules=( $(ghc-pkg dump \
+                         | perl -wln -00 -e 'm/^exposed-modules:(.*)/ms and print $1' 2>/dev/null \
+                         | perl -wln -e 'm{^\s+([A-Z].*)$} and $a = $1 and $a =~ s/,/ /g; $a =~ s/ /\n/g and (($a =~  m/^(.*)\s+from\s+/ and print $1) or print $a)' 2>/dev/null ))
     else
-    	local curcontext="$curcontext"
-        cmd="${${_ghc_pkg_cmds[(r)$WORDS[2]:*]%%:*}}"
-        if (( $#cmd )); then
-            _arguments \
-                "--user[Use current user's package database]" \
-                '--global[User the global package database]' \
-                {-f,--package-conf=}'[Use the specified package config file]:Package config file:_files' \
-                '--no-user-package-conf[Never reader the user package config]' \
-                {-V,--version}'[Output version information and exit]' \
-                '--force[Ignore missing directories and libraries only]' \
-                {-g,--auto-ghci-libs}'[Automatically build libs for GHCi]' \
-                {-?,--help}'[Display this help and exit]' \
-                '--simple-output[Print output in easy-to-parse format for some commands]' \
-                '--names-only[Only print package names, not versions]' \
-                '--ignore-case[Ignore case for substring matching]' \
-                '*:argument:_ghc_pkg_'$cmd
-        else
-            _message "unknown ghc-pkg command: $WORDS[2]"
-        fi
+      _ghc_modules=( $(ghc-pkg dump | sed -n '/^exposed-modules:/{s/^exposed-modules:[ ]\+\(.*\)$/\1/;s/ /\n/;p;be};b;:e;n;/^ /{s/^[ ]\+\(.*\)$/\1/;s/ /\n/;p;be}') )
     fi
+
+    _store_cache GHC_MODULES _ghc_modules
+  fi
+
+  compadd "$@" -a -- _ghc_modules
 }
 
-_ghc_pkg_unregister () { _ghc_pkg_list_packages }
-
-_ghc_pkg_expose () { _ghc_pkg_list_packages }
-
-_ghc_pkg_hide () { _ghc_pkg_list_packages }
-
-_ghc_pkg_latest () { _ghc_pkg_list_packages }
-
-_ghc_pkg_describe () { _ghc_pkg_list_packages }
-
-_ghc_pkg_field ()
+_ghc_pkg_available_packages()
 {
-    _ghc_pkg_available_packages
-    if (( $#WORDS == 2 )); then
-        compadd "$@" -a -- _ghc_pkg_packages
-    elif (( $#WORDS == 3 )); then
-        compset -P '*,'
-        compset -S ',*'
-        compadd "$@" -S ',' -q -- \
-            name version license copyright maintainer \
-            stability homepage package-url description \
-            category author exposed exposed-modules \
-            hidden-modules import-dirs hs-libraries \
-            extra-libraries extra-ghci-libraries include-dirs \
-            includes depends hugs-options cc-options ld-options \
-            framework-dirs frameworks haddock-interfaces \
-            haddock-html
-    fi
+  if ( [[ ${+_ghc_pkg_packages} -eq 0 ]] || _cache_invalid GHC_PACKAGES ) && ! _retrieve_cache GHC_PACKAGES;
+  then
+    _ghc_pkg_packages=( $(ghc-pkg list --simple-output --names-only) )
+    _store_cache GHC_PACKAGES _ghc_pkg_packages
+  fi
 }
 
-_ghc_pkg_register () { _files }
-
-_ghc_pkg_update () { _files }
-
-_ghc_pkg_list () { _ghc_pkg_list_packages }
-
-_ghc_pkg_find-module ()
+_ghc_pkg_list_packages()
 {
-    if (( $#WORDS == 2)); then
-        if ( [[ ${+_ghc_modules} -eq 0 ]] || _cache_invalid GHC_MODULES ) &&
-	    ! _retrieve_cache GHC_MODULES;
-        then
-            _ghc_modules=( $(ghc-pkg dump | sed -n '/^exposed-modules:/{s/^exposed-modules:[ ]\+\(.*\)$/\1/;s/ /\n/;p;be};b;:e;n;/^ /{s/^[ ]\+\(.*\)$/\1/;s/ /\n/;p;be}') )
-            _store_cache GHC_MODULES _ghc_modules
-        fi
-        compadd "$@" -a -- _ghc_modules
-    fi
+  _ghc_pkg_available_packages
+  compadd "$@" -a -- _ghc_pkg_packages
 }
-
-_ghc_pkg_dump () {}
-
-_ghc_pkg_check () {}
-
-_ghc_pkg_available_packages ()
-{
-    if ( [[ ${+_ghc_pkg_packages_pkgs} -eq 0 ]] || _cache_invalid GHC_PACKAGES ) &&
-	! _retrieve_cache GHC_PACKAGES;
-    then
-        _ghc_pkg_packages=( $(ghc-pkg list --simple-output --names-only) )
-        _store_cache GHC_PACKAGES _ghc_pkg_packages
-    fi
-}
-
-_ghc_pkg_list_packages ()
-{
-    _ghc_pkg_available_packages
-    compadd "$@" -a -- _ghc_pkg_packages
-}
-
 
 #
 # dispatcher
 #
-
 case $service in
-    ghc)
-        _ghc_compiler
-        ;;
-    ghci)
-        _ghc_ghci
-        ;;
-    ghc-pkg)
-        _ghc_pkg
-        ;;
+  (ghc)
+    _ghc_compiler
+    ;;
+  (ghci)
+    _ghc_ghci
+    ;;
+  (ghc-pkg)
+    _ghc_pkg
+    ;;
 esac
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
