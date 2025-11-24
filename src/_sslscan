@@ -1,0 +1,98 @@
+#compdef sslscan
+# ------------------------------------------------------------------------------
+# Copyright (c) 2025 Github zsh-users - https://github.com/zsh-users
+# All rights reserved.
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for sslscan 2.2.0. (https://github.com/rbsec/sslscan)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei YOSHIDA (https://github.com/syohex)
+#
+# ------------------------------------------------------------------------------
+
+_arguments \
+  '--targets=[a file containing a list of hosts to check]:file:_files' \
+  '--sni-name=[hostname for SNI]:name' \
+  '(-4 --ipv4 -6 --ipv6)'{-4,--ipv4}'[only use IPv4]' \
+  '(-4 --ipv4 -6 --ipv6)'{-6,--ipv6}'[only use IPv6]' \
+  '--show-certificate[show full certificate information]' \
+  '--show-certificates[show chain full certificates information]' \
+  '--show-client-cas[show trusted CAs for TLS client auth]' \
+  '--no-check-certificate[do not warn about weak certificate algorithm or keys]' \
+  '--ocsp[request OCSP response from server]' \
+  '--pk=[a file containing the private key or a PKCS#12 file]:file:_files' \
+  '--pkpass=[the password for private key or PKCS#12 file]:password' \
+  '--certs[a file containing PEM/ASN1 formatted client certificates]:file:_files' \
+  '--ssl2[only check if SSLv2 is enabled]' \
+  '--ssl3[only check if SSLv3 is enabled]' \
+  '--tls10[only check TLSv1.0 ciphers]' \
+  '--tls11[only check TLSv1.1 ciphers]' \
+  '--tls12[only check TLSv1.2 ciphers]' \
+  '--tls13[only check TLSv1.3 ciphers]' \
+  '--tlsall[only check TLS ciphers(all versions)]' \
+  '--show-ciphers[show supported client ciphers]' \
+  '--show-cipher-ids[show cipher IDs]' \
+  '--iana-names[use IANA/RFC cipher names rather than OpenSSL ones]' \
+  '--show-times[show handshake times in milliseconds]' \
+  '--no-cipher-details[disable EC curve names and EDH/RSA key lengths output]' \
+  '--no-ciphersuites[do not check for supported ciphersuites]' \
+  '--no-compression[do not check for TLS compression(CRIME)]' \
+  '--no-fallback[do not check for TLS Fallback SCSV]' \
+  '--no-groups[do not enumerate key exchange groups]' \
+  '--no-heartbleed[do not check for OpenSSL Heartbleed(CVE-2014-0160)]' \
+  '--no-renegotiation[do not check for TLS renegotiation]' \
+  '--show-sigs[enumerate signature algorithms]' \
+  '--starttls-ftp[STARTTLS setup for FTP]' \
+  '--starttls-imap[STARTTLS setup for IMAP]' \
+  '--starttls-irc[STARTTLS setup for IRC]' \
+  '--starttls-ldap[STARTTLS setup for LDAP]' \
+  '--starttls-mysql[STARTTLS setup for MYSQL]' \
+  '--starttls-pop3[STARTTLS setup for POP3]' \
+  '--starttls-psql[STARTTLS setup for PostgreSQL]' \
+  '--starttls-smtp[STARTTLS setup for SMTP]' \
+  '--starttls-xmpp[STARTTLS setup for XMPP]' \
+  '--xmpp-server[use a server-to-server XMPP handshake]' \
+  '--rdp[send RDP preamble before starting scan]' \
+  '--bugs[enable SSL implementation bug work-arounds]' \
+  '--no-colour[disable coloured output]' \
+  '--sleep=[pause between connection request(msecs)]:msecs' \
+  '--timeout=[set socket timeout(seconds). Default is 3s]:seconds' \
+  '--connect-timeout=[set connect timeout(seconds). Default is 75s]:seconds' \
+  '--verbose[display verbose output]' \
+  '--version[display the program version]' \
+  '--xml=[output results to an XML file. Use - for STDOUT]:file:_files' \
+  '(- *)--help[display the help text]' \
+  '*::host:_urls'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
