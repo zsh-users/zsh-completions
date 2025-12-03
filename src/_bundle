@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Bundler 2.7.0 (https://bundler.io/).
+#  Completion script for Bundler 4.0.0 (https://bundler.io/).
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -39,7 +39,273 @@
 #
 # ------------------------------------------------------------------------------
 
-local curcontext="$curcontext" state line ret=1
+_bundle() {
+  typeset -A opt_args
+  local context state line
+  local curcontext="$curcontext"
+
+  local ret=1
+
+  _arguments -C -A "-v" -A "--version" \
+    '(- 1 *)'{-v,--version}'[display version information]' \
+    '(-r --retry)'{-r,--retry}'[specify the number of times you with to attempt network commands]:number:' \
+    '(-v --verbose)'{-V,--verbose}'[print out additional logging information]' \
+    '--no-color[print all output without color]' \
+    '1: :_bundle_commands' \
+    '*:: :->args' && ret=0
+
+  case $state in
+    (args)
+      case $words[1] in
+        (help)
+          _arguments \
+            '1: :_bundle_commands' \
+            && ret=0
+          ;;
+        (install)
+          local -a policies=('HighSecurity' 'MediumSecurity' 'LowSecurity' 'AlmostNoSecurity' 'NoSecurity')
+          _arguments \
+            '(- *)'{-h,--help}'[show help message]' \
+            '(--force --redownload)'{--force,--redownload}'[force reinstalling every gem]' \
+            '--full-index[download and cache the index file of all gems]' \
+            '--gemfile=-[use the specified gemfile instead of Gemfile]:gemfile:_files' \
+            '(-j --jobs)'{-j,--jobs}'[the maximum number of parallel download and install jobs]:number' \
+            '--local[do not attempt to connect to rubygems.org]' \
+            '--lockfile=[location of the lockfile which Bundler should use]:path:_files' \
+            '--prefer-local[force using locally installed gems]' \
+            '--no-cache[do not update the cache in vendor/cache with newly installed gems]' \
+            '--no-lock[do not create a lockfile]' \
+            '--quiet[only output warnings and errors]' \
+            '--retry=[retry number when network or git requests failed]:number' \
+            '--standalone=-[create standalone bundles]:groups:_bundle_groups' \
+            "--trust-policy=-[apply the Rubygems security policy]:arg:($policies)" \
+            && ret=0
+          ;;
+        (update)
+          _arguments \
+            '(- *)'{-h,--help}'[show help message]' \
+            '--all[update all gems specified in Gemfile]' \
+            \*{--group,-g}=-'[only update the gems in the specified group]' \
+            '--source=-[the name of a source used in the Gemfile]:url' \
+            '--local[do not attempt to fetch gems remotely and use the gem cached instead]' \
+            '--ruby[update the locked version of Ruby to the current version of Ruby]' \
+            '--bundler[update the locked version of bundler to invoked bundler version]' \
+            '(--force --redownload)'{--force,--redownload}'[force reinstalling every gem]' \
+            '--full-index[fall back to using the single-file index of all gems]' \
+            '(-j --jobs)'{-j,--jobs}'[specify the number of jobs to run in parallel]:number' \
+            '--retry=-[retry failed network or git requests for number times]:number' \
+            '--quiet[only output warnings and errors]' \
+            '--patch[prefer updating only to next patch version]' \
+            '--minor[prefer updating only to next minor version]' \
+            '--major[prefer updating only to next major version (default)]' \
+            '--pre[always choose the highest allowed version]' \
+            '--strict[do not allow any gem to be updated past latest --patch | --minor | --major]' \
+            '--conservative[use bundle install conservative update behavior]' \
+            '*:: :_bundle_gems' \
+            && ret=0
+          ;;
+        (cache)
+          _arguments \
+            '(- *)'{-h,--help}'[show help message]' \
+            '--all-platforms[include gems for all platforms present in the lockfile, not only the current one]' \
+            '--cache-path=-[specify a different cache path than the default(vendor/cache)]: :_files -/' \
+            '--gemfile=-[use the specified gemfile instead of Gemfile]:gemfile:_files' \
+            "--no-install[don't install the gems, only update the cache]" \
+            '--quite[only output warnings and errors]' \
+            && ret=0
+          ;;
+        (exec)
+          _arguments \
+            '(- *)'{-h,--help}'[show help message]' \
+            '--gemfile=[use the specified gemfile instead of Gemfile]' \
+            '*:: :_normal' \
+            && ret=0
+          ;;
+        (config)
+          _arguments \
+            '(- *)'{-h,--help}'[show help message]' \
+            '1: :_bundle_config_subcommands' \
+            '--local[use local configuration]' \
+            '--global[use global configuration]' \
+            && ret=0
+          ;;
+        (add)
+          _arguments \
+            '(- *)'{-h,--help}'[show help message]' \
+            '(-v --version)'{-v,--version}=-'[specify version requirements for the added gem]:version' \
+            '(-g --group)'{-g,--group}=-'[specify the group for the added gem]:group:_bundle_groups' \
+            '(-s --source)'{-s,--source}=-'[specify the source for the added gem]: :_files' \
+            '(-r --require)'{-r,--require}=-'[adds require path to gem]: :_files' \
+            '--path=[specify the file path for the added gem]: :_files -/' \
+            '--git=[specify the git source for the added gem]:git' \
+            '--github=[specify the github source for the added gem]:github' \
+            '--branch=[specify the git branch for the added gem]:branch' \
+            '--ref=[specify the git ref for the added gem]' \
+            "--glob=[specify the location of a dependency's .gemspec, expanded within Ruby]:glob" \
+            '--quiet[do not print progress information to the standard output]' \
+            '--skip-install[adds the gem to the Gemfile but does not install it]' \
+            '--optimistic[adds optimistic declaration of version]' \
+            '--strict[adds strict declaration of version]' \
+            '1::gem' \
+            && ret=0
+          ;;
+        (binstubs)
+          _arguments \
+            '(- *)'{-h,--help}'[show help message]' \
+            '--force[overwrite existing binstubs if they exist]' \
+            '--standalone[makes binstubs that can work without depending on Rubygems or Bundler at runtime]' \
+            '--shebang=-[specify a different shebang executable name than the default(default: ruby)]: :_files' \
+            '--all[create binstubs for all gems in the bundle]' \
+            '--all-platforms[install binstubs for all platforms]' \
+            '1::gem:' \
+            && ret=0
+          ;;
+        (check)
+          _arguments \
+            '(- *)'{-h,--help}'[show help message]' \
+            '--dry-run[locks the Gemfile before running the command]' \
+            '--gemfile=-[use the specified gemfile instead of the Gemfile]: :_files' \
+            && ret=0
+          ;;
+        (show)
+          _arguments \
+            '(- *)'{-h,--help}'[show help message]' \
+            '--paths[list the paths of all gems that are required by your Gemfile]' \
+            '1:: :_bundle_gems' \
+            && ret=0
+          ;;
+        (outdated)
+          _arguments \
+            '(- *)'{-h,--help}'[show help message]' \
+            '--local[do not attempt to fetch gems remotely and use the gem cache instead]' \
+            '--pre[check for newer pre-release gems]' \
+            '--source=[check against a specific source]:source:_files' \
+            '(--filter-strict --strict)'{--filter-strict,--strict}'[only list newer versions allowed by your Gemfile requirements]' \
+            '(--parseable --porcelain)'{--parseable,--porcelain}'[use minimal formatting for more parsable output]' \
+            '--group=[list gems from a specific group]:group:_bundle_groups' \
+            '--groups[list gems organized by groups]' \
+            '--major[prefer updating to next major version(default)]' \
+            '--minor[prefer updating only to next minor version]' \
+            '--patch[prefer updating only to next patch version]' \
+            '--filter-major[only list major new versions]' \
+            '--filter-minor[only list minor new versions]' \
+            '--filter-patch[only list patch new versions]' \
+            '--only-explicit[only list gems specified in your Gemfile, not their dependencies]' \
+            '*:: :_bundle_gems' \
+            && ret=0
+          ;;
+        (console)
+          _arguments \
+            '(- *)'{-h,--help}'[show help message]' \
+            '--no-color[disable colorization in output]' \
+            '(-r --retry)'{-r,--retry}='[specify the number of times you with to attempt network commands]:num' \
+            '1:: :_bundle_groups' \
+            && ret=0
+          ;;
+        (open)
+          _arguments \
+            '(- *)'{-h,--help}'[show help message]' \
+            '--path=[specify GEM source relative path to open]:path:_files' \
+            '1:: :_bundle_gems' \
+            && ret=0
+          ;;
+        (list)
+          _arguments \
+            '(- *)'{-h,--help}'[show help message]' \
+            '--name-only[print only the name of each gem]' \
+            '--paths[print the path to each gem in the bundle]' \
+            '--without-group=-[a space-separated list of groups of gems to skip during printing]: :_bundle_groups' \
+            '--only-group=-[a space-separated list of groups of gems to print]: :_bundle_groups' \
+            '--format[output format]:format:(json)' \
+            && ret=0
+          ;;
+        (lock)
+          _arguments \
+            '(- *)'{-h,--help}'[show help message]' \
+            '--update=-[ignores the existing lockfile]' \
+            '--bundler=-[update the locked version of bundler to the given version or the latest version]:version' \
+            '--local[do not attempt to connect to rubygems.org]' \
+            '--print[prints the lockfile to STDOUT instead of writing to the file system]' \
+            '--lockfile=[the path where the lick file should be written to]: :_files' \
+            '--full-index[fall back to using the single file index of all gems]' \
+            '--gemfile=[use the specified gemfile instead of Gemfile]:file:_files' \
+            '--add-checksums[add checksums to the lockfile]' \
+            '--add-platform=[add a new platform to the lockfile]:platforms' \
+            '--remove-platform=[remove a platform from the lockfile]:platforms' \
+            '--normalize-platforms[normalize lockfile platforms]' \
+            '--patch[if updating, prefer updating only to next patch version]' \
+            '--minor[if updating, prefer updating only to next minor version]' \
+            '--major[if updating, prefer updating  to next major version(default)]' \
+            '--pre[if updating, always choose the highest allowed version]' \
+            '--strict[if updating, do not allow any gem to be updated past latest --patch | --minor | --major]' \
+            '--conservative[if updating, use bundle install conservative update behavior]' \
+            && ret=0
+          ;;
+        (init)
+          _arguments \
+            '(- *)'{-h,--help}'[show help message]' \
+            '--gemspec=-[use the specified .gemspec to create the Gemfile]: :_files' \
+            '--gemfile=[use the specified name for the gemfile instead of Gemfile]:name' \
+            && ret=0
+          ;;
+        (gem)
+          _arguments \
+            '(- *)'{-h,--help}'[show help message]' \
+            '(--exe -b --bin --no-exe)'{--exe,-b,--bin}'[specify that bundler should create a binary executable in the generated rubygem project]' \
+            '(--exe -b --bin --no-exe)--no-exe[do not create a binary]' \
+            '(--no-coc)--coc[add a CODE_OF_CONDUCT.md to the root of the generated project]' \
+            '(--coc)--no-coc[do not create a CODE_OF_CONDUCT.md]' \
+            '(--changelog --no-changelog)--changelog[add a CHANGELOG.md file to the root of the project]' \
+            '(--changelog --no-changelog)--no-changelog[do not add a CHANGELOG.md file to the root of the project]' \
+            '(--no-ext --ext)--ext=[add boilerplate for C, GO or Rust extension code to the generated project]: :(c go rust )' \
+            '(--ext --no-ext)--no-ext[do not add extension code]' \
+            '--git[initialize a git repo inside your library]' \
+            '--github-username=[Github username on README]:username' \
+            '(--no-mit --mit)--mit[add an MIT license to a LICENSE.txt file in the root of the generated project]' \
+            '(--mit --no-mit)--no-mit[do not create a LICENSE.txt]' \
+            '(-t --test --no-test)'{-t,--test}='[specify the test framework]: :(minitest rspec test-unit)' \
+            '(-t --test --no-test)--no-test[do not use a test framework]' \
+            '(--ci --no-ci)--ci=-[specify the continuous integration service]: :(circle github gitlab)' \
+            '(--ci --no-ci)--no-ci[do not use a continuous integration service]' \
+            '(--linter --no-linter)--linter=-[specify the linter and code formatter]: :(rubocop standard)' \
+            '(--linter --no-linter)--no-linter[do not add a linter]' \
+            '(-e --edit)'{-e,--edit}='[open the resulting GEM_NAME.gemspec in EDITOR]:editor' \
+            '(--bundle --no-bundle)--bundle[run bundle install after creating the gem]' \
+            '(--bundle --no-bundle)--no-bundle[do not run bundle install after creating the gem]' \
+            '1::gem_name:' \
+            && ret=0
+          ;;
+        (platform)
+          _arguments \
+            '(- *)'{-h,--help}'[show help message]' \
+            '--ruby[it will display the ruby directive information]' \
+            && ret=0
+          ;;
+        (clean)
+          _arguments \
+            '(- *)'{-h,--help}'[show help message]' \
+            '--dry-run[print the changes, but do not clean the unused gems]' \
+            '--force[forces cleaning up unused gems even if Bundler is configured to use globally installed gems]' \
+            && ret=0
+          ;;
+        (doctor)
+          _bundle_doctor && ret=0
+          ;;
+        (remove)
+          _arguments \
+            '(- *)'{-h,--help}'[show help message]' \
+            '*:: :_bundle_gems' \
+            && ret=0
+          ;;
+        (plugin)
+          _bundle_plugin && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return ret
+}
 
 _bundle_commands() {
   local -a commands=(
@@ -58,13 +324,14 @@ _bundle_commands() {
     "open:Open an installed gem in the editor"
     "list:Show all of the gems in the current bundle"
     "lock:Generate a lockfile for your dependencies"
-    "viz:Generate a visual representation of your dependencies"
     "init:Generate a simple Gemfile, placed in the current directory"
     "gem:Create a simple gem, suitable for development with bundler"
     "platform:Displays platform compatibility information"
     "clean:Clean up unused gems in your Bundler directory"
     "doctor:Display warnings about common problems"
     "remove:Removes gems from the Gemfile"
+    "plugin:Manage Bundler plugins"
+    "version:Prints Bundler version information"
   )
 
   _describe -t commands 'command' commands "$@"
@@ -85,8 +352,7 @@ _bundle_groups() {
 }
 
 _bundle_config_subcommands() {
-  local subcommands;
-  subcommands=(
+  local -a subcommands=(
     "list:print a list of all bundler configuration"
     "get:print the value of that configuration setting"
     "set:set <name> <value> defaults to setting configuration"
@@ -95,261 +361,118 @@ _bundle_config_subcommands() {
   _describe -t subcommands 'subcommand' subcommands "$@"
 }
 
-_arguments -C -A "-v" -A "--version" \
-  '(- 1 *)'{-v,--version}'[display version information]' \
-  '(-r --retry)'{-r,--retry}'[specify the number of times you with to attempt network commands]:number:' \
-  '(-v --verbose)'{-V,--verbose}'[print out additional logging information]' \
-  '--no-color[print all output without color]' \
-  '1: :_bundle_commands' \
-  '*:: :->args' && ret=0
+_bundle_plugin() {
+  local ret=1
 
-case $state in
-  args)
-    case $words[1] in
-      help)
-        local -a commands=('install' 'update' 'cache' 'exec' 'config' 'help' 'add' 'binstubs'
-                           'check' 'show' 'outdated' 'console' 'open' 'list' 'lock' 'lock' 'viz' 'init'
-                           'gem' 'platform' 'clean' 'doctor' 'remove')
-        _arguments -C \
-          '1: :($commands)' \
-          && ret=0
-        ;;
-      install)
-        local -a policies=('HighSecurity' 'MediumSecurity' 'LowSecurity' 'AlmostNoSecurity' 'NoSecurity')
-        _arguments \
-          '--binstubs=-[generate bin stubs for bundled gems to ./bin]:directory:_files -/' \
-          '--clean[remove any gems not present in the current Gemfile]' \
-          '--deployment[install using defaults tuned for deployment environments]' \
-          '--redownload[force download every gem, even if the required versions are already available locally]' \
-          '--frozen[do not allow the Gemfile.lock to be updated after this install]' \
-          '--full-index[download and cache the index file of all gems]' \
-          '--gemfile=-[use the specified gemfile instead of Gemfile]:gemfile:_files' \
-          '(-j --jobs)'{-j,--jobs}'[the maximum number of parallel download and install jobs]:number' \
-          '--local[do not attempt to connect to rubygems.org]' \
-          '--no-cache[do not update the cache in vendor/cache with newly installed gems]' \
-          '--no-prune[do not remove stale gem from cache after installation]' \
-          '--path=-[specify a different path than the system default]:path:_files' \
-          '--quiet[only output warnings and errors]' \
-          '--shebang=-[specify ruby executable to execute scripts]:ruby:_files' \
-          '--standalone=-[create standalone bundles]:groups:_bundle_groups' \
-          '--system[install to the system location]' \
-          "--trust-policy=-[apply the Rubygems security policy]:arg:($policies)" \
-          '--with=-[include gems that are part of the specified named group]:groups:_bundle_groups' \
-          '--without=-[exclude gems that are part of the specified named group]:groups:_bundle_groups' \
-        && ret=0
-        ;;
-      update)
-        _arguments \
-          '--all[update all gems specified in Gemfile]' \
-          \*{--group,-g}=-'[only update the gems in the specified group]' \
-          '--source=-[the name of a source used in the Gemfile]:url' \
-          '--local[do not attempt to fetch gems remotely and use the gem cached instead]' \
-          '--ruby[update the locked version of Ruby to the current version of Ruby]' \
-          '--bundler[update the locked version of bundler to invoked bundler version]' \
-          '--full-index[fall back to using the single-file index of all gems]' \
-          '(-j --jobs)'{-j,--jobs}'[specify the number of jobs to run in parallel]:number' \
-          '--retry=-[retry failed network or git requests for number times]:number' \
-          '--quiet[only output warnings and errors]' \
-          '--redownload[force download every gem, even if the required versions are already available locally]' \
-          '--patch[prefer updating only to next patch version]' \
-          '--minor[prefer updating only to next minor version]' \
-          '--major[prefer updating only to next major version (default)]' \
-          '--strict[do not allow any gem to be updated past latest --patch | --minor | --major]' \
-          '--conservative[use bundle install conservative update behavior]' \
-          '*:: :_bundle_gems' \
-        && ret=0
-        ;;
-      cache)
-        _arguments \
-          '--all[include all sources]' \
-          '--all-platforms[include gems for all platforms present in the lockfile, not only the current one]' \
-          '--cache-path=-[specify a different cache path than the default(vendor/cache)]: :_files -/' \
-          '--gemfile=-[use the specified gemfile instead of Gemfile]:gemfile:_files' \
-          "--no-install[don't install the gems, only update the cache]" \
-          "--no-prune[don't remove stale gems from the cache]" \
-          '--path=-[specify a different path than the system default($BUNDLE_PATH or $GEM_HOME)]: :_files' \
-          '--quite[only output warnings and errors]' \
-          '--frozen[do not allow the Gemfile.lock to be updated after this bundle cache operation]' \
-          '--no-color[disable colorization in output]' \
-          '(-r --retry)'{-r,--retry}=-'[specify the number of times you with to attempt network commands]:nums' \
-          '(-V --verbose)'{-v,--verbose}'[enable verbose output mode]' \
-        && ret=0
-        ;;
-      exec)
-        _arguments \
-          '--keep-file-descriptors[exec will revert to the 1.9 behavior of passing all file descriptors to the new process]' \
-          '*:: :_normal' \
-        && ret=0
-        ;;
-      config)
-        _arguments -C \
-          '1: :_bundle_config_subcommands' \
-          '--local[use local configuration]' \
-          '--global[use global configuration]' \
-          && ret=0
-        ;;
-      add)
-        _arguments \
-          '(-v --version)'{-v,--version}=-'[specify version requirements for the added gem]:version' \
-          '(-g --group)'{-g,--group}=-'[specify the group for the added gem]:group:_bundle_groups' \
-          '(-s --source)'{-s,--source}=-'[specify the source for the added gem]: :_files' \
-          '(-r --require)'{-r,--require}=-'[adds require path to gem]: :_files' \
-          '--path=-[specify the file path for the added gem]: :_files -/' \
-          '--git=-[specify the git source for the added gem]:git' \
-          '--github=-[specify the github source for the added gem]:github' \
-          '--branch=-[specify the git branch for the added gem]:branch' \
-          '--ref=-[specify the git ref for the added gem]' \
-          "--glob=[specify the location of a dependency's .gemspec, expanded within Ruby]:glob" \
-          '--quiet[do not print progress information to the starndard output]' \
-          '--skip-install[adds the gem to the Gemfile but does not install it]' \
-          '--optimistic[adds optimistic declaration of version]' \
-          '--strict[adds strict declaration of version]' \
-          '1::gem:' \
-        && ret=0
-        ;;
-      binstubs)
-        _arguments \
-          '--force[overwrite existing binstubs if they exist]' \
-          '--path=-[the location to install the specified binstubs to]: :_files -/' \
-          '--standalone[makes binstubs that can work without depending on Rubygems or Bundler at runtime]' \
-          '--shebang=-[specify a different shebang executable name than the default(default: ruby)]: :_files' \
-          '--all[create binstubs for all gems in the bundle]' \
-          '1::gem:' \
-        && ret=0
-        ;;
-      check)
-        _arguments \
-          '--dry-run[locks the Gemfile before running the command]' \
-          '--gemfile=-[use the specified gemfile instead of the Gemfile]: :_files' \
-          '--path=-[specify a different path than the system default($BUNDLE_PATH or $GEM_HOME)]: :_files -/' \
-        && ret=0
-        ;;
-      show)
-        _arguments \
-          '--paths[list the paths of all gems that are required by your Gemfile]' \
-          '1:: :_bundle_gems' \
-        && ret=0
-        ;;
-      outdated)
-        _arguments \
-          '--local[do not attempt to fetch gems remotely and use the gem cache instead]' \
-          '--pre[check for newer pre-release gems]' \
-          '--source[check against a specific source]' \
-          '--strict[only list newer versions allowed by your Gemfile requirements]' \
-          {--parseable,--porcelain}'[use minimal formatting for more parsable output]' \
-          '--group=-[list gems from a specific group]:group:_bundle_groups' \
-          '--groups[list gems organized by groups]' \
-          '--major[prefer updating to next major version(default)]' \
-          '--minor[prefer updating only to next minor version]' \
-          '--patch[prefer updating only to next patch version]' \
-          '--filter-major[only list major new versions]' \
-          '--filter-minor[only list minor new versions]' \
-          '--filter-patch[only list patch new versions]' \
-          '--only-explicit[only list gems specified in your Gemfile, not their dependencies]' \
-          '*:: :_bundle_gems' \
-          && ret=0
-        ;;
-      console)
-        _arguments \
-          '--no-color[disable colorization in output]' \
-          '(-r --retry)'{-r,--retry}=-'[specify the number of times you with to attempt network commands]:num' \
-          '(-v --verbose)'{-v,--verbose}=-'[enable verbose output mode]' \
-          '1:: :_bundle_groups' \
-          && ret=0
-        ;;
-      open)
-        _arguments \
-          '1:: :_bundle_gems' \
-        && ret=0
-        ;;
-      list)
-        _arguments \
-          '--name-only[print only the name of each gem]' \
-          '--paths[print the path to each gem in the bundle]' \
-          '--without-group=-[a space-separated list of groups of gems to skip during printing]: :_bundle_groups' \
-          '--only-group=-[a space-separated list of groups of gems to print]: :_bundle_groups' \
-          && ret=0
-        ;;
-      lock)
-        _arguments \
-          '--update=-[ignores the existing lockfile]' \
-          '--local[do not attempt to connect to rubygems.org]' \
-          '--print[prints the lockfile to STDOUT instead of writing to the file system]' \
-          '--lockfile=-[the path where the lick file should be written to]: :_files' \
-          '--full-index[fall back to using the single file index of all gems]' \
-          '--add-platform=-[add a new platform to the lockfile, re-resolving for the addition of that platform]' \
-          '--remove-platform=-[remove a platform from the lockfile]' \
-          '--normalize-platforms[normalize lockfile platforms]' \
-          '--patch[if updating, prefer updating only to next patch version]' \
-          '--minor[if updating, prefer updating only to next minor version]' \
-          '--major[if updating, prefer updating  to next major version(default)]' \
-          '--strict[if updating, do not allow any gem to be updated past latest --patch | --minor | --major]' \
-          '--conservative[if updating, use bundle install conservative update behavior]' \
-          && ret=0
-        ;;
-      viz)
-        _arguments \
-          '(-f --file)'{-f,--file}=-'[the name to use for the generated file]: :_files' \
-          '(-F --format)'{-F,--format}=-'[output format option]: :(png jpg svg dot)' \
-          '(-R --requirements)'{-r,--requirements}'[set to show the version of each required dependency]' \
-          '(-v --version)'{-v,--version}'[set to show each version]' \
-          '(-W --without)'{-W,--without}'[exclude gems that are part of the specified named group]' \
-          && ret=0
-        ;;
-      init)
-        _arguments \
-          '--gemspec=-[use the specified .gemspec to create the Gemfile]: :_files' \
-          '--gemfile=[use the specified name for the gamfile instead of Gemfile]:name' \
-          && ret=0
-        ;;
-      gem)
-        _arguments \
-          '(--exe -b --bin --no-exe)'{--exe,-b,--bin}'[specify that bundler should create a binary executable in the generated rubygem project]' \
-          '(--exe -b --bin --no-exe)--no-exe[do not create a binary]' \
-          '(--no-coc)--coc[add a CODE_OF_CONDUCT.md to the root of the generated project]' \
-          '(--coc)--no-coc[do not create a CODE_OF_CONDUCT.md]' \
-          '(--no-ext --ext)--ext=[add boilerplate for C or Rust extension code to the generated project]: :(c rust)' \
-          '(--ext --no-ext)--no-ext[do not add extension code]' \
-          '(--no-mit --mit)--mit[add an MIT license to a LICENSE.txt file in the root of the generated project]' \
-          '(--mit --no-mit)--no-mit[do not create a LICENSE.txt]' \
-          '(-t --test --no-test)'{-t,--test}=-'[specify the test framework]: :(minitest rspec test-unit)' \
-          '(-t --test --no-test)--no-test[do not use a test framework]' \
-          '(--ci --no-ci)--ci=-[specify the continuous integration service]: :(github travis gitlab circle)' \
-          '(--ci --no-ci)--no-ci[do not use a continuous integration service]' \
-          '(--linter --no-linter)--linter=-[specify the linter and code formatter]: :(rubocop standard)' \
-          '(--linter --no-linter)--no-linter[do not add a linter]' \
-          '(-e --edit)'{-e,--edit}=-'[open the resulting GEM_NAME.gemspec in EDITOR]' \
-          '1::gem_name:' \
-          && ret=0
-        ;;
-      platform)
-        _arguments \
-          '--ruby[it will display the ruby directive information]' \
-          && ret=0
-        ;;
-      clean)
-        _arguments \
-          '--dry-run[print the changes, but do not clean the unused gems]' \
-          '--force[forces cleaning up unused gems even if Bundler is configured to use globally installed gems]' \
-          && ret=0
-        ;;
-      doctor)
-        _arguments \
-          '--quiet[only output warnings and errors]' \
-          '--gemfile=-[the location of the Gemfile which Bundler should use]: :_files' \
-          && ret=0
-        ;;
-      remove)
-        _arguments \
-          '--install[runs bundle install after the given gem have been removed from the Gemfile]' \
-          '*:: :_bundle_gems' \
-          && ret=0
-        ;;
-    esac
+  _arguments -C \
+    '(- *)'{-h,--help}'[show help message]' \
+    '1:subcommand:_bundle_plugin_subcommands' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (install)
+          _arguments \
+            '(- *)'{-h,--help}'[show help message]' \
+            '--source=[install the plugin gem from a specific source]:url:_urls' \
+            '--version=[specify a version of the plugin gem]:version' \
+            '--git=[install the plugin gem from a Git repository]:url:_urls' \
+            '--branch=[branch name when using --git]:branch' \
+            '--ref=[tag or commit hash when using --git]:ref' \
+            '--path=[local file path to install the plugin gem]:path:_files -/' \
+            '*::plugins' \
+            && ret=0
+          ;;
+        (uninstall)
+          _arguments \
+            '(- *)'{-h,--help}'[show help message]' \
+            '--all[uninstall all the installed plugins]' \
+            '*::plugins' \
+            && ret=0
+          ;;
+        (list)
+          _arguments \
+            '(- *)'{-h,--help}'[show help message]' \
+            && ret=0
+          ;;
+        (help)
+          _arguments \
+            '(- *)'{-h,--help}'[show help message]' \
+            '1:subcommand:(install uninstall list help)' \
+            && ret=0
+          ;;
+      esac
     ;;
-esac
+  esac
 
-return ret
+  return ret
+}
+
+_bundle_plugin_subcommands() {
+  local -a subcommands=(
+    'install:install the given plugins'
+    'uninstall:uninstall the plugins'
+    'list:list the installed plugins and available commands'
+    'help:describe subcommands or one specific subcommand'
+  )
+
+  _describe -t subcommands 'subcommand' subcommands "$@"
+}
+
+_bundle_doctor() {
+  local ret=1
+
+  _arguments -C \
+    '(- *)'{-h,--help}'[show help message]' \
+    '--quiet[only output warnings and errors]' \
+    '--gemfile=[the location of the Gemfile which Bundler should use]: :_files' \
+    '--ssl[diagnose common SSL problems when connecting to https://rubygems.org]' \
+    '1:subcommand:_bundle_doctor_subcommands' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (diagnose)
+          _arguments \
+            '--quiet[only output warnings and errors]' \
+            '--gemfile=[the location of the Gemfile which Bundler should use]: :_files' \
+            '--ssl[diagnose common SSL problems when connecting to https://rubygems.org]' \
+            && ret=0
+          ;;
+        (ssl)
+          _arguments \
+            '--host=[perform the diagnostic on HOST(default: rubygems.org)]:host' \
+            '--tls-version=[TLS version to connect to HOST]:version:(1.1 1.2)' \
+            '--verify-mode=[specify the TLS verify mode]:mode:(CLIENT_ONCE FAIL_IF_NO_PEER_CERT NONE PEER)' \
+            && ret=0
+          ;;
+        (help)
+          _arguments \
+            '1:subcommand:_bundle_doctor_subcommands' \
+            && ret=0
+          ;;
+      esac
+    ;;
+  esac
+
+  return ret
+}
+
+_bundle_doctor_subcommands() {
+  local -a subcommands=(
+    'diagnose:check your Gemfile and gem environment for common problems'
+    'ssl:check issues related to SSL certificates or/and TLS versions'
+    'help:describe subcommands or one specific subcommand'
+  )
+
+  _describe -t subcommands 'subcommand' subcommands "$@"
+}
+
+_bundle "$@"
 
 # Local Variables:
 # mode: Shell-Script
