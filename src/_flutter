@@ -1073,6 +1073,7 @@ _flutter_pub_token() {
           _arguments \
             '(- *)'{-h,--help}'[Print this usage information]' \
             && ret=0
+          ;;
       esac
     ;;
   esac
