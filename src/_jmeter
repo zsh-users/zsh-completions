@@ -5,8 +5,6 @@
 #
 #  Completion script for JMeter (https://jmeter.apache.org/).
 #
-#  Status: incomplete
-#
 # ------------------------------------------------------------------------------
 # Authors
 # -------
@@ -14,7 +12,6 @@
 #  * Julien Nicoulaud <julien.nicoulaud@gmail.com>
 #
 # ------------------------------------------------------------------------------
-
 
 _arguments \
   '(- 1 *)--?[print command line options and exit]' \
@@ -29,7 +26,6 @@ _arguments \
   {-j,--jmeterlogfile}'[jmeter run file]: :_files -g "*.log"' \
   {-n,--nongui}'[run JMeter in nongui mode]' \
   {-s,--server}'[run the JMeter server]' \
-  {-E,--proxyScheme}'[set a proxy scheme to use for the proxy server]:scheme' \
   {-H,--proxyHost}'[set a proxy server for JMeter to use]: :_hosts' \
   {-P,--proxyPort}'[set proxy server port for JMeter to use]:number' \
   {-N,--nonProxyHosts}'[set non proxy host list]:host' \
@@ -45,7 +41,7 @@ _arguments \
   {-R,--remotestart}'[start these remote servers (overrides remote_hosts)]:remote servers list' \
   {-d,--homedir}'[the JMeter home directory to use]: :_files -/' \
   {-X,--remoteexit}'[exit the remote servers at end of test (non-GUI)]' \
-  {-g,--removeonly}'[generate report dashboard only, from a test results file]: :_files' \
+  {-g,--reportonly}'[generate report dashboard only, from a test results file]: :_files' \
   {-e,--reportatendofloadtests}'[generate report dashboard after load test]' \
   {-o,--reportoutputfolder}'[output folder for report dashboard]: :_files -/'
 
