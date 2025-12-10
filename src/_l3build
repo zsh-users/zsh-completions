@@ -3,7 +3,7 @@
 # Description
 # -----------
 #
-#  Completion script for l3build (https://github.com/latex3/l3build/).
+#  Completion script for l3build 2025-09-03 (https://github.com/latex3/l3build/).
 #  Modified from rejected https://github.com/latex3/l3build/pull/267
 #
 # ------------------------------------------------------------------------------
@@ -14,49 +14,60 @@
 #
 # ------------------------------------------------------------------------------
 
-__l3build() {
+_l3build_targets() {
   local targets=(
-    'check:Run\ all\ automated\ tests'
-    'clean:Clean\ out\ directory\ tree'
-    'ctan:Create\ CTAN-ready\ archive'
-    'doc:Typesets\ all\ documentation\ files'
-    'install:Installs\ files\ into\ the\ local\ texmf\ tree'
-    'manifest:Creates\ a\ manifest\ file'
-    'save:Saves\ test\ validation\ log'
-    'tag:Updates\ release\ tags\ in\ files'
-    'uninstall:Uninstalls\ files\ from\ the\ local\ texmf\ tree'
-    'unpack:Unpacks\ the\ source\ files\ into\ the\ build\ tree'
-    'upload:Send\ archive\ to\ CTAN\ for\ public\ release'
+    'check:Run all automated tests'
+    'clean:Clean out directory tree'
+    'ctan:Create CTAN-ready archive'
+    'doc:Typesets all documentation files'
+    'install:Installs files into the local texmf tree'
+    'manifest:Creates a manifest file'
+    'save:Saves test validation log'
+    'tag:Updates release tags in files'
+    'uninstall:Uninstalls files from the local texmf tree'
+    'unpack:Unpacks the source files into the build tree'
+    'upload:Send archive to CTAN for public release'
   )
-  local options=(
-    {--config,-c}'[Sets the config(s) used for running tests]':lua_file:'_files -g "*.lua"'
-    --date'[Sets the date to insert into sources]':
-    --debug'[Runs target in debug mode]'
-    --dirty'[Skip cleaning up the test area]'
-    --dry-run'[Dry run for install or upload]'
-    --email'[Email address of CTAN uploader]':
-    {--engine,-e}'[Sets the engine(s) to use for running test]':engine:'(pdftex xetex luatex ptex uptex)'
-    --epoch'[Sets the epoch for tests and typesetting]':
-    {--file,-F}'[Take the upload announcement from the given file]':file:_files
-    --first'[Name of first test to run]':
-    {--force,-f}'[Force tests to run if engine is not set up]'
-    --full'[Install all files]'
-    {--halt-on-error,-H}'[Stops running tests after the first failure]'
-    '(- : *)'{--help,-h}'[Print this message and exit]'
-    --last'[Name of last test to run]':
-    {--message,-m}'[Text for upload announcement message]':
-    {--quiet,-q}'[Suppresses TeX output when unpacking]'
-    --rerun'[Skip setup\: simply rerun tests]'
-    --show-log-on-error'[Show the full log of the failure with '\''halt-on-error'\'']'
-    {--show-saves,-S}'[Show the invocation to update failing .tlg files]'
-    --shuffle'[Shuffle order of tests]'
-    --texmfhome'[Location of user texmf tree]':
-    '(- : *)'--version'[Print version information and exit]'
-  )
-  _arguments -s -S $options "1:target:(($targets))"
+
+  _describe -t targets 'target' targets "$@"
 }
 
-__l3build
+_l3build() {
+  local ret=1
+  local -a engines=(pdftex xetex luatex ptex uptex)
+
+  _arguments -s -S \
+    '(-c --config)'\*{-c,--config}'[Set the config(s) used for running tests]:lua_file:_files -g "*.(lua|tlg)"' \
+    '(-d --date)'{-d,--date}'[Set the date to insert into sources]:date' \
+    '--debug[Run target in debug mode]' \
+    '--dev[Use the development LaTex format]' \
+    '--dirty[Skip cleaning up the test area]' \
+    '--dry-run[Dry run for install or upload]' \
+    '--email[Email address of CTAN uploader]:email' \
+    '(-e --engine)'{--engine,-e}'[Set the engine(s) to use for running test]:engine:(($engines))' \
+    '--epoch[Sets the epoch for tests and typesetting]:epoch' \
+    '(-F --file)'{--file,-F}'[Take the upload announcement from the given file]:file:_files' \
+    '--first[Name of first test to run]:name' \
+    '--full[Install all files]' \
+    '(-H --halt-on-error)'{-H,--halt-on-error}'[Stops running tests after the first failure]' \
+    '(- : *)'{-h,--help}'[Print this message and exit]' \
+    '--last[Name of last test to run]:name' \
+    '(-m --message)'{-m,--message}'[Text for upload announcement message]:message' \
+    '(-q --quiet)'{-q,--quiet}'[Suppresses TeX output when unpacking]' \
+    '--rerun[Skip setup\: simply rerun tests]' \
+    '--show-log-on-error[Show the full log of the failure with "halt-on-error"]' \
+    '(-S --show-saves)'{-S,--show-saves}'[Show the invocation to update failing .tlg files]' \
+    '--shuffle[Shuffle order of tests]' \
+    '(-s --stdengine)'{-s,--stdengine}'[Run tests only with the standard engine]' \
+    '--texmfhome[Location of user texmf tree]:location:_files' \
+    '(- : *)--version[Print version information and exit]' \
+    "1:target:_l3build_targets" \
+    && ret=0
+
+  return ret
+}
+
+_l3build "$@"
 
 # Local Variables:
 # mode: Shell-Script
