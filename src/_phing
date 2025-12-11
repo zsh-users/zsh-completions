@@ -23,7 +23,7 @@
 # Description
 # -----------
 #
-#  Completion script for Phing (https://www.phing.info/).
+#  Completion script for Phing 3.1.0 (https://www.phing.info/).
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -39,36 +39,53 @@ _phing() {
   typeset -A opt_args
 
   # Follow https://www.phing.info/guide/chunkhtml/sec.commandlineargs.html for more information
-  _arguments \
+  _arguments -C \
     '(-h -help)'{-h,-help}'[display the help screen]' \
     '(-v -version)'{-v,-version}'[print version information and exit]' \
-    '(-l -list)'{-l,-list}'[list all available targets in buildfile (excluding targets that have their hidden attribute set to true)]' \
+    '(-l -list)'{-l,-list}'[list all available targets in buildfile]' \
+    '(-i -init)'{-i,-init}'[generates an initial buildfile]:file:_files' \
     '(-q -quiet)'{-q,-quiet}'[quiet operation, no output at all]' \
+    '(-S -silent)'{-S,-silent}'[print nothing but task outputs and build failures]' \
     '-verbose[verbose, give some more output]' \
     '-debug[output debug information]' \
-    '-logfile [use given file for log]:file:_files' \
-    '-D[set the property to the specified value to be used in the buildfile]' \
-    '-find []:file:_files' \
-    '-buildfile [specify an alternate buildfile name. Default is build.xml]:file:_files' \
-    '-logger [specify an alternate logger. Default is phing.listener.DefaultLogger. Other options include phing.listener.NoBannerLogger, phing.listener.AnsiColorLogger, phing.listener.XmlLogger, phing.listener.TargetLogger and phing.listener.HtmlColorLogger]' \
-    '-propertyfile [load properties from the specified file]:file:_files' \
-    '(-v --version)'{-v,--version}'[show version]' \
+    '(-e -emacs)'{-e,-emacs}'[produce logging information without adornments]' \
+    '-diagnostics[print diagnostics information]' \
+    '(-strict -no-strict)-strict[run build in strict mode]' \
+    '(-strict -no-strict)-no-strict[run build normally]' \
+    '-longtargets[show target descriptions during build]' \
+    '-logfile[use given file for log]:file:_files' \
+    '-logger[the class which is to perform logging]:class' \
+    '*-listener[add an instance of class as a project listener]:class' \
+    '(-f -buildfile)'{-f,-buildfile}'[build file]:file:_files' \
+    '*-D[set the property to the specified value to be used in the buildfile]' \
+    '(-k -keep-going)'{-k,-keep-going}'[execute all targets that do not depend on failed target(s)]' \
+    '-propertyfile[load all properties from the specified file]:file:_files' \
+    '-propertyfileoverride[values in property file override existing values]' \
+    '-find[search for buildfile towards the root of the filesystem and use it]:file:_files' \
+    '-inputhandler[the class to use to handle user input]:class' \
+    '(- *)'{-v,-version}'[show version]' \
     '1: :->targets' \
     '*:: :->args' \
   && ret=0
 
   case $state in
-    targets)
-      local buildfile; buildfile=build.xml
+    (targets)
+      local buildfile=build.xml
+      if (( $+opt_args[-buildfile] )); then
+        buildfile=${opt_args[-buildfile]}
+      elif (($+opt_args[-f] )); then
+        buildfile=${opt_args[-f]}
+      fi
+
       if [[ ! -f $buildfile ]]
       then
         ret=0
       else
-        local targets; targets=($(sed -nE "/<target /s/.*name=[\"'](\w+)[\"'].*/\1/p" $buildfile))
+        local -a targets=($(sed -nE "/<target /s/.*name=[\"'](\w+)[\"'].*/\1/p" $buildfile))
         _describe -t 'targets' 'target' targets && ret=0
       fi
     ;;
-    args)
+    (args)
       if [[ CURRENT -eq NORMARG && ${+opt_args[--match]} -eq 0 ]]
       then
         # If the current argument is the first non-option argument
