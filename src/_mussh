@@ -38,44 +38,32 @@
 #
 # ------------------------------------------------------------------------------
 
-local curcontext="$curcontext" state line ret=1
-typeset -A opt_args
-
-# TODO:
-# -i: admit more than one use
-# -d, -v, -t: control input
-# -m: Accept number (but also empty)
-# -h: Accept multiple hosts, also more than one use
-# -H: Accept multiple files, also more than one use
-
-_arguments -C \
-  '--help[display this help message]' \
-  '-V[print version info and exit]' \
-  '-d[Verbose debug]:level (from 0 to 2)' \
-  '-v[SSH debug level]:level (from 0 to 3)' \
-  '-m[Run concurrently]' \
-  '(-b -B)-b[Print each hosts output in a block without mingling with other hosts output]' \
-  '(-b -B)-B[Allow hosts output to mingle. (default)]' \
+_arguments \
+  '(- *)--help[display this help message]' \
+  '-d-[Verbose debug]:level:(0 1 2)' \
+  '-v-[SSH debug levels]:level:(0 1 2 3)' \
+  '-m-[Run concurrently on the specified hosts at a time. "0" is used for infinite]:count' \
+  '-q[No output unless necessary]' \
+  '*-i[Load an identity file. May be used more than once]:identity:_files' \
+  '-o[Args to pass to ssh with -o option]:ssh-args' \
   '(-a -A)-a[Force loading ssh-agent]' \
   '(-a -A)-A[Do NOT load ssh-agent]' \
+  '(-b -B)-b[Print each hosts output in a block without mingling with other hosts output]' \
+  '(-b -B)-B[Allow hosts output to mingle. (default)]' \
   '(-u -U)-u[Unique. Eliminate duplicate hosts. (default)]' \
   '(-u -U)-U[Do NOT make host list unique]' \
   '-P[Do NOT fall back to passwords on any host. This will skip hosts where keys fail]' \
-  '-i[Load an identity file. May be used more than once]:identity' \
-  '-o[Args to pass to ssh with -o option]:ssh-args' \
   '(-l -L)-l[Use _login_ when no other is specified with the hostname]:login' \
   '(-l -L)-L[Force use of _login_ on all hosts]:login' \
   '-s[Path to shell on remote host]:shell' \
   '-t[Timeout setting for each session]:timeout' \
-  '-p[Host to use as proxy]:[user@]host' \
+  '(- *)-V[print version info and exit]' \
+  '-p[Host to use as proxy]:[user@]host:_hosts' \
   '-po[Args to pass to ssh on proxy with -o option]:ssh-args' \
-  '(-h -H)-h[Add a host to list of hosts]:[user@]host' \
-  '(-h -H)-H[Add contents of file to list of hosts]:host file:_files' \
+  '*-h[Add a host to list of hosts]:user@host' \
+  '*-H[Add contents of file to list of hosts]:host file:_files' \
   '(-c -C)-c[Add a command or quoted list of commands to list of commands to be executed on each host]:command' \
-  '(-c -C)-C[Add file contents to list of commands to be executed on each host]:commands file:_files' \
-  '(-q)-q[No output unless necessary]' && ret=0
-
-return ret
+  '(-c -C)-C[Add file contents to list of commands to be executed on each host]:commands file:_files'
 
 # Local Variables:
 # mode: Shell-Script
