@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for resilio sync 2.7.3 (https://www.resilio.com/individuals/).
+#  Completion script for resilio sync 3.1.2 (https://www.resilio.com/individuals/).
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -38,30 +38,21 @@
 #
 # ------------------------------------------------------------------------------
 
-_rslsync(){
-  integer ret=1
-  local -a args
-  args+=(
-    '(- *)--help[Print help]'
-    '--config[Use a configuration file]:file:_files'
-    '--storage[Storage path for identity and license]:path:_files -/'
-    '--identity[Creates user identity]:name:'
-    '--license[Apply owner license]:file:_files'
-    '--decrypt[Decrypt encrypted folder]:'
-    '--upgradedb[Upgrade databases in specified storage or upgrade a single db]:db:_files'
-    '--nodaemon[Do not daemonize]'
-    '--dump-sample-config[Print a sample configuration file]'
-    '--log[Set log file]:file:_files'
-    '(--help)--webui.listen[Set the webui listening interface]:ip\:port:'
-    '--generate-secret[Generate a read/write key]::version:(2)'
-    '--get-ro-secret[Get the read-only key associated to a read/write key]:key:'
-    '--server[Set Management Console address]:ip\:port:'
-  )
-  _arguments $args[@] && ret=0
-  return ret
-}
-
-_rslsync
+_arguments \
+  '(- *)--help[Print help]' \
+  '--config[Use a configuration file]:file:_files' \
+  '--storage[Storage path for identity and license]:path:_files -/' \
+  '--identity[Creates user identity]:name' \
+  '--license[Apply owner license]:file:_files' \
+  '--decrypt[Decrypt encrypted folder]:secret_dbpath_encrypted_folder_output_folder' \
+  '--upgradedb[Upgrade databases in specified storage or upgrade a single db]:db:_files' \
+  '--nodaemon[Do not daemonize]' \
+  '--dump-sample-config[Print a sample configuration file]' \
+  '--log[Set log file]:file:_files' \
+  '(--help)--webui.listen[Set the webui listening interface]:ip_port:' \
+  '--generate-secret[Generate a read/write key]::version:(2)' \
+  '--get-ro-secret[Get the read-only key associated to a read/write key]:key' \
+  '--server[Set Management Console address]:ip_port'
 
 # Local Variables:
 # mode: Shell-Script
