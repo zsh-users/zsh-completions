@@ -1,0 +1,633 @@
+#compdef sox_ng soxi_ng play_ng rec_ng
+# ------------------------------------------------------------------------------
+# Copyright (c) 2025 Github zsh-users - https://github.com/zsh-users
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for sox_ng v14.7.0 (https://codeberg.org/sox_ng/sox_ng)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei Yoshida (https://github.com/syohex) <syohex@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+_sox_ng_common() {
+  typeset -A opt_args
+  local context state line
+  local curcontext="$curcontext"
+  local ret=1
+
+  local service="$1"
+
+  local -a sox_ng_global_options=(
+    '(--buffer --input-buffer)'{--buffer,--input-buffer}'[set the size in bytes of the buffers used for processing audio(default: 8192)]:size'
+    '(--clobber --no-clobber)--clobber[do not prompt before overwriting an existing file]'
+    '--combine[select the input file combining method]:type:(concatenate merge mix mix-power multiply sequence)'
+    '(-D --no-dither)'{-D,--no-dither}'[disable automatic dither]'
+    '--effects-file[read a file to obtain all effects and their arguments]:file:_files'
+    '(-G --guard)'{-G,--guard}'[automatically invoke the gain effect to guard against clipping]'
+    '(- *)'{-h,--help}'[show version number and usage information]'
+    '--help-effect[show usage information for the specified effect]:effect:_sox_ng_effects'
+    '--help-format[show information about the specified file format]'
+    '(--i --info)'{--i,--info}'[behave as soxi_ng]'
+    '(-m -M)'{-m,-M}'[equivalent to --combine mix and --combine merge respectively]'
+    '--magic[enable libmagic library to help to detect audio file types]'
+    '(--multi-threaded --single-threaded)--multi-threaded[process in parallel]'
+    '(--multi-threaded --single-threaded)--single-threaded[process at a time]'
+    '(--clobber --no-clobber)--no-clobber[prompt before overwriting an existing file]'
+    '--norm=-[automatically invoke the gain effect to guard against clipping and to normalize the audio]:level'
+    '--play-rate-arg[select a quality option to be used when the rate effect is invoked]:rate'
+    '--plot[set plot mode]:mode:(gnuplot octave off)'
+    '(-q --no-show-progress)'{-q,--no-show-progress}'[run in quiet mode]'
+    '-R[run in "repeatable" mode]'
+    '--replay-gain[select whether or not to apply replay gain adjustment to input files]:gain:(track album off)'
+    '(-S --show-progress)'{-S,--show-progress}'[display input file format/header information]'
+    '-T(equivalent to --combine multiply)'
+    '--temp[specified that any temporary files should be created in the given directory]:dir:_files -/'
+    '(- *)--version[show version number and exit]'
+    '-V[set verbosity]:level:(0 1 2 3 4 5 6)'
+  )
+
+  local -a sox_ng_format_options=(
+    "--ignore-length[override the audio length given in an audio file's header]"
+    '(-v --volume)'{-v,--volume}'[adjust the volume of the file by a factor of factor]:factor'
+    '(-b --bits)'{-b,--bits}'[set the number of bits in each encoded sample]:bits'
+    '(-c --channels)'{-c,--channels}'[set the number of audio channels in the audio file]'
+    '(-e --encoding)'{-e,--encoding}'[set the audio encoding type]:type:_sox_ng_audio_encoding_type'
+    '--no-glob[specify that filename "globbing should not be performed by Sox on the following filename"]'
+    '(-r --rate)'{-r,--rate}'[give the sample rate in Hz of the file]:rate'
+    '(-t --type)'{-t,--type}'[give the type of an audio file]:type:_sox_ng_supported_formats'
+    '(-L -B -X --endian)-L[the byte order of the audio file is little endian]'
+    '(-L -B -X --endian)-B[the byte order of the audio file is big endian]'
+    '(-L -B -X --endian)-x[the byte order of the audio file should be reversed]'
+    '(-L -B -X --endian)--endian[the byte order of the audio file]:type:(little big swap)'
+    '(-N --reverse-nibbles)'{-N,--reverse-nibbles}'[nibble ordering of the samples should be reversed]'
+    '(-X --reverse-bits)'{-X,--reverse-bits}'[bit ordering of the samples should be reversed]'
+    '--add-comment[append a comment to the output file header]:comment'
+    '--comment[specify the comment text to store in the output file header]:comment'
+    '--comment-file[specify a file containing the comment text to store in the output file header]:file:_files'
+    '(-C --compression)'{-C,--compression}'[set the compression factor for output file formats]:factor'
+  )
+
+  local -a sox_ng_effects=(
+    allpass band bandpass bandreject bass treble bend biquad centercut
+    channels chorus compand contrast dcshift deemph delay dither dolbyb
+    dop downsample earwax gain echo echos equalizer fade fir firfit
+    flanger highpass hilbert ladspa loudness lowpass mcompand
+    noiseprof noisered norm oops overdrive pad phaser pitch rate remix
+    repeat reverb reverse riaa saturation sdm silence sinc softvol
+    spectrogram speed speexdsp splice stat stats stretch swap synth
+    tempo treble tremolo trim upsample vad vol
+  )
+
+  _arguments -s \
+    $sox_ng_global_options[@] \
+    $sox_ng_format_options[@] \
+    '*:: :_sox_ng_file_or_effect' \
+    && ret=0
+  return ret
+}
+
+_sox_ng_file_or_effect() {
+  _alternative \
+    'file: :_files' \
+    'effect: :_sox_ng_effect'
+}
+
+_sox_ng_effect() {
+  local ret=1
+  local last_index=0
+  local index=1
+  for word in $words[@]; do
+    if [[ $words[$index] != -* ]]; then
+      last_index=$index
+    fi
+    (( index++ ))
+  done
+
+  if [[ $last_index == 0 ]]; then
+    _sox_ng_effects && ret=0
+    return ret
+  fi
+
+  local effect=$words[$last_index]
+  if (( ! ${sox_ng_effects[(I)$effect]} )); then
+    _sox_ng_effects && ret=0
+    return ret
+  fi
+
+  local -a sox_ng_dither_filters=(
+    lipshitz  f-weighted  modified-e-weighted  improved-e-weighted  gesemann
+    shibata  low-shibata  high-shibata
+    shibata-A0 shibata-A1 shibata-A2 shibata-A3 shibata-A4 shibata-A5 shibata-A6
+    shibata-B0 shibata-B1 shibata-B2 shibata-B3 shibata-B4 shibata-B5 shibata-B6
+    shibata-A-saturated
+  )
+  local -a sox_ng_sdm_filters=(
+    clans-4 clans-5 clans-6 clans-7 clans-8
+    sdm-4  sdm-5 sdm-6 sdm-7 sdm-8
+  )
+
+  local -a options=()
+  case "$effect" in
+    (allpass|highpass|lowpass)
+      options=(
+        '-1:use 1-pole filter'
+        '-2:use 2-pole filter'
+      )
+      ;;
+    (band)
+      options=(
+        '-n:introduce a power gain of about 11dB in the filter'
+      )
+      ;;
+    (bandpass|bandreject)
+      options=(
+        '-c:select a constant skirt gain instead of the default'
+      )
+      ;;
+    (bend)
+      options=(
+        '-f:frame rate]:frame_rate'
+        '-o:over sampling]:sampling'
+      )
+      ;;
+    (centercut)
+      options=(
+        '-a:gain out for all channels:gain'
+        '-b:move the bass out of the center into the sides'
+        '-w:change the window size:window_size'
+      )
+      ;;
+    (chorus|flanger|phaser)
+      options=(
+        '-n:no interpolation'
+        '-l:do linear interpolation between samples'
+        '-q:ask for quadratic interpolation which is about 40% slower but makes it less noisy'
+        '-s:sinusoidal modulation'
+        '-t:triangular modulation'
+      )
+      ;;
+    (dither)
+      options=(
+        '-S:select a slightly "sloped" TPDF'
+        '-s:enable noise-shaping with the shibata filter'
+        '-f:select filter:filter:(($sox_ng_dither_filters))'
+        '-a:enable a mode where dithering are automatically enabled only when needed'
+        '-p:override the target precision in bits(from 1 to 24):bit'
+      )
+      ;;
+    (dolbyb)
+      options=(
+        '(-e -d)-e:do Dolby B encoding'
+        '(-e -d)-d:do Dolby B decoding'
+        '-u:set the upsample ratio to use in the sliding filter:upsample'
+        '-h:upsample is used throughout the effect from when the audio enters to when it leaves'
+        '-t:adjust the gain when the audio is fed to the Dolby gain control circuits:threshold'
+        '-a:set how accurate it needs to be before it is considered OK:accuracy'
+        '-f:filter type to use:type:(1 2 3 4)'
+      )
+      ;;
+    (gain)
+      options=(
+        '-e:the levels of the audio channels of a multichannel'
+        '-B:balance option'
+        '-b:balance option but has clipping protection'
+        '-r:used in conjunction with a prior invocation of gain with the -h option'
+        '-n:normalize the audio to 0dB FSD'
+        '-l:invoke a simple limiter'
+        '-h:apply gain to provide headroom for subsequent processing'
+      )
+      ;;
+    (hilbert)
+      options=(
+        '-n:the number of filter taps:taps'
+      )
+      ;;
+    (ladspa)
+      options=(
+        '-l:latency compensation'
+        '-r:allow cloning a mono plugins to handle multichannel input'
+      )
+      ;;
+    (rate)
+      options=(
+        '-q:quality level is quick'
+        '-l:quality level is low'
+        '-m:quality level is medium'
+        '-g:quality level is generic'
+        '-h:quality level is high'
+        '-e:quality level is extreme'
+        '-v:quality level is very high'
+        '-u:quality level is ultra'
+      )
+      ;;
+    (remix)
+      options=(
+        '-a:retain the automatic scaling'
+        '-m:multiple files are mix-combined'
+        '-p:any automatic 1/n scaling is replaced by 1/sqrt(n) scaling'
+      )
+      ;;
+    (reverb)
+      options=(
+        '-w:select only the "wet" signal'
+      )
+      ;;
+    (sdm)
+      options=(
+        '-f:select the noise-shaping filter:filter:(($sox_ng_sdm_filters))'
+        '-t:number of paths to consider:num'
+        '-l:output latency(max 2048)'
+      )
+      ;;
+    (silence)
+      options=(
+        "-l:below-periods' duration of 'silent' audio should be left at the beginning of each period of silence"
+      )
+      ;;
+    (sinc)
+      options=(
+        '-a:override attenuation:att'
+        "-b:kaiser window's 'beta' parameter:beta"
+        '-p:any phase response:phase'
+        '-M:minimum phase response'
+        '-I:intermediate phase response'
+        '-L:linear phase response'
+        '-t:override the default transition bandwidth:tbw'
+        '-n:number of filter taps:taps'
+      )
+      ;;
+    (spectrogram)
+      options=(
+        '-x:change the width of the spectrogram:num'
+        '-X:X axis pixels per second:num'
+        '-y:set the size of the Y axis per channel in pixels:num'
+        '-Y:set the total height of the spectrogram:num'
+        '-z:Z axis range in DB:num'
+        '-Z:set the upper limit of the Z axis in dBFS:num'
+        '-n:normalize the upper limit of the Z axis'
+        '-q:set the Z axis quantization:num'
+        '-w:select a window function:func:(Hann Hamming Bartlett Rectangular Kaiser Dolph)'
+        '-W:window adjustment parameter:num'
+        '-s:allow slack overlapping of DFT windows'
+        '-m:create a monochrome spectrogram'
+        '-h:select a high-color palette'
+        '-p:permute the colors in a color or hybrid palette:num:(1 2 3 4 5 6)'
+        '-l:create a "printer-friendly" spectrogram with a light background'
+        '-a:suppress the display of the axis lines'
+        '-r:raw spectrogram'
+        '-A:select an alternative, fixed color set'
+        '-t:set the image title:title'
+        '-c:set the image comment:comment'
+        '-o:the name of the spectrogram output PNG file:file:_files'
+        '-L:plot the frequency on a logarithmic axis'
+        '-R:specify the frequency range:range'
+        '-d:set the X axis resolution such that audio with the given duration:duration'
+        '-S:start the spectrogram at the given point in the audio stream'
+      )
+      ;;
+    (speexdsp)
+      options=(
+        '-agc:enable automatic gain control and set target volume level:level'
+        '-denoise:enable nose reduction and set the maximum attenuation:max_db'
+        '-dereverb:enable reverb reduction'
+        '-fps:specify the number of frames per second:frames'
+        '-spf:specify the number of samples per frame:samples'
+      )
+      ;;
+    (splice)
+      options=(
+        '-h:audio=correlated, fade level=constant gain, transitions=smooth'
+        '-t:audio=correlated, fade level=constant gain, transitions=abrupt'
+        '-q:audio=uncorrelated, fade level=constant power, transitions=smooth'
+      )
+      ;;
+    (stat)
+      options=(
+        '-s:scale the input data by a given factor:scale'
+        '-rms:convert all averaged values to "root mean square" format'
+        "-freq:output the input's power spectrum"
+        '-v:display only the "Volume Adjustment"value'
+        '-d:display a hex dump of the 32-bit signed PCM data audio in internal buffer'
+        '-a:output the average power spectrum instead of the power spectrum'
+        '-h:use the "histogram algorithm" to calculated the integrated EBU R-128 loudness'
+        '-j:output in JSON format'
+      )
+      ;;
+    (stats)
+      options=(
+        '-b:three measurements are scale to a signed integer with the given number:bits'
+        '-x:behave the same way as -b except that the signed integers values are displayed in hexadecimal'
+        '-s:scale the three measurements by a given floating point number:scale'
+        '-w:short window size:time'
+      )
+      ;;
+    (synth)
+      options=(
+        '-j:select just intonation:key'
+        '-n:disable to incorporate the functionaly of gain'
+      )
+      ;;
+    (tempo)
+      options=(
+        '-q:use tree search instead of linear search'
+        '(-m -s -l)-m:optimize default values for music processing'
+        '(-m -s -l)-s:optimize default values for speech processing'
+        '(-m -s -l)-l:optimize default values for linear processing'
+      )
+      ;;
+    (vad)
+      options=(
+        '-t:level to use to trigger activity detection:level'
+        '-T:time constant to use to help ignore short bursts of sound:num'
+        '-s:the amount of audio to search for quieter/shorter bursts of audio:num'
+        '-g:allowed gap between quieter/shorter bursts of audio:num'
+        '-p:the amount of audio to preserve before the trigger point:num'
+        '-b:time for the initial noise estimate:num'
+        '-N:time used by the adaptive noise estimate when the noise level is increasing:num'
+        '-n:time used by the adaptive noise estimate when the noise level is decreasing:num'
+        '-r:amount of noise reduction to use in the detection algorithm:num'
+        "-f:frequency of the algorithm's processing measurements:num"
+        '-M:time constant used to smooth spectral measurements:num'
+        '-h:"Brick-wall" frequence of the high-pass filter:num'
+        '-l:"Brick-wall" frequence of the low-pass filter:num'
+        '-H:"Brick-wall" frequence of the high-pass lifter:num'
+        '-L:"Brick-wall" frequence of the low-pass lifter:num'
+      )
+      ;;
+  esac
+
+  _describe -t 'effect' 'effect options' options "$@" && ret=0
+  return ret
+}
+
+_sox_ng_soxi_ng() {
+  _arguments -s \
+    '-V[set verbosity]' \
+    '-T[change behavior of -s, -d, and -D. display the total across all given files]' \
+    '-t[show detected file type]' \
+    '-r[show sample-rate]' \
+    '-c[show number of channels]' \
+    '-s[show number of samples]' \
+    '-d[show duration in hours, minutes and seconds]' \
+    '-D[show duration in seconds]' \
+    '-b[show number of bits per sample]' \
+    '-B[show the bitrate averaged over the whole file]' \
+    '-p[show estimated sample precision in bits]' \
+    '-e[show the name of the audio encoding]' \
+    '-a[show file comments if available]' \
+    '*: :_files'
+}
+
+_sox_ng_audio_encoding_type() {
+  local -a types=(
+    'signed-integer:PCM data stored as signed integers'
+    'unsigned-integer:PCM data stored as unsigned integers'
+    'float:PCM data stored as IEEE 753 32-bit or 64-bit floating point numbers'
+    'floating-point:PCM data stored as IEEE 753 32-bit or 64-bit floating point numbers'
+    'a-law:internal telephony standard for logarithmic encoding to 8 bits per sample'
+    'u-law:the North American telephony standard for logarithmic encoding to 8 bits per sample'
+    'mu-law:the North American telephony standard for logarithmic encoding to 8 bits per sample'
+    'oki-adpcm:OKI 4-bit ADPCM has a precision equivalent to roughly 12-bit PCM'
+    'ima-adpcm:IMA 4-bit ADPCM has a precision equivalent to roughly 13-bit PCM'
+    'ms-adpcm:Microsoft 4-bit ADPCM has a precision equivalent to roughly 14-bit PCM'
+    'gsm-full-rate:GCM full rate audio format'
+  )
+
+  _describe -t types 'type' types "$@"
+}
+
+_sox_ng_supported_formats() {
+  local -a formats=(
+    'raw:Raw audio files'
+    '3gp:Third Generation Partnership Project format'
+    '3g2:Third Generation Partnership Project 2 format'.
+    '8svx:Amiga 8SVX musical instrument description format'
+    'aac:Advanced Audio Coding format'
+    'ac3:Audio Codec 3 (Dolby Digital) format'
+    'adts:Audio Data Transport Stream format'
+    'aiff:AIFF files as used on old Apple Macs, Apple IIc/IIgs and SGI'
+    'aiffc:AIFF-C is based on AIFF but also handles compressed audio'
+    'alsa:The Advanced Linux Sound Architecture'
+    'amb:Ambisonic B-Format'
+    'amr-nb:Adaptive Multi Rate Narrow and Wide Band'
+    "ao:Xiph.org's Audio Output device driver only works for playing audio"
+    "ape:Monkey's Audio format"
+    'apm:Ubisoft Rayman 2 APM format'
+    'aptx:Audio Processing Technology for Bluetooth format'
+    'argo_asf:Argonaut Games ASF format'
+    'asf:Advanced / Active Streaming Format'
+    'ast:AST Audio Stream format'
+    'au:Sun Microsystems AU files'
+    'avi:Audio Video Interleaved format'
+    'avr:Audio Visual Research format'
+    "caf:Apple's Core Audio File format"
+    'cdda:Red Book Compact Disc Digital Audio (raw audio)'
+    'coreaudio:The MacOS X CoreAudio'
+    'cvsd:Continuously Variable Slope Delta modulation'
+    'cvu:Unfiltered Continuously Variable Slope Delta modulation'
+    'dat:Text Data files contain a textual representation of sample data'
+    'dfpwm:DFPWM1a format'
+    'dts:Digital Theatre Systems format'
+    'dff:Direct Stream Digital Interchange File Format'
+    'dsf:DSD Stream File is a format defined by Sony for storing 1-bit DSD data'
+    'dvms:The Digital Voice Messaging System format'
+    'eac3:Enhanced AC-3 Audio'
+    'ffmpeg:pseudo-type that uses the external program ffmpeg'
+    'flv:Macromedia Flash Video format'
+    'fssd:Flexible Sound Studio Data format'
+    'gsrt:Grandstream ring-tone files'
+    'gsm:GSM 06.10 Lossy Speech Compression'
+    'gxf:General eXchange Format'
+    'hcom:Macintosh HCOM files'
+    'htk:Single channel 16-bit PCM format used by HTK'
+    'ima:A headerless file of IMA ADPCM audio data'
+    'ism:ISM streaming video format'
+    'kvag:Simon & Schuster Interactive VAG format'
+    'lpc:LPC-10'
+    'm4a:MPEG-4 Audio format'
+    'm4b:MPEG-4 Video format'
+    'mat4:Matlab 4.2 format'
+    'mat5:Matlab 5.0 format'
+    'm3u:A playlist format'
+    'maud:An IFF-conforming audio file type'
+    'mkv:Matroska video format'
+    'mlp:Meridian Lossless Packing format'
+    'mov:MPEG-1 Systems / MPEG program stream format'
+    'mp1:MP1 compressed audio'
+    'mp2:MP2 compressed audio'
+    'mp3:MP3 compressed audio'
+    'mp4:MPEG-4 video format'
+    'mpeg:MPEG-1 Systems / MPEG program stream format'
+    'mpegts:MPEG-TS (MPEG-2 Transport Stream) format'
+    'mxf:Material eXchange Format Operational Pattern OP1A "OP-Atom" format'
+    'nsp:NSP format'
+    'nut:NUT is a low overhead generic container format'
+    'ogg:Various Xiph.org audio formats in an Ogg container'
+    "vorbis:Xiph.org's Ogg Vorbis compressed audio"
+    "opus:Xiph.org's Opus compressed audio"
+    'oss:The Open Sound System'
+    'paf:Ensoniq PARIS file format'
+    'pls:A playlist format containing a list of audio files'
+    'prc:Psion Record format'
+    'pulseaudio:PulseAudio is a cross-platform networked sound server'
+    'pvf:Portable Voice Format'
+    'ra:RealAudio format'
+    'raw:Headerless audio data'
+    'rm:RealMedia format'
+    'rso:Lego Mindstorms RSO format'
+    'sbc:Bluetooth SIG low-complexity subband audio format'
+    'sd2:Sound Designer 2 format'
+    'sds:MIDI Sample Dump Standard'
+    'sf:IRCAM Sound Description Interchange Format'
+    "sln:Asterisk PBX 'signed linear' 8khz, 16-bit signed integer, little-endian raw format"
+    'smjpeg:Loki SDL MJPEG'
+    'smp:SMP format'
+    'snd:Several file formats use the .snd extension'
+    'sndfile:pseudo-type that forces libsndfile to be used'
+    'sndio:OpenBSD audio device driver'
+    'sndr:Sounder files are an MS-DOS/Windows format'
+    'sndt:SoundTool files are another MS-DOS/Windows format'
+    "sox:SoX's native uncompressed PCM format"
+    'spdif:IEC 61937 S/PDIF format'
+    'sph:SPHERE (SPeech HEader REsources)'
+    'spx:Ogg Speex format'
+    'sunau:The Sun /dev/audio device driver'
+    'tta:True Audio format'
+    'vag:Sony PS2 VAG format'
+    'txw:TXW is a file format from the Yamaha TX-16W sampling keyboard '
+    'voc:Sound Blaster VOC files'
+    'vox:Headerless files of Dialogic/OKI ADPCM audio data'
+    "w64:Sonic Foundry's 64-bit RIFF/WAV format"
+    'wav:Microsoft .WAV RIFF files'
+    'waveaudio:The MS-Windows native audio device driver'
+    'wavpcm:A non-standard but widely used variant of .wav'
+    'wma:Windows Media Audio format'
+    'wsaud:Westwood Studios audio format'
+    'wsd:Wideband Single-bit Data'
+    'wtv:Windows Television format'
+    'wv:WavPack lossless audio compression'
+    'wve:Psion 8-bit A-law'
+    'xa:Maxis XA files'
+    'xi:Fasttracker 2 Extended Instrument format'
+  )
+
+  _describe -t formats 'format' formats "$@"
+}
+
+_sox_ng_effects() {
+  local -a effects=(
+    'allpass:Apply a two-pole all-pass filter'
+    'band:Apply a band-pass filter'
+    'bandpass:Apply a two-pole Butterworth band-pass filter'
+    'bandreject:Apply a two-pole Butterworth band-reject filter'
+    'bass:Boost or cut the bass frequencies of the audio'
+    'bend:Changes the pitch by specified amounts at specified times without changing the duration'
+    'biquad:Apply a biquad Infinite Impulse Response filter'
+    'centercut:Remove the center from a stereo file leaving the far left and right parts of the stereo'
+    'channel:Invoke a simple algorithm to change the number of channels in the audio signal'
+    'chorus:Add a chorus effect to the audio'
+    'compand:Compand (compress or expand) the dynamic range of the audio'
+    'contrast:modify an audio signal to make it sound louder'
+    'dcshift:Apply a DC shift to the audio'
+    'deemph:Pre-emphasis was applied in the mastering of some CDs issued in the early 1980s'
+    'delay:Delay zero or more audio channels'
+    'dither:Apply dithering to the audio'
+    'dolbyb:Apply Dolby B decoding/encoding to its input signal'
+    'dop:DSD over PCM'
+    'downsample:Downsample the signal by an integer factor'
+    'earwax:move the sound stage from inside your head to outside and in front of you'
+    'echo:Add echoes to the audio'
+    'echos:Add a sequence of echoes to the audio'
+    'equalizer:Apply a two-pole peaking equalization filter'
+    'fade:Apply a fade effect to the beginning, end, or both of the audio'
+    "fir:Use SoX's FFT convolution engine with given Finite Impulse Response filter coefficients"
+    "firfit:Use SoX's FFT convolution engine to make a filter"
+    'flanger:Apply a flanging effect to the audio'
+    'gain:Apply amplification or attenuation to the audio signal'
+    'highpass:Apply a high-pass filter with 3dB point frequency'
+    'hilbert:Apply an odd-tap Hilbert transform filter'
+    "ladspa:Apply a LADSPA(Linux Audio Developer's Simple Plugin API) plugin"
+    'loudness:Loudness control is similar to the gain effect'
+    'lowpass:Apply a low-pass filter'
+    'mcompand:Apply the multi-band compander'
+    'noiseprof:Calculate a profile of the audio for use in noise reduction'
+    'noisered:Reduce noise in the audio signal by profiling and filtering'
+    'norm:Normalize the audio'
+    'oops:Out Of Phase Stereo effect'
+    'overdrive:Non-linear distortion'
+    'pad:Pad the audio with silence at the beginning, at the end or at any specified points'
+    'phaser:Add a phasing effect to the audio'
+    'pitch:Change the audio pitch but not the tempo'
+    'rate:Change the audio sampling rate'
+    'remix:Select and mix input audio channels into output audio channels'
+    'repeat:Repeat the entire audio count times, or once if count is not given'
+    'reverb:Add reverberation to the audio using the "freeverb" algorithm'
+    'reverse:Reverse the audio completely'
+    'riaa:Apply RIAA vinyl playback equalization'
+    'saturation:Add saturation, which can produce effects ranging from subtle warmth to crunchy fuzz'
+    'sdm:Apply a 1-bit sigma-delta modulator producing DSD output'
+    'silence:Removes silence from the beginning, middle or end of the audio'
+    'sinc:Apply a kaiser-windowed low-pass, high-pass, band-pass or band-reject filter'
+    'softvol:Apply a simple multiplier to the audio ensuring'
+    'spectrogram:Create a spectrogram of the audio'
+    'speed:Adjust the audio speed (pitch and tempo together)'
+    'speexdsp:Use the Speex DSP library to improve perceived sound quality'
+    'splice:Splice audio sections together'
+    'stat:Display time and frequency domain statistical information about the audio'
+    'stats:Display time domain statistical information about the audio channels'
+    'stretch:Change the audio duration but not its pitch'
+    'swap:Swap stereo channels'
+    'synth:Generate fixed or swept frequency audio tones with various wave shapes and wide-band noise'
+    'tempo:Change the audio playback speed but not its pitch'
+    'treble:Apply a treble tone control effect'
+    'tremolo:Apply a tremolo'
+    'trim:Cuts out portions of the audio'
+    'upsample:Upsample the signal by an integer factor'
+    'vad:Trim silence and quiet background sounds from the ends of recordings of speech'
+    'vol:Apply amplification or attenuation to the audio signal'
+  )
+
+  _describe -t effects 'effect' effects "$@"
+}
+
+case $service in
+  (soxi_ng)
+    _sox_ng_soxi_ng
+    ;;
+  (*)
+    _sox_ng_common
+    ;;
+esac
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
