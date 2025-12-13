@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for svm (https://github.com/yuroyoro/svm)
+#  Completion script for svm, Scala2 version manager (https://github.com/yuroyoro/svm)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -38,130 +38,120 @@
 #
 # ------------------------------------------------------------------------------
 
-local context curcontext="$curcontext" state line ret=1
-typeset -A opt_args
+_svm() {
+  local context curcontext="$curcontext" state line ret=1
+  typeset -A opt_args
 
+  _arguments -C \
+    '(- *)-h[show this usage information]' \
+    '-c[show the currently use scala version]' \
+    "-l[show the scala version installed in svm_path(default is ${HOME}/.svm)]" \
+    '-v[show the available scala version not installed]' \
+    '-i[install specific scala version]: :_svm_completion_not_installed_scala_versions' \
+    '-r[uninstall specific scala version and remove their sources]: :_svm_installed_scala_versions' \
+    '(-s -u)'{-s,-u}'[setup to use a specific scala version]: :_svm_not_selected_scala_versions' \
+    '1: :_svm_commands' \
+    '*:: :->args' && ret=0
 
-local -a _1st_arguments
-_1st_arguments=(
-  'help:show this usage information'
-  'current:show the currently use scala version'
-  "list:show the scala version installed in svm_path(default is ${HOME}/.svm)"
-  "versions:show the available scala version not installed"
-  'install:install specific scala version'
-  'remove:uninstall specific scala version and remove their sources'
-  'switch:setup to use a specific scala version'
-  'update-latest:install or update nightly build scala version'
-  'latest:setup to use nightly build scala version'
-  'stable:setup to use stable(x.x.x.final) scala version'
-  'self-update:update svm itself'
-)
+  case $state in
+    (args)
+      # scala version number
+      case $words[1] in
+        (install)
+          # install not installed version
+          _arguments \
+            '--docs[download scala-devel-docs]' \
+            '--sources[download scala-sources]' \
+            '1: :_svm_not_installed_scala_versions' \
+            && ret=0
+          ;;
+        (update-latest)
+          # update nightly build scala version
+          _arguments \
+            '--docs[download scala-devel-docs]' \
+            '--sources[download scala-sources]' \
+            && ret=0
+          ;;
+        (remove|uninstall)
+          # remove installed version
+          _arguments \
+            '1: :_svm_installed_scala_versions' \
+            && ret=0
+          ;;
+        (switch|use)
+          # use installed version
+          _arguments \
+            '1: :_svm_not_selected_scala_versions' \
+            && ret=0
+          ;;
+      esac
 
-_arguments -C \
-  '(-)-h[show this usage information]' \
-  '-c[show the currently use scala version]' \
-  "-l[show the scala version installed in svm_path(default is ${HOME}/.svm)]" \
-  '-v[show the available scala version not installed]' \
-  '-i[install specific scala version]: :_svm_completion_not_installed_scala_versions' \
-  '-r[uninstall specific scala version and remove their sources]: :_svm_completion_installed_scala_versions' \
-  '(-s -u)'{-s,-u}'[setup to use a specific scala version]: :_svm_completion_not_selected_scala_versions' \
-  '1: :->cmds' \
-  '*:: :->args' && ret=0
+      ;;  # end args
+  esac
 
+  return ret
+}
+
+(( $+functions[_svm_commands] )) ||
+_svm_commands() {
+  case $PREFIX in
+    (u*)
+      local -a synonyms=(
+        'uninstall:uninstall specific scala version and remove their sources'
+        'use:setup to use a specific scala version'
+        'update-latest:install or update nightly build scala version'
+      )
+
+      _describe -t actions 'svm actions' synonyms
+      ;;
+    (*)
+      local -a commands=(
+        'help:show this usage information'
+        'current:show the currently use scala version'
+        "list:show the scala version installed in svm_path(default is ${HOME}/.svm)"
+        "versions:show the available scala version not installed"
+        'install:install specific scala version'
+        'remove:uninstall specific scala version and remove their sources'
+        'switch:setup to use a specific scala version'
+        'update-latest:install or update nightly build scala version'
+        'latest:setup to use nightly build scala version'
+        'stable:setup to use stable(x.x.x.final) scala version'
+        'self-update:update svm itself'
+      )
+
+      _describe -t actions 'svm actions' commands
+      ;;
+  esac
+}
 
 # installed scala versions
-(( $+functions[_svm_completion_installed_scala_versions] )) ||
-_svm_completion_installed_scala_versions() {
-  local -a _installed_versions
-  _current_version="${$(_call_program installed svm current)#currently version is[[:space:]]*}"
-
+(( $+functions[_svm_installed_scala_versions] )) ||
+_svm_installed_scala_versions() {
   # collect lines starts with digit
-  _installed_versions=( ${(M)${(@f)"$(_call_program installed svm list)"}:#[[:digit:]]*} )
-
-  _describe -t installed "installed versions" _installed_versions
+  local -a installed_versions=( ${(M)${(@f)"$(_call_program installed svm list)"}:#[[:digit:]]*} )
+  _describe -t installed "installed versions" installed_versions
 }
 
 # installed and not selected scala versions
-(( $+functions[_svm_completion_not_selected_scala_versions] )) ||
-_svm_completion_not_selected_scala_versions() {
-  local _current_version
-  local -a _not_selected_versions
-
-  _current_version="${$(_call_program installed svm current)#currently version is[[:space:]]*}"
-
-  # collect lines starts with digit
-  _not_selected_versions=( ${(M)${(@f)"$(_call_program installed svm list)"}:#[[:digit:]]*} )
+(( $+functions[_svm_not_selected_scala_versions] )) ||
+_svm_not_selected_scala_versions() {
+  local current_version=$(_call_program current svm current | sed 's/currently version is //')
+  local -a not_selected_versions=( ${(M)${(@f)"$(_call_program installed svm list)"}:#[[:digit:]]*} )
 
   # remove current version
-  _not_selected_versions=( ${_not_selected_versions:#$_current_version})
-  _describe -t installed "not selected versions" _not_selected_versions
+  not_selected_versions=( ${not_selected_versions:#$current_version})
+  _describe -t installed "not selected versions" not_selected_versions
 }
 
 # not installed scala versions
-(( $+functions[_svm_completion_not_installed_scala_versions] )) ||
-_svm_completion_not_installed_scala_versions() {
-  local -a _not_installed_versions
-  # collect lines starts with digit
-  _not_installed_versions=( ${(M)${(@f)"$(_call_program installed svm versions)"}:#[[:digit:]]*} )
+(( $+functions[_svm_not_installed_scala_versions] )) ||
+_svm_not_installed_scala_versions() {
+  local -a not_installed_versions=( ${(M)${(@f)"$(_call_program installed svm versions)"}:#[[:digit:]]*} )
 
-  _describe -t notinstalled "not installed versions" _not_installed_versions
+  _describe -t notinstalled "not installed versions" not_installed_versions
 }
 
-
-case $state in
-  cmds)
-    # action
-    case $PREFIX in
-      u*)
-        # complete command synonyms
-        local -a _synonym_arguments
-        _synonym_arguments=(
-          'uninstall:uninstall specific scala version and remove their sources'
-          'use:setup to use a specific scala version'
-          'update-latest:install or update nightly build scala version'
-        )
-        _describe -t actions 'svm actions' _synonym_arguments && ret=0
-        ;;
-
-      *)
-        _describe -t actions 'svm actions' _1st_arguments
-        _svm_completion_not_selected_scala_versions && ret=0
-        ;;
-    esac
-    ;;  # end action
-
-  args)
-    # scala version number
-    case $words[1] in
-      (install)
-        # install not installed version
-        _arguments \
-          '1: :_svm_completion_not_installed_scala_versions' \
-          '--docs[download scala-devel-docs]' \
-          '--sources[download scala-sources]' && ret=0
-        ;;
-      (update-latest)
-        # update nightly build scala version
-        _arguments \
-          '--docs[download scala-devel-docs]' \
-          '--sources[download scala-sources]' && ret=0
-        ;;
-      (remove|uninstall)
-        # remove installed version
-        _arguments \
-          '1: :_svm_completion_installed_scala_versions' && ret=0
-        ;;
-      (switch|use)
-        # use installed version
-        _arguments \
-          '1: :_svm_completion_not_selected_scala_versions' && ret=0
-        ;;
-    esac
-
-    ;;  # end args
-esac
-
-return ret
+_svm "$@"
 
 # Local Variables:
 # mode: Shell-Script
