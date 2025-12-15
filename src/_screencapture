@@ -34,7 +34,7 @@
 #
 # ------------------------------------------------------------------------------
 
-_arguments \
+_arguments -s \
   '-c[force screen capture to go to the clipboard]' \
   '(-i -J -s -w -W)-b[capture touch bar only non interactive modes]' \
   '(-b -i -J -s -w -W)-C[capture the cursor as well as the screen only in non interactive modes]' \
