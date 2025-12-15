@@ -3,7 +3,7 @@
 # Description
 # -----------
 #
-#  Completion script for emulator (Android Emulator) 12.0
+#  Completion script for emulator (Android Emulator) 35.3.11.0
 #  (https://developer.android.com/studio/run/emulator-command).
 #
 # ------------------------------------------------------------------------------
@@ -14,119 +14,274 @@
 #
 # ------------------------------------------------------------------------------
 
+_emulator() {
+  typeset -A opt_args
+  local context state line curcontext="$curcontext"
+  local ret=1
 
-typeset -A opt_args
-local context state line curcontext="$curcontext"
+  local -a option_names=(
+    list-avds sysdir system vendor writable-system delay-adb datadir
+    kernel ramdisk image initdata data encryption-key logcat-output
+    partition-size cache cache-size no-cache nocache sdcard
+    quit-after-boot qemu-top-dir monitor-adb snapstorage
+    no-snapstorage snapshot no-snapshot no-snapshot-save
+    no-snapshot-load force-snapshot-load qcow2-for-userdata
+    snapshot-list no-snapshot-update-time wipe-data avd avd-arch
+    skindir skin no-skin noskin memory ui-only id cores accel no-accel
+    ranchu engine netspeed netdelay netfast code-profile show-kernel
+    shell no-jni nojni dalvik-vm-checkjni logcat log-nofilter
+    log-detailed no-audio noaudio audio radio port ports
+    modem-simulator-port onion onion-alpha onion-rotation dpi-device
+    scale wifi-client-port wifi-server-port http-proxy timezone
+    change-language change-country change-locale dns-server net-tap
+    net-socket net-tap-script-up net-tap-script-down cpu-delay
+    no-boot-anim no-window qt-hide-window no-sim lowram version
+    no-passive-gps gnss-file-path gnss-grpc-port virtio-console
+    read-only is-restart report-console gps shell-serial tcpdump
+    bootchart charmap studio-params prop shared-net-id nand-limits gpu
+    use-host-vulkan vsync-rate camera-back camera-front webcam-list
+    virtualscene-poster screen selinux unix-pipe fixed-scale
+    wait-for-debugger skip-adb-auth metrics-to-console
+    metrics-collection metrics-to-file no-metrics detect-image-hang
+    feature icc-profile sim-access-rules-file phone-number acpi-config
+    fuchsia window-size allow-host-audio restart-when-stalled
+    perf-stat share-vid grpc grpc-tls-key grpc-tls-cer grpc-tls-ca
+    grpc-use-token grpc-use-jwt grpc-allowlist idle-grpc-timeout
+    waterfall grpc-ui packet-streamer-endpoint netsim-args
+    multidisplay google-maps-key no-location-ui use-keycode-forwarding
+    record-session legacy-fake-camera camera-hq-edge no-direct-adb
+    check-snapshot-loadable no-hidpi-scaling no-mouse-reposition
+    guest-angle usb-passthrough append-userspace-opt save-path
+    no-nested-warnings wifi-tap wifi-tap-script-up
+    wifi-tap-script-down wifi-socket vmnet-bridged vmnet-shared
+    vmnet-start-address ting mnet_end_address vmnet-end-address
+    vmnet-subnet-mask vmnet-isolated wifi-user-mode-options
+    network-user-mode-options adb-path hotplug-multi-display xts
+    wifi-mac-address no-ethernet android-serialno
+  )
 
-_list_avds() {
+  local -a help_flags=()
+  for name in $option_names[@]
+  do
+    help_flags+=("(- *)-help-${name}[print -${name} help message]")
+  done
+
+  # TODO All image options are contextual to -sysdir value
+  # TODO All skin options are contextual to -skindir value
+  # TODO snapshot options are mutually exclusive
+  # TODO Use '-snapshot-list' output for snapshot names
+  # TODO -logcat: use completer from _adb
+  # TODO Complete options with device values
+  # TODO Complete -prop
+  _arguments -C \
+    '-list-avds[list available AVDs]' \
+    '-sysdir[search for system disk images in the directory]: :_files -/' \
+    '-vendor[read initial vendor image]: :_files' \
+    "-writable-system[make system image writable after 'adb remount']" \
+    '-delay-adb[delay adb communication till boot completes]' \
+    '-datadir[write user data into the directory]: :_files -/' \
+    '-kernel[use specific emulated kernel]: :_files' \
+    '(-system -image)'{-system,-image}'[read initial system image from the file]: :_files -g "*.img"' \
+    '-ramdisk[ramdisk image (default <system>/ramdisk.img]: :_files -g "*.img"' \
+    "-initdata[same as '-init-data <file>']: :_files" \
+    '-data[data image (default <datadir>/userdata-qemu.img]: :_files -g "*.img"' \
+    '-encryption-key[read initial encryption key image]: :_files' \
+    '-logcat-output[output file of logcat]: :_files' \
+    '-partition-size[system/data partition size]:size (in MBs)' \
+    '(-no-cache -nocache)-cache[cache partition image (default is temporary file)]: :_files -g "*.img"' \
+    '(-cache -no-cache -nocache)'{-no-cache,-nocache}'[disable the cache partition]' \
+    '-sdcard[SD card image (default <system>/sdcard.img]: :_files -g "*.img"' \
+    '-quit-after-boot[quit emulator after guest boots completely]' \
+    '-qemu-top-dir[use the emulator in the specified dir]: :_files -/' \
+    '-monitor-adb[monitor the adb messages between guest and host]:verbose_level' \
+    '(-no-snapstorage)-snapstorage[file that contains all state snapshots]: :_files -g "*.img"' \
+    '(-snapstorage)-no-snapstorage[do not mount a snapshot storage file]' \
+    "-snapshot[name of snapshot within storage file for auto-start and auto-save]:snapshot name" \
+    '-no-snapshot[perform a full boot and do not do not auto-save, but qemu vmload and vmsave operate on snapstorage]' \
+    '-no-snapshot-save[do not auto-save to snapshot on exit: abandon changed state]' \
+    '-no-snapshot-load[do not auto-start from snapshot: perform a full boot]' \
+    '-force-snapshot-load[force starting from snapshot]' \
+    '-qcow2-for-userdata[use qcow2 for userdata]' \
+    '-snapshot-list[show a list of available snapshots]' \
+    '-no-snapshot-update-time[do not do try to correct snapshot time on restore]' \
+    '-wipe-data[reset the user data image (copy it from initdata)]' \
+    '-avd[use a specific android virtual device]:android virtual device name:($(_emulator_list_avds))' \
+    '-avd-arch[use a specific target architecture]:target' \
+    '-skindir[search skins in <dir> (default <system>/skins)]: :_files -/' \
+    '-skin[select a given skin]' \
+    '(-noskin -no-skin)'{-noskin,-no-skin}'[don'\''t use any emulator skin]' \
+    '-memory[physical RAM size in MBs]:size (in MBs)' \
+    '-ui-only[run only the UI feature requested]:feature' \
+    '-id[assign an ID to this virtual device]:id' \
+    '-cores[Set number of CPU cores to emulator]:number' \
+    '(-no-accel)-accel[Configure emulation acceleration]:mode' \
+    "(-accel)-no-accel[Same as '-accel off']" \
+    '-ranchu[use new emulator backend instead of the classic one]' \
+    '-engine[select engine]:engine:(auto classic qemu2)' \
+    '-netspeed[maximum network download/upload speeds]:speed' \
+    '-netdelay[network latency emulation]:delay' \
+    '-netfast[disable network shaping]' \
+    '-code-profile[enable code profiling]:profile' \
+    '-show-kernel[display kernel messages]' \
+    '-shell[enable root shell on current terminal]' \
+    {-no-jni,-nojni}'[disable JNI checks in the Dalvik runtime]' \
+    '-logcat[enable logcat output with given tags]:logcat tags' \
+    '-logcat-nofilter[disable the duplicate log filter]' \
+    '-log-detailed[enable detailed logging info]' \
+    '(-audio -noaudio -no-audio)'{-noaudio,-no-audio}'[disable audio support]' \
+    '(-noaudio -no-audio)-audio[use specific audio backend]:audio backend' \
+    '-radio[redirect radio modem interface to character device]:device' \
+    '-port[TCP port that will be used for the console]:port number' \
+    '-ports[TCP ports used for the console and adb bridge]:console port,adb port' \
+    '-modem-simulator-port[TCP port to use for android modem simulator]:port' \
+    '-onion[use overlay PNG image over screen]: :_files -g "*.(png|PNG)"' \
+    '-onion-alpha[specify onion-skin translucency]:percentage' \
+    '-onion-rotation[specify onion-skin rotation]:rotation:(0 1 2 3)' \
+    '-dpi-device[specify device'\''s resolution in dpi (default 165)]:dpi' \
+    '-scale[scale emulator window]:scale' \
+    '-wifi-client-port[connect to other emulator for WiFi forwarding]:port' \
+    '-wifi-server-port[listen to other emulator for WiFi forwarding]:port' \
+    '-http-proxy[make TCP connections through a HTTP/HTTPS proxy]:proxy' \
+    "-timezone[use this timezone instead of the host's default]:timezone" \
+    '-change-language[use this language instead of the current one]:language' \
+    '-change-country[use this country instead of the current one]:country' \
+    '-change-locale[use this locale instead of the current one]' \
+    '-dns-server[use this DNS server(s) in the emulated system]:DNS servers' \
+    '-net-tap[use this TAP interface for network]:interface' \
+    '-net-socket[use Socket interface for network]:option' \
+    '-net-tap-script-up[script to run when the TAP interface goes up]: :_files' \
+    '-net-tap-script-down[script to run when the TAP interface goes down]: :_files' \
+    '-cpu-delay[throttle CPU emulation]:CPU delay' \
+    '-no-boot-anim[disable animation for faster boot]' \
+    '-no-window[disable graphical window display]' \
+    '-qt-hide-window[start QT window but hide window display]' \
+    '-no-sim[device has no SIM card]' \
+    '-lowram[device is a low ram device]' \
+    '(- : *)-version[display emulator version number]' \
+    '-no-passive-gps[disable passive gps updates]' \
+    '-gnss-file-path[use the specified filepath to read gnss data]: :_files' \
+    '-gnss-grpc-port[use the specified port number to start grpc service]:port' \
+    '-virtio-console[using virtio console as console]' \
+    '-read-only[allow running multiple instances of emulators on the same AVD]' \
+    '-is-restart[specify that this emulator was a restart and to wait out given PID]: :_pids' \
+    '-report-console[report console port to remote socket]: :_socket' \
+    '-gps[redirect NMEA GPS to character device]:device' \
+    '-shell-serial[specific character device for root shell]:device' \
+    '-tcpdump[capture network packets to file]: :_files' \
+    '-bootchart[enable bootcharting]:timeout' \
+    '-charmap[use specific key character map]: :_files' \
+    '*-prop[set system property on boot]:name=value' \
+    '-shared-net-id[join the shared network, using IP address 10.1.2.<number>]:number' \
+    '-nand-limits[enforce NAND/Flash read/write thresholds]:limits' \
+    '-gpu[set hardware OpenGLES emulation mode]:mode' \
+    '-use-host-vulkan[use host for vulkan emulation regardless of "gpu" mode]' \
+    '-vsync-rate[set the vsync rate]:rate' \
+    '-camera-back[set emulation mode for a camera facing back]:mode' \
+    '-camera-front[set emulation mode for a camera facing front]:mode' \
+    '-webcam-list[list web cameras available for emulation]' \
+    '*-virtualscene-poster[load a png or jpeg image as a poster in the virtual scene]' \
+    '-screen[set emulated screen mode]:mode' \
+    '-selinux[set SELinux mode]:mode:(disabled permissive)' \
+    '-unix-pipe[add path to the list of allowed Unix pipes]:file:_files' \
+    '-fixed-scale[use fixed 1:1 scale for the initial emulator window]' \
+    '-wait-for-debugger[pause an launch and wait for a debugger process to attach before resuming]' \
+    '-skip-adb-auth[skip adb authentication dialogue]' \
+    '-metrics-to-console[enable usage metrics and print the messages to stdout]' \
+    '-metrics-collection[enable usage metrics and send them to google play]' \
+    '-metrics-to-file[enable usage metrics and write the messages into specified file]: :_files' \
+    '-no-metrics[disable metrics collection]' \
+    '-detect-image-hang[enable the detection of system image hangs]' \
+    '*-feature[force-enable or disable the features]:name' \
+    '-icc-profile[use icc profile from specified file]: :_files' \
+    '-sim-access-rules-file[use SIM access rules from specified file]: :_files' \
+    '-phone-number[set the phone number of the emulated device]:phone_number' \
+    '-acpi-config[specify acpi device properties]: :_files' \
+    '-fuchsia[run Fuchsia image]' \
+    '-window-size[set window size for when bypassing android-specific setup]:size' \
+    '-allow-host-audio[allow sending of audio from audio input devices]' \
+    '-restart-when-stalled[allow restarting guest when it is stalled]' \
+    '-perf-stat[run pediodic perf stat reporter in the background and output to specified file]: :_files' \
+    '-share-vid[share current video state in shared memory region]' \
+    '-grpc[TCP ports used for the gRPC bridge]' \
+    '-grpc-tls-key[file with the private key used to enable gRPC TLS]: :_files' \
+    '-grpc-tls-cer[file with the public X509 certificate used to enable gRPC TLS]: :_files' \
+    '-grpc-tls-ca[file with the Certificate Authorities used to validate client certificates]: :_files' \
+    '-grpc-use-token[use the emulator console token for gRPC authentication]' \
+    '-grpc-use-jwt[use a signed JWT token for gRPC authentication]' \
+    '-grpc-allowlist[use a custom allow list for gRPC authentication]: :_files' \
+    '-idle-grpc-timeout[terminate the emulrator if there is no gRPC activity within the given second]:seconds' \
+    '-waterfall[mode in which to run waterfall]:mode' \
+    '-grpc-ui[use the experimental gRPC ui]' \
+    '-packet-streamer-endpoint[use the provided packet streamer endpoint when present]:uri:_urls' \
+    '-netsim-args[additional netsim arguments]' \
+    '-google-maps-key[API key to use with the Google Maps GUI]:api_key' \
+    '-no-location-ui[disable the location UI in the extended window]' \
+    '-use-keycode-forwarding[use keycode forwarding instead of host charmap translation]' \
+    '-record-session[screen record the emulator session]' \
+    '-legacy-fake-camera[use legacy camera HAL for the emulated fake camera]' \
+    '-camera-hq-edge[enable high qualify edge processing for emulated camera]' \
+    '-no-direct-adb[use external adb executable for internal communication]' \
+    '-check-snapshot-loadable[check if a snapshot is loadable]' \
+    '-no-hidpi-scaling[disable HiDPI scaling of guest display on macOS devices]' \
+    '-no-mouse-reposition[do not reposition the mouse to emulator window center]' \
+    '-guest-angle[enable guest ANGLE as system driver]' \
+    '-usb-passthrough[host USB device Passthrough]:param' \
+    '*-append-userspace-opt[append a property which is passed to the userspace]:param' \
+    '-save-path[override save path for screenshot and bug report]: :_files' \
+    '-no-nested-warnings[disable warning dialog when emulator is running in nested virtualization]' \
+    '-wifi-tap[use this TAP interface for Virtio Wi-Fi]: :_files' \
+    '-wifi-tap-script-up[script to run when the TAP interface goes up]: :_files' \
+    '-wifi-tap-script-down[script to run when the TAP interface goes down]: :_files' \
+    '-wifi-socket[use Socket interface for Virtio Wi-Fi]: :_socket' \
+    '-vmnet-bridged[enable vmnet framework in shared mode]: :_files' \
+    '-vmnet-shared[enable vmnet framework in shared mode]' \
+    '-vmnet-start-address[starting IPv4 address to assing using DHCP]:v4_addr' \
+    '-vmnet-end-address[ending IPv4 address to assing using DHCP]:v4_addr' \
+    '-vmnet-subnet-mask[IPv4 netmask to assing using DHCP]:v4_addr' \
+    '-vmnet-isolated[enable isolation for the interface]' \
+    '-wifi-user-mode-options[override default user mode networking option for wifi network]:options' \
+    '-network-user-mode-options[override default user mode networking option for both radio and wifi network]:options' \
+    '-adb-path[use adb binary from specified path]: :_files' \
+    '-hotplug-multi-display[use the HAL hotplug display to implement multiDisplay]' \
+    '-xts[use android64-xts CPU profile instead of the default one]' \
+    '-wifi-mac-address[override the mac address of the wlan0 interface in AVD]:mac_address' \
+    '-no-ethernet[disable virtual Ethernet interface en0]' \
+    '-android-serialno[set customized android serial number]:serial_no' \
+    '-qemu[pass arguments to qemu]:arguments' \
+    "-verbose[same as '-debug-init']" \
+    '*'{-debug,-debug-,-debug-no-}'[enable/disable specific debug messages]:tag' \
+    '(- : *)-help[display help information]' \
+    '(- : *)-help-disk-images[about disk images]' \
+    '(- : *)-help-debug-tags[debug tags for -debug <tags>]' \
+    '(- : *)-help-char-devices[character <device> specification]' \
+    '(- : *)-help-environment[environment variables]' \
+    '(- : *)-help-virtual-device[virtual device management]' \
+    '(- : *)-help-sdk-images[about disk images when using the SDK]' \
+    '(- : *)-help-build-images[about disk images when building Android]' \
+    '(- : *)-help-all[prints all help content]' \
+    $help_flags[@] \
+    '1: :->cmds' \
+    '*:: :->args' && ret=0
+
+  case $state in
+    (cmds)
+      local -a avds=($(_emulator_list_avds))
+      for ((i=1; i<=${#avds[@]}; i++)); do
+        avds[i]="@${avds[i]}"
+      done
+      _values 'avds' "${avds[@]}"
+      ;;
+  esac
+
+  return ret
+}
+
+_emulator_list_avds() {
   local -a _avds=($HOME/.android/avd/*.ini(N.:t:r))
   echo "${_avds[@]}"
 }
 
-# TODO All image options are contextual to -sysdir value
-# TODO All skin options are contextual to -skindir value
-# TODO snapshot options are mutually exclusive
-# TODO Use '-snapshot-list' output for snapshot names
-# TODO -logcat: use completer from _adb
-# TODO Complete options with device values
-# TODO Complete -prop
-_arguments \
-  '(- : *)-version[display emulator version number]' \
-  '(- : *)-help[display help information]' \
-  '(- : *)-help-disk-images[about disk images]' \
-  '(- : *)-help-keys[supported key bindings]' \
-  '(- : *)-help-debug-tags[debug tags for -debug <tags>]' \
-  '(- : *)-help-char-devices[character <device> specification]' \
-  '(- : *)-help-environment[environment variables]' \
-  '(- : *)-help-keyset-file[key bindings configuration file]' \
-  '(- : *)-help-virtual-device[virtual device management]' \
-  '(- : *)-help-sdk-images[about disk images when using the SDK]' \
-  '(- : *)-help-build-images[about disk images when building Android]' \
-  '(- : *)-help-all[prints all help content]' \
-  '(- : *)-help-'{version,list-avds,sysdir,system,writable-system,image,datadir,kernel,ramdisk,initdata,data,partition-size,cache,no-cache,nocache,sdcard,snapstorage,no-snapstorage,snapshot,no-snapshot,no-snapshot-save,no-snapshot-load,snapshot-list,no-snapshot-update-time,wipe-data,avd,skindir,skin,noskin,no-skin,memory,cores,accel,no-accel,netspeed,netdelay,netfast,trace,show-kernel,shell,no-jni,nojni,logcat,noaudio,no-audio,audio,raw-keys,radio,port,ports,onion,onion-alpha,onion-rotation,scale,dpi-device,http-proxy,timezone,dns-server,cpu-delay,no-boot-anim,no-window,report-console,gps,keyset,shell-serial,tcpdump,bootchart,charmap,prop,shared-net-id,nand-limits,memcheck,qemu,verbose}'[print option-specific help]' \
-  '-list-avds[list available AVDs]' \
-  '-sysdir[search for system disk images in the directory]: :_files -/' \
-  '(-system -image)'{-system,-image}'[read initial system image from the file]: :_files -g "*.img"' \
-  '-writable-system[make system image writable after '\''adb remount'\'']' \
-  '-datadir[write user data into the directory]: :_files -/' \
-  '-kernel[use specific emulated kernel]: :_files' \
-  '-ramdisk[ramdisk image (default <system>/ramdisk.img]: :_files -g "*.img"' \
-  '-initdata[same as '\''-init-data <file>'\'']: :_files' \
-  '-data[data image (default <datadir>/userdata-qemu.img]: :_files -g "*.img"' \
-  '-partition-size[system/data partition size]:size (in MBs)' \
-  '(-no-cache -nocache)-cache[cache partition image (default is temporary file)]: :_files -g "*.img"' \
-  '(-cache -no-cache -nocache)'{-no-cache,-nocache}'[disable the cache partition]' \
-  '-sdcard[SD card image (default <system>/sdcard.img]: :_files -g "*.img"' \
-  '(-no-snapstorage)-snapstorage[file that contains all state snapshots (default <datadir>/snapshots.img)]: :_files -g "*.img"' \
-  '(-snapstorage)-no-snapstorage[do not mount a snapshot storage file (this disables all snapshot functionality)]' \
-  '-snapshot[name of snapshot within storage file for auto-start and auto-save (default '\''default-boot'\'')]:snapshot name' \
-  '-no-snapshot[perform a full boot and do not do not auto-save, but qemu vmload and vmsave operate on snapstorage]' \
-  '-no-snapshot-save[do not auto-save to snapshot on exit: abandon changed state]' \
-  '-no-snapshot-load[do not auto-start from snapshot: perform a full boot]' \
-  '-snapshot-list[show a list of available snapshots]' \
-  '-no-snapshot-update-time[do not do try to correct snapshot time on restore]' \
-  '-wipe-data[reset the user data image (copy it from initdata)]' \
-  '-avd[use a specific android virtual device]:android virtual device name:($(_list_avds))' \
-  '-skindir[search skins in <dir> (default <system>/skins)]: :_files -/' \
-  '-skin[select a given skin]' \
-  '(-noskin -no-skin)'{-noskin,-no-skin}'[don'\''t use any emulator skin]' \
-  '-memory[physical RAM size in MBs]:size (in MBs)' \
-  '-cores[Set number of CPU cores to emulator]:number' \
-  '(-no-accel)-accel[Configure emulation acceleration]:mode' \
-  '(-accel)-no-accel[Same as '\''-accel off'\'']' \
-  '-netspeed[maximum network download/upload speeds]:speed' \
-  '-netdelay[network latency emulation]:delay' \
-  '-netfast[disable network shaping]' \
-  '-trace[enable code profiling (F9 to start)]:trace name' \
-  '-show-kernel[display kernel messages]' \
-  '-shell[enable root shell on current terminal]' \
-  {-no-jni,-nojni}'[disable JNI checks in the Dalvik runtime]' \
-  '-logcat[enable logcat output with given tags]:logcat tags' \
-  '(-audio -noaudio -no-audio)'{-noaudio,-no-audio}'[disable audio support]' \
-  '(-noaudio -no-audio)-audio[use specific audio backend]:audio backend' \
-  '-raw-keys[disable Unicode keyboard reverse-mapping]' \
-  '-radio[redirect radio modem interface to character device]:device' \
-  '-port[TCP port that will be used for the console]:port number' \
-  '-ports[TCP ports used for the console and adb bridge]:console port,adb port' \
-  '-onion[use overlay PNG image over screen]: :_files -g "*.(png|PNG)"' \
-  '-onion-alpha[specify onion-skin translucency]:percentage' \
-  '-onion-rotation[specify onion-skin rotation]:rotation:((1 2 3 4))' \
-  '-scale[scale emulator window]:scale' \
-  '-dpi-device[specify device'\''s resolution in dpi (default 165)]:dpi' \
-  '-http-proxy[make TCP connections through a HTTP/HTTPS proxy]:proxy' \
-  '-timezone[use this timezone instead of the host'\''s default]:timezone' \
-  '-dns-server[use this DNS server(s) in the emulated system]:DNS servers' \
-  '-cpu-delay[throttle CPU emulation]:CPU delay' \
-  '-no-boot-anim[disable animation for faster boot]' \
-  '-no-window[disable graphical window display]' \
-  '-report-console[report console port to remote socket]: :_socket' \
-  '-gps[redirect NMEA GPS to character device]:device' \
-  '-keyset[specify keyset file name]: :_files' \
-  '-shell-serial[specific character device for root shell]:device' \
-  '-tcpdump[capture network packets to file]: :_files' \
-  '-bootchart[enable bootcharting]:timeout' \
-  '-charmap[use specific key character map]: :_files' \
-  '*-prop[set system property on boot]:name=value' \
-  '-shared-net-id[join the shared network, using IP address 10.1.2.<number>]:number' \
-  '-nand-limits[enforce NAND/Flash read/write thresholds]:limits' \
-  '-memcheck[enable memory access checking]:flags' \
-  '-qemu[pass arguments to qemu]:arguments' \
-  '-verbose[same as '\''-debug-init'\'']' \
-  '*'{-debug,-debug-,-debug-no-}'[enable/disable specific debug messages]:tag' \
-  '1: :->cmds' \
-  '*:: :->args' && ret=0
-
-case $state in
-  cmds)
-    local -a _avds=($(_list_avds))
-    for ((i=1; i<=${#_avds[@]}; i++)); do
-      _avds[i]="@${_avds[i]}"
-    done
-    _values 'avds' "${_avds[@]}"
-    ;;
-esac
-
-return ret
+_emulator "$@"
 
 # Local Variables:
 # mode: Shell-Script
