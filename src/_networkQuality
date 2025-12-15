@@ -34,10 +34,10 @@
 #
 # ------------------------------------------------------------------------------
 
-_arguments \
+_arguments -s \
   '-b[Show Bonjour advertised networkQuality servers]' \
   '-B[Run against specified Bonjour instance]:name' \
-  '-C[Use custom configuration URL or path]:url_or_path' \
+  '-C[Use custom configuration URL or path]:url_or_path:_urls' \
   '-f[Force usage of a specific protocol selection]:option:(h1 h2 h3 L4S noL4S)' \
   '-I[Bind test to interface]:interface:_net_interfaces' \
   '-M[Maximum runtime in seconds]:seconds' \

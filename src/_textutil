@@ -39,15 +39,15 @@ local -a format=(txt html rtf rtfd doc docx wordml odt webarchive)
 _arguments -S \
   '-help[Show the usage information for the command and exit]' \
   '-info[Display information about the specified files]' \
-  '-convert[Convert the specified files to the indicated format and write]:format:'"($format)" \
-  '-cat[Read the specified files, concatenate them in the indicated format]:format:'"($format)" \
+  '-convert[Convert the specified files to the indicated format and write]:format:(($format))' \
+  '-cat[Read the specified files, concatenate them in the indicated format]:format:(($format))' \
   '-extension[Specify an extension to be used for output files]:ext' \
   '-output[Specify the file name to be used for the first output file]:path:_files' \
   '-stdin[Specify that input should be read from stdin rather than from files]' \
   '-stdout[Specify that the first output file should go to stdout]' \
-  '-encoding[Specify the encoding to be used for plain text or HTML output files]:encode' \
+  '-encoding[Specify the encoding to be used for plain text or HTML output files]:name' \
   '-inputencoding[Force all plain text input files to be interpreted using the specified encoding]' \
-  '-format[Force all input files to be interpreted using the indicated format]:format:'"($format)" \
+  '-format[Force all input files to be interpreted using the indicated format]:format:(($format))' \
   '-font[Specify the name of the font to be used for converting plain to rich text]:font' \
   '-fontsize[Specify the size in points of the font to be used for converting plain to rich text]:size' \
   '-noload[Do not load subsidiary resources]' \
