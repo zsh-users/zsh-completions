@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for zcash-cli (https://z.cash).
+#  Completion script for zcash-cli v6.10.0 (https://z.cash).
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -38,139 +38,148 @@
 #
 # ------------------------------------------------------------------------------
 
-local state line curcontext="$curcontext" ret=1
+_zcash_cli_commands() {
+  local -a commands=(
+    'addmultisigaddress:Add a nrequired-to-sign transparent multisignature address to the wallet'
+    'addnode:Attempts to add or remove a node from the addnode list'
+    'backupwallet:Safely copies current wallet file to destination filename'
+    'clearbanned:Clear all banned IPs'
+    'createmultisig:Creates a multi-signature address with n signature of m keys required'
+    'decoderawtransaction:Return a JSON object representing the serialized, hex-encoded transaction'
+    'decodescript:Decode a hex-encoded script'
+    'disconnectnode:Immediately disconnects from the specified node'
+    'dumpprivkey:Reveals the private key corresponding to "t-addr"'
+    'encryptwallet:Encrypts the wallet with "passphrase"'
+    'generate:Mine blocks immediately'
+    'getaddednodeinfo:Returns information about the given added node, or all added nodes'
+    'getaddressbalance:Returns the balance for addresses'
+    'getaddressdeltas:Returns all changes for an address'
+    'getaddressmempool:Returns all mempool deltas for an address'
+    'getaddresstxids:Returns the txids for given transparent addresses within the given'
+    'getaddressutxos:Returns all unspent outputs for an address'
+    "getbalance:Returns the wallet's available transparent balance"
+    'getbestblockhash:Returns the hash of the best (tip) block in the longest block chain'
+    'getblock:return data for the block'
+    'getblockchaininfo:Returns an object containing various state info regarding block chain processing'
+    'getblockcount:Returns the height of the most recent block in the best valid block chain'
+    'getblockdeltas:Returns information about the given block and its transactions'
+    'getblockhash:Returns hash of block in best-block-chain at index provided'
+    'getblockhashes:Returns array of hashes of blocks within the timestamp range provided'
+    'getblockheader:return block header'
+    'getblocksubsidy:Returns block subsidy reward'
+    'getblocktemplate:get block template'
+    'getchaintips:Return information about all known tips in the block tree'
+    'getconnectioncount:Returns the number of connections to other nodes'
+    'getdeprecationinfo:Returns an object containing current version and deprecation block height'
+    'getdifficulty:Returns the proof-of-work difficulty as a multiple of the minimum difficulty'
+    'getexperimentalfeatures:Returns enabled experimental features'
+    'getgenerate:Return if the server is set to generate coins or not'
+    'getinfo:Returns an object containing various state info'
+    'getlocalsolps:Returns the average local solutions per second since this node was started'
+    'getmemoryinfo:Returns an object containing information about memory usage'
+    'getmempoolinfo:Returns details on the active state of the TX memory pool'
+    'getmininginfo:Returns a json object containing mining-related information'
+    'getnettotals:Returns information about network traffic'
+    'getnetworkinfo:Returns an object containing various state info regarding P2P networking'
+    'getnetworksolps:Returns the estimated network solutions per second based on the last n blocks'
+    'getnewaddress:Returns a new transparent Zcash address'
+    'getpeerinfo:Returns data about each connected network node as a json array of objects'
+    'getrawchangeaddress:Returns a new transparent Zcash address for receiving change'
+    'getrawmempool:Returns all transaction ids in memory pool as a json array of string transaction ids'
+    'getrawtransaction:Return the raw transaction data'
+    'getreceivedbyaddress:Returns the total amount received by the given transparent Zcash address'
+    'getspentinfo:Returns the txid and index where an output is spent'
+    'gettransaction:Returns detailed information about in-wallet transaction'
+    'gettxout:Returns details about an unspent transaction output'
+    'gettxoutproof:Returns a hex-encoded proof that "txid" was included in a block'
+    'gettxoutsetinfo:Returns statistics about the unspent transaction output set'
+    "getunconfirmedbalance:Returns the server's total unconfirmed transparent balance"
+    'getwalletinfo:Returns wallet state information'
+    'help:List all commands, or get help for a specified command'
+    'importaddress:import address'
+    'importprivkey:Adds a private key to your wallet'
+    'importpubkey:Adds a public key'
+    'importwallet:Imports taddr keys from a wallet dump file'
+    'listaddresses:Lists the addresses managed by this wallet by source'
+    'listaddressgroupings:Lists groups of transparent addresses'
+    'listbanned:List all banned IPs/Subnets'
+    'listlockunspent:Returns list of temporarily unspendable transparent outputs'
+    'listreceivedbyaddress:List balances by transparent receiving address'
+    'listsinceblock:Get all transactions in blocks'
+    "listtransactions:Returns up to 'count' of the most recent transactions"
+    'listunspent:Returns array of unspent transparent transaction outputs'
+    'lockunspent:Updates list of temporarily unspendable outputs'
+    'ping:Requests that a ping be sent to all other nodes, to measure ping time'
+    'prioritisetransaction:Accepts the transaction into mined blocks at a higher/lower priority'
+    'sendmany:Send to multiple transparent recipient'
+    'sendrawtransaction:Submits raw transaction to local node and network'
+    'sendtoaddress:Send an amount to a given transparent address'
+    'setban:Attempts to add or remove an IP/Subnet from the banned list'
+    'setgenerate:Set "generate" true or false to turn generation on or off'
+    'setlogfilter:Sets the filter to be used for selecting events to log'
+    'signmessage:Sign a message with the private key of a t-addr'
+    'stop:Stop Zcash server'
+    'submitblock:Attempts to submit new block to network'
+    'validateaddress:Return information about the given Zcash address'
+    'verifychain:Verifies blockchain database'
+    'verifymessage:Verify a signed message'
+    'verifytxoutproof:Verifies that a proof points to a transaction in a block'
+    'walletconfirmbackup:Notify the wallet that the user has backed up the emergency recovery phrase'
+    'z_converttex:Converts a transparent Zcash address to a TEX address'
+    'z_exportkey:Reveals the zkey corresponding to "zaddr"'
+    'z_exportviewingkey:Returns the full viewing key corresponding to "zaddr"'
+    'z_exportwallet:Exports all wallet keys, for taddr and zaddr, in a human-readable format'
+    'z_getaddressforaccount:get address for account'
+    "z_getbalance:Returns the balance of a taddr or zaddr belonging to the node's wallet"
+    "z_getbalanceforaccount:Returns the account's spendable balance for each value pool"
+    'z_getbalanceforviewingkey:Returns the balance viewable by a full viewing key'
+    'z_getmigrationstatus:Returns information about the status of the Sprout to Sapling migration'
+    'z_getnewaccount:Prepares and returns a new account'
+    'z_getnewaddress:Returns a new shielded address for receiving payments'
+    'z_getnotescount:Returns the number of notes available in the wallet for each shielded value pool'
+    'z_getoperationresult:Retrieve the result and status of an operation which has finished'
+    'z_getoperationstatus:Get operation status and any associated result or error data'
+    'z_getpaymentdisclosure:Generate a payment disclosure for a given joinsplit output'
+    "z_getsubtreesbyindex:Returns roots of subtrees of the given pool's note commitment tree"
+    "z_gettreestate:Return information about the given block's tree state"
+    'z_importkey:Adds a zkey (as returned by z_exportkey) to your wallet'
+    'z_importviewingkey:Adds a viewing key to your wallet'
+    'z_importwallet:Imports taddr and zaddr keys from a wallet export file'
+    'z_listaccounts:Returns the list of accounts created with z_getnewaccount'
+    'z_listaddresses:Returns the list of shielded addresses belonging to the wallet'
+    'z_listoperationids:Returns the list of operation ids currently known to the wallet'
+    "z_listreceivedbyaddress:Return a list of amounts received by a zaddr belonging to the node's wallet"
+    'z_listunifiedreceivers:Returns a record of the individual receivers contained within the provided UA'
+    'z_listunspent:Returns an array of unspent shielded notes'
+    'z_mergetoaddress:Merge multiple UTXOs and notes into a single UTXO or note'
+    'z_sendmany:Send a transaction with multiple recipients'
+    "z_setmigration:attempt to migrate all funds from this wallet's Sprout addresses"
+    'z_shieldcoinbase:Shield transparent coinbase funds by sending to a shielded zaddr'
+    'z_validateaddress:Return information about the given address'
+    'z_validatepaymentdisclosure:Validates a payment disclosure'
+    'z_viewtransaction:Get detailed shielded information about in-wallet transaction'
+    'zcbenchmark:Runs a benchmark of the selected benchmark type samplecount times'
+    'zcsamplejoinsplit:Perform a joinsplit and return the JSDescription'
+  )
 
-_arguments -C \
-  '-?[display usage information]' \
-  -conf='[specify configuration file]:file [zcash.conf]:_files' \
-  -datadir='[specify data directory]:directory:_directories' \
-  -testnet'[use the test network]' \
-  -regtest'[enter regression test mode, which uses a special chain in which blocks can be solved instantly. This is intended for regression testing tools and app development.]' \
-  -rpcconnect='[send commands to node running on specified ip]:rpcconnect [127.0.0.1]:_hosts' \
-  -rpcport='[connect to JSON-RPC on specified port]: :_guard "[[\:digit\:]]#" "port [8232 or testnet\: 18232]"' \
-  -rpcwait'[wait for RPC server to start]' \
-  -rpcuser='[username for JSON-RPC connections]:rpcuser' \
-  -rpcpassword='[password for JSON-RPC connections]:rpcpassword' \
-  -rpcclienttimeout='[specify timeout during HTTP requests, or 0 for no timeout]: :_guard "[[\:digit\:]]#" "timeout (seconds) [900]"' \
-  ':subcommand:->subcommand' && ret=0
+  _describe -t commands 'command' commands "$@"
+}
 
-case $state in
-  subcommand)
-    subcommands=(
-      'getbestblockhash'
-      'getblock'
-      'getblockchaininfo'
-      'getblockcount'
-      'getblockhash'
-      'getblockheader'
-      'getchaintips'
-      'getdifficulty'
-      'getmempoolinfo'
-      'getrawmempool'
-      'gettxout'
-      'gettxoutproof'
-      'gettxoutsetinfo'
-      'verifychain'
-      'verifytxoutproof'
-      'getinfo'
-      'help'
-      'stop'
-      'generate'
-      'getgenerate'
-      'setgenerate'
-      'getblocksubsidy'
-      'getblocktemplate'
-      'getlocalsolps'
-      'getmininginfo'
-      'getnetworkhashps'
-      'getnetworksolps'
-      'prioritisetransaction'
-      'submitblock'
-      'addnode'
-      'clearbanned'
-      'disconnectnode'
-      'getaddednodeinfo'
-      'getconnectioncount'
-      'getnettotals'
-      'getnetworkinfo'
-      'getpeerinfo'
-      'listbanned'
-      'ping'
-      'setban'
-      'createrawtransaction'
-      'decoderawtransaction'
-      'decodescript'
-      'fundrawtransaction'
-      'getrawtransaction'
-      'sendrawtransaction'
-      'signrawtransaction'
-      'createmultisig'
-      'estimatefee'
-      'estimatepriority'
-      'validateaddress'
-      'verifymessage'
-      'z_validateaddress'
-      'addmultisigaddress'
-      'backupwallet'
-      'dumpprivkey'
-      'dumpwallet'
-      'encryptwallet'
-      'getaccount'
-      'getaccountaddress'
-      'getaddressesbyaccount'
-      'getbalance'
-      'getnewaddress'
-      'getrawchangeaddress'
-      'getreceivedbyaccount'
-      'getreceivedbyaddress'
-      'gettransaction'
-      'getunconfirmedbalance'
-      'getwalletinfo'
-      'importaddress'
-      'importprivkey'
-      'importwallet'
-      'keypoolrefill'
-      'listaccounts'
-      'listaddressgroupings'
-      'listlockunspent'
-      'listreceivedbyaccount'
-      'listreceivedbyaddress'
-      'listsinceblock'
-      'listtransactions'
-      'listunspent'
-      'lockunspent'
-      'move'
-      'sendfrom'
-      'sendmany'
-      'sendtoaddress'
-      'setaccount'
-      'settxfee'
-      'signmessage'
-      'z_exportkey'
-      'z_exportwallet'
-      'z_getbalance'
-      'z_getnewaddress'
-      'z_getoperationresult'
-      'z_getoperationstatus'
-      'z_gettotalbalance'
-      'z_importkey'
-      'z_importwallet'
-      'z_listaddresses'
-      'z_listoperationids'
-      'z_listreceivedbyaddress'
-      'z_sendmany'
-      'zcbenchmark'
-      'zcrawjoinsplit'
-      'zcrawkeygen'
-      'zcrawreceive'
-      'zcsamplejoinsplit'
-    )
-
-    _describe -t subcommands 'zcash-cli subcommand' subcommands && ret=0
-  ;;
-esac
-
-return ret
+_arguments \
+  '(- *)-?[display usage information]' \
+  '(- *)-version[display version and exit]' \
+  '-conf=[specify configuration file]:file [zcash.conf]:_files' \
+  '-datadir=[specify data directory]:directory:_files -/' \
+  '-testnet[use the test network]' \
+  '-regtest[enter regression test mode]' \
+  '-rpcconnect=[send commands to node running on specified ip]:rpcconnect [127.0.0.1]:_hosts' \
+  '-rpcport=[connect to JSON-RPC on specified port]: :_guard "[[\:digit\:]]#" "port [8232 or testnet\: 18232]"' \
+  '-rpcwait[wait for RPC server to start]' \
+  '-rpcuser=[username for JSON-RPC connections]:rpcuser' \
+  '-rpcpassword=[password for JSON-RPC connections]:rpcpassword' \
+  '-rpcclienttimeout=[specify timeout during HTTP requests, or 0 for no timeout]: :_guard "[[\:digit\:]]#" "timeout (seconds) [900]"' \
+  '1: :_zcash_cli_commands' \
+  '*:: :_files'
 
 # Local Variables:
 # mode: Shell-Script
