@@ -3,7 +3,7 @@
 # Description
 # -----------
 #
-#  Completion script for tox (https://tox.readthedocs.io).
+#  Completion script for tox 4.32.0 (https://tox.readthedocs.io).
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -13,6 +13,137 @@
 #
 # ------------------------------------------------------------------------------
 
+_tox() {
+  typeset -A opt_args
+  local context state line
+  local curcontext="$curcontext"
+  local ret=1
+
+  local -a stderr_colors=(
+    BLACK BLUE CYAN GREEN LIGHTBLACK_EX LIGHTBLUE_EX LIGHTCYAN_EX LIGHTGREEN_EX LIGHTMAGENTA_EX
+    LIGHTRED_EX LIGHTWHITE_EX LIGHTYELLOW_EX MAGENTA RED RESET WHITE YELLOW
+  )
+
+  local -a options=(
+    '(- 1 *)'{-h,--help}'[show help options]'
+    '--colored[should output be enriched with colors]: :(yes no)'
+    '--stderr-color[color for stderr output]:color:(($stderr_colors))'
+    '--exit-and-dump-after[dump tox threads after specified seconds and exit the app]:seconds'
+    '(-c --conf)'{-c,--conf}'[configuration file/folder for tox]:file_or_dir:_files'
+    '--workdir[tox working directory]:dir:_files -/'
+    '--root[project root directory]:dir:_files -/'
+    '--runner[the tox run engine to use]:runner:(virtualenv)'
+    '--no-provision[do not perform provision]:json:_files -g "*.json"'
+    '--no-recreate-provision[do not recreate provision tox environment]'
+    '(-r --recreate)'{-r,--recreate}'[recreate the tox environments]'
+    '--matrix-scope[emit a github matrix specifix to scope mentioned]:scope:(all galaxy sanity integration unit)'
+    '--gh-matrix[emit a github matrix]'
+    '--ansible[enable ansible testing]'
+  )
+
+  _arguments -C \
+    '(- 1 *)'{-h,--help}'[show help options]' \
+    '--colored[should output be enriched with colors]: :(yes no)' \
+    '--stderr-color[color for stderr output]:color:(($stderr_colors))' \
+    '--exit-and-dump-after[dump tox threads after specified seconds and exit the app]:seconds' \
+    '(-c --conf)'{-c,--conf}'[configuration file/folder for tox]:file_or_dir:_files' \
+    '--workdir[tox working directory]:dir:_files -/' \
+    '--root[project root directory]:dir:_files -/' \
+    '--runner[the tox run engine to use]:runner:(virtualenv)' \
+    '(- *)--version[show program and plugins version and exit]' \
+    '--no-provision[do not perform provision]:json:_files -g "*.json"' \
+    '--no-recreate-provision[do not recreate provision tox environment]' \
+    '(-r --recreate)'{-r,--recreate}'[recreate the tox environments]' \
+    '--matrix-scope[emit a github matrix specifix to scope mentioned]:scope:(all galaxy sanity integration unit)' \
+    '--gh-matrix[emit a github matrix]' \
+    '--ansible[enable ansible testing]' \
+    \*{-x,--override}'[configuration override(s)]:override' \
+    \*{-v,--verbose}'[increase verbosity]' \
+    \*{-q,--quiet}'[decrease verbosity]' \
+    '1: :_tox_commands' \
+    '*::arg:->args' \
+    && ret=0
+
+  case "$state" in
+    (args)
+      case $words[1] in
+        (run|run-parallel|depends|exec|list|quickstart|schema|config|devenv)
+          options+=(
+            '--result-json[write a JSON file with detailed information]:file:_files'
+            '--hashseed[set PYTHONHASHSEED to the specified seed before running commands]:sed'
+            '--discover[for Python discovery first try these Python executables]:file:_files'
+            '(--list-dependencies --no-list-dependencies)--list-dependencies[list the dependencies installed during environment setup]'
+            '(--list-dependencies --no-list-dependencies)--no-list-dependencies[never list the dependencies]'
+            '--develop[install package in development mode]'
+          )
+          ;|
+        (run|run-parallel|direnv)
+          options+=(
+            '-m[label to evaluate]:label'
+            '-f[factor to evaluate]:factor'
+          )
+          ;|
+        (run|run-parallel|exec|devenv)
+          options+=(
+            '(-s --skip-missing-interpreters)'{-s,--skip-missing-interpreters}'[do not fail tests for missing interpreters]'
+            '(-n --notest)'{-n,--notest}'[do not run the test commands]'
+            '(-b --pkg-only --sdistonly)'{-b,--pkg-only,--sdistonly}'[only perform the packaging activity]'
+            '--installpkg[use specified package for installation into venv]:package'
+            '--develop[install package in development mode]'
+            '--no-recreate-pkg[do not recreate packaging tox environment(s)]'
+            '--skip-pkg-install[skip package installation for this run]'
+            '-e[enumerate all environments]:env'
+            '--skip-env[exclude all environments selected that match this regular expression]:pattern'
+          )
+          ;|
+        (run-parallel|legacy)
+          options+=(
+            '(-p --parallel)'{-p,--parallel}'[run tox environments in parallel]:num'
+            '(-o --parallel-live)'{-o,--parallel-live}'[connect to stdout while running environments]'
+            '--parallel-no-spinner[run tox environments in parallel but do not show the spinner]'
+          )
+          ;;
+        (config)
+          options+=(
+            '-k[list just configuration keys specified]'
+            '--core[show core options]'
+          )
+          ;;
+        (schema)
+          options+=(
+            '--strict[disallow extra properties in configuration]'
+          )
+          ;;
+        (legacy)
+          options+=(
+            '--force-dep[force a certain version of one of the dependencies]:req'
+          )
+          ;;
+      esac
+
+      _arguments $options[@] && ret=0
+      ;;
+  esac
+
+  return ret
+}
+
+(( $+functions[_tox_commands] )) ||
+_tox_commands() {
+  local -a commands=(
+    'run:run environments'
+    'run-parallel:run environments in parallel'
+    'depends:visualize tox environment dependencies'
+    'list:list environment'
+    'devenv:set up a development environment at ENVDIR'
+    'schema:ganerate schema for tox configuration'
+    'config:show tox configuration'
+    'quickstart:quickly create a tox config file for a Python project'
+    'exec:execute an arbitrary command within a tox environment'
+    'legacy:legacy entry-point command'
+  )
+  _describe -t commands 'command' commands "$@"
+}
 
 (( $+functions[_tox_envs_list] )) ||
 _tox_envs_list() {
@@ -24,39 +155,7 @@ _tox_envs_list() {
   fi
 }
 
-_arguments \
-  '(- 1 *)--version[show version and exit]' \
-  '(- 1 *)'{-h,--help}'[show help options]' \
-  '(- 1 *)'{--hi,--help-ini}'[show help about ini-names]' \
-  '*'{-v,--verbose}'[increase verbosity of reporting output]' \
-  '*-q[progressively silence reporting output]' \
-  '(- 1 *)--showconfig[show configuration information for all environments]' \
-  '(- 1 *)'{-l,--listenvs}'[show list of test environments]' \
-  '(- 1 *)'{-a,--listenvs-all}'[show list of all defined environments]' \
-  '-c[config file name or directory with "tox.ini" file]:config path:_files -g "*.ini"' \
-  '-e[work against specified environments]: :_tox_envs_list' \
-  "--devenv[sets up a development environment at ENVDIR based on the env's tox configuration specified by '-e' ]: :" \
-  '--notest[skip invoking test commands]' \
-  '--sdistonly[only perform the sdist packaging activity]' \
-  '--skip-pkg-install[skip package installation for this run]' \
-  '(-p --parallel)'{-p,--parallel}'[run tox environments in parallel]: :' \
-  '(-o --parallel-live)'{-o,--parallel-live}'[connect to stdout while running environments]' \
-  '--parallel--safe-build[ensure two tox builds can run in parallel]' \
-  '--installpkg[ensure two tox builds can run in parallel]:package path:_files -/' \
-  '--develop[install package in the venv using "setup.py develop"]' \
-  '(-i --index-url)'{-i,--index-url}'[set indexserver url]:index server URL:_urls' \
-  '--pre[install pre-releases and development versions of dependencies]' \
-  '(-r --recreate)'{-r,--recreate}'[force recreation of virtual environments]' \
-  '--result-json[write a json file with detailed information about all commands and results involved]:JSON file path:_files -g "*.json"' \
-  '--discover[for python discovery first try the python executables under these paths]:' \
-  '--hashseed[set PYTHONHASHSEED to SEED before running commands]:seed' \
-  '*--force-dep[forces a certain version of one of the dependencies when configuring the virtual environment]:pip requirement' \
-  '--sitepackages[override sitepackages setting to True in all envs]' \
-  '--alwayscopy[override alwayscopy setting to True in all envs]' \
-  '--no-provision[do not perform provision, but fail and if a path was provided write provision metadata as JSON to it]:JSON file path:_files -g "*.json"' \
-  '(-s --skip-missing-interpreters)'{-s,--skip-missing-interpreters}'[do not fail tests for missing interpreters]: :(config true false)' \
-  '--workdir[tox working directory]: :_files -/' \
-  '*: :_guard "^-*" command positional substitution arguments'
+_tox "$@"
 
 # Local Variables:
 # mode: Shell-Script
