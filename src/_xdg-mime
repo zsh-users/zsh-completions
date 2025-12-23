@@ -15,8 +15,8 @@ _xdg-mime_query() {
       "*::arg:->args"
 
   case $line[1] in
-    filetype) _arguments '*: :_files' ;;
-    default) _arguments '*: :_mime_types' ;;
+    filetype) _files ;;
+    default) _mime_types ;;
   esac
 }
 
