@@ -59,6 +59,8 @@ _xdg-mime() {
   esac
 }
 
+_xdg-mime "$@"
+
 # Local Variables:
 # mode: Shell-Script
 # sh-indentation: 2
