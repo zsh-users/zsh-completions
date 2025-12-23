@@ -1,0 +1,233 @@
+#compdef openvpn-install openvpn-install.sh
+# ------------------------------------------------------------------------------
+# Copyright (c) 2025 Github zsh-users - https://github.com/zsh-users
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for openvpn-install (https://github.com/angristan/openvpn-install)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei Yoshida (https://github.com/syohex) <syohex@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+_openvpn_install() {
+  typeset -A opt_args
+  local context state line
+
+  local curcontext="$curcontext"
+
+  local ret=1
+
+  _arguments -C \
+    '--verbose[show detailed output]' \
+    '(--log --no-log)--log[log file path]:file:_files' \
+    '(--log --no-log)--no-log[disable file logging]' \
+    '--no-color[disable colored output]' \
+    '(- *)'{-h,--help}'[show help]' \
+    '1: :_openvpn_install_commands' \
+    '*:: :->args' \
+    && ret=0;
+
+  case "$state" in
+    (args)
+      case $words[1] in
+        (install)
+          local -a dns_providers=(
+            system unbound cloudflare quad9 quad9-uncensored
+            fdn dnswatch opendns google yandex adguard nextdns custom
+          )
+
+          local -a ciphers=(
+            AES-128-GCM AES-192-GCM AES-256-GCM AES-128-CBC
+            AES-192-CBC AES-256-CBC CHACHA20-POLY1305
+          )
+
+          _arguments \
+            '(-i --interactive)'{-i,--interactive}'[run interactive install wizard]' \
+            '--endpoint[public IP or hostname for clients]:host_or_ip' \
+            '--endpoint-type[endpoint IP version(default: 4)]:version:(4 6)' \
+            '--ip[server listening IP]:addr' \
+            '(--client-ipv4 --no-client-ipv4)--client-ipv4[enable IPv4 for VPN clients]' \
+            '(--client-ipv4 --no-client-ipv4)--no-client-ipv4[disable IPv4 for VPN clients]' \
+            '(--client-ipv6 --no-client-ipv6)--client-ipv6[enable IPv6 for VPN clients]' \
+            '(--client-ipv6 --no-client-ipv6)--no-client-ipv6[disable IPv6 for VPN clients]' \
+            '--subnet-ipv4[IPv4 VPN subnet(default: 10.8.0.0)]:subnet' \
+            '--subnet-ipv6[IPv6 VPN subnet(default: fd42:42:42:42::)]:subnet' \
+            '(--port --port-random)--port[OpenVPN port]:port' \
+            '(--port --port-random)--port-random[use random port(49152-65535)]:port' \
+            '--protocol[UDP or TCP(default: udp)]:proto:(udp tcp)' \
+            '--mtu[tunnel MTU(default: 1500)]:size' \
+            '--dns[DNS provider(default: cloudflare)]:provider:(($dns_providers))' \
+            '--dns-primary[custom primary DNS]:ip' \
+            '--dns-secondary[custom secondary DNS]:ip' \
+            '--cipher[data channel cipher(default: AES-128-GCM)]:cipher:(($ciphers))' \
+            '--cert-type[certificate type(default: ecdsa)]:type:(ecdsa rsa)' \
+            '--cert-curve[ECDSA curve(default: prime256v1)]:curve:(prime256v1 secp384r1 secp521r1)' \
+            '--rsa-bits[RSA key size(default: 2048)]:size:(2048 3072 4096)' \
+            '--cc-cipher[control channel cipher]:cipher' \
+            '--tls-version-min[minimum TLS version(default: 1.2)]:min_ver:(1.2 1.3)' \
+            '--tls-ciphersuites[TLS 1.3 cipher suites, colon-separated]:list' \
+            '--tls-groups[key exchange groups, colon-separated]:list' \
+            '--hmac[HMAC algorithm(default: SHA256)]:alg:(SHA256 SHA384 SHA512)' \
+            '--tls-sig[TLS mode(default: crypt-v2)]:mode:(crypt-v2 crypt auth)' \
+            '--server-cert-days[server cert validity in days(default: 3650)]:days' \
+            '--multi-client[allow same cert on multiple devices]' \
+            '--client[initial client name(default: client)]:name' \
+            '--client-password[password-protect client]:password' \
+            '--client-cert-days[client cert validity in days(default: 3650)]:days' \
+            '--no-client[skip initial client creation]' \
+            && ret=0
+          ;;
+        (uninstall)
+          _arguments \
+            '(-f --force)'{-f,--force}'[skip confirmation prompt]' \
+            && ret=0
+          ;;
+        (client)
+          _openvpn_install_client && ret=0
+          ;;
+        (server)
+          _openvpn_install_server && ret=0
+          ;;
+      esac
+  esac
+
+  return ret
+}
+
+_openvpn_install_commands() {
+  local -a commands=(
+    'install:Install and configure OpenVPN server'
+    'uninstall:Remove OpenVPN server'
+    'client:Manage client certificates'
+    'server:Server management'
+    'interactive:Launch interactive menu'
+  )
+
+  _describe -t 'commands' 'commands' commands
+}
+
+_openvpn_install_client() {
+  local ret=1
+
+  _arguments -C \
+    '(- *)'{-h,--help}'[Print this usage information]' \
+    '1: :_openvpn_install_client_commands' \
+    '*:: :->args' \
+    && ret=0
+
+  case $state in
+    (args)
+      case $words[1] in
+        (add)
+          _arguments \
+            '--password[password-protect client]:password' \
+            '--cert-days[certificate validity in days(default: 3650)]:days' \
+            '--output[output path for .ovpn file(default: ~/<name>.ovpn)]:file:_files' \
+            '1:name' \
+            && ret=0
+          ;;
+        (list)
+          _arguments \
+            '--format[output format(default: table)]:format:(table json)' \
+            && ret=0
+          ;;
+        (revoke)
+          _arguments \
+            '(-f --force)'{-f,--force}'[skip confirmation/warning]' \
+            && ret=0
+          ;;
+        (renew)
+          _arguments \
+            '--cert-days[new certificate validity in days(default: 3650)]:days' \
+            && ret=0
+          ;;
+      esac
+    ;;
+  esac
+
+  return ret
+}
+
+_openvpn_install_client_commands() {
+  local -a commands=(
+    'add:add a new client'
+    'list:list all clients'
+    'revoke:revoke a client certificate'
+    'renew:renew a client certificate'
+  )
+
+  _describe -t commands 'command' commands "$@"
+}
+
+_openvpn_install_server() {
+  local ret=1
+
+  _arguments -C \
+    '(- *)'{-h,--help}'[Print this usage information]' \
+    '1: :_openvpn_install_server_commands' \
+    '*:: :->args' \
+    && ret=0
+
+  case $state in
+    (args)
+      case $words[1] in
+        (status)
+          _arguments \
+            '--format[output format(default: table)]:format:(table json)' \
+            && ret=0
+          ;;
+        (renew)
+          _arguments \
+            '--cert-days[new certificate validity in days(default: 3650)]:days' \
+            '(-f --force)'{-f,--force}'[skip confirmation/warning]' \
+            && ret=0
+          ;;
+      esac
+    ;;
+  esac
+
+  return ret
+}
+
+_openvpn_install_server_commands() {
+  local -a commands=(
+    'status:list currently connected clients'
+    'renew:renew server certificate'
+  )
+  _describe -t commands 'command' commands "$@"
+}
+
+_openvpn_install "$@"
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
