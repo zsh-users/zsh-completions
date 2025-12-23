@@ -1,4 +1,4 @@
-#compdef sox_ng soxi_ng play_ng rec_ng
+#compdef sox_ng soxi_ng play_ng rec_ng sox soxi play rec
 # ------------------------------------------------------------------------------
 # Copyright (c) 2025 Github zsh-users - https://github.com/zsh-users
 #
@@ -65,7 +65,7 @@ _sox_ng_common() {
     '-R[run in "repeatable" mode]'
     '--replay-gain[select whether or not to apply replay gain adjustment to input files]:gain:(track album off)'
     '(-S --show-progress)'{-S,--show-progress}'[display input file format/header information]'
-    '-T(equivalent to --combine multiply)'
+    '-T[equivalent to --combine multiply]'
     '--temp[specified that any temporary files should be created in the given directory]:dir:_files -/'
     '(- *)--version[show version number and exit]'
     '-V[set verbosity]:level:(0 1 2 3 4 5 6)'
@@ -616,7 +616,7 @@ _sox_ng_effects() {
 }
 
 case $service in
-  (soxi_ng)
+  (soxi_ng|soxi)
     _sox_ng_soxi_ng
     ;;
   (*)
