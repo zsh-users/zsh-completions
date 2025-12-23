@@ -22,9 +22,9 @@ _xdg-mime_query() {
 
 _xdg-mime() {
   local line
-  local -A appdirs=(
+  local -a appdirs=(
     /usr/share/applications
-    $HOME/.local/share/applications
+    "$HOME/.local/share/applications"
   )
 
   _arguments -C \
@@ -38,7 +38,7 @@ _xdg-mime() {
     query) _xdg-mime_query ;;
     default)
       _arguments \
-        "1:Application:_files -W '$appdirs' -g '*.desktop'" \
+        "1:Application:_files -W appdirs -g '*.desktop'" \
         '2: :_mime_types'
         ;;
     install)
