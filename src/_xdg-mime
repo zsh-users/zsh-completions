@@ -1,0 +1,70 @@
+#compdef xdg-mime
+
+# Description:
+#   ZSH Completion for xdg-mime 1.2.1 from
+#   xdg-utils (https://gitlab.freedesktop.org/xdg/xdg-utils)
+#
+# Authors:
+#   ligelowbee@gmail.com
+
+_xdg-mime_query() {
+  _arguments \
+      "1:Query Type:((
+          filetype\:'Returns mime-type of a file'
+          default\:'Returns default application for a mime-type'))" \
+      "*::arg:->args"
+
+  case $line[1] in
+    filetype) _files ;;
+    default) _mime_types ;;
+  esac
+}
+
+_xdg-mime() {
+  local line
+  local -a appdirs=(
+    /usr/share/applications
+    "$HOME/.local/share/applications"
+  )
+
+  _arguments -C \
+    "--help[Show help info]" \
+    "--version[Show version info]" \
+    "--manual[Show manual page]" \
+    "1:xdg-mime command:(query default install uninstall)" \
+    "*::arg:->args"
+
+  case $line[1] in
+    query) _xdg-mime_query ;;
+    default)
+      _arguments \
+        "1:Application:_files -W appdirs -g '*.desktop'" \
+        '2: :_mime_types'
+        ;;
+    install)
+      _arguments \
+        "--mode=[Install for user or system]: :((
+            user\:'Install for this user only'
+            system\:'Install for all users'))" \
+        "--novendor[Don't check mimetype-file for vendor prefix]" \
+        '*:XML mimetypes file:_files -g "*.xml"'
+      ;;
+    uninstall)
+      _arguments \
+        "--mode=[Uninstall for user or whole system]: :((
+            user\:'Uninstall for this user only'
+            system\:'Uninstall for all users'))" \
+        '*:XML mimetypes file:_files -g "*.xml"'
+      ;;
+  esac
+}
+
+_xdg-mime "$@"
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: filetype=zsh expandtab softtabstop=2 tabstop=2 shiftwidth=2
