@@ -58,7 +58,12 @@ _gio() {
       _gio_commands
     ;;
     (args)
-      case $words[1] in
+      local subcmd=$words[1]
+      if [[ $subcmd == gio ]]; then
+        subcmd=$words[2]
+      fi
+
+      case $subcmd in
         (help)
           _arguments \
             '1:command:_gio_commands' \
@@ -265,13 +270,21 @@ _gio_location() {
 
 (( $+functions[_gio_desktop_files] )) ||
 _gio_desktop_files() {
-  local -a desktop_files
-  desktop_files=(
-    /usr/share/applications/*.desktop(N:t)
-    ~/.local/share/applications/*.desktop(N:t)
+  local -a search_path data_dirs desktop_files
+  data_dirs=(${(@s/:/)XDG_DATA_DIRS:-/usr/local/share:/usr/share})
+  search_path=(
+    "${XDG_DATA_HOME:-$HOME/.local/share}/applications"
+    ${data_dirs[@]/%/\/applications}
   )
 
-  _describe -t desktop-files 'desktop files' desktop_files
+  desktop_files=()
+  local dir
+  for dir in $search_path; do
+    [[ -d $dir ]] || continue
+    desktop_files+=($dir/*.desktop(N))
+  done
+
+  compadd -a -- desktop_files
 }
 
 (( $+functions[_gio_mime_types] )) ||
