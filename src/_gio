@@ -1,0 +1,307 @@
+#compdef gio
+# ------------------------------------------------------------------------------
+# Copyright (c) 2025 Github zsh-users - https://github.com/zsh-users
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of the zsh-users nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL ZSH-USERS BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for gio 2.86.3 (https://docs.gtk.org/gio/).
+#
+#  Status: Basic (subcommands and common options).
+#  Origin: Original script.
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Magniquick (https://github.com/Magniquick)
+#
+# ------------------------------------------------------------------------------
+
+_gio() {
+  local context state line
+  typeset -A opt_args
+  local ret=1
+
+  _arguments -C \
+    '(- : *)'{-h,--help}'[show help information]' \
+    '(- : *)'--version'[display version information]' \
+    '1:command:->command' \
+    '*::arg:->args' \
+  && ret=0
+
+  case $state in
+    (command)
+      _gio_commands
+    ;;
+    (args)
+      local subcmd=$words[1]
+      if [[ $subcmd == gio ]]; then
+        subcmd=$words[2]
+      fi
+
+      case $subcmd in
+        (help)
+          _arguments \
+            '1:command:_gio_commands' \
+            && ret=0
+        ;;
+        (version)
+          _arguments && ret=0
+        ;;
+        (cat)
+          _arguments \
+            '*:location:_gio_location' \
+            && ret=0
+        ;;
+        (copy)
+          _arguments \
+            '(-T --no-target-directory)'{-T,--no-target-directory}'[no target directory]' \
+            '(-p --progress)'{-p,--progress}'[show progress]' \
+            '(-i --interactive)'{-i,--interactive}'[prompt before overwrite]' \
+            '--preserve[preserve all attributes]' \
+            '(-b --backup)'{-b,--backup}'[backup existing destination files]' \
+            '(-P --no-dereference)'{-P,--no-dereference}'[never follow symbolic links]' \
+            '--default-permissions[use default permissions for the destination]' \
+            '--default-modified-time[use default file modification timestamps for the destination]' \
+            '*:location:_gio_location' \
+            && ret=0
+        ;;
+        (info)
+          _arguments \
+            '(-w --query-writable)'{-w,--query-writable}'[list writable attributes]' \
+            '(-f --filesystem)'{-f,--filesystem}'[get file system info]' \
+            '(-a --attributes)'{-a,--attributes}'[attributes to get]:attributes' \
+            '(-n --nofollow-symlinks)'{-n,--nofollow-symlinks}'[do not follow symbolic links]' \
+            '*:location:_gio_location' \
+            && ret=0
+        ;;
+        (launch)
+          _arguments \
+            '1:desktop file:_gio_desktop_files' \
+            '*::file argument:_gio_location' \
+            && ret=0
+        ;;
+        (list)
+          _arguments \
+            '(-a --attributes)'{-a,--attributes}'[attributes to get]:attributes' \
+            '(-h --hidden)'{-h,--hidden}'[show hidden files]' \
+            '(-l --long)'{-l,--long}'[use a long listing format]' \
+            '(-n --nofollow-symlinks)'{-n,--nofollow-symlinks}'[do not follow symbolic links]' \
+            '(-d --print-display-names)'{-d,--print-display-names}'[print display names]' \
+            '(-u --print-uris)'{-u,--print-uris}'[print full URIs]' \
+            '*:location:_gio_location' \
+            && ret=0
+        ;;
+        (mime)
+          _arguments \
+            '1:mimetype:_gio_mime_types' \
+            '2:handler' \
+            && ret=0
+        ;;
+        (mkdir)
+          _arguments \
+            '(-p --parent)'{-p,--parent}'[create parent directories]' \
+            '*:location:_gio_location' \
+            && ret=0
+        ;;
+        (monitor)
+          _arguments \
+            '(-d --dir)'{-d,--dir}'[monitor a directory]:location:_gio_location' \
+            '(-f --file)'{-f,--file}'[monitor a file]:location:_gio_location' \
+            '(-D --direct)'{-D,--direct}'[monitor a file directly]:location:_gio_location' \
+            '(-s --silent)'{-s,--silent}'[monitor a file directly without reporting changes]:location:_gio_location' \
+            '(-n --no-moves)'{-n,--no-moves}'[report moves and renames as simple deleted/created events]' \
+            '(-m --mounts)'{-m,--mounts}'[watch for mount events]' \
+            '*:location:_gio_location' \
+            && ret=0
+        ;;
+        (mount)
+          _arguments \
+            '(-m --mountable)'{-m,--mountable}'[mount as mountable]' \
+            '(-d --device)'{-d,--device}'[mount volume with device file or identifier]:device' \
+            '(-u --unmount)'{-u,--unmount}'[unmount]' \
+            '(-e --eject)'{-e,--eject}'[eject]' \
+            '(-t --stop)'{-t,--stop}'[stop drive with device file]:device' \
+            '(-s --unmount-scheme)'{-s,--unmount-scheme}'[unmount all mounts with scheme]:scheme' \
+            '(-f --force)'{-f,--force}'[ignore outstanding file operations when unmounting or ejecting]' \
+            '(-a --anonymous)'{-a,--anonymous}'[use an anonymous user when authenticating]' \
+            '(-l --list)'{-l,--list}'[list volumes, drives and mounts]' \
+            '(-o --monitor)'{-o,--monitor}'[monitor volume, drive and mount events]' \
+            '(-i --detail)'{-i,--detail}'[show extra information]' \
+            '--tcrypt-pim[unlock VeraCrypt volume with PIM]:pim' \
+            '--tcrypt-hidden[mount a TCRYPT hidden volume]' \
+            '--tcrypt-system[mount a TCRYPT system volume]' \
+            '*:location:_gio_location' \
+            && ret=0
+        ;;
+        (move)
+          _arguments \
+            '(-T --no-target-directory)'{-T,--no-target-directory}'[no target directory]' \
+            '(-p --progress)'{-p,--progress}'[show progress]' \
+            '(-i --interactive)'{-i,--interactive}'[prompt before overwrite]' \
+            '(-b --backup)'{-b,--backup}'[backup existing destination files]' \
+            '(-C --no-copy-fallback)'{-C,--no-copy-fallback}'[do not use copy and delete fallback]' \
+            '*:location:_gio_location' \
+            && ret=0
+        ;;
+        (open)
+          _arguments \
+            '*:location:_gio_location' \
+            && ret=0
+        ;;
+        (rename)
+          _arguments \
+            '1:location:_gio_location' \
+            '2:new name' \
+            && ret=0
+        ;;
+        (remove)
+          _arguments \
+            '(-f --force)'{-f,--force}'[ignore nonexistent files, never prompt]' \
+            '*:location:_gio_location' \
+            && ret=0
+        ;;
+        (save)
+          _arguments \
+            '(-b --backup)'{-b,--backup}'[backup existing destination files]' \
+            '(-c --create)'{-c,--create}'[only create if not existing]' \
+            '(-a --append)'{-a,--append}'[append to end of file]' \
+            '(-p --private)'{-p,--private}'[restrict access to current user]' \
+            '(-u --unlink)'{-u,--unlink}'[replace as if the destination did not exist]' \
+            '(-v --print-etag)'{-v,--print-etag}'[print new etag at end]' \
+            '(-e --etag)'{-e,--etag}'[etag of the file being overwritten]:etag' \
+            '1:destination:_gio_location' \
+            && ret=0
+        ;;
+        (set)
+          _arguments \
+            '(-t --type)'{-t,--type}'[type of the attribute]:type' \
+            '(-n --nofollow-symlinks)'{-n,--nofollow-symlinks}'[do not follow symbolic links]' \
+            '(-d --delete)'{-d,--delete}'[unset given attribute]' \
+            '1:location:_gio_location' \
+            '2:attribute' \
+            '*::value' \
+            && ret=0
+        ;;
+        (trash)
+          _arguments \
+            '(-f --force)'{-f,--force}'[ignore nonexistent files, never prompt]' \
+            '--empty[empty the trash]' \
+            '--list[list files in the trash with their original locations]' \
+            '--restore[restore a file from trash to its original location]' \
+            '*:location:_gio_location' \
+            && ret=0
+        ;;
+        (tree)
+          _arguments \
+            '(-h --hidden)'{-h,--hidden}'[show hidden files]' \
+            '(-l --follow-symlinks)'{-l,--follow-symlinks}'[follow symbolic links, mounts and shortcuts]' \
+            '*:location:_gio_location' \
+            && ret=0
+        ;;
+      esac
+    ;;
+  esac
+
+  return ret
+}
+
+(( $+functions[_gio_commands] )) ||
+_gio_commands() {
+  local -a commands=(
+    'help:print help'
+    'version:print version'
+    'cat:concatenate files to standard output'
+    'copy:copy one or more files'
+    'info:show information about locations'
+    'launch:launch an application from a desktop file'
+    'list:list the contents of locations'
+    'mime:get or set the handler for a mimetype'
+    'mkdir:create directories'
+    'monitor:monitor files and directories for changes'
+    'mount:mount or unmount the locations'
+    'move:move one or more files'
+    'open:open files with the default application'
+    'rename:rename a file'
+    'remove:delete one or more files'
+    'save:read from standard input and save'
+    'set:set a file attribute'
+    'trash:move or restore files to the trash'
+    'tree:list the contents of locations in a tree'
+  )
+
+  _describe -t commands 'gio commands' commands
+}
+
+(( $+functions[_gio_location] )) ||
+_gio_location() {
+  if (( $+functions[_urls] )); then
+    _alternative \
+      'files:files:_files' \
+      'urls:URL:_urls'
+  else
+    _files
+  fi
+}
+
+(( $+functions[_gio_desktop_files] )) ||
+_gio_desktop_files() {
+  local -a search_path data_dirs desktop_files
+  data_dirs=(${(@s/:/)XDG_DATA_DIRS:-/usr/local/share:/usr/share})
+  search_path=(
+    "${XDG_DATA_HOME:-$HOME/.local/share}/applications"
+    ${data_dirs[@]/%/\/applications}
+  )
+
+  desktop_files=()
+  local dir
+  for dir in $search_path; do
+    [[ -d $dir ]] || continue
+    desktop_files+=($dir/*.desktop(N))
+  done
+
+  compadd -a -- desktop_files
+}
+
+(( $+functions[_gio_mime_types] )) ||
+_gio_mime_types() {
+  if (( $+functions[_mime_types] )); then
+    _mime_types
+  else
+    _message 'mime type'
+  fi
+}
+
+_gio "$@"
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
