@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Node.js v25.0.0 (https://nodejs.org)
+#  Completion script for Node.js v25.4.0 (https://nodejs.org)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -156,7 +156,6 @@ _node() {
     '--no-experimental-detect-module[when ambiguous modules fail to evaluate, try again to evaluate them as ES modules]' \
     '--no-experimental-global-navigator[expose experimental Navigator API on the global scope]' \
     '--no-experimental-repl-await[disable experimental await keyword support in REPL]' \
-    '--no-experimental-require-module[allow loading synchronous ES Modules in require()]' \
     '--no-experimental-sqlite[disable experimental node sqlite module]' \
     '--no-experimental-strip-types[disable experimental type-stripping for TypeScript files]' \
     '--no-experimental-websocket[experimental WebSocket API (currently set)]' \
@@ -164,6 +163,7 @@ _node() {
     '--no-force-async-hooks-checks[disable checks for async_hooks]' \
     '--no-global-search-paths[disable global module search paths]' \
     '--no-network-family-autoselection[disable network address family autodetection algorithm]' \
+    '(--require-module --no-require-module)--no-require-module[disable support for loading a synchronous ES module graph in require()]' \
     '--no-warnings[silence all process warnings]' \
     '--no-webstorage[disable Web Storage API]' \
     '--node-memory-debug[run with extra debug checks for memory leaks in Node.js itself]' \
@@ -185,6 +185,7 @@ _node() {
     '--report-on-signal=[generate diagnostic report upon receiving signals]' \
     '--report-signal=[causes diagnostic report to be produced on provided signal]:signals:_signals -s' \
     '--report-uncaught-exception[generate diagnostic report on uncaught exceptions]' \
+    '(--require-module --no-require-module)--require-module[support for loading a synchronous ES module graph in require()]' \
     '*'{-r,--require}'[module to preload (option can be repeated)]: :_node_files' \
     '--run=[run a script specified in package.json]:script:_node_scripts' \
     '--secure-heap=[total size of the OpenSSL secure heap]: :number' \
