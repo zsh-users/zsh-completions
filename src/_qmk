@@ -29,7 +29,7 @@
 # -----------
 #
 #  Completion script for QMK CLI (https://qmk.fm/).
-#  version: 1.1.1
+#  version: 1.2.0
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -52,7 +52,7 @@ _qmk() {
     '--datetime-fmt[Format string for datetimes]:DATETIME_FMT' \
     '--log-fmt[Format string for printed log output]:LOG_FMT' \
     '--log-file-fmt[Format string for log file.]:LOG_FILE_FMT' \
-    '--log-file-level[Logging level for log file]:(debug,info,warning,error,critical)' \
+    '--log-file-level[Logging level for log file]:level:(debug info warning error critical)' \
     '--log-file[File to write log messages to]:filename:_files' \
     '(--no-color --color)--color[Enable color in output]' \
     '(--no-color --color)--no-color[Disable color in output]' \
@@ -73,7 +73,7 @@ _qmk() {
       ;;
   esac
 
-  return $ret
+  return ret
 }
 
 (( $+functions[_qmk_commands] )) ||
@@ -91,8 +91,18 @@ _qmk_commands() {
     'compile:Compile a QMK Firmware'
     'doctor:Basic QMK environment checks'
     'flash:QMK Flash'
+    'generate-autocorrect-data:Generate the autocorrection data file from a dictionary file'
     'generate-compilation-database:Create a compilation database'
+    'generate-community-modules-rules-mk:Creates a community_modules_rules_mk from a keymap.json file'
+    'generate-community-modules-h:Creates a community_modules.h from a keymap.json file'
+    'generate-community-modules-c:Creates a community_modules.c from a keymap.json file'
+    'generate-community-modules-introspection-h:Creates a community_modules_introspection.h from a keymap.json file'
+    'generate-community-modules-introspection-c:Creates a community_modules_introspection.c from a keymap.json file'
+    'generate-led-matrix-community-modules-inc:Creates an led_matrix_community_modules.inc from a keymap.json file'
+    'generate-rgb-matrix-community-modules-inc:Creates an rgb_matrix_community_modules.inc from a keymap.json file'
+    'generate-keymap-h:Creates a keymap.h from a QMK Configurator export.'
     'generate-rgb-breathe-table:Generates an RGB Light breathing table header'
+    'git-submodule:Git Submodule actions'
     'import-kbfirmware:Import kbfirmware json export'
     'import-keyboard:Import data driven keyboard'
     'import-keymap:Import data-driven keymap'
@@ -107,6 +117,12 @@ _qmk_commands() {
     'painter-convert-graphics:Converts an input image to something QMK understands'
     'painter-make-font-image:Converts an input font to something QMK understands'
     'painter-convert-font-image:Converts an input font image to something QMK firmware understands'
+    'resolve-alias:Resolve any keyboard_aliases for provided rule'
+    'userspace-doctor:Checks userspace configuration'
+    'userspace-add:Adds a build target to userspace "qmk.json"'
+    'userspace-remove:Removes a build target from userspace "qmk.json"'
+    'userspace-list:Lists the build targets specified in userspace "qmk.json"'
+    'userspace-compile:Compiles the build targets specified in userspace "qmk.json"'
     'via2json:Convert a VIA backup json to keymap.json format'
   )
 
@@ -235,12 +251,103 @@ _qmk_flash() {
     '*: :_files'
 }
 
+(( $+functions[_qmk_generate-autocorrect-data] )) ||
+_qmk_generate-autocorrect-data() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '(-q --quiet)'{-q,--quiet}'[Quiet mode, only output error message]' \
+    '(-o --output)'{-o,--output}'[File to write to]:file:_files' \
+    '(-km --keymap)'{-km,--keymap}'[The keymap to build a firmware for]:keymap' \
+    '(-kb --keyboard)'{-kb,--keyboard}'[The keyboard to build a firmware for]:keyboard' \
+    '*: :_files'
+}
+
 (( $+functions[_qmk_generate-compilation-database] )) ||
 _qmk_generate-compilation-database() {
   _arguments \
     '(- *)'{-h,--help}'[show help message and exit]' \
     '(-km --keymap)'{-km,--keymap}'[The keymap to build a firmware for]:keymap' \
     '(-kb --keyboard)'{-kb,--keyboard}'[The keyboard to build a firmware for]:keyboard'
+}
+
+(( $+functions[_qmk_generate-community-modules-rules-mk] )) ||
+_qmk_generate-community-modules-rules-mk() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '(-kb --keyboard)'{-kb,--keyboard}'[The keyboard to build a firmware for]:keyboard' \
+    '(-e --escape)'{-e,--escape}'[Escape spaces in quiet mode]' \
+    '(-q --quiet)'{-q,--quiet}'[Quiet mode, only output error message]' \
+    '(-o --output)'{-o,--output}'[File to write to]:file:_files' \
+    '*: :_files'
+}
+
+(( $+functions[_qmk_generate-community-modules-h] )) ||
+_qmk_generate-community-modules-h() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '(-kb --keyboard)'{-kb,--keyboard}'[The keyboard to build a firmware for]:keyboard' \
+    '(-q --quiet)'{-q,--quiet}'[Quiet mode, only output error message]' \
+    '(-o --output)'{-o,--output}'[File to write to]:file:_files' \
+    '*: :_files'
+}
+
+(( $+functions[_qmk_generate-community-modules-c] )) ||
+_qmk_generate-community-modules-c() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '(-kb --keyboard)'{-kb,--keyboard}'[The keyboard to build a firmware for]:keyboard' \
+    '(-q --quiet)'{-q,--quiet}'[Quiet mode, only output error message]' \
+    '(-o --output)'{-o,--output}'[File to write to]:file:_files' \
+    '*: :_files'
+}
+
+(( $+functions[_qmk_generate-community-modules-introspection-h] )) ||
+_qmk_generate-community-modules-introspection-h() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '(-kb --keyboard)'{-kb,--keyboard}'[The keyboard to build a firmware for]:keyboard' \
+    '(-q --quiet)'{-q,--quiet}'[Quiet mode, only output error message]' \
+    '(-o --output)'{-o,--output}'[File to write to]:file:_files' \
+    '*: :_files'
+}
+
+(( $+functions[_qmk_generate-community-modules-introspection-c] )) ||
+_qmk_generate-community-modules-introspection-c() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '(-kb --keyboard)'{-kb,--keyboard}'[The keyboard to build a firmware for]:keyboard' \
+    '(-q --quiet)'{-q,--quiet}'[Quiet mode, only output error message]' \
+    '(-o --output)'{-o,--output}'[File to write to]:file:_files' \
+    '*: :_files'
+}
+
+(( $+functions[_qmk_generate-led-matrix-community-modules-inc] )) ||
+_qmk_generate-led-matrix-community-modules-inc() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '(-kb --keyboard)'{-kb,--keyboard}'[The keyboard to build a firmware for]:keyboard' \
+    '(-q --quiet)'{-q,--quiet}'[Quiet mode, only output error message]' \
+    '(-o --output)'{-o,--output}'[File to write to]:file:_files' \
+    '*: :_files'
+}
+
+(( $+functions[_qmk_generate-rgb-matrix-community-modules-inc] )) ||
+_qmk_generate-rgb-matrix-community-modules-inc() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '(-kb --keyboard)'{-kb,--keyboard}'[The keyboard to build a firmware for]:keyboard' \
+    '(-q --quiet)'{-q,--quiet}'[Quiet mode, only output error message]' \
+    '(-o --output)'{-o,--output}'[File to write to]:file:_files' \
+    '*: :_files'
+}
+
+(( $+functions[_qmk_generate-keymap-h] )) ||
+_qmk_generate-keymap-h() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '(-q --quiet)'{-q,--quiet}'[Quiet mode, only output error message]' \
+    '(-o --output)'{-o,--output}'[File to write to]:file:_files' \
+    '*: :_files'
 }
 
 (( $+functions[_qmk_generate-rgb-breathe-table] )) ||
@@ -251,6 +358,16 @@ _qmk_generate-rgb-breathe-table(){
     '(-o --output)'{-o,--output}'[File to write to]: :_files' \
     '(-m --max)'{-m,--max}'[The breathing maximum value, from 0 to 255]:num' \
     '(-c --center)'{-c,--center}'[The breathing center value, from 1 to 2.7]:num'
+}
+
+(( $+functions[_qmk_git-submodule] )) ||
+_qmk_git-submodule() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '(-f --force)'{-f,--force}'[Flag to remove unexpected directories]' \
+    '--sync[Shallow clone any missing submodules]' \
+    '--check[Check if the submodules are dirty, and display a warning if they are]' \
+    '*: :_files'
 }
 
 (( $+functions[_qmk_import-kbfirmware] )) ||
@@ -380,6 +497,56 @@ _qmk_painter-convert-font-image() {
     '(-n --no-ascii)'{-n,--no-ascii}'[Disable output of the full ASCII character set, exporting only the glyphs specified]' \
     '(-o --output)'{-o,--output}'[Specify output directory]: :_files -/' \
     '(-i --input)'{-i,--input}'[Specify input graphic file]: :_files'
+}
+
+(( $+functions[_qmk_resolve-alias] )) ||
+_qmk_resolve-alias() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '--allow-unknown[Return original if rule is not a valid keyboard]'
+}
+
+(( $+functions[_qmk_userspace-doctor] )) ||
+_qmk_userspace-doctor() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]'
+}
+
+(( $+functions[_qmk_userspace-add] )) ||
+_qmk_userspace-add() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    \*{-e,--env}'[Extra variables to set during build]:env' \
+    '(-km --keymap)'{-km,--keymap}"[The keymap's name]" \
+    '(-kb --keyboard)'{-kb,--keyboard}"[The keyboard's name]"
+}
+
+(( $+functions[_qmk_userspace-remove] )) ||
+_qmk_userspace-remove() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    \*{-e,--env}'[Extra variables to set during build]:env' \
+    '(-km --keymap)'{-km,--keymap}"[The keymap's name]" \
+    '(-kb --keyboard)'{-kb,--keyboard}"[The keyboard's name]"
+}
+
+(( $+functions[_qmk_userspace-list] )) ||
+_qmk_userspace-list() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '(-e --expand)'{-e,--expand}'[Expands any use of "all" for either keyboard or keymap]'
+}
+
+(( $+functions[_qmk_userspace-compile] )) ||
+_qmk_userspace-compile() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    \*{-e,--env}'[Extra variables to set during build]:env' \
+    '(-p --print-failures)'{-p,--print-failures}'[Print failed builds]' \
+    '(-n --dry-run)'{-n,--dry-run}'[Do not actually build, just show the commands to be run]' \
+    '(-c --clean)'{-c,--clean}'[Remove object files before compiling]' \
+    '(-j --parallel)'{-j,--parallel}'[Set the number of parallel make jobs, 0 means unlimited]:parallel' \
+    '(-t --no-temp)'{-t,--no-temp}'[Remove temporary files during build]'
 }
 
 (( $+functions[_qmk_via2json] )) ||
