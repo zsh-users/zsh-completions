@@ -40,6 +40,7 @@
 
 
 _jrnl() {
+    local ret=1
 
     _arguments -C \
       '(- 1 *)'-h"[Show help and exit]" \
@@ -60,6 +61,19 @@ _jrnl() {
       "--encrypt[Encrypts your existing journal with a new pass]" \
       "--decrypt[Decrypts your journal and stores it in plain text]" \
       "--edit[Opens your editor to edit the selected entries.]" \
+      '*:: :->args' \
+    && ret=0
+
+    case $state in
+        (args)
+            if [[ $PREFIX = @* ]]; then
+                local -a tags=($(jrnl --tags 2>/dev/null | grep -oE '@\S+'))
+                _describe -t tags 'tags' tags && ret=0
+            fi
+            ;;
+    esac
+
+    return ret
 }
 
 _jrnl
