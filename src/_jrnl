@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for jrnl a simple journal application for your command line. (https://maebert.github.io/jrnl/).
+#  Completion script for jrnl v4.2.1 (https://github.com/jrnl-org/jrnl).
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -38,43 +38,77 @@
 #
 # ------------------------------------------------------------------------------
 
-
 _jrnl() {
-    local ret=1
+  typeset -A opt_args
+  local context state line
+  local curcontext="$curcontext"
+  local ret=1
 
-    _arguments -C \
-      '(- 1 *)'-h"[Show help and exit]" \
-      '(- 1 *)'-v"[Prints version information and exits]" \
-      '(- 1 *)'-ls"[Displays accessible journals]" \
-      '(- 1 *)'-d"[Execute in debug mode]" \
-      '(- 1 *)'--tags"[Returns a list of all tags and number of occurrences]" \
-      "--short[Show only titles or line containing the search]" \
-      "-from[View entries after this date]:date:" \
-      "-until[View entries before this date]:date:" \
-      "-to[View entries before this date]:date:" \
-      "-on[View entries on this date]:date:" \
-      "-and[Filter by tags using AND (default: OR)]" \
-      "-starred[Show only starred entries]" \
-      "-n[Shows the last n entries matching the filter. And '-3' have the same effect.]":number: \
-      "--export[Export your journal. TYPE can be json, markdown text.]:format:(json markdown text)" \
-      "-o[Optionally specifies output file when using --export If OUTPUT is a directory, exports each entry in individual file instead.]:output file:" \
-      "--encrypt[Encrypts your existing journal with a new pass]" \
-      "--decrypt[Decrypts your journal and stores it in plain text]" \
-      "--edit[Opens your editor to edit the selected entries.]" \
-      '*:: :->args' \
+  _arguments -C  \
+    '--debug[Print information useful for troubleshooting]' \
+    '(- *)--help[Show help message]' \
+    '(- *)--version[print version information]' \
+    '--list[List all configured journals]' \
+    '--encrypt[Encrypt selected journal with a password]' \
+    '--decrypt[Decrypt selected journal and store it in plain text]' \
+    '--import[Import entries from another journal]' \
+    '-on[Show entries on this date]:date' \
+    '-today-in-history[Show entries of today over the years]' \
+    '-month[Show entries on this month of any year]:date' \
+    '-day[Show entries on this day of any month]:date' \
+    '-year[Show entries of a specific year]:date' \
+    '-from[Show entries after, or on, this date]:date' \
+    '(-to -until)'{-to,-until}'[Show entries before, or on, this date]' \
+    '-contains[Show entries containing specific text]:text' \
+    '-and[Show only entries that match all conditions(default: OR)]' \
+    '-starred[Show only starred entries (marked with *)]' \
+    '-tagged[Show only entries that have at least one tag]' \
+    '-n[Show a maximum of NUMBER entries. And "-3" has the same effect]:number' \
+    '-not[exclude entries with that tag]:tag_or_flag' \
+    '--edit[Opens the selected entries in your configured editor]' \
+    '--delete[Interactively deletes selected entries]' \
+    '--change-time[Change timestamp for selected entries(default: now)]:date' \
+    '--format[Display selected entries in an alternate format]:format:_jrnl_formats' \
+    '--tags[Alias for "--format tags"]' \
+    '--short[Show only titles or line containing the search tags]' \
+    '--config-override[Override configured key-value pair]:key_value' \
+    '--config-file[Override default config file]:path:_files' \
+    '*:: :->args' \
     && ret=0
 
-    case $state in
-        (args)
-            if [[ $PREFIX = @* ]]; then
-                local -a tags=($(jrnl --tags 2>/dev/null | grep -oE '@\S+'))
-                _describe -t tags 'tags' tags && ret=0
-            fi
-            ;;
-    esac
+  case $state in
+    (args)
+      if [[ $PREFIX = @* ]]; then
+        local -a tags=($(jrnl --tags 2>/dev/null | command grep -oE '@\S+'))
+        _describe -t tags 'tags' tags && ret=0
+      fi
+      ;;
+  esac
 
-    return ret
+  return ret
 }
 
-_jrnl
+(( $+functions[_jrnl_formats] )) ||
+_jrnl_formats() {
+  local -a formats
 
+  if (( $+opt_args[--list] )); then
+    formats=(json yaml)
+  elif (( $+opt_args[--import] )); then
+    formats=(jrnl)
+  else
+    formats=(boxed calendar dates fancy heatmap json markdown md pretty short tags text txt xml yaml)
+  fi
+
+  _values 'format' $formats
+}
+
+_jrnl "$@"
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
