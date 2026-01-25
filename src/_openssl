@@ -990,7 +990,7 @@ _openssl_enc() {
     '-out[output file name]:file:_files' \
     '-pass[password source]:source:_openssl_pass_phrase_options' \
     '-e[encrypt the input data(default behavior)]' \
-    '-e[decrypt the input data]' \
+    '-d[decrypt the input data]' \
     '(-a -base64)'{-a,-base64}'[Base64 proess the data]' \
     '-A[base64 encoding produces output without any newline character]' \
     '-k[password to derive the key from]:password' \
