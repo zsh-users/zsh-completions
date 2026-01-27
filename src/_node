@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Node.js v25.4.0 (https://nodejs.org)
+#  Completion script for Node.js v25.5.0 (https://nodejs.org)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -84,6 +84,7 @@ _node() {
     '--allow-net[allow use of network when any permissions are set]' \
     '--allow-wasi[allow wasi when any permissions are set]' \
     '--allow-worker[allow worker threads when any permissions are set]' \
+    '--build-sea=[Build a Node.js single executable application]:sea_config:_files -g "*.json"' \
     '--build-snapshot[generate a snapshot blob when the process exits]' \
     '--build-snapshot-config=[generate a snapshot blob when the process exits using a JSON configuration in the specified path]:path:_files' \
     {-c,--check}'[syntax check script without executing]' \
