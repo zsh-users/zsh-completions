@@ -1,0 +1,318 @@
+#compdef aac2mp4 mp42aac mp42avc mp42hevc mp42hls mp42ts mp4compact mp4dash mp4dashclone mp4dcfpackager mp4decrypt mp4dump mp4edit mp4encrypt mp4extract mp4fragment mp4hls mp4iframeindex mp4info mp4mux mp4rtphintinfo mp4split mp4tag
+# ------------------------------------------------------------------------------
+# Copyright (c) 2026 Github zsh-users - https://github.com/zsh-users
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for bento4 tools 1.6.0-641 (https://github.com/axiomatic-systems/Bento4)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei Yoshida (https://github.com/syohex) <syohex@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+local -a encrypt_methods=(
+  OMA-PDCF-CBC OMA-PDCF-CTR MARLIN-IPMP-ACBC MARLIN-IPMP-ACGK ISMA-IAEC PIFF-CBC
+  PIFF-CTR MPEG-CENC MPEG-CBC1 MPEG-CENS MPEG-CBCS
+)
+local -a options=()
+
+case $service in
+  (mp42aac|mp42avc|mp42hevc)
+    options+=('--key[128-bit decryption key (in hex: 32 chars)]:key')
+    ;;
+  (mp42hls)
+    options+=(
+      '--verbose[enable verbose mode]'
+      '--show-info[show information]'
+      '--hls-version[HLS version(default: 3)]:version'
+      '--pmt-pid[PID to use for the PMT(default: 0x100)]:pid'
+      '--audio-pid[PID to use for audio packets(default: 0x101)]:pid'
+      '--video-pid[PID to use for video packets(default: 0x102)]:pid'
+      '--audio-track-id[Read audio from the given track ID(0 means no audio)]:track_id'
+      '--video-track-id[Read video from the given track ID(0 means no video)]:track_id'
+      '--audio-format[Format to use for audio-only segments(default: ts)]:format:(ts packed)'
+      '--segment-duration[Target segment duration in seconds(default: 6)]:seconds'
+      '--segment-duration-threshold[Segment duration threshold in milliseconds(default: 15)]:seconds'
+      '--pcr-offset[offset in units of 90kHz(default: 1000)]:offset'
+      '--index-filename[File name to use for the playlist/index(default: stream.m3u8)]:name:_files'
+      '--allow-cache[set #EXT-X-ALLOW_CACHE to YES or NO]: :(YES NO)'
+      '--segment-filename-template[File name pattern to use for the segment(default: segment-%d.<ext> or stream.<ext>)]:pattern'
+      '--segment-url-template[URL pattern to use for segments(default: segment-%d.<ext> or stream.<ext>)]:pattern'
+      '--iframe-index-filename[File name to use for the I-Frame playlist(default: iframes.m3u8)]:file:_files'
+      '--output-single-file[Output all the media in a single file instead of separate segment files]'
+      '--encryption-mode[Encryption mode(default: AES-128)]:mode:(AES-128 SAMPLE-AES)'
+      '--encryption-key[Encryption key in hexadecimal(default: no encryption)]:key'
+      '--encryption-iv-mode[Encryption IV mode(default: separate)]:mode:(sequence random fps)'
+      '--encryption-key-uri[Encryption key URI, relative or absolute URI(default: key.bin)]:uri'
+      '--encryption-key-format[Encryption key format(default: identity)]:format'
+      '--encryption-key-format-versions[Encryption key format versions]:versions'
+      '--encryption-key-line[Preformatted encryption key line]:ext_x_key_line'
+    )
+    ;;
+  (mp42ts)
+    options+=(
+      '--pmt-pid[PID to use for the PMT(default: 0x100)]:pid'
+      '--audio-pid[PID to use for audio packets(default: 0x101)]:pid'
+      '--video-pid[PID to use for video packets(default: 0x102)]:pid'
+      '--segment[Segment duration in seconds]:seconds'
+      '--segment-duration-threshold[Segment duration threshold in milliseconds(default: 50)]:seconds'
+      '--pcr-offset[offset in units of 90kHz(default: 1000)]:offset'
+      '--verbose[enable verbose mode]'
+      '--playlist[Playlist file name]:file:_files'
+      '--playlist-hls-version[HLS version(default: 3)]:version'
+    )
+    ;;
+  (mp4compact)
+    options+=('--verbose[Enable verbose mode]')
+    ;;
+  (mp4dash)
+    options+=(
+      '(- *)'{-h,--help}'[Show this help message and exit]'
+      '(-v --verbose)'{-v,--verbose}'[Be verbose]'
+      '(-d --debug)'{-d,--debug}'[Print out debugging information]'
+      '(-o --output-dir)'{-o,--output-dir=}'[Output directory]:dir:_files -/'
+      '(-f --force)'{-f,--force}'[Allow output to an existing directory]'
+      '--mpd-name=[MPD file name]:file:_files'
+      '--profiles=[Comma-separated list of one or more profile(s)]:profiles'
+      '--no-media[Do not output media files (MPD/Manifests only)]'
+      '--rename-media[Use a file name pattern instead of the base name of input files]'
+      '--media-prefix=[Use this prefix for prefixed media file names(default: media)]:prefix'
+      '--init-segment=[Initialization segment name]:file:_files'
+      '--no-split[Do not split the file into individual segment files]'
+      '--use-segment-list[Use segment lists instead of segment templates]'
+      '--use-segment-template-number-padding[Use padded numbers in segment URL/filename templates]'
+      '--use-segment-timeline[Use segment timelines]'
+      '--min-buffer-time=[Minimum buffer time in seconds]:seconds'
+      '--max-playout-rate=[Max Playout Rate setting strategy for trick-play support]:strategy:(lowest:X)'
+      '--language-map=[Remap language code <lang_from> to <lang_to>]:from_to_list'
+      '--always-output-lang[Always output an @lang attribute for audio tracks]'
+      '--subtitles[Enable Subtitles]'
+      *'--attributes=[Specify the attributes of a set of tracks]:attribute'
+      '--smooth[Produce an output compatible with Smooth Streaming]'
+      '--smooth-client-manifest-name=[Smooth Streaming Client Manifest file name]:file:_files'
+      '--smooth-server-manifest-name=[Smooth Streaming Server Manifest file name]:file:_files'
+      '--smooth-h264-fourcc=[Smooth Streaming FourCC value for H.264 video(default H264)]:fourcc'
+      '--hls[Output HLS playlists in addition to MPEG DASH]'
+      '--hls-key-url=[HLS key URL (default: key.bin)]:url'
+      '--hls-master-playlist-name=[HLS master playlist name (default: master.m3u8)]:file:_files'
+      '--hls-media-playlist-name=[HLS media playlist name (default: media.m3u8)]:file:_files'
+      '--hls-iframes-playlist-name=[HLS I-Frames playlist name (default: iframes.m3u8)]'
+      '--hippo[Produce an output compatible with the Hippo Media Server]'
+      '--hippo-server-manifest-name=[Hippo Media Server Manifest file name]:file:_files'
+      '--use-compat-namespace[Use the original DASH MPD namespace]'
+      '--use-legacy-audio-channel-config-uri[Use the legacy DASH namespace URI]'
+      '--encryption-key=[Encryption key specifications]:key_spec'
+      '--encryption-cenc-scheme=[MPEG Common Encryption scheme(default: cenc)]:scheme:(cenc cbc1 cens cbcs)'
+      '--encryption-args=[Pass additional command line arguments to mp4encrypt]:args'
+      '--eme-signaling=[Add EME-compliant signaling in the MPD and PSSH boxes]:type:(pssh-v0 pssh-v1)'
+      '--merge-keys[Merge all keys in a single set used for all ContentProtection elements]'
+      '--marlin[Add Marlin signaling to the MPD]'
+      '--marlin-add-pssh[Add an (optional) Marlin "pssh" box in the init segment(s)]'
+      '--playready[Add PlayReady signaling to the MPD]'
+      '--playready-version=[PlayReady version to use]:version:(4.0 4.1 4.2 4.3)'
+      '--playready-header=[Add a PlayReady PRO element in the MPD and a PlayReady PSSH box in the init segments]:header'
+      '--playready-no-pssh[Do not store the PlayReady header in a "pssh" box in the init segment(s)]'
+      '--widevine[Add Widevine signaling to the MPD]'
+      '--widevine-header=[Add a Widevine entry in the MPD, and a Widevine PSSH box in the init segments]:header'
+      '--primetime[Add Primetime signaling to the MPD]'
+      '--primetime-metadata=[Add Primetime metadata in a PSSH box in the init segments]:metadata'
+      '--fairplay-key-uri=[Specify the key URI to use for FairPlay Streaming key delivery]:uri'
+      '--clearkey[Add Clear Key signaling to the MPD]'
+      '--clearkey-license-uri=[Specify the license/key URI to use for Clear Key]'
+      '--exec-dir=[Directory where the Bento4 executables are located]:dir:_files -/'
+    )
+    ;;
+  (mp4dashclone)
+    options+=(
+      '(- *)'{-h,--help}'[Show this help message and exit]'
+      '--quiet[Be quiet]'
+      '--encrypt=[Encrypt the media with KID and KEY specified in HEX(32 characters each)]:key'
+      '--exec-dir=[Directory where the Bento4 executables are located]:dir:_files -/'
+    )
+    ;;
+  (mp4dcfpackager)
+    options+=(
+      '--method[method name]:method:(NULL CBC CTR)'
+      '--content-type[Content MIME type]:mime_type'
+      '--content-id[Content ID]:id'
+      '--rights-issuer[rights issuer URL]:url'
+      '--key[Specify the key to use for encryption]:key'
+      *'--textual-header[Specify a textual header]:header'
+    )
+    ;;
+  (mp4decrypt)
+    options+=(
+      '--show-progress[Show progress details]'
+      '--key[Specify the key to use for decryption]:key'
+      '--fragments-info[File to decrypt the fragments read from]:file:_files'
+    )
+    ;;
+  (mp4dump)
+    options+=(
+      '--verbosity[Set the verbosity level]:level:(0 1 2 3)'
+      '--track[Write the track data into a file]:file:_files'
+      '--format[Format to use for the output(default: text)]:format:(text json)'
+    )
+    ;;
+  (mp4edit)
+    options+=(
+      '--insert[insert atom data]:atom_path_and_source_and_position'
+      '--remove[remove atom data]:atom_path'
+      '--replace[replace atom data]:atom_path_and_source'
+    )
+    ;;
+  (mp4encrypt)
+    options+=(
+      '--method=[Encryption method]:method:($encrypt_methods)'
+      '--show-progress[Show progress details]'
+      '--fragments-info[Encrypt the fragments read from <input> with track info read from the given file]:file:_files'
+      '--multi[Encrypt multiple individual fragment files]'
+      '--key[Specify the key to use for a track (or group key)]:key_spec'
+      '--strict[Fail if there is a warning]'
+      *'--property[Specify a named string property for a track]:property'
+      '--global-option[Set the global option]:option'
+      '--pssh[Add a "pssh" atom for this system ID with the payload]:pssh'
+      '--pssh-v1[Same as --pssh but generates a version=1 "pssh" atom]:pssh'
+      '--kms-uri[Specify the KMS URI for the ISMA-IAEC method]:uri'
+    )
+    ;;
+  (mp4extract)
+    options+=(
+      '--payload-only[Omit the atom header]'
+    )
+    ;;
+  (mp4fragment)
+    options+=(
+      '--verbosity[Set the verbosity level]:level:(0 1 2 3)'
+      '--debug[Enable debugging information output]'
+      '--quiet[Do not print out notice messages]'
+      '--fragment-duration[Fragment duration in milliseconds(default: automatic)]:msecs'
+      '--timescale[Time scale]:time_scale'
+      '--track[Specify track ID or type only include media from one track]:id_or_type:(audio video subtitles)'
+      '--index[(Re)create the segment index]'
+      '--trim[Trim excess media in longer tracks]'
+      '--no-tfdt[Do not add "tfdt boxes in the fragments"]'
+      '--tfdt-start[Set start value of the first tfdt timestamp]:start'
+      '--sequence-number-start[Set start value of the first segment sequence number(default: 1)]:number'
+      '--force-i-frame-sync[Treat all I-frames as sync samples]:type:(auto all)'
+      '--copy-udta[Copy the moov/udta atom from input to output]'
+      '--no-zero-elst[Do not set the last edit list entry to 0 duration]'
+      '--trun-version-zero[Set the "trun" box version to zero(default version: 1)]'
+    )
+    ;;
+  (mp4hls)
+    options+=(
+      '(- *)'{-h,--help}'[Show this help message and exit]'
+      '(-v --verbose)'{-v,--verbose}'[Be verbose]'
+      '(-d --debug)'{-d,--debug}'[Print out debugging information]'
+      '(-o --output-dir)'{-o,--output-dir=}'[Output directory]:dir:_files -/'
+      '(-f --force)'{-f,--force}'[Allow output to an existing directory]'
+      '--hls-version=[HLS version]:version'
+      '--master-playlist-name=[Master Playlist name]:file:_files'
+      '--media-playlist-name=[Media Playlist name]:file:_files'
+      '--iframe-playlist-name=[I-frame Playlist name]:name'
+      '--output-single-file[Store segment data in a single output file per input file]'
+      '--audio-format=[Format for audio segments]:format:(packed ts)'
+      '--segment-duration=[Segment duration(default: 6)]:duration'
+      '--encryption-mode=[Encryption mode(default: AES-128)]:mode:(AES-128 SAMPLE-AES)'
+      '--encryption-key=[Encryption key in hexadecimal]:key'
+      '--encryption-iv-mode=[Encryption IV mode]:mode:(sequence random fps)'
+      '--encryption-key-uri=[Encryption key URI(default: key.bin)]:uri'
+      '--encryption-key-format=[Encryption key format (default: identity)]:mode:(identity)'
+      '--encryption-key-format-versions=[Encryption key format versions]:versions'
+      '--signal-session-key[Signal an #EXT-X-SESSION-KEY tag in the master playlist]'
+      '--fairplay=[Enable FairPlay Key Delivery and set parameters]:parameters'
+      '--widevine=[Enable Widevine Key Delivery and set parameters]:parameters'
+      '--output-encryption-key[Output the encryption key to a file]'
+      '--exec-dir=[Directory where the Bento4 executables are located]:dir:_files -/'
+      '--base-url=[The base URL for the Media Playlists and TS files listed in the playlists]:uri'
+    )
+    ;;
+  (mp4iframeindex)
+    options+=(
+      '--track[ID of the video track]:id'
+    )
+    ;;
+  (mp4info)
+    options+=(
+      '--verbose[Show extended information when available]'
+      '--format[Display the information in this format(default: text)]:format:(text json)'
+      '--show-layout[Show sample layout]'
+      '--show-samples[Show sample details]'
+      '--show-sample-data[Show sample data]'
+      '--fast[Skip some details that are slow to compute]'
+    )
+    ;;
+  (mp4mux)
+    options+=(
+      *'--track=[Track type, input, parameters]:track'
+      '--verbose[Show more details]'
+    )
+    ;;
+  (mp4rtphintinfo)
+    options+=(
+      '--trackid[Hint track ID]:id'
+    )
+    ;;
+  (mp4split)
+    options+=(
+      '--verbose[Print verbose information when running]'
+      '--init-segment[Name of init segment(default: init.mp4)]:file:_files'
+      '--init-only[Only output the init segment(no media segments)]'
+      '--media-segment[Segment file name pattern(default: segment-%llu.%04llu.m4s)]:pattern'
+      '--start-number[Start numbering segments at n(default=1)]:number'
+      '--pattern-parameters[One or more selector letter(default: IN)]:params'
+      '--track-id[Only output segments with this track ID]:id'
+      '--audio[Only output audio segments]'
+      '--video[Only output video segments]'
+    )
+    ;;
+  (mp4tag)
+    options+=(
+      '--help[Print this usage information]'
+      '--show-tags[Show tags found in the input file]'
+      '--list-symbols[List all the builtin symbols]'
+      '--list-keys[List all the builtin symbolic key names]'
+      '--set[Set a tag]:tag'
+      '--add[Set/Add a tag]:tag'
+      '--remove[Remove a tag]:key'
+      '--extract[extract the value of a tag and save it to a file]:key_file'
+    )
+    ;;
+esac
+
+_arguments \
+  $options[@] \
+  "*::file:_files"
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
