@@ -213,12 +213,6 @@ _flutter() {
         (custom-devices)
           _flutter_custom_devices && ret=0
           ;;
-        (daemon)
-          _arguments \
-            '(- *)'{-h,--help}'[Print this usage information]' \
-            '--listen-on-tcp-port=[If specified, the daemon will be listening for commands on the specified port instead of stdio]:port:' \
-            && ret=0
-          ;;
         (debug-adapter)
           _arguments \
             '(- *)'{-h,--help}'[Print this usage information]' \
@@ -521,6 +515,9 @@ _flutter() {
             '--verify-only[Checks for any new Flutter updates, without actually fetching them]' \
             && ret=0
           ;;
+        (widget-preview)
+          _flutter_widget_preview && ret=0
+          ;;
         (*)
           _arguments \
             '(- *)'{-h,--help}'[Print this usage information]' \
@@ -564,6 +561,7 @@ _flutter_root_commands() {
     'symbolize:Symbolize a stack trace from an AOT-compiled Flutter app.'
     'test:Run Flutter unit tests for the current project.'
     'upgrade:Upgrade your copy of Flutter.'
+    'widget-preview:Manage the widget preview environment'
   )
   _describe -t commands 'command' commands "$@"
 }
@@ -1090,6 +1088,59 @@ _flutter_pub_token_subcommand() {
   )
   _describe -t subcommands 'subcommand' subcommands "$@"
 }
+
+(( $+functions[_flutter_widget_preview] )) ||
+_flutter_widget_preview() {
+  local ret=1
+
+  _arguments -C \
+    '(- *)'{-h,--help}'[Print this usage information]' \
+    \*{-v,--verbose}'[Noisy logging, including all shell commands executed]' \
+    '(-d --device-id)'{-d,--device-id}'[Target device id or name]:id_or_name' \
+    '(- *)--version[Report the version of this tool]' \
+    '(--enable-analytics --disable-analytics)--enable-analytics[Enable telemetry reporting each time a flutter or dart command runs]' \
+    '(--enable-analytics --disable-analytics)--disable-analytics[Disable telemetry reporting each time a flutter or dart command runs]' \
+    '--suppress-analytics[Suppress analytics reporting for the current CLI invocation]' \
+    '1: :_flutter_widget_preview_subcommand' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (clean)
+          _arguments \
+            '(- *)'{-h,--help}'[Print this usage information]' \
+            && ret=0
+          ;;
+        (start)
+          _arguments \
+            '(- *)'{-h,--help}'[Print this usage information]' \
+            '(--pub --no-pub)--pub[Run "flutter packages get" after the project has been created]' \
+            '(--pub --no-pub)--no-pub[Do not run "flutter packages get" after the project has been created]' \
+            '(--offline --no-offline)--offline[Run "flutter packages get" in offline mode]' \
+            '(--offline --no-offline)--no-offline[Do not run "flutter packages get" in offline mode]' \
+            '(--web-server --no-web-server)--web-server[Serve the widget preview environment using the web-server device instead of browser]' \
+            '(--web-server --no-web-server)--no-web-server[Do not serve the widget preview environment using the web-server device]' \
+            && ret=0
+          ;;
+      esac
+    ;;
+  esac
+
+  return ret
+}
+
+(( $+functions[_flutter_widget_preview_subcommand] )) ||
+_flutter_widget_preview_subcommand() {
+  local -a subcommands=(
+    "clean:Cleans up widget preview state"
+    "start:Starts the widget preview environment"
+  )
+  _describe -t subcommands 'subcommand' subcommands "$@"
+}
+
+# Utilities
 
 (( $+functions[_flutter_web_renderers] )) ||
 _flutter_web_renderers() {
