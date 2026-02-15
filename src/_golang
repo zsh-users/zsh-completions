@@ -30,7 +30,7 @@
 # Description
 # -----------
 #
-#  Completion script for go 1.25.0 (https://go.dev/).
+#  Completion script for go 1.26.0 (https://go.dev/).
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -312,20 +312,45 @@ __go_packages() {
   fi
 }
 
-__go_fix_names() {
-  local -a fix_names=(
-    'buildtag[remove +build comments from modules using Go 1.18 or later]'
-    'cftype[fixes initializers and casts of C.*Ref and JNI types]'
-    'context[Change imports of golang.org/x/net/context to context]'
-    'egl[fixes initializers of EGLDisplay]'
-    'eglconf[fixes initializers of EGLConfig]'
-    'gotypes[change imports of oglang.org/x/tools/go{exact,types} to go/{constant,types}]'
-    "jni[fixes initializers of JNI's jobject and subtypes]"
-    'netipv6zone[adapt element key to IPAddr, UPDAddr, TCPAddr composite literals]'
-    'printerconfig[add element keys to Config composite literals]'
+__go_fix_analyzers() {
+  local -a fix_analyzers=(
+    "any[replace interface{} with any]"
+    "buildtag[check //go:build and // +build directives]"
+    "fmtappendf[replace \[\]byte(fmt.Sprintf) with fmt.Appendf]"
+    "forvar[remove redundant re-declaration of loop variables]"
+    "hostport[check format of addresses passed to net.Dial]"
+    "inline[apply fixes based on 'go:fix inline' comment directives]"
+    "mapsloop[replace explicit loops over maps with calls to maps package]"
+    "minmax[replace if/else statements with calls to min or max]"
+    "newexpr[simplify code by using go1.26's new(expr)]"
+    "omitzero[suggest replacing omitempty with omitzero for struct fields]"
+    "plusbuild[remove obsolete //+build comments]"
+    "rangeint[replace 3-clause for loops with for-range over integers]"
+    "reflecttypefor[replace reflect.TypeOf(x) with TypeFor\[T\]()]"
+    "slicescontains[replace loops with slices.Contains or slices.ContainsFunc]"
+    "slicessort[replace sort.Slice with slices.Sort for basic types]"
+    "stditerators[use iterators instead of Len/At-style APIs]"
+    "stringsbuilder[replace += with strings.Builder]"
+    "stringscut[replace strings.Index etc. with strings.Cut]"
+    "stringscutprefix[replace HasPrefix/TrimPrefix with CutPrefix]"
+    "stringsseq[replace ranging over Split/Fields with SplitSeq/FieldsSeq]"
+    "testingcontext[replace context.WithCancel with t.Context in tests]"
+    "waitgroup[replace wg.Add(1)/go/wg.Done() with wg.Go]"
   )
 
-  _values -s ',' 'fix name' $fix_names
+  _values 'analyzer' $fix_analyzers
+}
+
+__go_pprof_symbolize_types() {
+  local -a symbolize_types=(
+    "none[Do not attempt symbolization]"
+    "local[Examine only local binaries]"
+    "fastlocal[Only get function names from local binaries]"
+    "remote[Do not examine local binaries]"
+    "force[Force re-symbolization]"
+  )
+
+  _values 'symbolize_type' $symbolize_types
 }
 
 if [[ "$service" = -value-* ]]; then
@@ -398,6 +423,38 @@ case $state in
       'verify:verify dependencies have expected content'
       'why:explain why packages or modules are needed'
       'help:get more information about a command'
+    )
+    local -a fix_flags=(
+      '-fixtool=[specify fix analyzer]:analyzer:__go_fix_analyzers'
+      '-diff[display diffs instead of rewriting files]'
+      '-fixtool=[select analysis tool]:analyzer:'
+      '(- *)-V[print version and exit]'
+      '-any[enable any analysis]'
+      '-buildtag[enable buildtag analysis]'
+      '-c[display offending line with this many lines of content(default: -1)]:num'
+      '-fix[apply all suggested fixes]'
+      '-flags[print analyzer flags in JSON]'
+      '-fmtappendf[enable fmtappendf analysis]'
+      '-forvar[enable forvar analysis]'
+      '-hostport[enable hostport analysis]'
+      '-inline[enable inline analysis]'
+      '-json[emit JSON output]'
+      '-mapsloop[enable mapsloop analysis]'
+      '-minmax[enable minmax analysis]'
+      '-newexpr[enable newexpr analysis]'
+      '-omitzero[enable omitzero analysis]'
+      '-plusbuild[enable plusbuild analysis]'
+      '-rangeint[enable rangeint analysis]'
+      '-reflecttypefor[enable reflecttypefor analysis]'
+      '-slicescontains[enable slicescontains analysis]'
+      '-slicessort[enable slicessort analysis]'
+      '-stditerators[enable stditerators analysis]'
+      '-stringsbuilder[enable stringsbuilder analysis]'
+      '-stringscut[enable stringscut analysis]'
+      '-stringscutprefix[enable stringscutprefix analysis]'
+      '-stringsseq[enable stringsseq analysis]'
+      '-testingcontext[enable testingcontext analysis]'
+      '-waitgroup[enable waitgroup analysis]'
     )
 
     case $words[1] in
@@ -532,10 +589,7 @@ case $state in
       (fix)
         _arguments \
           '-C[change to directory before running the command]: :_files -/' \
-          '-diff[display diffs instead of rewriting files]' \
-          '-force[force these fixes to run even if the code looks updated]:fix_names:__go_fix_names' \
-          '-go[go language version for files]:version' \
-          '-r[restrict the rewrites to this comma-separated list]:fix_names:__go_fix_names' \
+          $fix_flags[@] \
           '*:importpaths:__go_packages'
         ;;
 
@@ -572,7 +626,6 @@ case $state in
       (install)
         _arguments \
           ${build_flags[@]} \
-          '-json[emit install output in JSON suitable for automated processing]' \
           '*:importpaths:__go_packages'
         ;;
 
@@ -602,7 +655,7 @@ case $state in
         ;;
 
       (mod)
-        _arguments \
+        _arguments -C \
           "1: :{_describe 'command' mod_commands}" \
           '*:: :->args'
 
@@ -639,8 +692,8 @@ case $state in
                   '-e[attempt to proceed despite errors encountered while loading packages]' \
                   '-x[print the commands download executes]' \
                   '-diff[not to modify go.mod or go.sum but instead print necessary changes as a unified diff]' \
-                  '-go[update the go directive in the go.mod file to the given version]:goversion' \
-                  '-compat[preserves additional checksums needed for the indicated Go version]:version'
+                  '-go=[update the go directive in the go.mod file to the given version]:goversion' \
+                  '-compat=[preserves additional checksums needed for the indicated Go version]:version'
                 ;;
               (vendor)
                 _arguments \
@@ -712,6 +765,7 @@ case $state in
         else
           _arguments \
             "-c[compile but don't run test]" \
+            '-artifacts[save test artifacts in the directory specified by -outputdir]' \
             '-bench[run benchmarks matching the regular expression]:regexp' \
             '-benchmem[print memory allocation statistics for benchmarks]' \
             '-benchtime[run benchmarks for t rime]:t' \
@@ -908,12 +962,12 @@ case $state in
                 ;;
 
               (fix)
-                _arguments \
-                  '(* -)-help[show help message]' \
-                  '-diff[display diffs instead of rewriting files]' \
-                  '-force[force fixes to run even if the code looks updated]:string:__go_fix_names' \
-                  '-r[restrict the rewrites]:string:__go_fix_names' \
-                  '*:files:_files'
+                if [[ $words[2] == "help" ]]; then
+                  __go_fix_analyzers
+                else
+                  _arguments \
+                    "*:args:{ _alternative ':subcommand:(help)' _files }"
+                fi
                 ;;
 
               (link)
@@ -995,15 +1049,17 @@ case $state in
                   ':files:_files'
                 ;;
 
-              pprof)
+              (pprof)
                 _arguments \
                   '-callgrind[outputs a graph in callgrind format]' \
+                  '-comments[output all profile comments]' \
                   '-disasm=[output annotated assembly]:p' \
                   '-dot[outputs a graph in DOT format]' \
                   '-eog[visualize graph through eog]' \
                   '-evince[visualize graph through evince]' \
                   '-gif[outputs a graph image in GIF format]' \
                   '-gv[visualize graph through gv]' \
+                  '-kcachegrind[visualize report in KCachegrind]' \
                   '-list=[output annotated source for functions matching regexp]:p' \
                   '-pdf[outputs a graph in PDF format]' \
                   '-peek=[output callers/callees of functions matching regexp]:p' \
@@ -1015,23 +1071,61 @@ case $state in
                   '-tags[outputs all tags in the profile]' \
                   '-text[outputs top entries in text form]' \
                   '-top[outputs top entries in text form]' \
+                  '-topproto[outputs top entries in compresses protobuf format]' \
+                  '-traces[outputs all profile samples in text form]' \
                   '-tree[outputs a text rendering of call graph]' \
                   '-web[visualize graph through web browser]' \
                   '-weblist=[output annotated source in HTML]:p' \
+                  '-call_tree[generate a context-sensitive call tree]' \
+                  '-compact_labels[show minimal headers]' \
+                  '-divide_by=[scale all samples by dividing them by f]:f' \
+                  '-drop_negative[ignore negative differences]' \
+                  '-edgefraction=[hide edges below <f>*total]:f' \
+                  '-focus=[restricts to paths going through a node matching regexp]:r' \
+                  '-hide=[skips nodes matching regexp]:regexp' \
+                  '-ignore=[skips paths going through any nodes matching regexp]:r' \
+                  '-intel_syntax[show assembly in Intel syntax]' \
+                  '-mean[average sample value over first value]' \
+                  '-nodecount=[max number of nodes to show]:n' \
+                  '-nodefraction=[hide nodes below <f>*total]:f' \
+                  '-noinlines[ignore inlines]' \
+                  '-normalize[scales profile based on the base profile]' \
                   '-output=[generate output on file f (stdout by default)]:f' \
+                  '-prune_from[drops any functions below the matched frame]' \
+                  '-relative_percentages[show percentages relative to focused subgraph]' \
+                  '-sample_index[index of sample value to display]' \
+                  '-show=[only show nodes matching regexp]:regexp' \
+                  '-show-from=[drops functions above the highest matched frame]:regexp' \
+                  '-show-columns[show column numbers at the source code line level]' \
+                  '-source_path=[search path for source files]:path:_files -/' \
+                  '-tagfocus=[restrict to samples tagged with key:value matching regexp]:r' \
+                  '-taghide=[skip tags matching this regexp]:regexp' \
+                  '-tagignore=[discard samples tagged with key:value matching regexp]:regexp' \
+                  '-tagleaf[add pseudo stack frames for labels key/value pairs at the callstack leaf]' \
+                  '-tagroot[add pseudo stack frames for labels key/value pairs at the callstack root]' \
+                  '-trim[honor nodefraction/edgefraction/nodecount defaults]' \
+                  '-trim_path[path to trim from source paths before search]:path:_files -/' \
+                  '-unit=[convert all samples to unit u for display]:u' \
                   '-functions[report at function level (default)]' \
+                  '-filefunctions[aggregate at the file function level]' \
                   '-files[report at source file level]' \
                   '-lines[report at source line level]' \
                   '-addresses[report at address level]' \
-                  '-base[show delta from this profile]:profile' \
-                  '-drop_negative[ignore negative differences]' \
                   '-cum[sort by cumulative data]' \
+                  '-flat[sort entries based on own weight]' \
                   '-seconds=[length of time for dynamic profiles]:n' \
-                  '-nodecount=[max number of nodes to show]:n' \
-                  '-nodefraction=[hide nodes below <f>*total]:f' \
-                  '-edgefraction=[hide edges below <f>*total]:f' \
-                  '-sample_index[index of sample value to display]' \
-                  '-mean[average sample value over first value]' \
+                  '-timeout=[timeout in seconds for profile collection]:seconds' \
+                  '-buildid=[override build id for main binary in profile]:id' \
+                  '-add_comment=[free-form annotation to add to the profile]:comment' \
+                  '-diff_base=[source of base profile for comparison]:source:_files' \
+                  '-base[show delta from this profile]:profile' \
+                  '-symbolize=[controls source of symbol information]:source:__go_pprof_symbolize_types' \
+                  '-tls_cert=[TLS client certificate file for fetchign profile and symbols]:file:_files' \
+                  '-tls_key=[TLS private key file for fetching profile and symbols]:file:_files' \
+                  '-tls_ca=[TLS CA certs file for fetching profile and symbols]:file:_files' \
+                  '-http=[provide web interface at host:port]:host_port' \
+                  '-no_browser[skip opening a browser for the interactive web UI]' \
+                  '-tools=[search path for object tools]:path:_files -/' \
                   '-inuse_space[display in-use memory size]' \
                   '-inuse_objects[display in-use object counts]' \
                   '-alloc_space[display allocated memory size]' \
@@ -1039,16 +1133,6 @@ case $state in
                   '-total_delay[display total delay at each region]' \
                   '-contentions[display number of delays at each region]' \
                   '-mean_delay[display mean delay at each region]' \
-                  '-runtime[show runtime call frames in memory profiles]' \
-                  '-focus=[restricts to paths going through a node matching regexp]:r' \
-                  '-ignore=[skips paths going through any nodes matching regexp]:r' \
-                  '-tagfocus=[restrict to samples tagged with key:value matching regexp]:r' \
-                  '-tagignore=[discard samples tagged with key:value matching regexp]' \
-                  '-call_tree[generate a context-sensitive call tree]' \
-                  '-unit=[convert all samples to unit u for display]:u' \
-                  '-divide_by=[scale all samples by dividing them by f]:f' \
-                  '-buildid=[override build id for main binary in profile]:id' \
-                  '-tools=[search path for object-level tools]:path' \
                   '-help[help message]' \
                   '*:files:_files'
                 ;;
