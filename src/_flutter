@@ -25,7 +25,7 @@
 # Description
 # -----------
 #
-#  Completion script for the Flutter.io sdk's cli tool 3.35.1 (https://flutter.dev)
+#  Completion script for the Flutter.io sdk's cli tool 3.41.1 (https://flutter.dev)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -106,16 +106,15 @@ _flutter() {
         (assemble)
           _arguments \
             '(- *)'{-h,--help}'[Print this usage information]' \
-            \*{-d,--define=}'[Allows passing configuration to a target]:configuration' \
-            '--performance-measurement-file[Output individual target performance to a JSON file]' \
-            {-i,--input=}'[Allows passing additional input]: :' \
-            '--depfile=[A file path where a depfile will be written]: :_path_files' \
-            '--build-inputs=[A file path where a newline-separated file containing all inputs used will be written after a build]: :_path_files' \
-            '--build-outputs=[A file path where a newline-separated file containing all outputs used will be written after a build]: :_path_files' \
-            '(-o --output)'{-o,--output=}'[A directory where output files will be written]: :_path_files -/' \
-            '*--dart-define=[Additional key-value pairs that will be available as constants]:' \
+            \*{-D,--dart-define=}'[Additional key-value pairs that will be available as constants]:define' \
             '--dart-define-from-file=[The path of a json format file where flutter define a global constant pool]: :_files -g "*.(json|env)"' \
-            '--resource-pool-size=[The maximum number of concurrent tasks the build system will run]:number:' \
+            '--performance-measurement-file[Output individual target performance to a JSON file]' \
+            {-i,--input=}'[Allows passing additional input]::input' \
+            '--depfile=[A file path where a depfile will be written]:file:_files' \
+            '--build-inputs=[A file path where a newline-separated file containing all inputs used will be written after a build]:files:_files' \
+            '--build-outputs=[A file path where a newline-separated file containing all outputs used will be written after a build]:files:_files' \
+            '(-o --output)'{-o,--output=}'[A directory where output files will be written]:dir:_files -/' \
+            '--resource-pool-size=[The maximum number of concurrent tasks the build system will run]:number' \
             && ret=0
           ;;
         (attach)
@@ -126,15 +125,15 @@ _flutter() {
             '(-t --target)'{-t,--target=}'[The main entry-point file of the application, as run on the device.(defaults to "lib/main.dart")]::_files -g "*.dart"' \
             '--device-vmservice-port=[Look for vmservice connections only from the specified port]:port:' \
             '--host-vmservice-port=[When a device-side vmservice port is forwarded to a host-side port]:port:' \
-            '*--dart-define=[Additional key-value pairs that will be available as constants]:' \
+            \*{-D,--dart-define=}'[Additional key-value pairs that will be available as constants]:define' \
             '--dart-define-from-file=[The path of a json format file where flutter define a global constant pool]: :_files -g "*.(json|env)"' \
-            '--device-user=[Identifier number for a user or work profile on Android only]:id:' \
-            '--debug-url=[The URL at which the observatory is listening]:url:' \
-            '--app-id=[The package name (Android) or bundle identifier (iOS) for the app]:app_id:' \
-            '--pid-file=[Specify a file to write the process id to]: :_files' \
+            '--device-user=[Identifier number for a user or work profile on Android only]:id' \
+            '--debug-url=[The URL at which the observatory is listening]:url' \
+            '--app-id=[The package name (Android) or bundle identifier (iOS) for the app]:app_id' \
+            '--pid-file=[Specify a file to write the process id to]:file:_files' \
             '(--no-track-widget-creation --track-widget-creation)--track-widget-creation[Track widget creation location(defaults on)]' \
             '(--no-track-widget-creation --track-widget-creation)--no-track-widget-creation[Not track widget creation locations]' \
-            '--dds-port=[When this value is provided, the Dart Development Service (DDS) will be bound to the provided port]:port:' \
+            '--dds-port=[When this value is provided, the Dart Development Service (DDS) will be bound to the provided port]:port' \
             '(--no-dds --dds)--dds[Enable the Dart Developer Service]' \
             '(--no-dds --dds)--no-dds[Disable the Dart Developer Service]' \
             '--device-timeout=[Time in seconds to wait for devices to attach]:seconds:' \
@@ -144,8 +143,8 @@ _flutter() {
         (bash-completion)
           _arguments \
             '(- *)'{-h,--help}'[Print this usage information]' \
-            '(--no-overwrite --overwrite)--overwrite[Overwritten completion setup if it already exists]' \
-            '(--overwrite --no-overwrite)--no-overwrite[Not overwritten completion setup if it already exists]' \
+            '(--no-overwrite --overwrite)--overwrite[Overwrite completion setup if it already exists]' \
+            '(--overwrite --no-overwrite)--no-overwrite[Not overwrite completion setup if it already exists]' \
             && ret=0
           ;;
         (build)
@@ -153,13 +152,14 @@ _flutter() {
           ;;
         (config)
           _arguments \
-            '(-h --help)'{-h,--help}'[Print this usage information]' \
+            '(- *)'{-h,--help}'[Print this usage information]' \
             '--list[List all settings and their current values]' \
             '--clear-ios-signing-cert[Clear the saved development certificate choice used to sign apps for iOS device deployment]' \
-            '--android-sdk=[The Android SDK directory]: :_path_files -/' \
-            '--android-studio-dir=[The Android Studio install directory]: :_path_files -/' \
-            '--jdk-dir=[The Java Development Kit installation directory]: :_path_files -/' \
-            '--build-dir=[The relative path to override a projects build directory]: :_path_files -/' \
+            '--select-ios-signing-settings[Complete prompt to select and save code signing settings to sign apps for iOS]' \
+            '--android-sdk=[The Android SDK directory]:dir:_files -/' \
+            '--android-studio-dir=[The Android Studio install directory]:dir:_files -/' \
+            '--jdk-dir=[The Java Development Kit installation directory]:dir:_files -/' \
+            '--build-dir=[The relative path to override a projects build directory]:dir:_files -/' \
             '(--no-enable-web --enable-web)--enable-web[Enable Flutter for web]' \
             '(--no-enable-web --enable-web)--no-enable-web[Disable Flutter for web]' \
             '(--no-enable-linux-desktop --enable-linux-desktop)--enable-linux-desktop[Enable support for desktop on Linux]' \
@@ -182,42 +182,42 @@ _flutter() {
             '(--no-cli-animations --cli-animations)--no-cli-animations[Disable animations in the command line interface]' \
             '(--no-enable-native-assets --enable-native-assets)--enable-native-assets[Enable native assets compilation and bundling]' \
             '(--no-enable-native-assets --enable-native-assets)--no-enable-native-assets[Disable native assets compilation and bundling]' \
-            '(--no-enable-flutter-preview --enable-flutter-preview)--enable-flutter-preview[Enable Flutter preview prebuilt device]' \
-            '(--no-enable-flutter-preview --enable-flutter-preview)--no-enable-flutter-preview[Disable Flutter preview prebuilt device]' \
+            '(--no-enable-dart-data-assets --enable-dart-data-assets)--enable-dart-data-assets[Enable Dart data assets building and bundling]' \
+            '(--no-enable-dart-data-assets --enable-dart-data-assets)--no-enable-dart-data-assets[Disable Dart data assets building and bundling]' \
             '(--no-enable-swift-package-manager --enable-swift-package-manager)--enable-swift-package-manager[Enable support for Swift Package Manager]' \
             '(--no-enable-swift-package-manager --enable-swift-package-manager)--no-enable-swift-package-manager[Disable support for Swift Package Manager]' \
+            '(--no-omit-legacy-version-file --omit-legacy-version-file)--omit-legacy-version-file[Enable stops writing the legacy version file]' \
+            '(--no-omit-legacy-version-file --omit-legacy-version-file)--no-omit-legacy-version-file[Disable stops writing the legacy version file]' \
+            '(--no-enable-windowing --enable-windowing)--enable-windowing[Enable for windowing]' \
+            '(--no-enable-windowing --enable-windowing)--no-enable-windowing[Disable for windowing]' \
+            '(--no-enable-lldb-debugging --enable-lldb-debugging)--enable-lldb-debugging[Enable support for debugging with LLDB]' \
+            '(--no-enable-lldb-debugging --enable-lldb-debugging)--no-enable-lldb-debugging[Disable support for debugging with LLDB]' \
+            '(--no-enable-uiscene-migration --enable-uiscene-migration)--enable-uiscene-migration[Enable support for migration to UIScene lifecycle]' \
+            '(--no-enable-uiscene-migration --enable-uiscene-migration)--no-enable-uiscene-migration[Disable support for migration to UIScene lifecycle]' \
             '--clear-features[Remove all configured features and restore them to the default values]' \
             && ret=0
           ;;
         (create)
           _arguments \
             '(- *)'{-h,--help}'[Print this usage information]' \
-            '(--pub --no-pub)--pub[Whether to run "flutter packages get" after the project has been created. (defaults to on)]' \
-            '(--pub --no-pub)--no-pub[Whether to run "flutter packages get" after the project has been created. (defaults to on)]' \
-            '(--offline --no-offline)--offline[Offline mode when "flutter packages get" is run]' \
-            '(--offline --no-offline)--no-offline[Offline mode when "flutter packages get" is run]' \
+            '(--pub --no-pub)--pub[Run "flutter packages get" after the project has been created. (defaults to on)]' \
+            '(--pub --no-pub)--no-pub[Do not run "flutter packages get" after the project has been created]' \
+            '(--offline --no-offline)--offline[Run "flutter packages get" in offline mode]' \
+            '(--offline --no-offline)--no-offline[Do not run "flutter packages get" in offline mode]' \
             '(--overwrite --no-overwrite)--overwrite[When performing operations, overwrite existing files]' \
             '(--overwrite --no-overwrite)--no-overwrite[When performing operations, not overwrite existing files]' \
-            "--description=[The description to use for your new Flutter project. (defaults to 'A new Flutter project.')]::" \
+            "--description=[The description to use for your new Flutter project(defaults to 'A new Flutter project.')]::" \
             "--org=[The organization responsible for new Flutter project, in reverse domain name notation.(defaults to 'com.example')]::" \
             '--project-name=[The project name for this new Flutter project]:name:' \
             '(-i --ios-language)'{-i,--ios-language=}'[iOS project language]: :_flutter_ios_languages' \
             '(-a --android-language)'{-a,--android-language=}'[Android project language]: :_flutter_android_languages' \
             '--platforms=[The platforms supported by this project]:platforms:_flutter_platforms' \
             '(-t --template=)'{-t,--template=}'[Specify the type of project to create]: :_flutter_project_templates' \
-            '(-s --sample=)'{-s,--sample=}'[Specifies the Flutter code sample to use as the "main.dart" for an application]:id:' \
             '(-e --empty)'{-e,--empty}'[Specifies creating using an application template with a main.dart that is minimal]' \
-            '--list-samples=[Specifies a JSON output file for a listing of Flutter code samples that can be created with "--sample"]: :_path_files' \
             && ret=0
           ;;
         (custom-devices)
           _flutter_custom_devices && ret=0
-          ;;
-        (daemon)
-          _arguments \
-            '(- *)'{-h,--help}'[Print this usage information]' \
-            '--listen-on-tcp-port=[If specified, the daemon will be listening for commands on the specified port instead of stdio]:port:' \
-            && ret=0
           ;;
         (debug-adapter)
           _arguments \
@@ -232,7 +232,6 @@ _flutter() {
         (devices)
           _arguments \
             '(- *)'{-h,--help}'[Print this usage information]' \
-            '--machine[Output device information in machine readable structured JSON format]' \
             "--device-timeout=[Time in seconds to wait for devices to attach]:seconds:" \
             '--device-connection=[Discover devices based on connection type]:type:_flutter_device_connection_types' \
             && ret=0
@@ -251,26 +250,23 @@ _flutter() {
             '--release[Build a release version of your app]' \
             '*--dart-define=[Additional key-value pairs that will be available as constants]:' \
             '--dart-define-from-file=[The path of a json or .env file containing key-value pairs]: :_files -g "*.(json|env)"' \
+            '*--web-define=[Additional key-value pairs that will be available as template variables in web/index.html]' \
             '--flavor[Build a custom app flavor as defined by platform-specific build setup]:flavor' \
-            '--web-renderer=[The renderer implementation to use when building for the web]: :_flutter_web_renderers' \
             '--no-web-resources-cdn[Do not use Web static resources hosted on a CDN]' \
             '--use-application-binary=[Specify a pre-built application binary to use when running]:app:_files -g "*.apk"' \
             '--trace-startup[Start tracing during startup]' \
             '(--cache-startup-profile --no-cache-startup-profile)--cache-startup-profile[Caches the CPU profile collected before the first frame for startup analysis]' \
             '(--cache-startup-profile --no-cache-startup-profile)--no-cache-startup-profile[Not caches the CPU profile collected before the first frame for startup analysis]' \
             '--verbose-system-logs[Include verbose logging from the Flutter engine]' \
-            '--cache-sksl[Cache the shader in the SkSL format instead of in binary or GLSL formats]' \
-            '--dump-skp-on-shader-compilation[Cache the shader in the SkSL format instead of in binary or GLSL formats]' \
             '--purge-persistent-cache[Removes all existing persistent caches]' \
             '--route[Which route to load when running the app]' \
             '(--no-start-paused --start-paused)--start-paused[Start in a paused mode and wait for a debugger to connect]' \
-            '(--no-start-paused --start-paused)--no-start-paused[Not tart in a paused mode and wait for a debugger to connect]' \
+            '(--no-start-paused --start-paused)--no-start-paused[Not start in a paused mode and wait for a debugger to connect]' \
             '--endless-trace-buffer[Enable tracing to an infinite buffer, instead of a ring buffer]' \
             '--trace-systrace[Enable tracing to the system tracer]' \
             '--trace-to-file=[Write the timeline trace to a file at the specified path]:file:_files' \
             '--trace-skia[Enable tracing of Skia code]' \
             '--no-enable-dart-profiling[Disable the Dart VM sampling CPU profiler]' \
-            '--skia-deterministic-rendering[provide completely deterministic Skia rendering]' \
             *{-a,--dart-entrypoint-args=}'[Pass a list of arguments to the Dart entrypoint at application startup]: :' \
             '--wasm[Compile to WebAssembly rather than JavaScript]' \
             '--web-tls-cert-path=[The certificate that host will use to serve using TLS connection]:cert:_files' \
@@ -279,8 +275,8 @@ _flutter() {
             '(-t --target=)'{-t,--target=}'[The main entry-point file of the application, as run on the device.(defaults to "lib/main.dart")]: :_files -g "*.dart"' \
             '--device-vmservice-port=[Look for vmservice connections only from the specified port]:port:' \
             '--host-vmservice-port=[When a device-side vmservice port is forwarded to a host-side port]:port:' \
-            '(--no-pub --pub)--pub[Whether to run "flutter packages get" before executing this command. (defaults to on)]' \
-            '(--no-pub --pub)--no-pub[Whether to run "flutter packages get" before executing this command. (defaults to on)]' \
+            '(--no-pub --pub)--pub[Run "flutter packages get" before executing this command. (default: on)]' \
+            '(--no-pub --pub)--no-pub[Do not run "flutter packages get" before executing this command]' \
             '(--no-track-widget-creation --track-widget-creation)--track-widget-creation[Track widget creation locations(defaults on)]' \
             '(--no-track-widget-creation --track-widget-creation)--no-track-widget-creation[Not track widget creation locations]' \
             '--device-user=[Identifier number for a user or work profile on Android only]:id:' \
@@ -296,8 +292,8 @@ _flutter() {
             '(--no-keep-app-running --keep-app-running)--keep-app-running[Will keep the Flutter application running when done testing]' \
             '--use-existing-app=[Connect to an already running instance via the given observatory URL]' \
             '--driver=[The test file to run on the host]: :_files' \
-            '--build[If necessary, build the app before running. (defaults to on)]' \
-            '--no-build[If necessary, not build the app before running]' \
+            '(--no-build --build)--build[If necessary, build the app before running. (defaults to on)]' \
+            '(--no-build --build)--no-build[If necessary, not build the app before running]' \
             '--screenshot=[Directory location to write screenshots on test failure]::_path_files -/' \
             '--driver-port=[The port where Webdriver server is launched at(default to "4444")]:port:' \
             '(--no-headless --headless)--headless[Launch driver browser in headless mode(defaults to on)]' \
@@ -307,9 +303,8 @@ _flutter() {
             '(--no-android-emulator --android-emulator)--android-emulator[Perform Flutter Driver testing using an Android Emulator]' \
             '(--no-android-emulator --android-emulator)--no-android-emulator[Not perform Flutter Driver testing using an Android Emulator]' \
             '--chrome-binary=[Location of the Chrome binary]::_files' \
-            '--write-sksl-on-exit[Attempts to write an SkSL file when the drive process is finished to the provided file, overwriting it if necessary]' \
-            '*--test-arguments=[Additional arguments to pass to the Dart VM running The test script]: :' \
-            '--profile-memory=[Launch devtools and profile application memory, writing the output data as JSON]::_files -g "*.json"' \
+            '*--test-arguments=[Additional arguments to pass to the Dart VM running The test script]:arg' \
+            '--profile-memory=[Launch devtools and profile application memory, writing the output data as JSON]:file:_files -g "*.json"' \
             '--timeout=[Timeout the test after the given number of seconds]:seconds' \
             && ret=0
           ;;
@@ -337,8 +332,6 @@ _flutter() {
             '(--no-use-deferred-loading --use-deferred-loading)--use-deferred-loading[Generate the Dart localization file as deferred]' \
             '(--no-use-deferred-loading --use-deferred-loading)--no-use-deferred-loading[Not generate the Dart localization file as deferred]' \
             '--gen-inputs-and-outputs-list=[the tool generates a JSON file containing the tools inputs and outputs]::_path_files -/' \
-            '(--no-synthetic-package --synthetic-package)--synthetic-package[Generate files as a synthetic package]' \
-            '(--no-synthetic-package --synthetic-package)--no-synthetic-package[Not generate files as a synthetic package]' \
             '--project-dir=[the directory of the root Flutter project]::_path_files -/' \
             '(--no-required-resource-attributes --required-resource-attributes)--required-resource-attributes[Requires all resource ids to contain a corresponding resource attribute]' \
             '(--no-required-resource-attributes --required-resource-attributes)--no-required-resource-attributes[Requires all resource ids to contain a corresponding resource attribute]' \
@@ -404,9 +397,10 @@ _flutter() {
             '--debug[Build a debug version of your app (default mode)]' \
             '--profile[Build a version of your app specialized for performance profiling]' \
             '--release[Build a release version of your app]' \
-            '*--dart-define=[Additional key-value pairs that will be available as constants]: ' \
+            \*{-D,--dart-define=}'[Additional key-value pairs that will be available as constants]:define' \
+            '--dart-define-from-file=[The path of a json format file where flutter define a global constant pool]: :_files -g "*.(json|env)"' \
+            '*--web-define=[Additional key-value pairs that will be available as template variables in web/index.html]' \
             '--flavor[Build a custom app flavor as defined by platform-specific build setup]:flavor' \
-            '--web-renderer=[The renderer implementation to use when building for the web]: :_flutter_web_renderers' \
             '--no-web-resources-cdn[Do not use Web static resources hosted on a CDN]' \
             '--use-application-binary=[Specify a pre-built-application binary to use when running]: :_files' \
             '--trace-startup[Start tracing during startup]' \
@@ -414,42 +408,42 @@ _flutter() {
             '(--cache-startup-profile --no-cache-startup-profile)--no-cache-startup-profile[Not caches the CPU profile collected before the first frame for startup analysis]' \
             '--verbose-system-logs[Include verbose logging from the Flutter engine]' \
             '--cache-sksl[Cache the shader in the SkSL format instead of in binary or GLSL formats]' \
-            '--dump-skp-on-shader-compilation[Cache the shader in the SkSL format instead of in binary or GLSL formats]' \
             '--purge-persistent-cache[Removes all existing persistent caches]' \
             '--route[Which route to load when running the app]' \
             '(--no-start-paused --start-paused)--start-paused[Start in a paused mode and wait for a debugger to connect]' \
             '(--no-start-paused --start-paused)--no-start-paused[Not start in a paused mode and wait for a debugger to connect]' \
             '--endless-trace-buffer[Enable tracing to an infinite buffer, instead of a ring buffer]' \
             '--trace-systrace[Enable tracing to the system tracer]' \
+            '--trace-to-file=[Write the timeline trace to a file at the specified path]:file:_files' \
             '--trace-skia[Enable tracing of Skia code]' \
             '--no-enable-dart-profiling[Disable the Dart VM sampling CPU profiler]' \
             '--enable-software-rendering[Enable rendering using the Skia software backend]' \
-            '--skia-deterministic-rendering[When combined with --enable-software-rendering, provides 100% deterministic Skia rendering]' \
-            *{-a,--dart-entrypoint-args=}'[Pass a list of arguments to the Dart entrypoint at application startup]: :' \
+            \*{-a,--dart-entrypoint-args=}'[Pass a list of arguments to the Dart entrypoint at application startup]: :' \
             '--wasm[Compile to WebAssembly rather than JavaScript]' \
             '--web-tls-cert-path=[The certificate that host will use to serve using TLS connection]:cert:_files' \
             '--web-tls-cert-key-path=[The certificate key that host will use to authenticate cert]:key:_files' \
             '--web-launch-url=[The URL to provide to the browser]: :' \
-            '(-t= --target=)'{-t=,--target=}'[The main entry-point file of the application, as run on the device.(defaults to "lib/main.dart")]: :_files -g "*.dart"' \
+            '(-t --target=)'{-t,--target=}'[The main entry-point file of the application, as run on the device(default: "lib/main.dart")]: :_files -g "*.dart"' \
             '--device-vmservice-port=[Look for vmservice connections only from the specified port]:port:' \
             '--host-vmservice-port=[When a device-side vmservice port is forwarded to a host-side port]:port:' \
-            '--pub[Whether to run "flutter packages get" before executing this command. (defaults to on)]' \
-            '--no-pub[Whether to run "flutter packages get" before executing this command. (defaults to on)]' \
-            '--track-widget-creation[Track widget creation locations. (defaults to on)]' \
-            '--no-track-widget-creation[Not rack widget creation locations. (defaults to on)]' \
-            '--device-user=[Identifier number for a user or work profile on Android only]:id:' \
-            '--device-timeout=[Time in seconds to wait for devices to attach]:seconds:' \
-            '--device-connection=[Discover devices based on connection type]: :_flutter_device_connection_types' \
+            '(--no-pub --pub)--pub[Run "flutter packages get" before executing this command(default: on)]' \
+            '(--no-pub --pub)--no-pub[Do not run "flutter packages get" before executing this command]' \
+            '(--no-track-widget-creation --track-widget-creation)--track-widget-creation[Track widget creation locations. (defaults to on)]' \
+            '(--no-track-widget-creation --track-widget-creation)--no-track-widget-creation[Not track widget creation locations]' \
+            '--device-user=[Identifier number for a user or work profile on Android only]:id' \
+            '--device-timeout=[Time in seconds to wait for devices to attach]:seconds' \
+            '--device-connection=[Discover devices based on connection type]:type:_flutter_device_connection_types' \
+            '--dds-port=[When this value is provided, the Dart Development Service (DDS) will be bound to the provided port]:port:' \
             '(--no-dds --dds)--dds[Enable the Dart Developer Service]' \
             '(--no-dds --dds)--no-dds[Disable the Dart Developer Service]' \
-            '--dds-port=[When this value is provided, the Dart Development Service (DDS) will be bound to the provided port]:port:' \
+            '(--no-android-skip-build-dependency-validation --android-skip-build-dependency-validation)--android-skip-build-dependency-validation[Skip version checking during Android builds]' \
+            '(--no-android-skip-build-dependency-validation --android-skip-build-dependency-validation)--no-android-skip-build-dependency-validation[Skip version checking during Android builds]' \
             *{-P,--android-project-arg=}'[Additional arguments specified as key=value that are passed directly to the gradle project via the -P flag]: :' \
-            '--multidex[indicates that the app should be built with multidex support(defaults to on)]' \
-            '--no-multidex[indicates that the app should not be built with multidex support(defaults to on)]' \
+            '--android-project-cache-dir[Specify the project-specific cache directory]:dir:_file -/' \
             '--ignore-deprecation[Indicates that the app should ignore deprecation warnings and continue to build using deprecated APIs]' \
             '--no-await-first-frame-when-tracing[Just dump the trace as soon as the application is running]' \
-            '--use-test-fonts[Enable (and default to) the "Ahem" font]' \
-            '--no-use-test-fonts[Not enable (and default to) the "Ahem" font]' \
+            '(--no-use-test-fonts --use-test-fonts)--use-test-fonts[Enable (and default to) the "Ahem" font]' \
+            '(--no-use-test-fonts --use-test-fonts)--no-use-test-fonts[Not enable (and default to) the "Ahem" font]' \
             '--no-build[Do not build the app before running]' \
             '--no-hot[Run without support for hot reloading]' \
             '--pid-file=[Specify a file to write the process id to]: :_files' \
@@ -481,9 +475,8 @@ _flutter() {
             '(--pub --no-pub)--no-pub[Not to run "flutter packages get" before executing this command]' \
             '(--track-widget-creation --no-track-widget-creation)--track-widget-creation[Track widget creation locations]' \
             '(--track-widget-creation --no-track-widget-creation)--no-track-widget-creation[Not track widget creation locations]' \
-            '*--dart-define=[Additional key-value pairs that will be available as constants]:' \
+            \*{-D,--dart-define=}'[Additional key-value pairs that will be available as constants]:define' \
             '--dart-define-from-file=[The path of a json format file where flutter define a global constant pool]: :_files -g "*.(json|env)"' \
-            '--web-renderer=[The renderer implementation to use when building for the web]: :_flutter_web_renderers' \
             '--device-user=[Identifier number for a user or work profile on Android only]:id:' \
             '--flavor[Build a custom app flavor as defined by platform-specific build setup]:flavor' \
             '--name=[A regular expression matching substrings of the names of tests to run]' \
@@ -491,12 +484,15 @@ _flutter() {
             *{-t,--tags=}'[Run only tests associated with the specified tags]:tag:' \
             *{-x,--exclude-tags=}'[Run only tests that do not have the specified tags]:tag:' \
             '--start-paused[Start in a paused mode and wait for a debugger to connect]' \
+            '(--no-fail-fast --fail-fast)--fail-fast[Stop running tests after the first failure]' \
+            '(--no-fail-fast --fail-fast)--no-fail-fast[Do not stop running tests after the first failure]' \
             '(--no-run-skipped --run-skipped)--run-skipped[Run skipped tests instead of skipping them]' \
             '(--no-run-skipped --run-skipped)--no-run-skipped[Not run skipped tests instead of skipping them]' \
             '--coverage[Whether to collect coverage information]' \
             '--merge-coverage[Whether to merge coverage data with "coverage/lcov.base.info" (Requires lcov)]' \
             '--branch-coverage[Whether to collect branch coverage information]' \
             '--coverage-path=[Where to store coverage information (if coverage is enabled). (defaults to "coverage/lcov.info")]::_files' \
+            '--coverage-package=[A regular expression matching packages names to include in the coverage report]:pattern' \
             '--update-goldens[Whether "matchesGoldenFile()" calls within your test methods should update the golden files]' \
             '(-j --concurrency)'{-j,--concurrency=}'[The number of concurrent test processes to run]:nums:' \
             '(--test-assets --no-test-assets)--test-assets[Build the assets bundle for testing]' \
@@ -504,14 +500,14 @@ _flutter() {
             '--test-randomize-ordering-seed[The seed to randomize the execution order of test cases within test files]' \
             '--total-shards[Tests can be sharded with the "--total-shards" and "--shard-index" arguments]' \
             '--shard-index[Tests can be sharded with the "--total-shards" and "--shard-index" arguments]' \
-            {-r,--reporter=}'[Set how to print test results]: :(compact expanded github json silent)' \
+            {-r,--reporter=}'[Set how to print test results]: :(compact expanded failures-only github json silent)' \
             '--file-reporter[Enable an additional reporter writing test results to a file]' \
             '--timeout=[The default test timeout, specified either in seconds (e.g. "60s"). Defaults to "30s"]:seconds:' \
             '--ignore-timeouts[Ignore all timeouts]' \
             '--wasm[Compile to WebAssembly rather than JavaScript]' \
+            '--dds-port=[the Dart Development Service (DDS) will be bound to the provided port]:port:' \
             '(--no-dds --dds)--dds[Enable the Dart Developer Service]' \
             '(--no-dds --dds)--no-dds[Disable the Dart Developer Service]' \
-            '--dds-port=[the Dart Development Service (DDS) will be bound to the provided port]:port:' \
             && ret=0
           ;;
         (upgrade)
@@ -520,6 +516,9 @@ _flutter() {
             '(-f --force)'{-f,--force}'[Force upgrade the flutter branch, potentially discarding local changes]' \
             '--verify-only[Checks for any new Flutter updates, without actually fetching them]' \
             && ret=0
+          ;;
+        (widget-preview)
+          _flutter_widget_preview && ret=0
           ;;
         (*)
           _arguments \
@@ -564,6 +563,7 @@ _flutter_root_commands() {
     'symbolize:Symbolize a stack trace from an AOT-compiled Flutter app.'
     'test:Run Flutter unit tests for the current project.'
     'upgrade:Upgrade your copy of Flutter.'
+    'widget-preview:Manage the widget preview environment'
   )
   _describe -t commands 'command' commands "$@"
 }
@@ -574,7 +574,7 @@ _flutter_build() {
 
   _arguments -C \
     '(- *)'{-h,--help}'[Print this usage information]' \
-    '1: :_flutter_build_entities' \
+    '1: :_flutter_build_subcommands' \
     '*:: :->args' \
     && ret=0
 
@@ -637,14 +637,19 @@ _flutter_build() {
             '--asset-dir[The output directory for the kernel_blob.bin file]: :_files -/'
           )
           ;;
-        (fuchsia)
-          ;;
         (ios)
           opts+=(
             '--code-size-directory=[The location to write code size analysis files]: :_files -/'
             '--no-codesign[Do not codesign the application bundle]'
             '--config-only[Update the project configuration without performing a build]'
             '--simulator[Build for the iOS simulator instead of the device]'
+          )
+          ;;
+        (ios-framework|macos-framework)
+          opts+=(
+            '--cocoapods[Produce a Flutter.podspec instead of an engine Flutter.xcframework]'
+            '--plugins[Produce frameworks for the plugins]'
+            '--static[Build plugins as static frameworks]'
           )
           ;;
         (linux)
@@ -698,19 +703,20 @@ _flutter_build() {
   return ret
 }
 
-(( $+functions[_flutter_build_entities] )) ||
-_flutter_build_entities() {
+(( $+functions[_flutter_build_subcommands] )) ||
+_flutter_build_subcommands() {
   local -a entities=(
-    "aar:Build a repository containing an AAR and a POM file."
-    "apk:Build an Android APK file from your app."
-    "appbundle:Build an Android App Bundle file from your app."
-    "bundle:Build the Flutter assets directory from your app."
-    "fuchsia:Build the Fuchsia target."
-    "ios:Build an iOS application bundle (Mac OS X host only)."
-    "linux:Build a Linux desktop application."
-    "macos:Build a macOS desktop application."
+    "aar:Build a repository containing an AAR and a POM file"
+    "apk:Build an Android APK file from your app"
+    "appbundle:Build an Android App Bundle file from your app"
+    "bundle:Build the Flutter assets directory from your app"
+    "ios:Build an iOS application bundle"
+    "ios-framework:Produces .xcframeworks for a Flutter project for existing, plain iOS Xcode projects"
+    "linux:Build a Linux desktop application"
+    "macos:Build a macOS desktop application"
+    "macos-framework:Produces .xcframeworks for a Flutter project for existing, plain macOS Xcode projects"
     "web:Build a web application bundle"
-    "windows:Build a Windows desktop application."
+    "windows:Build a Windows desktop application"
   )
   _describe -t entities 'entity' entities "$@"
 }
@@ -756,43 +762,6 @@ _flutter_custom_devices_subcommands() {
     "reset:Reset the config file to the default"
   )
   _describe -t subcmds 'subcommands' subcmds "$@"
-}
-
-(( $+functions[_flutter_project_templates] )) ||
-_flutter_project_templates() {
-  local -a templates=(
-    "app:(default) Generate a Flutter application"
-    "module:Generate a shareable Flutter project containing modular Dart code"
-    "package:Generate a shareable Flutter project containing modular Dart code"
-    "plugin:Generate a shareable Flutter project containing an API in Dart code with a platform-specific implementation for Android, for iOS code, or for both"
-    "plugin_ffi:Generate a shareable Flutter project containing an API in Dart code with a platform-specific implementation through dart:ffi for Android, iOS, Linux, macOS, Windows, or any combination of these"
-    "skeleton:Generate a List View / Detail View Flutter application that follows community best practices"
-  )
-  _describe -t templates 'template' templates "$@"
-}
-
-(( $+functions[_flutter_platforms] )) ||
-_flutter_platforms() {
-  local -a platforms=("ios" "android" "windows" "linux" "macos" "web")
-  _values -s , "platforms" $platforms
-}
-
-(( $+functions[_flutter_ios_languages] )) ||
-_flutter_ios_languages() {
-  local -a languages=(
-    "objc:Objective-C"
-    "swift:(default) Swift"
-  )
-  _describe -t languages 'language' languages "$@"
-}
-
-(( $+functions[_flutter_android_languages] )) ||
-_flutter_android_languages() {
-  local -a languages=(
-    "java:Java"
-    "kotlin:(default) Kotlin"
-  )
-  _describe -t languages 'language' languages "$@"
 }
 
 (( $+functions[_flutter_pub] )) ||
@@ -874,6 +843,7 @@ _flutter_pub() {
             '(-f --force)'{-f,--force}'[Publish without confirmation if there are no errors]' \
             '--skip-validation[Publish without validation and resolution]' \
             '(-C --directory)'{-C,--directory=}'[Run this in the given directory]:dir:_files -/' \
+            '--ignore-warnings[Do not treat warnings as fatal]' \
             && ret=0
           ;;
         (run)
@@ -896,6 +866,7 @@ _flutter_pub() {
             '--precompile[Build executables in immediate dependencies]' \
             '--unlock-transitive[Also upgrades the transitive dependencies of the listed dependencies]' \
             '--major-versions[Upgrades packages to their latest resolvable versions]' \
+            '--no-example[Do not run in "example/" if it exists]' \
             '(-C --directory)'{-C,--directory=}'[Run this in the given directory]:dir:_files -/' \
             && ret=0
           ;;
@@ -1089,6 +1060,97 @@ _flutter_pub_token_subcommand() {
     "remove:Remove secret token for package repository"
   )
   _describe -t subcommands 'subcommand' subcommands "$@"
+}
+
+(( $+functions[_flutter_widget_preview] )) ||
+_flutter_widget_preview() {
+  local ret=1
+
+  _arguments -C \
+    '(- *)'{-h,--help}'[Print this usage information]' \
+    \*{-v,--verbose}'[Noisy logging, including all shell commands executed]' \
+    '(-d --device-id)'{-d,--device-id}'[Target device id or name]:id_or_name' \
+    '(- *)--version[Report the version of this tool]' \
+    '(--enable-analytics --disable-analytics)--enable-analytics[Enable telemetry reporting each time a flutter or dart command runs]' \
+    '(--enable-analytics --disable-analytics)--disable-analytics[Disable telemetry reporting each time a flutter or dart command runs]' \
+    '--suppress-analytics[Suppress analytics reporting for the current CLI invocation]' \
+    '1: :_flutter_widget_preview_subcommand' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      case $words[1] in
+        (clean)
+          _arguments \
+            '(- *)'{-h,--help}'[Print this usage information]' \
+            && ret=0
+          ;;
+        (start)
+          _arguments \
+            '(- *)'{-h,--help}'[Print this usage information]' \
+            '(--pub --no-pub)--pub[Run "flutter packages get" after the project has been created]' \
+            '(--pub --no-pub)--no-pub[Do not run "flutter packages get" after the project has been created]' \
+            '(--offline --no-offline)--offline[Run "flutter packages get" in offline mode]' \
+            '(--offline --no-offline)--no-offline[Do not run "flutter packages get" in offline mode]' \
+            '(--web-server --no-web-server)--web-server[Serve the widget preview environment using the web-server device instead of browser]' \
+            '(--web-server --no-web-server)--no-web-server[Do not serve the widget preview environment using the web-server device]' \
+            && ret=0
+          ;;
+      esac
+    ;;
+  esac
+
+  return ret
+}
+
+(( $+functions[_flutter_widget_preview_subcommand] )) ||
+_flutter_widget_preview_subcommand() {
+  local -a subcommands=(
+    "clean:Cleans up widget preview state"
+    "start:Starts the widget preview environment"
+  )
+  _describe -t subcommands 'subcommand' subcommands "$@"
+}
+
+# Utilities
+
+(( $+functions[_flutter_project_templates] )) ||
+_flutter_project_templates() {
+  local -a templates=(
+    "app:(default) Generate a Flutter application"
+    "module:Generate a shareable Flutter project containing modular Dart code"
+    "package:Generate a shareable Dart/Flutter project containing modular Dart code"
+    "package_ffi:Generate a shareable Dart/Flutter project containing an API in Dart with FFI"
+    "plugin:Generate a shareable Flutter project containing an API in Dart code with a platform-specific implementation for Android, for iOS code, or for both"
+    "plugin_ffi:Generate a shareable Flutter project containing an API in Dart code with a platform-specific implementation through dart:ffi for Android, iOS, Linux, macOS, Windows, or any combination of these"
+    "skeleton:Generate a List View / Detail View Flutter application that follows community best practices"
+  )
+  _describe -t templates 'template' templates "$@"
+}
+
+(( $+functions[_flutter_platforms] )) ||
+_flutter_platforms() {
+  local -a platforms=("ios" "android" "windows" "linux" "macos" "web" "darwin")
+  _values -s , "platforms" $platforms
+}
+
+(( $+functions[_flutter_ios_languages] )) ||
+_flutter_ios_languages() {
+  local -a languages=(
+    "objc:Objective-C"
+    "swift:(default) Swift"
+  )
+  _describe -t languages 'language' languages "$@"
+}
+
+(( $+functions[_flutter_android_languages] )) ||
+_flutter_android_languages() {
+  local -a languages=(
+    "java:Java"
+    "kotlin:(default) Kotlin"
+  )
+  _describe -t languages 'language' languages "$@"
 }
 
 (( $+functions[_flutter_web_renderers] )) ||

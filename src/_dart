@@ -24,7 +24,7 @@
 # Description
 # -----------
 #
-#  Completion script for dart 3.9.0 (https://dart.dev/)
+#  Completion script for dart 3.11.0 (https://dart.dev/)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -362,6 +362,7 @@ _dart_pub() {
         (add|get|remove|upgrade)
           opts+=(
             '--precompile[Build executables in immediate dependencies]'
+            '--no-example[Do not run "example/" if it exists]'
           )
           ;|
         (get)
@@ -373,6 +374,7 @@ _dart_pub() {
           opts+=(
             '(-f --force)'{-f,--force}'[Publish without confirmation if there are no errors]'
             '--skip-validation[Publish without validation and resolution]'
+            '--ignore-warnings[Do not treat warnings as fatal]'
           )
           ;|
         (upgrade)
