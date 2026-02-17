@@ -79,72 +79,66 @@ _diana_command_arguments() {
     (remove)
       _diana_load_gids
       _describe -t output 'Downloads to delete' GIDs
-    ;;
+      ;;
     (info)
       _diana_load_gids
       _describe -t output 'Downloads to get info' GIDs
-    ;;
+      ;;
     (files)
       _diana_load_gids
       _describe -t output 'Get files for downloads' GIDs
-    ;;
+      ;;
     (forcerm)
       _diana_load_gids
       _describe -t output 'Downloads to delete' GIDs
-    ;;
+      ;;
     (pause)
       _diana_load_gids
       _describe -t output 'Downloads to pause' GIDs
-    ;;
+      ;;
     (resume)
       _diana_load_paused_gids
       _describe -t output 'Downloads to resume' PGIDs
-    ;;
+      ;;
     (preview)
       _diana_load_gids
       _describe -t output 'Downloads to preview' GIDs
-    ;;
+      ;;
   esac
-
-
 }
 
-_diana() {
-    local -a commands
+_diana_subcommands() {
+  local -a commands=(
+    "list:Output the list of active downloads."
+    "paused:Output the list of paused downloads."
+    "stopped:Output the list of stopped downloads."
+    "info:Output information regarding the given GIDs."
+    "files:Output the files owned by the downloads corresponding to the given GIDs."
+    "errors:Output the list of errors."
+    "stats:Output download bandwidth statistics."
+    "add:Download the given items (local or remote URLs to torrents, etc.)."
+    "remove:Remove the downloads corresponding to the given GIDs."
+    "forcerm:Forcibly remove the downloads corresponding to the given GIDs."
+    "pause:Pause the downloads corresponding to the given GIDs."
+    "resume:Resume the downloads corresponding to the given GIDs."
+    "preview:Preview all the files from all the downloads corresponding to the given GIDs."
+    "sleep:Pause all the active downloads."
+    "wake:Resume all the paused downloads."
+    "purge:Clear the list of stopped downloads and errors."
+    "clean:Stop seeding completed downloads."
+  )
 
-    commands=(
-        "list:Output the list of active downloads."
-        "paused:Output the list of paused downloads."
-        "stopped:Output the list of stopped downloads."
-        "info:Output information regarding the given GIDs."
-        "files:Output the files owned by the downloads corresponding to the given GIDs."
-        "errors:Output the list of errors."
-        "stats:Output download bandwidth statistics."
-        "add:Download the given items (local or remote URLs to torrents, etc.)."
-        "remove:Remove the downloads corresponding to the given GIDs."
-        "forcerm:Forcibly remove the downloads corresponding to the given GIDs."
-        "pause:Pause the downloads corresponding to the given GIDs."
-        "resume:Resume the downloads corresponding to the given GIDs."
-        "preview:Preview all the files from all the downloads corresponding to the given GIDs."
-        "sleep:Pause all the active downloads."
-        "wake:Resume all the paused downloads."
-        "purge:Clear the list of stopped downloads and errors."
-        "clean:Stop seeding completed downloads."
-    )
-
-_arguments -C \
-  '1:cmd:->cmds' \
-  '*:: :->args' \
-
-case "$state" in
-  (cmds)
-    _describe -t commands 'commands' commands
-  ;;
-  (*)
-    _diana_command_arguments
-  ;;
-esac
+  _describe -t commands 'commands' commands
 }
 
-_diana
+_arguments \
+  '1:cmd:_diana_subcommands' \
+  '*:: :_diana_command_arguments'
 
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
