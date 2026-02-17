@@ -3,7 +3,7 @@
 # Description
 # -----------
 #
-#  Completion script for MacPorts (https://www.macports.org/).
+#  Completion script for MacPorts 2.12.1 (https://www.macports.org/).
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -43,57 +43,282 @@
 #
 # ------------------------------------------------------------------------------
 
+# global variable
+#_port_available_packages
+
 _port() {
-  local -a  revupgrade_options select_options \
-              pseudo_common pseudo_advanced port_prefix
+  typeset -A opt_args
+  local context state line
+  local curcontext="$curcontext"
+  local ret=1
 
-  local port_path=$(which port)
-  port_prefix=${port_path%/bin/port}
-
-  pseudo_common=(all current active inactive actinact installed uninstalled outdated
-  obsolete requested unrequested leaves rleaves)
-
-  pseudo_advanced=('variants:' 'variant:' 'description:' 'depends:'
-  'depends_lib:' 'depends_run:' 'depends_build:' 'depends_fetch:' 'depends_extract:'
-  'portdir:' 'homepage:' 'epoch:' 'platforms:' 'platform:' 'name:' 'long_description:'
-  'maintainers:' 'maintainer:' 'categories:' 'category:' 'version:' 'revision:' 'license:')
-
-  select_options=(
-  '--summary:Display summary of selected options'
-  '--list:List available versions for the group'
-  '--set:Select the given version for the group'
-  '--show:Show which version is currently selected for the group (default if none given)'
-  )
-
-  revupgrade_options=('--id-loadcmd-check:Run more checks against a special loadcommand in Mach-O binaries')
+  local port_prefix=${commands[port]%/bin/port}
 
   _arguments -s -C \
     '-v[Verbose mode (generate verbose messages)]' \
     '-d[Debug mode (generate debugging messages, implies -v)]' \
     '-q[Quiet mode (suppress messages)]' \
+    '-N[Non-interactive mode]' \
     "-n[Don't upgrade dependencies (affects upgrade and install)]" \
-    "-R[Also upgrade dependents (only affects upgrade) - note that this does not upgrade dependents' dependencies]" \
+    "-R[Also upgrade dependents (only affects upgrade) ]" \
     '-u[Uninstall non-active ports when upgrading and uninstalling]' \
-    '-f[Force mode (ignore state file)]' \
-    '-o[Honor state files even if the Portfile has been modified since (called -o because it used to mean "older")]' \
-    '-s[Source-only mode (build and install from source, do not attempt to fetch binary archives)]' \
-    '-b[Binary-only mode (build and install from binary archives, ignore source, abort if no archive available)]' \
+    '-y[Perform a dry run]' \
+    '-s[Source-only mode (build and install from source)]' \
+    '-b[Binary-only mode (build and install from binary archives)]' \
     '-c[Autoclean mode (execute clean after install)]' \
     "-k[Keep mode (don't autoclean after install)]" \
-    '-D[Specify portdir]' \
-    '-F[Read and process the file of commands specified by the argument.]' \
-    '-p[Despite any errors encountered, proceed to process multiple ports and commands.]' \
-    '-y[Perform a dry run.]' \
-    '-t[Enable trace mode debug facilities on platforms that support it (macOS).]' \
+    '-p[Despite any errors encountered, proceed to process multiple ports and commands]' \
+    '-o[Honor state files even if the Portfile has been modified since]' \
+    '-t[Enable trace mode debug facilities on platforms that support it]' \
+    '-f[Force mode, ignore state file]' \
+    '-D[Specify portdir]:dir:_files -/' \
+    '-F[Read and process the file of commands specified by the argument]:file:_files' \
     "1:Port actions:_port_actions" \
-    '::Per-action arguments:_port_dispatch' \
-    && return 0
+    '*::arg:->args' \
+    && ret=0
+
+  case "$state" in
+    (args)
+      local subcmd=$words[1]
+      local cache_policy
+      zstyle -s ":completion:${curcontext}:" cache-policy cache_policy
+      zstyle ":completion:${curcontext}:" cache-policy ${cache_policy:-_port_caching_policy}
+
+      local -a log_phases=('fetch' 'checksum' 'extract' 'patch' 'configure' 'build' 'destroot')
+      local -a no_portname_commands=(
+        'help' 'diagnose' 'migrate' 'outdated' 'platform' 'provides' 'reclaim' 'restore'
+        'rev-upgrade' 'search' 'select' 'selfupdate' 'snapshot' 'sync' 'usage'
+      )
+
+      local -a options=()
+      case $subcmd in
+        (activate|deactivate)
+          options+=('--no-exec[Do not execute any stored pre- or post-uninstall procedures]')
+          ;;
+        (archivefetch)
+          options+=('-p[Proceed even if a port fails to fetch]')
+          ;;
+        (fetch|checksum|extract|patch|configure|build|destroot|test)
+          options+=('--no-mirrors[Only fetch files from URLs in master_sites]')
+          ;;
+        (bump)
+          options+=('--patch[Create a Portfile.patch file instead of directly overwriting the Portfile]')
+          ;;
+        (clean)
+          options+=(
+            '--archive[Remove partially downloaded binary archives]'
+            '--dist[Delete source code archives, the so-called distfiles]'
+            '--logs[Delete log files]'
+            '--work[Delete the work directory of a port]'
+            '--all[Remove all temporary files]'
+          )
+          ;;
+        (contents)
+          options+=(
+            "--size[Enable printing a human-readable representation of the files' size]"
+            '--units[Used in conjunction with --size to choose the unit in which the size is given]:units:_port_units'
+          )
+          ;;
+        (deps|rdeps)
+          options+=(
+            '--index[Do not read Portfiles, but instead rely solely on the PortIndex information]'
+            '--no-build[Exclude dependencies only required at build time]'
+            '--no-test[Exclude test dependencies]'
+          )
+
+          if [[ $subcmd == "rdeps" ]]; then
+            options+=('--full[Display all branches of the dependency tree instead of listing each dependency only once]')
+          fi
+          ;;
+        (diagnose)
+          options+=('--quiet[Only display warnings or errors]')
+          ;;
+        (edit)
+          options+=('--editor[Use the specified editor]:editor')
+          ;;
+        (help)
+          options+=('1:action:_port_actions')
+          ;;
+        (info)
+          options+=(
+            '--index[Do not read the Portfile, but rely solely on the port index information]'
+            '--line[Print a single line for each port]'
+            '--pretty[Format the output in a convenient, human-readable fashion]'
+            '(--category --categories)'{--category,--categories}'[List the categories of a port]'
+            '--conflicts[List other ports that cannot be activate at the same time as the given port]'
+            '--depends_fetch[List the fetch dependencies of a port]'
+            '--depends_extract[List the extract dependencies of a port]'
+            '--depends_build[List the build dependencies of a port]'
+            '--depends_lib[List the lib dependencies of a port]'
+            '--depends_run[List the run dependencies of a port]'
+            '--depends[List the all dependencies of a port]'
+            '(--description --long_description)--description[Print the short description of a port]'
+            '(--description --long_description)--long_description[Print the long description of a port]'
+            '--epoch[List the epoch components of a MacPorts]'
+            '--version[List the version components of a MacPorts]'
+            '--revision[List the revision components of a MacPorts]'
+            '--fullname[Print name and the full MacPorts version tuple]'
+            '--heading[Like --fullname but including the categories]'
+            '--homepage[List the homepage of a port]'
+            '--license[Print the license that applies to the source code of a port]'
+            '(--maintainer --maintainers)'{--maintainer,--maintainers}"[List the email address(es) of a port's maintainer(s)]"
+            '--name[Print the name of a port]'
+            '--pathfiles[List the patches that will be applied to the port]'
+            '(--platform --platforms)'{--platform,--platforms}'[List the platforms supported by a port]'
+            "--portdir[Print the path to a port's directory]"
+            '--replaced_by[List the name of the port that replaces a port]'
+            "--subports[Print a list of subports defined by this port's Portfile]"
+            '(--variant --variants)'{--variant,--variants}'[List the variants defined by a port by name]'
+          )
+          ;;
+        (install)
+          options+=(
+            '--allow-failing[Attempt installation even if the specified port is known to fail]'
+            '--no-replace[Attempt to install specified port even if it is replaced by another port]'
+            '--no-rev-upgrade[Do not run rev-upgrade after installation]'
+            '--unrequested[Do not mark the installed ports as requested]'
+          )
+          ;;
+        (lint)
+          options+=('--nitpick[Enable additional checks that are mostly whitespace-related and best practices]')
+          ;;
+        (log)
+          options+=(
+            '--level[Log level]:level:(error warn msg info debug)'
+            '--phase[Only print messages that were generated in the given installation phase]:phase:($log_phases)'
+          )
+          ;;
+        (migrate)
+          options+=(
+            '--all[Migrate all ports including unrequested ones]'
+            '--continue[Continue with migration of ports]'
+          )
+          ;;
+        (mirror)
+          options+=('--new[Delete the existing database of mirrored files and re-create it from scratch]')
+          ;;
+        (provides)
+          options+=('*::file:_files')
+          ;;
+        (reclaim)
+          options+=(
+            '--keep-build-deps[Consider build-time depdencency ports to be considered needed]'
+            '(--enable-reminders --disable-reminders)--enable-reminders[Enable regular reminders to run "port reclaim"]'
+            '(--enable-reminders --disable-reminders)--disable-reminders[Disable reminders to run "port reclaim"]'
+          )
+          ;;
+        (restore)
+          options+=(
+            '--snapshot-id[Restore the snapshot with the specified ID]:id:_port_snapshot_ids'
+            '--last[Restore the last created snapshot]'
+            '--all[Restore all ports in the snapshot including unrequested ones]'
+          )
+          ;;
+        (rev-upgrade)
+          options+=('--id-loadcmd-check[Check the ID load command in each library installed by MacPorts]')
+          ;;
+        (search)
+          options+=(
+            '--case-sensitive[Do not ignore case when searching for the given keyword]'
+            '(--exact --glob --regex)--exact[Search for the given string exactly]'
+            '(--exact --glob --regex)--glob[Treat the keyword(s) as wildcard]'
+            '(--exact --glob --regex)--regex[Treat the given string as a Tcl regular expression]'
+            '--line[Print one match per line]'
+            '(--category --categories)'{--category,--categories}'[Search the category]'
+            '--depends_fetch[Search the fetch dependencies of a port]'
+            '--depends_extract[Search the extract dependencies of a port]'
+            '--depends_build[Search the build dependencies of a port]'
+            '--depends_lib[Search the lib dependencies of a port]'
+            '--depends_run[Search the run dependencies of a port]'
+            '--depends[Search the all dependencies of a port]'
+            '(--description --long_description)--description[Test the search string against the description]'
+            '(--description --long_description)--long_description[Test the search string against the long description]'
+            '--homepage[Search for the keyword(s) in the homepage property]'
+            '(--maintainer --maintainers)'{--maintainer,--maintainers}"[Search for maintainers]"
+            '--name[Search in ports name]'
+            "--portdir[Test the search string against the path of the directory that contains the port]"
+            '(--variant --variants)'{--variant,--variants}'[Search for variant names]'
+          )
+          ;;
+        (select)
+          options+=(
+            '--summary:Display summary of selected options'
+            '--list:List available versions for the group'
+            '--set:Select the given version for the group'
+            '--show:Show which version is currently selected for the group (default if none given)'
+            '1:group:_port_select_groups'
+            '2:variant:_port_select_variants'
+          )
+          ;;
+        (selfupdate)
+          options+=(
+            '--no-sync[Only check for updates and install if available]'
+            '--migrate[Rebuild even if no new version is available]'
+            '--rsync[Use the older rsync method for downloading the new version of MacPorts]'
+          )
+          ;;
+        (snapshot)
+          options+=(
+            '--create[Create a new snapshot that records the current active ports]'
+            '--note[Label with the given note when creating a snapshot]:note'
+            '--list[Display a list of all snapshots that currently exist]'
+            '--diff[Display the differences between the given snapshot ID and currently installed ports]:id:_port_snapshot_ids'
+            '--all[Consider all ports when displaying diffs]'
+            '--delete[Delete the snapshot with the given ID number]:id:_port_snapshot_ids'
+            '--export[Generate a JSON representation of the snapshot with the given ID number]:id:_port_snapshot_ids'
+            '--import[Create a new snapshot from the information in the given file]:file:_files'
+            '(- *)--help[Display brief usage information]'
+          )
+          ;;
+        (space)
+          options+=(
+            '--total[Only print the total amount of space used by all given ports]'
+            '--units[Choose the unit in which the size is given]:unit:_port_units'
+          )
+          ;;
+        (uninstall)
+          options+=(
+            '--follow-dependents[Also uninstall all ports recursively depending directly or indirectly]'
+            '--follow-dependencies[Also recursively uninstall all ports that the given port depends on]'
+            '--no-exec[Do not execute any stored pre- or post-uninstall procedures]'
+          )
+          ;;
+        (upgrade)
+          options+=(
+            '--enforce-variants[Upgrade all given ports and their dependencies]'
+            '--force[Ignore circumstances that would normally cause ports to be skipped]'
+            '--no-replace[Do not automatically install ports that replace a new-obsolete port you have installed]'
+            '--no-rev-upgrade[Do not run rev-upgrade after upgrading]'
+          )
+          ;;
+        (variants)
+          options+=('--index[Do not read the Portfile]')
+          ;;
+      esac
+
+      if (( $no_portname_commands[(Ie)$subcmd] )); then
+        _arguments \
+          $options[@] \
+          && ret=0
+      else
+        _port_update_cache
+
+        _arguments \
+          $options[@] \
+          '1: :_port_names' \
+          '*: :_port_options' \
+          && ret=0
+      fi
+
+      ;;
+  esac
+
+  return ret
 }
 
 (( $+functions[_port_actions] )) ||
 _port_actions() {
-  local -a actions
-  actions=(
+  local -a actions=(
     'activate:Activate the given ports'
     'archive:Archive the given ports, i.e. install the port image but do not activate'
     'archivefetch:Fetch archive for the given ports'
@@ -113,7 +338,6 @@ _port_actions() {
     'distcheck:Checks if the given ports can be fetched from all of its master_sites'
     'distfiles:Returns a list of distfiles for the given port'
     'dmg:Creates a dmg for each of the given ports'
-    'dpkg:Creates a dpkg for each of the given ports'
     'echo:Returns the list of ports the argument expands to'
     'edit:Edit given ports'
     'extract:Extract the downloaded files of the given ports'
@@ -132,6 +356,7 @@ _port_actions() {
     'log:Shows main log for given ports'
     'logfile:Returns the log file path for each of the given ports'
     'mdmg:Creates a dmg containing an mpkg for each of the given ports and their dependencies'
+    'migrate:Update MacPorts for a new platform'
     'mirror:Fetches distfiles for the given ports'
     'mpkg:Creates an mpkg for each of the given ports and their dependencies'
     'notes:Displays informational notes for each of the given ports'
@@ -143,14 +368,16 @@ _port_actions() {
     'rdependents:Recursive version of dependents'
     'rdeps:Display a recursive dependency listing for the given ports'
     'reclaim:Reclaims disk space'
+    'reload:Restart daemon'
+    'restore:Restore snapshots of installed ports'
     'rev-upgrade:Scan for broken binaries in the installed ports and rebuild them as needed'
-    'rpm:Creates a rpm for each of the given ports'
     'search:Search for a port'
     'select:Select between multiple versions of a versioned port'
     'selfupdate:Upgrade MacPorts itself and run the sync target'
     'setrequested:Marks each of the given ports as requested'
+    'setunrequested:Marks each of the given ports as unrequested'
+    'snapshot:Create and manage snapshots of installed ports'
     'space:Show the disk space used by the given ports'
-    'srpm:Creates a srpm for each of the given ports'
     'sync:Synchronize the set of Portfiles'
     'test:Run tests on each of the given ports'
     'unarchive:Unarchive the destroot of the given ports from installed images'
@@ -168,116 +395,116 @@ _port_actions() {
   _describe -t actions 'actions' actions
 }
 
-_port_dispatch() {
-  local cache_policy
-  zstyle -s ":completion:${curcontext}:" cache-policy cache_policy
-  zstyle ":completion:${curcontext}:" cache-policy ${cache_policy:-_port_caching_policy}
+(( $+functions[_port_options] )) ||
+_port_options() {
+  local current_arg=$words[CURRENT]
 
-  case "$words[2]" in
-    provides)
-      _files
-      ;;
-    search)
-      _message 'pattern'
-      ;;
-    help)
-      _port_actions
-      ;;
-    select)
-      _call_function - _port_select
-      ;;
-    contents|deactivate|setrequested|space|uninstall|unsetrequested)
-      # Cache the list of installed ports.
-      if ( [[ ${+_port_installed_packages} -eq 0 ]] || _cache_invalid PORT_INSTALLED_PACKAGES ) &&
-        ! _retrieve_cache PORT_INSTALLED_PACKAGES;
-      then
-        _port_installed_packages=( $(_call_program path-all "port -q echo installed") )
-        _store_cache PORT_INSTALLED_PACKAGES _port_installed_packages
-      fi
-      _alternative \
-        "ports:Installed ports:($_port_installed_packages)" \
-        "pseudo-common:Common Pseudo-portnames:($pseudo_common)" \
-        "pseudo-advanced:Advanced Pseudo-portnames:($pseudo_advanced)"
-      ;;
-    upgrade)
-      # No good reason to actually cache outdated ports list
-      local outdated_packages
-      outdated_packages=( $(_call_program path-outdated "port -q echo outdated") )
-      _alternative -- \
-        "upgrade-options:Upgrade options:_port_upgrade_options" \
-        "ports:Outdated ports:($outdated_packages)" \
-        "pseudo-common:Common Pseudo-portnames:($pseudo_common)" \
-        "pseudo-advanced:Advanced Pseudo-portnames:($pseudo_advanced)"
-      ;;
-    rev-upgrade)
-      if (( CURRENT == 3 )); then
-        _describe 'Rev-upgrade options' revupgrade_options
-      fi
-      ;;
-    outdated|sync)
-      # No need to complete anything more here.
-      return 0;
-      ;;
-    selfupdate)
-      _all_labels 'Selfupdate options' '--nosync'
-      ;;
-    *)
-      # Cache the list of all ports.
-      if ( [[ ${+_port_available_packages} -eq 0 ]] || _cache_invalid PORT_AVAILABLE_PACKAGES ) &&
-        ! _retrieve_cache PORT_AVAILABLE_PACKAGES;
-      then
-        _port_available_packages=( $(_call_program path-all "port -q echo all") )
-        _store_cache PORT_AVAILABLE_PACKAGES _port_available_packages
-      fi
-      _alternative \
-        "ports:Available ports:($_port_available_packages)" \
-        "pseudo-common:Common Pseudo-portnames:($pseudo_common)" \
-        "pseudo-advanced:Advanced Pseudo-portnames:($pseudo_advanced)"
-      ;;
-  esac
-}
-
-(( $+functions[_port_upgrade_options] )) ||
-_port_upgrade_options() {
-  local -a options
-  options=(
-    '--enforce-variants:Upgrade all given ports and their dependencies'
-    '--force:Ignore circumstances that would normally cause ports to be skipped'
-    '--no-replace:Do not automatically install ports that replace a new-obsolete port you have installed'
-    '--no-rev-upgrade:Do not run rev-upgrade after upgrading'
-  )
-
-  _describe -t options 'options' options
-}
-
-_port_select() {
-  if (( CURRENT == 3 )); then
-    _describe 'Port select options' select_options
-  elif (( CURRENT == 4 )); then
-    local select_group=($port_prefix/etc/select/*(N:t))
-    _describe "Port select groups" select_group
-  elif [[ $CURRENT -eq 5 && $words[3] == '--set' ]]; then
-    local select_variants
-    select_variants=("${(f)$(port select --list $words[4] | sed -e '1 d' -e 's/^[ \t]*//' -e 's/ (active)$//')}")
-    _describe "Port select group $words[4] variants" select_variants
+  # complete variants
+  if [[ $current_arg == +* || $current_arg == -* ]]; then
+    IPREFIX=$current_arg[1]
+    PREFIX=$current_arg[2,-1]
+    _port_variants $words[2]
   fi
 }
 
+(( $+functions[_port_names] )) ||
+_port_names() {
+  local -a pseudo_port_names=(
+    all current active inactive actinact installed uninstalled outdated
+    obsolete requested unrequested leaves rleaves
+  )
+
+  local -a selectors=(
+    'variants:' 'variant:' 'description:' 'depends:'
+    'depends_lib:' 'depends_run:' 'depends_build:' 'depends_fetch:' 'depends_extract:'
+    'portdir:' 'homepage:' 'epoch:' 'platforms:' 'platform:' 'name:' 'long_description:'
+    'maintainers:' 'maintainer:' 'categories:' 'category:' 'version:' 'revision:' 'license:'
+  )
+
+  _alternative \
+    "ports:Available ports:($_port_available_packages)" \
+    "pseudo-common:Common Pseudo-portnames:($pseudo_port_names)" \
+    "selectors:Pseudo portname selectors:($selectors)"
+}
+
+(( $+functions[_port_caching_policy] )) ||
 _port_caching_policy() {
   local reg_time comp_time check_file
 
   zmodload -F zsh/stat b:zstat 2> /dev/null
   case "${1##*/}" in
-    PORT_INSTALLED_PACKAGES)
+    (PORT_INSTALLED_PACKAGES)
       check_file=$port_prefix/var/macports/registry/registry.db
       ;;
-    PORT_AVAILABLE_PACKAGES)
+    (PORT_AVAILABLE_PACKAGES)
       check_file=${$(port dir MacPorts)%/*/*}/PortIndex
       ;;
   esac
+
   reg_time=$(zstat +mtime $check_file)
   comp_time=$(zstat +mtime $1)
   return $(( reg_time < comp_time ))
+}
+
+(( $+functions[_port_update_cache] )) ||
+_port_update_cache() {
+  # Cache the list of all ports.
+  if ( [[ ${+_port_available_packages} -eq 0 ]] || _cache_invalid PORT_AVAILABLE_PACKAGES ) &&
+       ! _retrieve_cache PORT_AVAILABLE_PACKAGES;
+  then
+    _port_available_packages=( $(_call_program path-all "port -q echo all") )
+    _store_cache PORT_AVAILABLE_PACKAGES _port_available_packages
+  fi
+}
+
+(( $+functions[_port_select_groups] )) ||
+_port_select_groups() {
+  local -a groups=($port_prefix/etc/select/*(N:t))
+  _describe "Port select groups" groups
+}
+
+(( $+functions[_port_select_variants] )) ||
+_port_select_variants() {
+  local group=$words[2]
+  local -a variants=("${(f)$(port select --list $group | awk '/^[ \t]+/{print $1}')}")
+  _describe "Port select group $words[4] variants" variants
+}
+
+(( $+functions[_port_snapshot_ids] )) ||
+_port_snapshot_ids() {
+  local -a snapshot_ids=()
+  if (( $+commands[perl] )); then
+    local perl_expr='m{^\s+(\d+)\s+(.*)$} and printf "%s:%s\n", $1, $2'
+    snapshot_ids=("${(f)$(port snapshot --list | perl -wln -e $perl_expr)}")
+  else
+    local awk_expr='NR > 2 { printf("%s:%s %s\n", $1, $2, $3) }'
+    snapshot_ids=("${(f)$(port snapshot --list | awk $awk_expr)}")
+  fi
+
+  _describe "Port snapshot IDs" snapshot_ids
+}
+
+(( $+functions[_port_variants] )) ||
+_port_variants() {
+  local name=$1
+  if (( $+commands[perl] )); then
+    local -a variants=($(port variants $name | perl -wln -e 'm{^(?:\s+|\[\+\])([^:]+):} and print $1'))
+    _values 'variant' $variants
+  fi
+}
+
+(( $+functions[_port_units] )) ||
+_port_units() {
+  local -a units=(
+    "B[List sizes in bytes]"
+    {K,Ki,KiB}"[List sizes in KiB, 1024 bytes]"
+    {Mi,MiB}'[List sizes in MiB, 1024 * 1024 bytes]'
+    {Gi,GiB}'[List sizes in GiB, 1024 * 1024 * 1024 bytes]'
+    {k,kB}'[List sizes in kB, 1000 bytes]'
+    {M,MB}'[List sizes in kB, 1000 * 1000 bytes]'
+    {G,GB}'[List sizes in kB, 1000 * 1000 * 1000 bytes]'
+  )
+  _values 'unit' $units
 }
 
 _port "$@"
