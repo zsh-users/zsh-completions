@@ -24,7 +24,7 @@
 # Description
 # -----------
 #
-#  Completion script for do-release-upgrade 23.10.10
+#  Completion script for do-release-upgrade 25.10.7
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -40,12 +40,10 @@ _arguments \
   '(-d --devel-release)'{-d,--devel-release}'[Upgrade to the development release]' \
   '--data-dir=[Directory that contains the data files]:dir:_files -/' \
   '(-p --proposed)'{-p,--proposed}'[Try upgrading to the latest release using the upgrade from \$distro-proposed]' \
-  '(-m --mode)'{-m,--mode=}'[Run in a special upgrade mode]:mode:(desktop server)' \
   '(-f --frontend)'{-f,--frontend}'[Run the specified frontend]:frontend' \
   '(- *)--check-dist-upgrade-only[Check only if a new distribution release is available]' \
   '--allow-third-party[Try the upgrade with third party mirrors and repositories]' \
-  '(-q --quiet)'{-q,--quiet}'[Quiet mode]' \
-  \*{-e,--env=}'[A comma-separated list of environment variables]'
+  '(-q --quiet)'{-q,--quiet}'[Quiet mode]'
 
 # Local Variables:
 # mode: Shell-Script
