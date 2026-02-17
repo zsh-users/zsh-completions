@@ -43,9 +43,11 @@ _direnv_commands() {
     'grant:Grants direnv permission to load the given .envrc or .env file'
     'block:Revokes the authorization of a given .envrc or .env file'
     'deny:Revokes the authorization of a given .envrc or .env file'
+    'disallow:Revokes the authorization of a given .envrc or .env file'
     'revoke:Revokes the authorization of a given .envrc or .env file'
     'edit:Opens PATH_TO_RC or the current .envrc or .env into an $EDITOR and allow the file to be loaded afterwards'
     'exec:Executes a command after loading the first .envrc or .env found in DIR'
+    'export:Loads an .envrc or .env and prints the diff in terms of exports'
     "fetchurl:Fetches a given URL into direnv's CAS"
     'help:shows this help'
     'hook:Used to setup the shell hook'
@@ -80,6 +82,12 @@ _direnv() {
           _arguments \
             '1:directory:_files -/' \
             '2:command:_command_names' \
+            && ret=0
+          ;;
+        (export)
+          local -a supported_shells=(bash elvish gha gzenv murex tcsh vim zsh fish json pwsh systemd)
+          _arguments \
+            '1:shell:($supported_shells)' \
             && ret=0
           ;;
         (hook)
