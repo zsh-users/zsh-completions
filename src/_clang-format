@@ -49,7 +49,7 @@ _arguments \
   '(-n --dry-run)'{-n,--dry-run}'[If set, do not actually make the formatting changes]' \
   '--dump-config[Dump configuration options to stdout and exit]' \
   '--fail-on-incomplete-format[If set, fail with exit code 1 on incomplete format]' \
-  '--fallback-style=[The name of the predefined style used as a fallback]: :'"($styles)" \
+  '--fallback-style=[The name of the predefined style used as a fallback]: :($styles)' \
   '--ferror-limit=[Set the maximum number of clang-format errors to emit before stopping]:limit' \
   '*--files=[Provide a list of files to run clang-format]: :_files' \
   '--fno-color-diagnostics[If set, not to print diagnostics in color]' \
@@ -63,7 +63,7 @@ _arguments \
   '--print-options[Print non default options after command line parsing]' \
   '--qualifier-alignment=[If set, overrides the qualifier alignment style determined by the QualifierAlignment style flag]' \
   '--sort-includes[If set, overrides the include sorting behavior determined by the SortIncludes style flag]' \
-  '--style=[Set coding style]: :'"($styles)" \
+  '--style=[Set coding style]: :($styles)' \
   '--verbose[If set, show the list of processed files]' \
   '(- *)--version[Display the version of this program]' \
   '*: :_files'
