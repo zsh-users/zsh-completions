@@ -1,0 +1,417 @@
+#compdef fail2ban-client fail2ban-regex fail2ban-server fail2ban-testcases
+# ------------------------------------------------------------------------------
+# Copyright (c) 2020 Github zsh-users - https://github.com/zsh-users
+# All rights reserved.
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for fail2ban-client (https://www.fail2ban.org/).
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Felix Neumärker <xdch47@posteo.de> (fail2ban-client)
+#  * Jesse Ayala <jesserayala95@gmail.com> (fail2ban-regex)
+#  * Shohei Yoshida (https://github.com/syohex) <syohex@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+_fail2ban_client_jail_list() {
+  LANG=C fail2ban-client status 2> /dev/null | sed -n -e 's/.*Jail list:\s\+//' -e 'T' -e 's/,\s\+/\'$'\n/g' -e 'p'
+}
+
+_fail2ban_client_subcommands() {
+  local -a cmds=(
+    'unban:unbans all IP addresses'
+    'set:set property'
+    'get:get property'
+    'status:gets the current status of the server'
+    'reload:reloads the configuration/jails'
+    'restart:restarts the server'
+    'start:starts the server and the jails'
+    'stop:stops all jails and terminate the server'
+    'ping:tests if the server is alive'
+    'flushlogs:flushes the logtarget if a file and reopens it'
+    'help:return this output'
+    'version:return the server version'
+  )
+
+  _describe -V "fail2ban commands" cmds
+}
+
+_fail2ban_client_command_args() {
+  local f2barg="$words[$NORMARG]"
+  case "$f2barg" in
+    (unban)
+      local jail
+      if (( $words[(I)(--all)] == 0 )) ; then
+        for jail in $(_fail2ban_client_jail_list) ; do
+          _fail2ban_client_ips $jail
+        done
+        local unban_opts=(--all)
+        _describe -o "unban options" unban_opts
+      else
+        _nothing
+      fi
+      ;;
+    (set|get)
+      if (( $NORMARG + 1 == $CURRENT )); then
+        _fail2ban_client_jails
+        _fail2ban_client_settings
+      elif [[ $f2barg == "get" ]]; then
+        _fail2ban_client_jail_get
+      elif [[ $f2barg == "set" ]]; then
+        _fail2ban_client_jail_set
+      fi
+      ;;
+    (status)
+      if (( $NORMARG + 1 == $CURRENT )); then
+        _fail2ban_client_jails
+      elif (( $NORMARG + 2 == $CURRENT )); then
+        _values "flavor" basic cymru
+      else
+        _nothing
+      fi
+      ;;
+  esac
+}
+
+_fail2ban_client_jails() {
+  local jails=($(_fail2ban_client_jail_list))
+  _describe -V "jails" jails
+}
+
+_fail2ban_client_ips() {
+  local ips=("${(@f)$(LANG=C fail2ban-client status $1 2> /dev/null | sed -n -e 's/^.*Banned IP list:\s\+//' -e 'T' -e 's/\s\+/\'$'\n/g' -e 'p')}")
+  if [[ -n "${ips[@]}" ]] ; then
+    _describe -t "f2b_jail_$1" -V "banned ips of jail $1" ips
+  else
+    _nothing
+  fi
+}
+
+_fail2ban_client_jail_set() {
+  if (( $NORMARG + 2 == $CURRENT )) ; then
+    case $words[$NORMARG+1] in
+      (loglevel)
+        local loglevel=(CRITICAL ERROR WARNING NOTICE INFO DEBUG TRACEDEBUG HEAVYDEBUG)
+        _describe -V "loglevel" loglevel
+        ;;
+      (logtarget)
+        local logtarget=(STDOUT STDERR SYSLOG)
+        _describe -V "logtarget" logtarget
+        _files
+        ;;
+      (syslogsocket)
+        local syslogsocket=(auto)
+        _describe -V "logtarget" syslogsocket
+        _files
+        ;;
+      (dbfile)
+        _files
+        ;;
+      (dbpurgeage)
+        _message "sets the max age in <SECONDS> that history of bans will be kept"
+        ;;
+      (*)
+        # jail
+        local jailsettings=(
+          unbanip banip action addaction addfailregex addignoreip
+          addignoreregex addjournalmatch addlogpath bantime
+          datepattern delaction delfailregex delignoreip
+          delignorerexgex deljournalmatch dellogpath findtime idle
+          ignorecache ignorecommand ignoreself logencoding maxlines
+          maxretry usedns
+        )
+        _describe -t "f2b_jail_setting" -V "jail setting" jailsettings
+        ;;
+    esac
+  else
+    local jail="$words[$NORMARG+1]"
+
+    if (( $NORMARG + 3 == $CURRENT )); then
+      case $words[$NORMARG+2] in
+        (unbanip)
+          _fail2ban_client_ips "$jail"
+          ;;
+        (delfailregex)
+          _fail2ban_client_regex fail "$jail"
+          ;;
+        (delignorerexgex)
+          _fail2ban_client_regex ignore "$jail"
+          ;;
+        (dellogpath)
+          local filelist=("${(@f)$(LANG=C fail2ban-client status $jail 2> /dev/null | sed -n -e 's/^.*File list:\s\+//' -e 'T' -e 's/\s\+/\'$'\n/g' -e 'p')}")
+
+          if [[ -n "${filelist[@]}" ]]; then
+            _describe -t "f2b_filelist" -V "filelist of jail $1" filelist
+          else
+            _nothing
+          fi
+          ;;
+        (idle)
+          _values 'fail2ban idle' on off
+          ;;
+        (ignoreself)
+          _values 'fail2ban ignoreself' true false
+          ;;
+        (delignoreip)
+          local ignoreips=("${(@f)$(fail2ban-client get "$jail" ignoreip 2> /dev/null | sed -e 's/^[|`]-\s\+//p')}")
+          if [[ -n "${ignoreips[@]}" ]]; then
+            _describe -t "f2b_ignoreip" -V "fail2ban ignored ips" ignoreips
+          else
+            _nothing
+          fi
+          ;;
+        (delaction|action)
+          _fail2ban_client_jail_actions "$jail"
+          ;;
+        (addlogpath)
+          _files
+          ;;
+        (*)
+          _message "No completion for ${words[NORMARG+2]}"
+          ;;
+      esac
+    elif (( $NORMARG + 4 == $CURRENT )) ; then
+      case $words[$NORMARG+2] in
+        (action)
+          _fail2ban_client_action_properties "$jail" $words[$NORMARG+3]
+          ;;
+        (addaction)
+          _files
+          ;;
+        (*)
+          _nothing
+          ;;
+      esac
+    else
+      _nothing
+    fi
+  fi
+}
+
+_fail2ban_client_jail_get() {
+  if (( $NORMARG + 2 == $CURRENT )); then
+    case $words[$NORMARG+1] in
+      (loglevel|logtarget|syslogsocket|dbfile|dbpurgeage)
+        _nothing
+        ;;
+      (*)
+        # jail
+        local jailprops=(
+          logpath logencoding journalmatch ignoreself ignoreip
+          ignorecommand failregex ignoreregex findtime bantime
+          datepattern usedns maxretry maxlines actions action
+          actionproperties actionmethods
+        )
+        _describe -t "f2b_jail_props" -V "jail properties" jailprops
+        ;;
+    esac
+  else
+    local jail="$words[$NORMARG+1]"
+
+    if (( $NORMARG + 3 == $CURRENT )); then
+      case $words[$NORMARG+2] in
+        (action|actionproperties|actionmethods)
+          _fail2ban_client_jail_actions "$jail"
+          ;;
+        (*)
+          _nothing
+          ;;
+      esac
+    elif (( $NORMARG + 4 == $CURRENT )) ; then
+      case $words[$NORMARG+2] in
+        (action|actionproperties|actionmethods)
+          _fail2ban_client_action_properties "$jail" $words[$NORMARG+3]
+          ;;
+        (*)
+          _nothing
+          ;;
+      esac
+    else
+      _nothing
+    fi
+  fi
+}
+
+_fail2ban_client_jail_actions() {
+  local jailactions=("${(@f)$(fail2ban-client get $1 actions 2>/dev/null | sed -e '1d' -e 's/,\s\+/\'$'\n/g')}")
+
+  if [[ -n "${jailactions[@]}" ]] ; then
+    _describe -t "f2b_jail_actions" -V "jail actions" jailactions
+  else
+    _nothing
+  fi
+}
+
+_fail2ban_client_action_properties() {
+  local -a default_actionproperties=(
+    actionstart actionstop actioncheck actionban actionunban timeout
+  )
+  local -a all_actionproperties=("${(@f)$(fail2ban-client get $1 actionproperties $2 2>/dev/null | sed -e '1d' -e 's/,\s\+/\'$'\n/g')}")
+  local -a add_actionproperties=("${(@)all_actionproperties:|default_actionproperties}")
+
+  _describe -t "f2b_actions_defprops" -V "default action properties" default_actionproperties
+
+  if [[ -n "${add_actionproperties[@]}" ]]; then
+    _describe -t "f2b_actions_remprops" -V "additional action properties" add_actionproperties
+  else
+    _nothing
+  fi
+}
+
+_fail2ban_client_regex() {
+  local regex=("${(@f)$(fail2ban-client get $2 ${1}regex 2> /dev/null | sed -n -e 's/[|`]- \[\([0-9]\+\)\]:\s\+/\1:/p')}")
+  if [[ -n "${regex[@]}" ]]; then
+    _describe -t "f2b_regex" -V "jail $2 ${1}regex" regex
+  else
+    _nothing
+  fi
+}
+
+_fail2ban_client_settings() {
+  local setargs=(loglevel logtarget syslogsocket dbfile dbpurgeage)
+  _describe -t "f2b_settings" -V "fail2ban-client settings" setargs
+}
+
+_fail2ban_client() {
+  _arguments -A "-*" -n \
+    '-c[configuration directory]:_files -/' \
+    '-s[socket path]:_files' \
+    '-p[pidfile path]:_files' \
+    '--loglevel[logging level]:(CRITICAL ERROR WARNING, NOTICE INFO, DEBUG, TRACEDEBUG HEAVYDEBUG)' \
+    '--logtarget[logging target]:(stdout stderr syslog sysout)' \
+    '--syslogsocket:_files' \
+    '-d[dump configuration]' \
+    '(--dp --dump-pretty)'{--dp,--dump-pretty}'[dump the configuration using more human readable representation]' \
+    '(-t --test)'{-t,--test}'[test configuration]' \
+    '-i[interactive mode]' \
+    '-v[increase verbosity]' \
+    '-q[decrease verbosity]' \
+    '-x[force execution of the server (remove socket file)]' \
+    '-b[start server in background]' \
+    '-f[start server in foreground]' \
+    '--str2sec[convert time abbreviation format to seconds]:_message str2sec' \
+    '(-h --help)'{-h,--help}'[display this help message]' \
+    '(-V --version)'{-V,--version}'[print the version]' \
+    '1:fail2ban command:_fail2ban_client_subcommands' \
+    '*:fail2ban command argument:_fail2ban_client_command_args'
+}
+
+_fail2ban_regex() {
+  _arguments -A "-*" -n \
+    '--version[show program''s version number]' \
+    '(-h --help)'{-h,--help}'[display the help message]' \
+    '(-c --config)'{-c,--config=}'[set alternate config directory]:directory:_files -/' \
+    '(-d --datepattern)'{-d,--datepattern=}'[set custom pattern used to match date/times]:DATEPATTERN' \
+    '(--timezone= --TZ=)'{--timezone=,--TZ=}'[set time-zone used by convert time format]:TIMEZONE' \
+    '(-e --encoding=)'{-e,--encoding=}'[use different encoding from system locale]:ENCODING' \
+    '(-r --raw)'{-r,--raw}'[raw hosts,don''t resolve dns]' \
+    '--usedns=[DNS specified replacement of tags <HOST> in regexp]::((yes\:matches all form of hosts no\:IP addresses only))' \
+    '(-L --maxlines=)'{-L,--maxlines}'[maxlines for multi-line regex]:MAXLINES' \
+    '(-m --journalmatch=)'{-m,--journalmatch=}'[journalctl style matches overriding filter file; "systemd-journal" only]:JOURNALMATCH' \
+    '(-l --log-level=)'{-l,--log-level}'[log level for the Fail2Ban logger to use]:LOG_LEVEL' \
+    '-V[get version in machine-readable short format]' \
+    '--verbosity=[set numerical level of verbosity]:(0 1 2 3 4)' \
+    '(--verbose-date --VD)'{--verbose-date,--VD}'[verbose date patterns/regex in output]' \
+    '(-D --debuggex)'{-D,--debuggex}'[produce debuggex.com urls for debugging there]' \
+    '--no-check-all[disable check for all regexes]' \
+    '(-o --out)'{-o,--out}'[set token to print failure information only (row, id, ip, msg, host, ip4, ip6, dns, matches, ...)]:out' \
+    '--print-no-missed[do not print any missed lines]' \
+    '--print-no-ignored[do not print any ignored lines]' \
+    '--print-all-matched[print all matched lines]' \
+    '--print-all-missed[print all missed lines, no matter how many]' \
+    '--print-all-ignored[print all ignored lines, no matter how many]' \
+    '(-t --log-traceback)'{-t,--log-traceback}'[enrich log-messages with compressed tracebacks]' \
+    '--full-traceback[enrich log-messages with full, uncompressed tracebacks]:' \
+    '1:file:_files -g \*.log' \
+    '2:file:_files -W /etc/fail2ban/filter.d -g \*\.\(conf\|local\)' \
+    '3:file:_files -W /etc/fail2ban/filter.d -g \*\.\(conf\|local\)'
+}
+
+_fail2ban_server() {
+  _arguments \
+    '(- *)'{-h,--help}'[display help message]' \
+    '(- *)'{-V,--version}'[print the version]' \
+    '(-c --conf)'{-c,--conf}'[configuration directory]:dir:_files -/' \
+    '(-s --socket)'{-s,--socket}'[socket path]:socket:_files' \
+    '(-p --pidfile)'{-p,--pidfile}'[pidfile path]:file:_files' \
+    '--pname[name of the process]:name' \
+    '--loglevel[logging level]:level' \
+    '--logtarget[logging target]:target:_files' \
+    '--syslogsocket[syslog socket]:file:_files' \
+    '-d[dump configuration for debugging]' \
+    '(--dp --dump-pretty)'{--dp,--dump-pretty}'[dump the configuration using more human readable representation]' \
+    '(-t --test)'{-t,--test}'[test configuration]' \
+    '-i[interactive mode]' \
+    \*'-v[increase verbosity]' \
+    \*'-q[decrease verbosity]' \
+    '-x[force execution of the server(remove socket file)]' \
+    '(-b -f --async)-b[start server in background(default)]' \
+    '(-b -f --async)-f[start server in foreground]' \
+    '(-b -f --async)--async[start server in async mode for internal usage]' \
+    '--timeout[timeout to wait for the server for internal usage]' \
+    '--str2sec[convert time abbreviation format to seconds]:str' \
+}
+
+_fail2ban_testcases() {
+  _arguments -s \
+    '(- *)--version[show program version number and exit]' \
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '(-l --log-level)'{-l,--log-level}'[log level for the logger]:level' \
+    \*'-v[Increase verbosity]' \
+    '--verbosity=[set numerical level of verbosity]:level:(0 1 2 3 4)' \
+    '--log-direct[prevent lazy logging inside tests]' \
+    '(-n --no-network)'{-n,--no-network}'[do not run tests that require the network]' \
+    '(-m --memory-db)'{-m,--memory-db}'[run database tests using memory instead of the file]' \
+    '(-f --fast)'{-f,--fast}'[try to increase speed of tests]' \
+    \*{-i,--ignore}'[negate regexps filter to ignore tests]:regexp' \
+    '(-t --log-traceback)'{-t,--log-traceback}'[enrich log-messages with compressed tracebacks]' \
+    '--full-traceback[make the tracebacks full, not compressed]' \
+    '*::regexp'
+}
+
+case $service in
+  (fail2ban-client)
+    _fail2ban_client
+    ;;
+  (fail2ban-regex)
+    _fail2ban_regex
+    ;;
+  (fail2ban-server)
+    _fail2ban_server
+    ;;
+  (fail2ban-testcases)
+    _fail2ban_testcases
+    ;;
+esac
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: set et sw=2 ts=2 ft=zsh:
