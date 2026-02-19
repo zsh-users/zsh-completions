@@ -45,6 +45,7 @@
 
 # global variable
 #_port_available_packages
+#_port_installed_packages
 
 _port() {
   typeset -A opt_args
@@ -88,6 +89,9 @@ _port() {
       local -a no_portname_commands=(
         'help' 'diagnose' 'migrate' 'outdated' 'platform' 'provides' 'reclaim' 'restore'
         'rev-upgrade' 'search' 'select' 'selfupdate' 'snapshot' 'sync' 'usage'
+      )
+      local -a show_installed_package_commands=(
+        contents deactivate setrequested space unsetrequested uninstall
       )
 
       local -a options=()
@@ -301,13 +305,35 @@ _port() {
           $options[@] \
           && ret=0
       else
-        _port_update_cache
+        local -a pseudo_port_names=(
+          all current active inactive actinact installed uninstalled outdated
+          obsolete requested unrequested leaves rleaves
+        )
 
-        _arguments \
-          $options[@] \
-          '1: :_port_names' \
-          '*: :_port_options' \
-          && ret=0
+        local -a selectors=(
+          'variants:' 'variant:' 'description:' 'depends:'
+          'depends_lib:' 'depends_run:' 'depends_build:' 'depends_fetch:' 'depends_extract:'
+          'portdir:' 'homepage:' 'epoch:' 'platforms:' 'platform:' 'name:' 'long_description:'
+          'maintainers:' 'maintainer:' 'categories:' 'category:' 'version:' 'revision:' 'license:'
+        )
+
+        if (( $show_installed_package_commands[(Ie)$subcmd] )); then
+          _port_update_cache "installed"
+
+          _arguments \
+            $options[@] \
+            '1: :_port_installed_ports' \
+            '*: :_port_options' \
+            && ret=0
+        else
+          _port_update_cache "all"
+
+          _arguments \
+            $options[@] \
+            '1: :_port_available_ports' \
+            '*: :_port_options' \
+            && ret=0
+        fi
       fi
 
       ;;
@@ -407,22 +433,18 @@ _port_options() {
   fi
 }
 
-(( $+functions[_port_names] )) ||
-_port_names() {
-  local -a pseudo_port_names=(
-    all current active inactive actinact installed uninstalled outdated
-    obsolete requested unrequested leaves rleaves
-  )
-
-  local -a selectors=(
-    'variants:' 'variant:' 'description:' 'depends:'
-    'depends_lib:' 'depends_run:' 'depends_build:' 'depends_fetch:' 'depends_extract:'
-    'portdir:' 'homepage:' 'epoch:' 'platforms:' 'platform:' 'name:' 'long_description:'
-    'maintainers:' 'maintainer:' 'categories:' 'category:' 'version:' 'revision:' 'license:'
-  )
-
+(( $+functions[_port_available_ports] )) ||
+_port_available_ports() {
   _alternative \
-    "ports:Available ports:($_port_available_packages)" \
+    'ports:Available ports:($_port_available_packages)' \
+    'pseudo-common:Common Pseudo-portnames:($pseudo_port_names)' \
+    'selectors:Pseudo portname selectors:($selectors)'
+}
+
+(( $+functions[_port_installed_ports] )) ||
+_port_installed_ports() {
+  _alternative \
+    "ports:Installed ports:($_port_installed_packages)" \
     "pseudo-common:Common Pseudo-portnames:($pseudo_port_names)" \
     "selectors:Pseudo portname selectors:($selectors)"
 }
@@ -448,13 +470,27 @@ _port_caching_policy() {
 
 (( $+functions[_port_update_cache] )) ||
 _port_update_cache() {
-  # Cache the list of all ports.
-  if ( [[ ${+_port_available_packages} -eq 0 ]] || _cache_invalid PORT_AVAILABLE_PACKAGES ) &&
-       ! _retrieve_cache PORT_AVAILABLE_PACKAGES;
-  then
-    _port_available_packages=( $(_call_program path-all "port -q echo all") )
-    _store_cache PORT_AVAILABLE_PACKAGES _port_available_packages
-  fi
+  local cache_type=$1
+
+  case "$cache_type" in
+    (all)
+      # Cache the list of all ports.
+      if ( [[ ${+_port_available_packages} -eq 0 ]] || _cache_invalid PORT_AVAILABLE_PACKAGES ) &&
+           ! _retrieve_cache PORT_AVAILABLE_PACKAGES;
+      then
+        _port_available_packages=( $(_call_program path-all "port -q echo all") )
+        _store_cache PORT_AVAILABLE_PACKAGES _port_available_packages
+      fi
+      ;;
+    (installed)
+      if ( [[ ${+_port_installed_packages} -eq 0 ]] || _cache_invalid PORT_INSTALLED_PACKAGES ) &&
+           ! _retrieve_cache PORT_INSTALLED_PACKAGES;
+      then
+        _port_installed_packages=( $(_call_program path-all "port -q echo installed") )
+        _store_cache PORT_INSTALLED_PACKAGES _port_installed_packages
+      fi
+      ;;
+  esac
 }
 
 (( $+functions[_port_select_groups] )) ||
@@ -489,7 +525,9 @@ _port_variants() {
   local name=$1
   if (( $+commands[perl] )); then
     local -a variants=($(port variants $name | perl -wln -e 'm{^(?:\s+|\[\+\])([^:]+):} and print $1'))
-    _values 'variant' $variants
+    if [[ ${#variants} != 0 ]]; then
+      _values 'variant' $variants
+    fi
   fi
 }
 
