@@ -206,7 +206,7 @@ _port() {
           ;;
         (reclaim)
           options+=(
-            '--keep-build-deps[Consider build-time depdencency ports to be considered needed]'
+            '--keep-build-deps[Consider build-time dependency ports to be considered needed]'
             '(--enable-reminders --disable-reminders)--enable-reminders[Enable regular reminders to run "port reclaim"]'
             '(--enable-reminders --disable-reminders)--disable-reminders[Disable reminders to run "port reclaim"]'
           )
