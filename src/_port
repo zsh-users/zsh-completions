@@ -60,9 +60,9 @@ _port() {
     '-d[Debug mode (generate debugging messages, implies -v)]' \
     '-q[Quiet mode (suppress messages)]' \
     '-N[Non-interactive mode]' \
-    "-n[Don't upgrade dependencies (affects upgrade and install)]" \
+    "-n[Don't follow dependencies in upgrade (affects upgrade and install)]" \
     "-R[Also upgrade dependents (only affects upgrade) ]" \
-    '-u[Uninstall non-active ports when upgrading and uninstalling]' \
+    '-u[Uninstall inactive ports when upgrading and uninstalling]' \
     '-y[Perform a dry run]' \
     '-s[Source-only mode (build and install from source)]' \
     '-b[Binary-only mode (build and install from binary archives)]' \
