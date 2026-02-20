@@ -315,6 +315,7 @@ _port() {
           'depends_lib:' 'depends_run:' 'depends_build:' 'depends_fetch:' 'depends_extract:'
           'portdir:' 'homepage:' 'epoch:' 'platforms:' 'platform:' 'name:' 'long_description:'
           'maintainers:' 'maintainer:' 'categories:' 'category:' 'version:' 'revision:' 'license:'
+          'depof' 'rdepof' 'rdepends' 'dependentof' 'rdependentof'
         )
 
         if (( $show_installed_package_commands[(Ie)$subcmd] )); then
