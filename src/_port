@@ -91,7 +91,11 @@ _port() {
         'rev-upgrade' 'search' 'select' 'selfupdate' 'snapshot' 'sync' 'usage'
       )
       local -a show_installed_package_commands=(
-        contents deactivate setrequested space unsetrequested uninstall
+        uninstall upgrade
+        activate deactivate
+        dependents rdependents
+        setrequested unsetrequested setunrequested
+        space location contents
       )
 
       local -a options=()
@@ -140,7 +144,7 @@ _port() {
         (edit)
           options+=('--editor[Use the specified editor]:editor')
           ;;
-        (help)
+        (help|usage)
           options+=('1:action:_port_actions')
           ;;
         (info)
