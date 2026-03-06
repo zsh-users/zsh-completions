@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Node.js v25.5.0 (https://nodejs.org)
+#  Completion script for Node.js v25.8.0 (https://nodejs.org)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -100,7 +100,7 @@ _node() {
     '*--disable-warning=[silence specific process warnings]:warn type' \
     '--disable-wasm-trap-handler[disable trap-handler-based WebAssembly bound checks]' \
     '--disallow-code-generation-from-strings[disallow eval and friends]' \
-    '--dns-result-order=[set default value of verbatim in dns.lookup]: :(ipv4first verbatim)' \
+    '--dns-result-order=[set default value of verbatim in dns.lookup]: :(ipv4first ipv6first verbatim)' \
     '--enable-etw-stack-walking[provides heap data to ETW Windows native tracing]' \
     '--enable-fips[enable FIPS crypto at startup]' \
     '--enable-source-maps[source map support for stack traces]' \
@@ -117,8 +117,8 @@ _node() {
     '(--loader --experimental-loader)'{--loader,--experimental-loader}'=[Specify the module of a custom ECMAScript Module loader]: :_files' \
     '--experimental-network-inspection[enable experimental network inspection support]' \
     '--experimental-print-required-tla[print pending top-level await]' \
-    '--experimental-quic[experimental QUIC support]' \
     '--experimental-sea-config=[generate a blob that can be embedded into the single executable application]: :_files' \
+    '--experimental-storage-inspection[experimental storage inspection support]' \
     '--experimental-test-coverage[enable code coverage in the test runner]' \
     '--experimental-test-module-mocks[enable module mocking in the test runner]' \
     '--experimental-transform-types[enable transformation of TypeScript-onlysyntax into JavaScript code]' \
@@ -158,19 +158,21 @@ _node() {
     '--no-experimental-global-navigator[expose experimental Navigator API on the global scope]' \
     '--no-experimental-repl-await[disable experimental await keyword support in REPL]' \
     '--no-experimental-sqlite[disable experimental node sqlite module]' \
-    '--no-experimental-strip-types[disable experimental type-stripping for TypeScript files]' \
+    '(--no-strip-types --no-experimental-strip-types)'{--no-strip-types,--no-experimental-strip-types}'[disable type-stripping for TypeScript files]' \
     '--no-experimental-websocket[experimental WebSocket API (currently set)]' \
     '--no-extra-info-on-fatal-exception[hide extra information on fatal exception that causes exit]' \
     '--no-force-async-hooks-checks[disable checks for async_hooks]' \
     '--no-global-search-paths[disable global module search paths]' \
-    '--no-network-family-autoselection[disable network address family autodetection algorithm]' \
-    '(--require-module --no-require-module)--no-require-module[disable support for loading a synchronous ES module graph in require()]' \
+    '(--no-network-family-autoselection --enable-network-family-autoselection)'{--no-network-family-autoselection,--enable-network-family-autoselection}'[disable network address family autodetection algorithm]' \
+    '(--require-module --no-require-module --no-experimental-require-module)'{--no-require-module,--no-experimental-require-module}'[disable support for loading a synchronous ES module graph in require()]' \
     '--no-warnings[silence all process warnings]' \
-    '--no-webstorage[disable Web Storage API]' \
+    '(--no-webstorage --no-experimental-webstorage)'{--no-webstorage,--no-experimental-webstorage}'[disable Web Storage API]' \
     '--node-memory-debug[run with extra debug checks for memory leaks in Node.js itself]' \
     '--openssl-config=[load OpenSSL configuration from the specified file (overrides OPENSSL_CONF)]:file:_files' \
     '--openssl-legacy-provider[enable OpenSSL 3.0 legacy provider]' \
     '--openssl-shared-config[enable OpenSSL shared configuration]' \
+    '--permission[enable the permission system]' \
+    '--permission-audit[enable audit only for the permission system]' \
     '--pending-deprecation[emit pending deprecation warnings]' \
     '--preserve-symlinks[preserve symbolic links when resolving]' \
     '--preserve-symlinks-main[preserve symbolic links when resolving the main module]' \
@@ -179,6 +181,7 @@ _node() {
     '--prof-process[process V8 profiler output generated using --prof]' \
     '--redirect-warnings=[write warnings to file instead of stderr]: :_files' \
     '--report-compact[output compact single-line JSON]' \
+    '--report-exclude-env[exclude environment variables when generating report]' \
     '--report-directory=[custom report path]: :_files -/' \
     '--report-exclude-network[exclude network interface diagnostics(default: false)]' \
     '--report-filename=[custom report file name]: :_files' \
@@ -186,7 +189,7 @@ _node() {
     '--report-on-signal=[generate diagnostic report upon receiving signals]' \
     '--report-signal=[causes diagnostic report to be produced on provided signal]:signals:_signals -s' \
     '--report-uncaught-exception[generate diagnostic report on uncaught exceptions]' \
-    '(--require-module --no-require-module)--require-module[support for loading a synchronous ES module graph in require()]' \
+    '(--require-module --no-require-module --no-experimental-require-module)--require-module[support for loading a synchronous ES module graph in require()]' \
     '*'{-r,--require}'[module to preload (option can be repeated)]: :_node_files' \
     '--run=[run a script specified in package.json]:script:_node_scripts' \
     '--secure-heap=[total size of the OpenSSL secure heap]: :number' \
@@ -229,14 +232,16 @@ _node() {
     '--trace-event-file-pattern[Template string specifying the filepath for the trace-events data, it supports ${rotation} and ${pid} log-rotation id. %2$u is the pid.]:template string' \
     '--trace-exit[show stack trace when an environment exits]' \
     '--trace-promises[show stack traces on promise initialization and resolution]' \
+    '--trace-require-module=[print access to require(esm)]:option:(all no-node-modules)' \
     '--trace-sigint[prints a stack trace on SIGINT]' \
     '--trace-sync-io[show stack trace when use of sync IO is detected after the first tick]' \
     '--trace-tls[prints TLS packet trace information to stderr]' \
     '--trace-uncaught[show stack traces for the throw behind uncaught exceptions]' \
     '--trace-warnings[show stack traces on process warnings]' \
     '--track-heap-objects[track heap object allocations for heap snapshots]' \
-    '--unhandled-rejections=[define unhandled rejections behavior]:rejection behavior:(strict warn none)' \
+    '--unhandled-rejections=[define unhandled rejections behavior]:rejection behavior:(strict warn none throw warn-with-error-code)' \
     '--use-bundled-ca[use bundled CA store (default)]' \
+    '--use-env-proxy[parse proxy settings from HTTP_PROXY/HTTPS_PROXY/NO_PROXY env vars]' \
     '--use-largepages=[re-map the Node.js static code to large memory pages at startup]:mode:(off on silent)' \
     "--use-openssl-ca[use OpenSSL's default CA store]" \
     "--use-system-ca[Use system's CA store]" \
