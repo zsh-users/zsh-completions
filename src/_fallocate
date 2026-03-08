@@ -46,7 +46,7 @@ _arguments \
   '(-o --offset)'{-o+,--offset}'[Specifies the beginning offset of the range, in bytes]:offset' \
   '(-p --punch-hole)'{-p,--punch-hole}'[Deallocates space in the byte range starting at offset and continuing for length bytes]' \
   '(-v --verbose)'{-v,--verbose}'[Enable verbose mode]' \
-  '(-x --posix)'{-p,--posix}'[Enable POSIX operation mode]' \
+  '(-x --posix)'{-x,--posix}'[Enable POSIX operation mode]' \
   '(-z --zero-range)'{-z,--zero-range}'[Zeroes space in the byte range starting at offset and continuing for length bytes]' \
   '(- *)'{-h,--help}'[Display help text and exit]' \
   '(- *)'{-V,--version}'[Print version and exit]' \
