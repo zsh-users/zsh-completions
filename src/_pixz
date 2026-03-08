@@ -55,7 +55,7 @@ _pixz() {
     '(- 1 *)'-h"[Show help and exit]" \
     '(- 1 *)-l[List tarball contents very fast]:file:_files -g "*.(tpxz|xz)"' \
     '(- 1 *)-x[Extract one file very fast]:filepath' \
-    '(- 1 *)-d[Decompress]:file:_files -g "*.(tpxz|xz)' \
+    '(- 1 *)-d[Decompress]:file:_files -g "*.(tpxz|xz)"' \
     '-i[Input]:file:_files' \
     '-o[Output]:output:_files' \
     '-p[Use a maximum of NUM CPU-intensive threads]:cpu:_pixz_cpus' \
