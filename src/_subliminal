@@ -53,7 +53,7 @@ _subliminal() {
             '(-e --encoding)'{-e,--encoding}'[Subtitle file encoding]:encoding' \
             '(-s --single)'{-s,--single}'[Save subtitle without language code in the file name]' \
             '(-f --force)'{-f,--force}'[Force download even if a subtitle already exist]' \
-            '(-hi,--hearing-impaired)'{-hi,--hearing-impaired}'[Prefer hearing impaired subtitles]' \
+            '(-hi --hearing-impaired)'{-hi,--hearing-impaired}'[Prefer hearing impaired subtitles]' \
             '(-m --min-score)'{-m,--min-score}'[Minimum score for a subtitle to be downloaded]:integer range:' \
             '(-w --max-worked)'{-w,--max-workers}'[Maximum number of threads to use]:integer range:' \
             '(-z --archives -Z --no-archives)'{-z,--archives}'[Scan archives for videos]' \
