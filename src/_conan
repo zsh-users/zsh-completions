@@ -509,6 +509,8 @@ _conan_remote() {
           )
           ;;
       esac
+
+      _arguments "${opts[@]}"
     ;;
   esac
 }
