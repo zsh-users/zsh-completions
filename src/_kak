@@ -58,7 +58,7 @@ _kak() {
     '-i[backup the files on which a filter is applied using the given suffix]:suffix' \
     '-q[in filter mode, do not print any errors]' \
     '-ui[set the type of user interface to use (terminal, dummy, or json)]:ui_type:(terminal dummy json)' \
-    '-l[list existing sessions]:session_id:_kak_sessions' \
+    '-l[list existing sessions]' \
     '-clear[clear dead sessions]' \
     '-debug[initial debug option value]:arg' \
     '(- *)-version[display Kakoune version and quit]' \
