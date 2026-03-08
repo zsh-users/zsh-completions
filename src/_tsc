@@ -34,6 +34,9 @@
 #
 # ------------------------------------------------------------------------------
 
+typeset -A opt_args
+local context state line
+
 local -a module_types=(
   none commonjs amd umd system es6/es2015 es2020 es2022 esnext node16 node18 nodenext preserve
 )
@@ -197,7 +200,7 @@ local -a opts=(
 if (( $+opt_args[--build] )); then
   opts+=(
     '(-v --verbose)'{-v,--verbose}"[Enable verbose logging]"
-    '(-d --dry)'{-d,--dry}'[Show what would be built]'
+    '--dry[Show what would be built]'
     '(-f --force)'{-f,--force}'[Build all projects, including those that appear to be up to date]'
     '--clean[Delete the outputs of all projects]'
     '--stopBuildOnErrors[Skip building downstream projects on error in upstream project]'
@@ -208,7 +211,7 @@ else
   )
 fi
 
-_arguments $opts && return 0
+_arguments -C $opts && return 0
 
 # Local Variables:
 # mode: Shell-Script
