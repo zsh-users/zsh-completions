@@ -41,7 +41,7 @@
 local curcontext="$curcontext" state state_descr line ret=1
 typeset -A opt_args
 
-local period="-d --days -h --hours -m --months -w --weeks"
+local period="-d --days -h --hours -m --months -w --weeks -y --years -5 --fiveminutes"
 
 _arguments -C : \
   '--95th[show 95th percentile output for the ongoing month]' \
