@@ -40,7 +40,7 @@ _l3build() {
     '(-c --config)'\*{-c,--config}'[Set the config(s) used for running tests]:lua_file:_files -g "*.(lua|tlg)"' \
     '(-d --date)'{-d,--date}'[Set the date to insert into sources]:date' \
     '--debug[Run target in debug mode]' \
-    '--dev[Use the development LaTex format]' \
+    '--dev[Use the development LaTeX format]' \
     '--dirty[Skip cleaning up the test area]' \
     '--dry-run[Dry run for install or upload]' \
     '--email[Email address of CTAN uploader]:email' \
