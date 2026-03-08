@@ -55,7 +55,7 @@ _arguments -s -C \
   '(-p --pause)'{-p,--pause}'[Sleep for given seconds before the invocation of ldattach]:value' \
   '(- *)'{-h,--help}'[Display help text and exit]'\
   '(- *)'{-V,--version}'[Print version and exit]' \
-  '1:disk' \
+  '1:line discipline' \
   '2::device:->device'
 
 # Complete device argument
