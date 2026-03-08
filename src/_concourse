@@ -102,7 +102,7 @@ _concourse_quickstart_or_web() {
     '--debug-bind-port=[port on which to listen for the pprof debugger endpoints]: :_concourse_ports'
     '--intercept-idle-timeout=[length of time for a intercepted session to be idle before terminating]: :_concourse_durations'
     '--component-runner-interval=[interval on which runners are kicked off for builds, locks, scans and checks]:interval:_concourse_durations'
-    '--lidar-scanner-interval[interval on which the resource scanner will run to see if new checkes need to be scheduled]:interval:_concourse_durations'
+    '--lidar-scanner-interval=[interval on which the resource scanner will run to see if new checks need to be scheduled]:interval:_concourse_durations'
     '--global-resource-check-timeout=[time limit on checking for new versions of resources]: :_concourse_durations'
     '--resource-checking-interval=[interval on which to check for new versions of resources]: :_concourse_durations'
     '--resource-type-checking-interval=[interval on which to check for new versions of resource types]: :_concourse_durations'
