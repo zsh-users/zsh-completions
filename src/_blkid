@@ -50,14 +50,14 @@ _arguments \
   '(-o --output)'{-o+,--output}'[Use the specified output format]:format:(full value list device udev export)' \
   '(-O --offset)'{-O+,--offset}'[Probe at the given offset]:offset' \
   '(-p --probe)'{-p,--probe}'[Switch to low-level superblock probing mode]' \
-  '(-s --match-tag)'{-m+,--match-tag}'[Show only the tags that match tag]:tag' \
+  '(-s --match-tag)'{-s+,--match-tag}'[Show only the tags that match tag]:tag' \
   '(-S --size)'{-S,--size}'[Override the size of device/file]' \
   '(-t --match-token)'{-t+,--match-token}'[Search for block devices with tokens named NAME that have the VALUE]:name' \
   '(-u --usages)'{-u,--usages}'[Restrict the probing functions to the specified comma-separated list of usage types]:list' \
   '(-U --uuid)'{-U,--uuid}'[Look up the device that uses this filesystem uuid]:uuid' \
   '(- *)'{-h,--help}'[Display help text and exit]' \
   '(- *)'{-V,--version}'[Print version and exit]' \
-  '*:device:_files -g /dev'
+  '*:device:_files -W /dev'
 
 # Local Variables:
 # mode: Shell-Script
