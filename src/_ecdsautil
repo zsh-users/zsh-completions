@@ -19,16 +19,15 @@ _ecdsautil_args() {
       _arguments '1:somefile:_files'
       ;;
     (verify)
-      _arguments '-s[signature]:secret:_files' '-p[publickey]:pubkey:_files'
-'-n[signaturecount]:signaturecount:""' ':file:_files'
+      _arguments \
+        '-s[signature]:secret:_files' '-p[publickey]:pubkey:_files' \
+        '-n[signaturecount]:signaturecount:""' ':file:_files'
       ;;
   esac
 }
 
 _ecdsautil() {
-  local -a commands
-
-  commands=(
+  local -a commands=(
     "help:Show help"
     "generate-key:generate a new secret on stdout"
     "show-key:output public key of secret read from stdin"
@@ -38,16 +37,24 @@ _ecdsautil() {
 
   _arguments -C \
     '1:cmd:->cmds' \
-    '*:: :->args' \
+    '*:: :->args'
 
   case "$state" in
     (cmds)
       _describe -t commands 'commands' commands
       ;;
     (*)
-      _ecdsautil_args
-      ;;
+    _ecdsautil_args
+    ;;
   esac
 }
 
 _ecdsautil "$@"
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
