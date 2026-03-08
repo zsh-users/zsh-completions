@@ -42,7 +42,7 @@ _ufw_logging() {
   local params additional second
   second=$words[2]
 
-  if [ ! -z $second ]; then
+  if [[ ! -z "$second" ]]; then
     return
   fi
 
@@ -58,7 +58,7 @@ _ufw_delete() {
 
   second=$words[2]
 
-  if [ ! -z $second ]; then
+  if [[ ! -z "$second" ]]; then
     return
   fi
 
