@@ -513,7 +513,7 @@ _rails_is_in_app() {
     if [[ -f "${dir}/bin/rails" ]]; then
       return 0
     fi
-    dir="${dir/*}"
+    dir="${dir%/*}"
   done
 
   return 1
