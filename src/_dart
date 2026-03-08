@@ -334,7 +334,7 @@ _dart_pub() {
     '(-v --verbose)'{-v,--verbose}'[Print detailed logging]' \
     '(--color --no-color)--color[Use colors in terminal output]' \
     '(--color --no-color)--no-color[Do not use colors in terminal output]' \
-    '(-C --directory)'{-d,--directory=}'[Run the subcommand in the directory]:dir:_files -/'\
+    '(-C --directory)'{-C,--directory=}'[Run the subcommand in the directory]:dir:_files -/'\
     '1: :_dart_pub_subcommands' \
     '*:: :->arg' \
     && ret=0
