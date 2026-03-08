@@ -52,7 +52,7 @@ _arguments \
   {-d,--dry-run}"[don't change the DB]" \
   {-R,--reference-set-size=}"[specify size of the reference set]:size [1000]" \
   {-T,--reference-set-timeframe-days=}"[don't use emails older than specified age]:age (days) [30]" \
-  {-N,--notmuch-args=}"[arguments for nutmuch new(in move mode)]:notmuch arg" \
+  {-N,--notmuch-args=}"[arguments for notmuch new(in move mode)]:notmuch arg" \
   {-v,--verbose}"[be more verbose]" \
   '*: :_guard "^-*" query'
 
