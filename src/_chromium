@@ -37,7 +37,7 @@ _arguments \
   "--app=[Runs URL in app mode]:url:_urls" \
   "--incognito[Open in incognito mode]" \
   "--new-window[open in new window]" \
-  "(--no-proxy-server --proxy-auto-detect --proxy-pac-url --password-store)--proxy-server=[specify proxy server]:[<proxy-scheme>\://]<proxy-host>[\:<proxy-port>]:_chromium_proxyurls" \
+  "(--no-proxy-server --proxy-auto-detect --proxy-pac-url)--proxy-server=[specify proxy server]:[<proxy-scheme>\://]<proxy-host>[\:<proxy-port>]:_chromium_proxyurls" \
   "--no-proxy-server[Disables the proxy server]" \
   "--proxy-auto-detect[Autodetect proxy configuration]" \
   "--proxy-pac-url=[Specify proxy autoconfiguration URL]:proxy autoconfiguration url:_urls" \
