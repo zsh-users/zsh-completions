@@ -69,7 +69,7 @@ _protoc() {
     '--cpp_out=[Generate C++ header and source]:out_dir:_files -/' \
     '--csharp_out=[Generate C# source file]:out_dir:_files -/' \
     '--java_out=[Generate Java source file]:out_dir:_files -/' \
-    '--kotlin_out[Generate Kotlin file]:out_dir:_files -/' \
+    '--kotlin_out=[Generate Kotlin file]:out_dir:_files -/' \
     '--js_out=[Generate JavaScript source]:out_dir:_files -/' \
     '--objc_out=[Generate Objective C header and source]:out_dir:_files -/' \
     '--php_out=[Generate PHP source file]:out_dir:_files -/' \
