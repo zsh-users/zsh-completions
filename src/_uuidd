@@ -45,7 +45,7 @@ _arguments \
   '(-q --quiet)'{-q,--quiet}'[suppress some failure messages]' \
   '(-r --random)'{-r,--random}'[connect to running uuid daemon and request to return a random-based UUID]' \
   '(-S --socket-activation -s --socket)'{-S,--socket-activation}'[do not create a socket]' \
-  '(-S --socket-activation -s --socket)'{-s,--socket}'[make uuidd use this path name for the unix-domain socket]:sokect:_files' \
+  '(-S --socket-activation -s --socket)'{-s,--socket}'[make uuidd use this path name for the unix-domain socket]:socket:_files' \
   '(-T --timeout)'{-T,--timeout}'[make uuidd exit after number seconds of inactivity]:seconds' \
   '(-t --time)'{-t,--time}'[connect to running uuid daemon and request to return a time-based UUID]' \
   '(- *)'{-h,--help}'[display help text and exit]' \
