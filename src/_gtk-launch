@@ -46,9 +46,9 @@ _gtk-launch() {
     _arguments -S -A "-*" \
       '(- *)'{-h,--help}'[Show help options]' \
       '(- *)'{-v,--version}'[Show program version]' \
-      '(- *)'--help-all'[Show all help options]' \
-      '(- *)'--help-gtk'[Show GTK+ Options]' \
-      '(- *)'--display='[X display to use]:display:_x_display' \
+      '(- *)--help-all[Show all help options]' \
+      '(- *)--help-gtk[Show GTK+ Options]' \
+      '(- *)--display=[X display to use]:display:_x_display' \
       '--class=[Program class as used by the window manager]:class' \
       '--name=[Program name as used by the window manager]:name' \
       '--gtk-module=[Load additional GTK+ modules]:module' \
