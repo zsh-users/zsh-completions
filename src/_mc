@@ -35,8 +35,7 @@
 
 setopt localoptions warncreateglobal typesetsilent
 
-local -a opts
-opts=(
+local -a opts=(
   {-h,--help}'[show help on options]'
   --help-all'[show help on all options]'
   --help-terminal'[terminal options help]'
@@ -47,7 +46,6 @@ opts=(
   {-C,--colors=}'[specifies a color configuration]:arg:'
   --configure-options'[print configure options]'
   {-d,--nomouse}'[disable mouse support in text version]'
-  {-d,--debuglevel=}'[save the debug level for SMB VFS]:debug level:(0 1 2 3 4 5 6 7 8 9 10)'
   {-e,--edit=}'[edit files]:file:_files'
   {-f,--datadir}'[print data directory]'
   {-F,--datadir-info}'[print extended info about used data directories]'
