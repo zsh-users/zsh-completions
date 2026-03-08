@@ -70,7 +70,7 @@ _openssl() {
     '-xcert[extra certificate file]:file:_files'
     '-xchain[extra certificate chain file]:file:_files'
     '-xchain_build[build the certificate chain for the extra certificates]'
-    '-xcertform[extra certificate format]:format[DER PEM P12]'
+    '-xcertform[extra certificate format]:format:(DER PEM P12)'
   )
 
   local -a openssl_supported_commands_flags=(
