@@ -170,7 +170,7 @@ _dart() {
             '--disable-service-auth-codes[Disables the requirement for an authentication code]' \
             '--enable-service-port-fallback[Use 0 if binding port is failed]' \
             '--root-certs-file=[The path to a file containing the trusted root certificates]:file:_files' \
-            '--root-certs-cache=[The path to a cache directory containing the trusted root certificates]:_files -/' \
+            '--root-certs-cache=[The path to a cache directory containing the trusted root certificates]:file:_files -/' \
             '--trace-loading[Enable tracing of library and script loading]' \
             '--packages=[The path to the package resolution configuration file]:file:_files'\
             '--write-service-info=[Outputs information necessary to connect to the VM service]:service_info:_files' \
