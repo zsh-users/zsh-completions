@@ -47,7 +47,7 @@ _arguments -S \
   '-stdout[Specify that the first output file should go to stdout]' \
   '-encoding[Specify the encoding to be used for plain text or HTML output files]:name' \
   '-inputencoding[Force all plain text input files to be interpreted using the specified encoding]' \
-  '-format[Force all input files to be interpreted using the indicated format]:format:(($format))' \
+  '-format[Force all input files to be interpreted using the indicated format]:format:($format)' \
   '-font[Specify the name of the font to be used for converting plain to rich text]:font' \
   '-fontsize[Specify the size in points of the font to be used for converting plain to rich text]:size' \
   '-noload[Do not load subsidiary resources]' \
