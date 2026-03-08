@@ -320,7 +320,7 @@ _yarn_subcommands() {
     'search:open the search interface'
     'upgrade-interactive:open the upgrade interface'
     'plugin:plugin related commands'
-    'version:version relarelated commands'
+    'version:version related commands'
     'workspace:workspace related commands'
     'workspaces:command for workspaces'
   )
@@ -798,7 +798,7 @@ _yarn_workspaces() {
           _arguments \
             '(- *)'{-h,--help}'[show help message and exit]' \
             '--since[only include workspaces that have been changed since the specified ref]' \
-            '(-R,--recursive)'{-R,--recursive}'[find packages via dependencies/devDependencies]' \
+            '(-R --recursive)'{-R,--recursive}'[find packages via dependencies/devDependencies]' \
             '--no-private[exclude workspaces that have the private field set to true]' \
             '(-v --verbose)'{-v,--verbose}'[also return the cross-dependencies between workspaces]' \
             '--json[format the output as an NDJSON stream]' \
