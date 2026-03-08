@@ -78,7 +78,7 @@ _inxi() {
     "--indent=[Change default wide mode primary indentation width]:integer:(11 12 13 14 15 16 17 18 19 20)" \
     "--indents=[Change wrapped mode primary indentation width]:integer:(0 1 2 3 4 5 6 7 8 9 10)" \
     "--limit[Limit max IP addresses for -i]:limit (-1 removes the limit): " \
-    '(--max-wrap --wrap-max)'{--max-wrap,--wrap-max}='[Set maximum width where inxi autowraps line starters]' \
+    '(--max-wrap --wrap-max)'{--max-wrap,--wrap-max}='[Set maximum width where inxi autowraps line starters]:width' \
     "--output[Change data output type]:type:(json screen xml)" \
     "--output-file[Path to output file]:output file:->output_file" \
     "--partition-sort[Change default sort order of partition output]:order:_inxi_partition_sort" \
