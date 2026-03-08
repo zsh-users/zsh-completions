@@ -49,7 +49,7 @@ _arguments \
   "--norc[don't look for .shellcheckrc files]" \
   '--rcfile=[specify configuration file over searching for one]:rcfile:_files' \
   {-o,--enable=}"[give list of optional checks to enable (or 'all')]:error code" \
-  {-P,--source-path=}'[specify path when looking for sourced files]:_files -/' \
+  {-P,--source-path=}'[specify path when looking for sourced files]:path:_files -/' \
   {-s,--shell=}'[specify dialect]:dialect:(sh bash dash ksh busybox)' \
   {-S,--severity=}'[specify minimum severity of errors to consider]:severity:(error warning info style)' \
   {-V,--version}'[print version information]' \
