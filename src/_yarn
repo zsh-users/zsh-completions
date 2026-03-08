@@ -731,6 +731,7 @@ _yarn_version() {
 
 (( $+functions[_yarn_workspace] )) ||
 _yarn_workspace() {
+  local ret=1
   local package_json=$(_yarn_package_json_path)
   local package_dir=$(dirname $package_json)
 
