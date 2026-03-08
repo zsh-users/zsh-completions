@@ -40,7 +40,7 @@ _arguments \
   '(-c --configure)'{-c,--configure}'[configure the specified CPUs]:cpu_list' \
   '(-d --disable)'{-d,--disable}'[disable the specified CPUs]:cpu_list' \
   '(-e --enable)'{-e,--enable}'[enable the specified CPUs]:cpu_list' \
-  '(-g --deconfigure)'{-d,--deconfigure}'[deconfigure the specified CPUs]:cpu_list' \
+  '(-g --deconfigure)'{-g,--deconfigure}'[deconfigure the specified CPUs]:cpu_list' \
   '(-p --dispatch)'{-p,--dispatch}'[set the CPU dispatching mode]:mode:(horizontal vertical)' \
   '(-r --rescan)'{-r,--rescan}'[trigger a rescan of CPUs]'
 
