@@ -89,14 +89,6 @@ _ufw_app() {
   return ret
 }
 
-(( $+functions[_flutter_pub_token_subcommand] )) ||
-_flutter_pub_token_subcommand() {
-  local -a subcommands=(
-
-  )
-  _describe -t subcommands 'subcommand' subcommands "$@"
-}
-
 _ufw() {
   local curcontext="$curcontext" ret=1
   local -a state line commands
