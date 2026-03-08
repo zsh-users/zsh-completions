@@ -70,14 +70,14 @@ _tox() {
         (run|run-parallel|depends|exec|list|quickstart|schema|config|devenv)
           options+=(
             '--result-json[write a JSON file with detailed information]:file:_files'
-            '--hashseed[set PYTHONHASHSEED to the specified seed before running commands]:sed'
+            '--hashseed[set PYTHONHASHSEED to the specified seed before running commands]:seed'
             '--discover[for Python discovery first try these Python executables]:file:_files'
             '(--list-dependencies --no-list-dependencies)--list-dependencies[list the dependencies installed during environment setup]'
             '(--list-dependencies --no-list-dependencies)--no-list-dependencies[never list the dependencies]'
             '--develop[install package in development mode]'
           )
           ;|
-        (run|run-parallel|direnv)
+        (run|run-parallel|devenv)
           options+=(
             '-m[label to evaluate]:label'
             '-f[factor to evaluate]:factor'
@@ -136,7 +136,7 @@ _tox_commands() {
     'depends:visualize tox environment dependencies'
     'list:list environment'
     'devenv:set up a development environment at ENVDIR'
-    'schema:ganerate schema for tox configuration'
+    'schema:generate schema for tox configuration'
     'config:show tox configuration'
     'quickstart:quickly create a tox config file for a Python project'
     'exec:execute an arbitrary command within a tox environment'
