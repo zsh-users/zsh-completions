@@ -425,7 +425,7 @@ _sox_ng_supported_formats() {
   local -a formats=(
     'raw:Raw audio files'
     '3gp:Third Generation Partnership Project format'
-    '3g2:Third Generation Partnership Project 2 format'.
+    '3g2:Third Generation Partnership Project 2 format'
     '8svx:Amiga 8SVX musical instrument description format'
     'aac:Advanced Audio Coding format'
     'ac3:Audio Codec 3 (Dolby Digital) format'
