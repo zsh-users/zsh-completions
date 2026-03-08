@@ -250,10 +250,10 @@ _port() {
           ;;
         (select)
           options+=(
-            '--summary:Display summary of selected options'
-            '--list:List available versions for the group'
-            '--set:Select the given version for the group'
-            '--show:Show which version is currently selected for the group (default if none given)'
+            '--summary[Display summary of selected options]'
+            '--list[List available versions for the group]'
+            '--set[Select the given version for the group]'
+            '--show[Show which version is currently selected for the group (default if none given)]'
             '1:group:_port_select_groups'
             '2:variant:_port_select_variants'
           )
