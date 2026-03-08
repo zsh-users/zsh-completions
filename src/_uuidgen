@@ -66,11 +66,11 @@ case $OSTYPE in
       '(-r --random)'{-r,--random}'[generate random-based uuid]' \
       '(-t --time)'{-t,--time}'[generate time-based uuid]' \
       '(-n --namespace)'{-n,--namespace}'[generate hash-based uuid in this namespace]:namespace:(@dns @url @oid @x500)' \
-      '(-N --name)'{-n,--name}'[generate hash-based uuid from this name]:name' \
+      '(-N --name)'{-N,--name}'[generate hash-based uuid from this name]:name' \
       '(-C --count -s --sha1 -m --md5)'{-m,--md5}'[generate md5 hash]' \
       '(-C --count -s --sha1 -m --md5)'{-C,--count}'[generate more uuids in loop]:count' \
       '(-C --count -s --sha1 -m --md5)'{-s,--sha1}'[generate sha1 hash]' \
-      '(-x --hex)'{-h,--hex}'[interpret name as hex string]'
+      '(-x --hex)'{-x,--hex}'[interpret name as hex string]'
     ;;
 esac
 
