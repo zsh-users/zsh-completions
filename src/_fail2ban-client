@@ -43,7 +43,7 @@ _fail2ban_client() {
     '-p[pidfile path]:file:_files' \
     '--loglevel[logging level]:level:(CRITICAL ERROR WARNING NOTICE INFO DEBUG TRACEDEBUG HEAVYDEBUG)' \
     '--logtarget[logging target]:target:(stdout stderr syslog sysout)' \
-    '--syslogsocket:file:_files' \
+    '--syslogsocket[syslog socket path]:file:_files' \
     '-d[dump configuration]' \
     '(--dp --dump-pretty)'{--dp,--dump-pretty}'[dump the configuration using more human readable representation]' \
     '(-t --test)'{-t,--test}'[test configuration]' \
