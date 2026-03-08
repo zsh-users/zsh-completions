@@ -582,7 +582,7 @@ _openssl_cmp() {
     '-extracerts[certificates files or URIs to append in extraCerts field]:file_or_uri:_files' \
     '-unprotected_errors[send request messages without CMP-level protection]' \
     '-certform[file format to use when saving a certificate]:format:(PEM DER)' \
-    '-crlform[file format to use when saving a CRL]:format(PEM DER)' \
+    '-crlform[file format to use when saving a CRL]:format:(PEM DER)' \
     '-keyform[format of the key input]:format:(PEM DER P12 ENGINE)' \
     '-otherpass[pass phrase source for certificate]:source:_openssl_pass_phrase_options' \
     $openssl_provider_options[@] \
@@ -1029,7 +1029,7 @@ _openssl_fipsinstall() {
     '(- *)-help[print help message]' \
     '-module[file name of the FIPS module]:file:_files' \
     '-out[file name to output configuration data to]:file:_files' \
-    '-in[input file name to load configuration data from]:_files' \
+    '-in[input file name to load configuration data from]:file:_files' \
     '-verify[verify the input configuration file]' \
     '-provider_name[name of the provider inside the configuration file(default: "fips")]:name' \
     '-section_name[name of the section inside the configuration file(default: "fips_sect")]:name' \
@@ -2012,13 +2012,13 @@ _openssl_smime() {
     '-in[input message file]:file:_files' \
     '-out[output file name]:file:_files' \
     '-inform[input format]:format:(DER PEM SMIME)' \
-    '-outform[output format]:format(DER PEM SMIME)' \
+    '-outform[output format]:format:(DER PEM SMIME)' \
     '-keyform[key format]:format:(DER PEM P12 ENGINE)' \
     '(-stream -indef)'{-stream,-indef}'[enable streaming I/O for encoding operations]' \
     '-noindef[disable streaming I/O]' \
     '-content[file containing the detached content]:file:_files' \
     '-text[add plain text MIME headers to the supplied message]' \
-    '-md[digest algorithm to use when signing or resigning]:digest:(sha256 sha1 md5' \
+    '-md[digest algorithm to use when signing or resigning]:digest:(sha256 sha1 md5)' \
     $cipher_flags[@] \
     '-nointern[use only the certificate in the -certificate]' \
     '-noverify[do not verify the signers certificate of a signed message]' \
@@ -2069,7 +2069,7 @@ _openssl_speed() {
     '(- *)-help[print help message]' \
     '-config[configuration file]:file:_files' \
     '-elapsed[use wall-clock time instead of CPU user time as divisor]' \
-    '-evp[use specified cipher or message digest algorithm via the EVP interface]:alg: _alternative "ciphers\:cipher\:_openssl_digests" "digests\:digest\:_openssl_cipher_algorithms"' \
+    '-evp[use specified cipher or message digest algorithm via the EVP interface]:alg: _alternative "ciphers\:cipher\:_openssl_cipher_algorithms" "digests\:digest\:_openssl_digests"' \
     '-multi[run multiple operations in parallel]:number' \
     '-async_jobs[enable async mode and start specified number of jobs]:number' \
     '-misalign[misalign the buffers by the specified number of bytes]:number' \
