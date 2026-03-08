@@ -21,14 +21,14 @@ _fwupdmgr() {
 
   _arguments -C \
     '(- : *)'{-h,--help}'[display help information]' \
-    '(- : *)'{-v,--version}'[display version information]' \
-    {-v,--verbose}'[show extra debugging information]' \
+    '(- : *)--version'[display version information]' \
+    '{-v,--verbose}'[show extra debugging information]' \
     --offline'[schedule installation for next reboot when possible]' \
     --allow-reinstall'[allow re-installing existing firmware versions]' \
     --allow-older'[allow downgrading firmware versions]' \
     --allow-branch-switch'[allow switching firmware branch]' \
     --force'[override warnings and force the action]' \
-    '(-y, --assume-yes)'{-y,--assume-yes}'[answer yes to all questions]' \
+    '(-y --assume-yes)'{-y,--assume-yes}'[answer yes to all questions]' \
     --sign'[sign the uploaded data with the client certificate]' \
     --no-unreported-check'[do not check for unreported history]' \
     --no-metadata-check'[do not check for old metadata]' \
@@ -86,7 +86,7 @@ _fwupdmgr() {
         ;;
         (refresh)
           _arguments \
-            '1:file or remote ID:_alternative _files _fwupdmgr_remote_ids' \
+            '1:file or remote ID:_alternative "file\:file\:_files" "remotes\:remote ID\:_fwupdmgr_remote_ids"' \
             && ret=0
         ;;
         (switch-branch)
