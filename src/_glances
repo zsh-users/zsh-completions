@@ -92,7 +92,7 @@ _glances() {
     '(-t --time)'{-t,--time}'[set minimum refresh rate in seconds(default: 2 sec)]:seconds' \
     '(-w --webserver)'{-w,--webserver}'[run Glances in web server mode]' \
     '--cached-time[set the server cache time(default: 1 sec)]:seconds' \
-    '--stop-after[stop Glances after n fresh]:' \
+    '--stop-after[stop Glances after n fresh]:times' \
     '--open-web-browser[try to open the Web UI in the default browser]' \
     '(-q --quiet)'{-q,--quiet}'[do not display the curses interface]' \
     '(-f --process-filter)'{-f,--process-filter}'[set the process filter pattern]:regexp' \
