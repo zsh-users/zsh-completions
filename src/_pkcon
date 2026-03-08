@@ -36,13 +36,12 @@
 # ------------------------------------------------------------------------------
 
 
-local -a command_options
-command_options=(
+local -a command_options=(
   '--version[Show the program version and exit]'
   '--filter[Set the filter, e.g. installed]'
   "--root[Set the install root, e.g. '/' or '/mnt/ltsp']"
   '(-n --nowait)'{-n,--nowait}'[Exit without waiting for actions to complete]'
-  '(-y --noninteractive)'{-g,--noninteractive}'[Install the packages without asking for confirmation]'
+  '(-y --noninteractive)'{-y,--noninteractive}'[Install the packages without asking for confirmation]'
   '--background[Run the command using idle network bandwidth and also using less power]'
   '(-p --plain)'{-p,--plain}'[Print to screen a machine readable output, rather than using animated widgets]'
   '(-c --cache-age)'{-c,--cache-age}"[The maximum metadata cache age. Use -1 for 'never'.]"
@@ -50,8 +49,7 @@ command_options=(
   '(-v --verbose)'{-v,--verbose}'[Show debugging information for all files]'
 )
 
-local -a actions
-actions=(
+local -a actions=(
   'accept-eula'
   'get-roles'
   'get-distro-upgrades'
