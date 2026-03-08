@@ -31,8 +31,8 @@ options=(
   {-I,--includepath}'[add specified directory to the paths searched for include files]:include directory [/usr/share]:include directory:_directories'
 )
 
-# start a state machine. The state is modified by _arguments if the 
-# current argument (descriptors) cannot be completed. Each state has to define is successive state and the 
+# start a state machine. The state is modified by _arguments if the
+# current argument (descriptors) cannot be completed. Each state has to define is successive state and the
 # 'descriptors' for _arguments, which essentially tells _arguments how to complete
 local _i=0
 while true;do
@@ -42,10 +42,10 @@ while true;do
 
   descriptors=()
   nextstate="end"
-  case $state in 
+  case $state in
   (start)
     ##if line is empty (at the start) or ends with semicolon, autocomplete subcommands,
-    # else if we are after a space,complete a semicolon (end the current nft command) and start anew 
+    # else if we are after a space,complete a semicolon (end the current nft command) and start anew
     if [[ $line[1] = "" || $line[1] =~ ';$' ]] ; then
       descriptors=( ":: :_nft_subcommands" )
       nextstate="category"
@@ -98,7 +98,7 @@ while true;do
     esac
   ;;
   #all completions for create and insert match with the completions of add
-  (create | insert) 
+  (create | insert)
     state="add"
   ;|
   #all completions for reset and flush match with the completions of list
@@ -234,7 +234,7 @@ while true;do
     #TODO
     #    _nft_rule $cmd_fam $cmd_tab $cmd_chain\
     #  && return 0;
-    descriptors=":expression: "
+    descriptors=(":expression: ")
     nextstate="start"
   ;;
   (list-set | list-map | delete-map | list-chain | list-flowtable | delete-flowtable | list-ct\\ helper | list-counter | list-quota | list-meter)
@@ -440,7 +440,7 @@ _nft_table(){
     1="${1/-handle/}"
     _describe -t tables "table" tables -V "handle"
   fi
-  case $1 in 
+  case $1 in
   (arp | bridge | inet | ip | ip6 | netdev)
     tables=( ${(f)"$(_call_program -p tables nft -a list ruleset 2>/dev/null \
       | grep '^table '"$1" | sed 's/table // ;s/{ # handle // ;s/\(\S*\) \(\S*\) \(\S*\)/\2:type \1, handle \3/' )"} )
@@ -454,7 +454,6 @@ _nft_table_handle(){
   #$1:protocol family
   local tables=( ${(f)"$(_call_program -p tables nft -a list ruleset 2>/dev/null \
       | grep '^table '"$1" | sed 's/table // ;s/{ # handle // ;s/\(\S*\) \(\S*\) \(\S*\)/\3:\2(type \1)/' )"} )
-  echo $1 > /tmp/znfttab
   _describe -t tables "table handle" tables
 }
 
@@ -462,7 +461,7 @@ _nft_table_handle_all(){
   # complete the handles of tables of all families (with the table name in the description)
   local tables=( ${(f)"$(_call_program -p tables nft -a list ruleset 2>/dev/null \
       | grep '^table' | sed 's/table // ;s/{ # handle // ;s/\(\S*\) \(\S*\) \(\S*\)/\3:\2(type \1)/' )"} )
-  _describe -t tables "table handle" tables 
+  _describe -t tables "table handle" tables
 }
 
 _nft_object(){
@@ -502,3 +501,11 @@ _nft_rule_handle(){
 
 #currently, only the `nft` command is covered by this script.
 _nft "$@"
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
