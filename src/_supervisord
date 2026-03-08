@@ -46,7 +46,7 @@ _supervisorctl() {
 
   _arguments -C \
     {--configuration,-c}='[configuration file path (default /etc/supervisor.conf)]:filename:_files' \
-    '(- *)'{--help,-h}'[print usage message and exit]:' \
+    '(- *)'{--help,-h}'[print usage message and exit]' \
     {--interactive,-i}'[start an interactive shell after executing commands]' \
     {--serverurl,-s}='[URL on which supervisord server is listening (default "http://localhost:9001")]:url:_urls' \
     {--username,-u}='[username to use for authentication with server]:username:_users' \
@@ -206,7 +206,7 @@ _supervisorctl_collect_procs() {
   | awk "/$pattern/"'{n=$1;gsub(":","\\:",n); printf "%s\n%s\\:\n",n,substr($1,1,index($1,":")-1)}' \
   | uniq)"})
   procs+=(all)
-  _describe 'stooped processes or groups' procs
+  _describe 'stoped processes or groups' procs
 }
 
 (( $+functions[_supervisorctl_groups] )) ||
@@ -242,7 +242,7 @@ case $service in
       '(-i --identifier)'{-i,--identifier}'[identifier used for this instance of supervisord]:id' \
       '(-q --childlogdir)'{-q,--childlogdir}'[the log directory for child process logs]:log dir:_files -/' \
       '(-k --nocleanup)'{-k,--nocleanup}'[prevent the process from performing cleanup]' \
-      '(-a --minfds)'{-m,--minfds}'[the minimum number of file descriptors for start success]:min fds' \
+      '(-a --minfds)'{-a,--minfds}'[the minimum number of file descriptors for start success]:min fds' \
       '(-t --strip_ansi)'{-t,--strip_ansi}'[strip ansi escape codes from process output]' \
       '--profile_options[profile options]:profile option:_values -s , "field" cumulative calls callers'
     ;;
