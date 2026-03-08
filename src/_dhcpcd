@@ -16,7 +16,7 @@
 _arguments \
   '(-b --background)'{-b,--background}'[Background immediately]' \
   '(-c --script)'{-c,--script}'[Use this script instead of the default]: :_files' \
-  '(-D --duid)'{-d,--duid}'[Use a DHCP Unique Identifier]:id' \
+  '(-D --duid)'{-D,--duid}'[Use a DHCP Unique Identifier]:id' \
   '(-d --debug)'{-d,--debug}'[Echo debug messages to the stderr and syslog]' \
   '(-E --lastlease)'{-E,--lastlease}'[If dhcpcd cannot obtain a lease, then try to use the last lease acquired for the interface]' \
   '--lastleaseextend[Same as the -E/--lastlease, but the lease will be retained even if it expires]' \
