@@ -66,7 +66,7 @@ _arguments \
   '--force-default-config[Use default configuration even if configuration files are present in the directory tree]' \
   '(-s --stdin)'{-s,--stdin}'[Pipe source from STDIN, using FILE in offense reports]: :_files' \
   '--editor-mode[Optimize real-time feedback in editors, adjusting behaviors for editing experience]' \
-  '(-P --parallel --no-parallel)'{-p,--parallel}'[Use available CPUs to execute inspection in parallel]' \
+  '(-P --parallel --no-parallel)'{-P,--parallel}'[Use available CPUs to execute inspection in parallel]' \
   '(-P --parallel --no-parallel)--no-parallel[Execute not parallel]' \
   '--raise-cop-error[Raise cop-related errors with cause and location]' \
   '--fail-level[Minimum severity for exit with error code]:severity:(autocorrect info refactor convention warning error fatal)' \
