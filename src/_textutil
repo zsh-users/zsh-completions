@@ -39,8 +39,8 @@ local -a format=(txt html rtf rtfd doc docx wordml odt webarchive)
 _arguments -S \
   '-help[Show the usage information for the command and exit]' \
   '-info[Display information about the specified files]' \
-  '-convert[Convert the specified files to the indicated format and write]:format:(($format))' \
-  '-cat[Read the specified files, concatenate them in the indicated format]:format:(($format))' \
+  '-convert[Convert the specified files to the indicated format and write]:format:($format)' \
+  '-cat[Read the specified files, concatenate them in the indicated format]:format:($format)' \
   '-extension[Specify an extension to be used for output files]:ext' \
   '-output[Specify the file name to be used for the first output file]:path:_files' \
   '-stdin[Specify that input should be read from stdin rather than from files]' \
