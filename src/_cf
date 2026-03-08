@@ -38,116 +38,129 @@
 
 # Output a selectable list of organizations
 __cf_orgs() {
-    declare -a cont_cmd
-    cont_cmd=($(CF_COLOR=false CF_TRACE=false cf orgs | awk 'NR>3{print $1}'))
-    if [[ 'X$cont_cmd' != 'X' ]]
-        _describe 'ORG' cont_cmd
+  declare -a cont_cmd
+  cont_cmd=($(CF_COLOR=false CF_TRACE=false cf orgs | awk 'NR>3{print $1}'))
+  if [[ "X$cont_cmd" != 'X' ]]; then
+    _describe 'ORG' cont_cmd
+  fi
 }
 
 # Output a selectable list of spaces
 __cf_spaces() {
-    declare -a cont_cmd
-    cont_cmd=($(CF_COLOR=false CF_TRACE=false cf spaces | awk 'NR>3{print $1}'))
-    if [[ 'X$cont_cmd' != 'X' ]]
-        _describe 'SPACE' cont_cmd
+  declare -a cont_cmd
+  cont_cmd=($(CF_COLOR=false CF_TRACE=false cf spaces | awk 'NR>3{print $1}'))
+  if [[ "X$cont_cmd" != 'X' ]]; then
+    _describe 'SPACE' cont_cmd
+  fi
 }
 
 # Output a selectable list of applications
 __cf_apps() {
-    declare -a cont_cmd
-    cont_cmd=($(CF_COLOR=false CF_TRACE=false cf apps | awk 'NR>4{print $1}'))
-    if [[ 'X$cont_cmd' != 'X' ]]
-        _describe 'APP' cont_cmd
+  declare -a cont_cmd
+  cont_cmd=($(CF_COLOR=false CF_TRACE=false cf apps | awk 'NR>4{print $1}'))
+  if [[ "X$cont_cmd" != 'X' ]]; then
+    _describe 'APP' cont_cmd
+  fi
 }
 
 # Output a selectable list of stacks
 __cf_stacks() {
-    declare -a cont_cmd
-    cont_cmd=($(CF_COLOR=false CF_TRACE=false cf stacks | awk 'NR>4{print $1}'))
-    if [[  'X$cont_cmd' != 'X' ]]
-        _describe 'STACK' cont_cmd
+  declare -a cont_cmd
+  cont_cmd=($(CF_COLOR=false CF_TRACE=false cf stacks | awk 'NR>4{print $1}'))
+  if [[ "X$cont_cmd" != 'X' ]]; then
+    _describe 'STACK' cont_cmd
+  fi
 }
 
 # Output a selectable list of services
 __cf_marketplace_services() {
-    declare -a cont_cmd
-    cont_cmd=($(CF_COLOR=false CF_TRACE=false cf marketplace | awk 'NR>4{print $1}'))
-    if [[  'X$cont_cmd' != 'X' ]]
-        _describe 'SERVICE' cont_cmd
+  declare -a cont_cmd
+  cont_cmd=($(CF_COLOR=false CF_TRACE=false cf marketplace | awk 'NR>4{print $1}'))
+  if [[ "X$cont_cmd" != 'X' ]]; then
+     _describe 'SERVICE' cont_cmd
+  fi
 }
 
 # Output a selectable list of services
 __cf_services() {
-    declare -a cont_cmd
-    cont_cmd=($(CF_COLOR=false CF_TRACE=false cf services | awk 'NR>4{print $1}'))
-    if [[  'X$cont_cmd' != 'X' ]]
-        _describe 'SERVICE' cont_cmd
+  declare -a cont_cmd
+  cont_cmd=($(CF_COLOR=false CF_TRACE=false cf services | awk 'NR>4{print $1}'))
+  if [[ "X$cont_cmd" != 'X' ]]; then
+     _describe 'SERVICE' cont_cmd
+  fi
 }
 
 # Output a selectable list of domains
 __cf_domains() {
-    declare -a cont_cmd
-    cont_cmd=($(CF_COLOR=false CF_TRACE=false cf domains | grep -v shared | awk 'NR>2{print $1}'))
-    if [[  'X$cont_cmd' != 'X' ]]
-        _describe 'DOMAIN' cont_cmd
+  declare -a cont_cmd
+  cont_cmd=($(CF_COLOR=false CF_TRACE=false cf domains | grep -v shared | awk 'NR>2{print $1}'))
+  if [[ "X$cont_cmd" != 'X' ]]; then
+     _describe 'DOMAIN' cont_cmd
+  fi
 }
 
 # Output a selectable list of shared domains
 __cf_shared_domains() {
-    declare -a cont_cmd
-    cont_cmd=($(CF_COLOR=false CF_TRACE=false cf domains | grep -v owned | awk 'NR>2{print $1}'))
-    if [[  'X$cont_cmd' != 'X' ]]
-        _describe 'SHARED-DOMAIN' cont_cmd
+  declare -a cont_cmd
+  cont_cmd=($(CF_COLOR=false CF_TRACE=false cf domains | grep -v owned | awk 'NR>2{print $1}'))
+  if [[ "X$cont_cmd" != 'X' ]]; then
+    _describe 'SHARED-DOMAIN' cont_cmd
+  fi
 }
 
 # Output a selectable list of hostnames
 __cf_hostnames() {
-    declare -a cont_cmd
-    cont_cmd=($(CF_COLOR=false CF_TRACE=false cf routes | awk 'NR>3{print $2}'))
-    if [[  'X$cont_cmd' != 'X' ]]
-        _describe 'ROUTE' cont_cmd
+  declare -a cont_cmd
+  cont_cmd=($(CF_COLOR=false CF_TRACE=false cf routes | awk 'NR>3{print $2}'))
+  if [[ "X$cont_cmd" != 'X' ]]; then
+    _describe 'ROUTE' cont_cmd
+  fi
 }
 
 # Output a selectable list of buildpacks
 __cf_buildpacks() {
-    declare -a cont_cmd
-    cont_cmd=($(CF_COLOR=false CF_TRACE=false cf buildpacks | awk 'NR>3{print $1}'))
-    if [[  'X$cont_cmd' != 'X' ]]
-        _describe 'BUILDPACK' cont_cmd
+  declare -a cont_cmd
+  cont_cmd=($(CF_COLOR=false CF_TRACE=false cf buildpacks | awk 'NR>3{print $1}'))
+  if [[ "X$cont_cmd" != 'X' ]]; then
+     _describe 'BUILDPACK' cont_cmd
+  fi
 }
 
 # Output a selectable list of feature flags
 __cf_feature_flags() {
-    declare -a cont_cmd
-    cont_cmd=($(CF_COLOR=false CF_TRACE=false cf feature-flags | awk 'NR>4{print $1}'))
-    if [[  'X$cont_cmd' != 'X' ]]
-        _describe 'FEATURE-FLAG' cont_cmd
+  declare -a cont_cmd
+  cont_cmd=($(CF_COLOR=false CF_TRACE=false cf feature-flags | awk 'NR>4{print $1}'))
+  if [[ "X$cont_cmd" != 'X' ]]; then
+    _describe 'FEATURE-FLAG' cont_cmd
+  fi
 }
 
 # Output a selectable list of plugin repos
 __cf_repo_plugins() {
-    declare -a cont_cmd
-    cont_cmd=($(CF_COLOR=false CF_TRACE=false cf list-plugin-repos | awk 'NR>3{print $1}'))
-    if [[  'X$cont_cmd' != 'X' ]]
-        _describe 'REPO-PLUGIN' cont_cmd
+  declare -a cont_cmd
+  cont_cmd=($(CF_COLOR=false CF_TRACE=false cf list-plugin-repos | awk 'NR>3{print $1}'))
+  if [[ "X$cont_cmd" != 'X' ]]; then
+    _describe 'REPO-PLUGIN' cont_cmd
+  fi
 }
 
 # Output a selectable list of plugins
 __cf_plugins() {
-    declare -a cont_cmd
-    cont_cmd=($(cf plugins | awk 'NR>4{print $1}'))
-    if [[  'X$cont_cmd' != 'X' ]]
-        _describe 'PLUGIN' cont_cmd
+  declare -a cont_cmd
+  cont_cmd=($(cf plugins | awk 'NR>4{print $1}'))
+  if [[ "X$cont_cmd" != 'X' ]]; then
+    _describe 'PLUGIN' cont_cmd
+  fi
 }
 
 # Output a selectable list of targets (requires cf-targets plugin)
 __cf_targets() {
-    declare -a cont_cmd
-    cont_cmd=($(cf targets | awk '{print $1}'))
-    if [[  'X$cont_cmd' != 'X' ]]
-        _describe 'TARGET' cont_cmd
+  declare -a cont_cmd
+  cont_cmd=($(cf targets | awk '{print $1}'))
+  if [[ "X$cont_cmd" != 'X' ]]; then
+    _describe 'TARGET' cont_cmd
+  fi
 }
-
 
 # --------------------------
 # ----- end Helper functions
@@ -795,7 +808,7 @@ _1st_arguments=(
   "targets":"List all saved targets (requires cf-targets plugin)"
   "save-target":"Save the current target under a given name (requires cf-targets plugin)"
   "set-target":"Restore a previously saved target (requires cf-targets plugin)"
-  "delete-target":"Delete a saved target (requires cf-targets plugin)" 
+  "delete-target":"Delete a saved target (requires cf-targets plugin)"
 )
 
 # -----------------------
@@ -992,3 +1005,11 @@ case "$words[1]" in
   delete-target)
     __delete-target ;;
 esac
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
