@@ -72,7 +72,7 @@ case $service in
       \*{-l,--load}'[load Emacs Lisp FILE using the load function]: :_files' \
       '(-bg --background-color)'{-bg,--background-color}'[window background color]:color' \
       '(-D --basic-display)'{-D,--basic-display}'[disable many display features]' \
-      '(-bg --border-color)'{-bg,--border-color}'[main border color]:color' \
+      '(-bd --border-color)'{-bd,--border-color}'[main border color]:color' \
       '(-bw --border-width)'{-bw,--border-width}'[width of main border]' \
       '--color=-[override color mode for character terminals]:: :(auto never always ansi8)' \
       '(-cr --cursor-color)'{-cr,--cursor-color}'[color of the Emacs cursor indicating point]:color' \
@@ -89,12 +89,12 @@ case $service in
       '(-lsp --line-spacing)'{-lsp,--line-spacing}'[additional space to put between lines]' \
       '(-ms --mouse-color)'{-ms,--mouse-color}'[mouse cursor color in Emacs window]:color' \
       '(-T --name --title)'{-T,--name,--title}'[title for initial Emacs frame]:title' \
-      '(-nbc,--no-blinking-cursor)'{-nbc,--no-blinking-cursor}'[disable blinking cursor]' \
+      '(-nbc --no-blinking-cursor)'{-nbc,--no-blinking-cursor}'[disable blinking cursor]' \
       '(-r -rv --reverse-video)'{-r,-rv,--reverse-video}'[switch foreground and background]' \
       '(-vb --vertical-scroll-bars)'{-vb,--vertical-scroll-bars}'[enable vertical scroll bars]' \
       '--xrm[set additional X resources]:resource' \
       '--parent-id[set parent window]:xid' \
-      '(- *)--help{display help and exit}' \
+      '(- *)--help[display help and exit]' \
       '(- *)--version[output version information and exit]' \
       '*:: :_files'
     ;;

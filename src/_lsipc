@@ -95,7 +95,7 @@ _arguments \
   '(- *)'{-V,--version}'[display version]' \
   '(-m --shmems)'{-m,--shmems}'[shared memory segments]' \
   '(-M --posix-shmems)'{-M,--posix-shmems}'[POSIX shared memory segments]' \
-  '(-q --queues)'{-q,--queues}'[POSIX shared memory segments]' \
+  '(-q --queues)'{-q,--queues}'[message queues]' \
   '(-Q --posix-mqueues)'{-Q,--posix-mqueues}'[POSIX message queues]' \
   '(-s --semaphores)'{-s,--semaphores}'[semaphores]' \
   '(-S --posix-semaphores)'{-S,--posix-semaphores}'[POSIX semaphores]' \
@@ -111,7 +111,7 @@ _arguments \
   '(-n --newline)'{-n,--newline}'[display each piece of information on a new line]' \
   '(-l --list)'{-l,--list}'[force list output format]' \
   '(-o --output)'{-o,--output=-}'[define the columns to output]:columns:_lsipc_output_columns' \
-  '(-P --numeric-perms)'{-p,--numeric-perms}'[print numeric permissions]' \
+  '(-P --numeric-perms)'{-P,--numeric-perms}'[print numeric permissions]' \
   '(-r --raw)'{-r,--raw}'[display in raw mode]' \
   '(-t --time)'{-t,--time}'[show attach, detach and change times]' \
   '(-y --shell)'{-y,--shell}'[use column names to be usable as shell variables]'

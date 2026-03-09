@@ -45,14 +45,14 @@ _arguments \
   "(-t --tag -m --move-mails)"{-w,--watch}"[continuously monitor the mailbox for new messages matching the given query]" \
   "(-m --move-mails -w --watch)"{-t,--tag}"[run the tag filters]" \
   "(-w --watch -m --move-mails)"{-m,--move-mails}"[move mail files between maildir folders]" \
-  "(-n --all)"{-a,--all}"[operate on all email]" \
-  "(-a --new)"{-n,--new}"[operate on all new email]" \
+  "(-a --all)"{-a,--all}"[operate on all email]" \
+  "(-n --new)"{-n,--new}"[operate on all new email]" \
   {-C,--notmuch-config=}"[specify path to notmuch configuration file]:files:_files" \
   {-e,--enable-filters=}"[specify filter classes to use]:filter" \
   {-d,--dry-run}"[don't change the DB]" \
   {-R,--reference-set-size=}"[specify size of the reference set]:size [1000]" \
   {-T,--reference-set-timeframe-days=}"[don't use emails older than specified age]:age (days) [30]" \
-  {-N,--notmuch-args=}"[arguments for nutmuch new(in move mode)]:notmuch arg" \
+  {-N,--notmuch-args=}"[arguments for notmuch new(in move mode)]:notmuch arg" \
   {-v,--verbose}"[be more verbose]" \
   '*: :_guard "^-*" query'
 

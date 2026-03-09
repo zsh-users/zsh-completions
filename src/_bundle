@@ -49,7 +49,7 @@ _bundle() {
   _arguments -C -A "-v" -A "--version" \
     '(- 1 *)'{-v,--version}'[display version information]' \
     '(-r --retry)'{-r,--retry}'[specify the number of times you with to attempt network commands]:number:' \
-    '(-v --verbose)'{-V,--verbose}'[print out additional logging information]' \
+    '(-V --verbose)'{-V,--verbose}'[print out additional logging information]' \
     '--no-color[print all output without color]' \
     '1: :_bundle_commands' \
     '*:: :->args' && ret=0
@@ -111,7 +111,7 @@ _bundle() {
             '--cache-path=-[specify a different cache path than the default(vendor/cache)]: :_files -/' \
             '--gemfile=-[use the specified gemfile instead of Gemfile]:gemfile:_files' \
             "--no-install[don't install the gems, only update the cache]" \
-            '--quite[only output warnings and errors]' \
+            '--quiet[only output warnings and errors]' \
             && ret=0
           ;;
         (exec)

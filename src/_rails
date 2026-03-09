@@ -49,7 +49,7 @@ _rails() {
     '(- *)'{-v,--version}'[Show Rails version and quit]'
   )
 
-  runtime_options=(
+  rails_options=(
     '(-f --force)'{-f,--force}'[Overwrite files that already exist]'
     '(-p --pretend)'{-p,--pretend}'[Run but do not make any changes]'
     '(-q --quiet)'{-q,--quiet}'[Suppress status output]'
@@ -59,7 +59,7 @@ _rails() {
   local ret=1
 
   _arguments -C \
-    $rails_options \
+    $runtime_options \
     '1: :_rails_subcommands' \
     '*:: :->command' && ret=0
 
@@ -513,7 +513,7 @@ _rails_is_in_app() {
     if [[ -f "${dir}/bin/rails" ]]; then
       return 0
     fi
-    dir="${dir/*}"
+    dir="${dir%/*}"
   done
 
   return 1

@@ -48,14 +48,14 @@ _arguments -C \
   '(-f --filename)'{-f,--filename}'[Sets the filename and syntax type.]:NAME' \
   '(-t --type)'{-t,--type}'[Sets the file extension and syntax type.]:EXT' \
   '(-p --private --no-private)'{-p,--private}'[Makes your gist private.]' \
-  '(--no-private -p --private)'--no-private'[Makes your gist no private.]' \
+  '(--no-private -p --private)--no-private[Makes your gist no private.]' \
   '(-d --description)'{-d,--description}'[Adds a description to your gist.]:DESCRIPTION' \
   '(-s --shorten)'{-s,--shorten}'[Shorten the gist URL using git.io.]' \
   '(-u --update)'{-u,--update}'[Update an existing gist.]:URL ID:user_gists' \
   '(-c --copy)'{-c,--copy}'[Copy the resulting URL to the clipboard]' \
   '(-e --embed)'{-e,--embed}'[Copy the embed code for the gist to the clipboard]' \
   '(-o --open --no-open)'{-o,--open}'[Open the resulting URL in a browser]' \
-  '(--no-open -o --open)'--no-open'[No open the resulting URL in a browser]' \
+  '(--no-open -o --open)--no-open[No open the resulting URL in a browser]' \
   '(-P --paste)'{-P,--paste}'[Paste from the clipboard to gist]' \
   '(-R --raw)'{-R,--raw}'[Display raw URL of the new gist]' \
   '(-l --list)'{-l,--list}'[List all gists for user ]::user' \

@@ -306,7 +306,7 @@ case $service in
 esac
 
 _arguments \
-  $options[@] \
+  "${options[@]}" \
   "*::file:_files"
 
 # Local Variables:

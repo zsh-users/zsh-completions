@@ -203,7 +203,7 @@ _qmk_chibios-confmigrate() {
     '(-f --force)'{-f,--force}'[Re-migrates an already migrated file, even if it does not detect a full ChibiOS config]' \
     '(-d --delete)'{-d,--delete}'[If the file has no overrides, migration will delete the input file]' \
     '(-o --overwrite)'{-o,--overwrite}'[Overwrites the input file during migration]' \
-    '(-r,--reference)'{-r,--reference}'[Specify the reference file to compare against]:reference' \
+    '(-r --reference)'{-r,--reference}'[Specify the reference file to compare against]:reference' \
     '(-i --input)'{-i,--input}'[Specify input config file]: :_files'
 }
 
@@ -221,7 +221,7 @@ _qmk_compile() {
     '(-c --clean)'{-c,--clean}'[Remove object files before compiling]' \
     \*{-e,--env}'[Set a variable to be passed to make]:env' \
     '(-j --parallel)'{-j,--parallel}'[Set the number of parallel make jobs; 0 means unlimited]' \
-    '(-n --dry-run)'{-d,--dry-run}"[Don't actually build, just show the make command to be run]" \
+    '(-n --dry-run)'{-n,--dry-run}"[Don't actually build, just show the make command to be run]" \
     '(-km --keymap)'{-km,--keymap}'[The keymap to build a firmware for]:keymap' \
     '(-kb --keyboard)'{-kb,--keyboard}'[The keyboard to build a firmware for]:keyboard' \
     '*: :_files'
@@ -242,7 +242,7 @@ _qmk_flash() {
     '(-c --clean)'{-c,--clean}'[Remove object files before compiling]' \
     \*{-e,--env}'[Set a variable to be passed to make]:env' \
     '(-j --parallel)'{-j,--parallel}'[Set the number of parallel make jobs; 0 means unlimited]' \
-    '(-n --dry-run)'{-d,--dry-run}"[Don't actually build, just show the make command to be run]" \
+    '(-n --dry-run)'{-n,--dry-run}"[Don't actually build, just show the make command to be run]" \
     '(-km --keymap)'{-km,--keymap}'[The keymap to build a firmware for]:keymap' \
     '(-kb --keyboard)'{-kb,--keyboard}'[The keyboard to build a firmware for]:keyboard' \
     '(-m --mcu)'{-m,--mcu}'[The MCS name]:mcu' \

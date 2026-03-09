@@ -38,7 +38,7 @@ local curcontext="$curcontext" state line cmds ret=1
 
 _arguments -C \
   '(- 1 *)'{-v,--version}'[display version information]' \
-  '(-h|--help)'{-h,--help}'[show help information]' \
+  '(-h --help)'{-h,--help}'[show help information]' \
   '1: :->cmds' \
   '*: :->args' && ret=0
 
@@ -67,3 +67,10 @@ esac
 
 return ret
 
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et

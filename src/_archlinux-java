@@ -43,7 +43,7 @@ _archlinux-java_command_arguments() {
   case $words[1] in
     (set)
       local java_versions=("${(@f)$(archlinux-java status | tail -n +2 | tr -s ' ' | cut -d ' ' -f2)}")
-      _describe -t output 'Downloads to delete' java_versions
+      _describe -t output 'Java environments' java_versions
     ;;
   esac
 }

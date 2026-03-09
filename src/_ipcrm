@@ -36,7 +36,7 @@
 # ------------------------------------------------------------------------------
 
 _arguments -s \
-  '(-a --all)'{-a,--all}'-[Remove all resources]:resource:(shm msg sem)' \
+  '(-a --all)'{-a,--all}'[Remove all resources]:resource:(shm msg sem)' \
   '(-M --shmem-key)'{-M,--shmem-key}'[Remove the shared memory segment created with shemkey]:shmkey' \
   '(-m --shmem-id)'{-m,--shmem-id}'[Remove the shared memory segment identified by shmid]:shmid' \
   '(-Q --queue-key)'{-Q,--queue-key}'[Remove the message queue created with msgkey]:msgkey' \

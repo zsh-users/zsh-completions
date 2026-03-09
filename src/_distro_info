@@ -38,7 +38,7 @@
 
 _arguments \
   '(- *)'{-h,--help}'[display help message and exit]' \
-  '--date=[data for calculating the version]:date' \
+  '--date=[date for calculating the version]:date' \
   '(-a --all)'{-a,--all}'[list all known versions]' \
   '(-y --days)'{-y,--days=}'[display number of days until specified version reaches the specified milestone]:milestone:(created release eol eol-server)' \
   '(-d --devel)'{-d,--devel}'[latest development version]' \

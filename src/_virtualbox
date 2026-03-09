@@ -481,17 +481,17 @@ _vboxmanage_cloud_list() {
 
   case $state in
     (arg)
-      local -a state
+      local -a instance_states
       if [[ $words[1] == "instances" ]]; then
-        state=(running paused terminated)
+        instance_states=(running paused terminated)
       else
-        state=(available disabled deleted)
+        instance_states=(available disabled deleted)
       fi
 
       _arguments \
         '--provider=[Short cloud provider name]:provider' \
         '--profile=[Cloud profile name]:profile' \
-        '--state=[The state of cloud instance]: :'"($state)" \
+        '--state=[The state of cloud instance]: :'"($instance_states)" \
         '--compartment-id[A compartment is the logical container used]'
       ;;
   esac
@@ -1058,7 +1058,7 @@ _vboxmanage_guestcontrol() {
             '--recursive[Recursively removes directories from the specified from the guest VM]' \
             && ret=0
             ;;
-        (rmdir)
+        (rm)
           _arguments \
             '--quiet[Specifies that the command produce quieter output]' \
             '--verbose[Specifies that the command produce more detailed output]' \
@@ -1102,7 +1102,8 @@ _vboxmanage_guestcontrol() {
             '--wait-ready[Waits for the current Guest Additions being ready to handle the Guest Additions update]' \
             '--wait-start[Starts the VBoxManage update process on the guest VM and then waits for the Guest Additions update]' \
             && ret=0
-        (start|start)
+          ;;
+        (run|start)
           _arguments \
             '--quiet[Specifies that the command produce quieter output]' \
             '--verbose[Specifies that the command produce more detailed output]' \
@@ -1533,7 +1534,7 @@ _vboxmanage_modifynvram() {
             '--owner-uuid=[The UUID identifying the owner of the variable to delete]:uuid' \
             && ret=0
           ;;
-        (queryvar)
+        (changevar)
           _arguments \
             '--name=[UEFI variable name to change the data for]:name' \
             '--filename=[The file to read the data from]: :_files' \

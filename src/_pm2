@@ -50,13 +50,13 @@ _pm2() {
     '--max-memory-restart[restart the app if an amount of memory is exceeded (in bytes)]:bytes' \
     '--restart-delay[specify a delay between restarts(in milliseconds)]:delay' \
     '--exp-backoff-restart-delay[specify a delay between restarts(in milliseconds)]:delay' \
-    '(-x --execute-command)'{-e,--execute-command}'[execute a program using fork system]' \
+    '(-x --execute-command)'{-x,--execute-command}'[execute a program using fork system]' \
     '--max-restarts[only start the script COUNT times]:count' \
     '(-u --user)'{-u,--user}'[define user when generating startup script]:username' \
     '--uid[run target script with <uid> rights]:uid' \
     '--gid[run target script with <gid> rights]:gui' \
     '--namespace[start application within specified namespace]:namespace' \
-    '--cwd[run target script from path <cwd>]:cwd:_paths -/' \
+    '--cwd[run target script from path <cwd>]:cwd:_files -/' \
     '--hp[define home path when generating startup script]: :_paths -/' \
     '--wait-ip[override systemd script to wait for full internet connectivity to launch pm2]' \
     '--service-name[define service name when generating startup script]' \

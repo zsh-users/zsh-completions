@@ -23,7 +23,6 @@ _arguments \
   {-j,--jmeterlogfile}'[the jmeter log file]: :_files -g "*.log"' \
   {-l,--logfile}'[the file to log samples to]: :_files -g "*.jtl"' \
   {-i,--jmeterlogconf}'[jmeter logging configuration file]: :_files -g "*.xml"' \
-  {-j,--jmeterlogfile}'[jmeter run file]: :_files -g "*.log"' \
   {-n,--nongui}'[run JMeter in nongui mode]' \
   {-s,--server}'[run the JMeter server]' \
   {-H,--proxyHost}'[set a proxy server for JMeter to use]: :_hosts' \

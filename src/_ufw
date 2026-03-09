@@ -42,7 +42,7 @@ _ufw_logging() {
   local params additional second
   second=$words[2]
 
-  if [ ! -z $second ]; then
+  if [[ ! -z "$second" ]]; then
     return
   fi
 
@@ -58,7 +58,7 @@ _ufw_delete() {
 
   second=$words[2]
 
-  if [ ! -z $second ]; then
+  if [[ ! -z "$second" ]]; then
     return
   fi
 
@@ -87,14 +87,6 @@ _ufw_app() {
     && ret=0
 
   return ret
-}
-
-(( $+functions[_flutter_pub_token_subcommand] )) ||
-_flutter_pub_token_subcommand() {
-  local -a subcommands=(
-
-  )
-  _describe -t subcommands 'subcommand' subcommands "$@"
 }
 
 _ufw() {

@@ -23,7 +23,7 @@ _arguments \
   '(-F --fullwidth)'{-F,--fullwidth}'[use two columns per character]' \
   '(-f --fps)'{-f+,--fps=}'[set a frame rate target]: :_numbers -d 60' \
   '(-G --glitchpct)'{-G+,--glitchpct=}'[set the percentage of characters onscreen that glitch]: :_numbers -f -d 10.0' \
-  '(-g --glitchms)'{-g+,--glitchms=}'[control how often the characters on screen glitch]:N [300,400]]' \
+  '(-g --glitchms)'{-g+,--glitchms=}'[control how often the characters on screen glitch]:N [300,400]' \
   '(-h --help)'{-h,--help}'[shows the help message]' \
   '(-l --lingerms)'{-l+,--lingerms=}'[control how long characters stay onscreen after they finish scrolling]:N [1,3000]' \
   '(-M --shadingmode)'{-M+,--shadingmode=}'[control how neo assigns color values to characters on the screen]:choice [1]:((0\:random\ \(default\) 1\:gradient))' \

@@ -53,7 +53,7 @@ _glances() {
     '--disable-webui[disable the Web Interface]' \
     '(--light --enable-light)'{--light,--enable-light}'[light mode for Curses UI]' \
     '(-0 --disable-irix)'{-0,--disable-irix}"[task's cpu usage will be divided by the total number of CPUs]" \
-    '(-1 --percpu)'{-1,--percpu}'[start Clances in per CPU mode]' \
+    '(-1 --percpu)'{-1,--percpu}'[start Glances in per CPU mode]' \
     '(-2 --disable-left-sidebar)'{-2,--disable-left-sidebar}'[disable network, disk I/O, FS and sensors modules]' \
     '(-3 --disable-quicklook)'{-3,--disable-quicklook}'[disable quick look module]' \
     '(-4 --full-quicklook)'{-4,--full-quicklook}'[disable all but quick look and load]' \
@@ -92,7 +92,7 @@ _glances() {
     '(-t --time)'{-t,--time}'[set minimum refresh rate in seconds(default: 2 sec)]:seconds' \
     '(-w --webserver)'{-w,--webserver}'[run Glances in web server mode]' \
     '--cached-time[set the server cache time(default: 1 sec)]:seconds' \
-    '--stop-after[stop Glances after n fresh]:' \
+    '--stop-after[stop Glances after n fresh]:times' \
     '--open-web-browser[try to open the Web UI in the default browser]' \
     '(-q --quiet)'{-q,--quiet}'[do not display the curses interface]' \
     '(-f --process-filter)'{-f,--process-filter}'[set the process filter pattern]:regexp' \

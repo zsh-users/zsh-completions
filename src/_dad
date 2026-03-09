@@ -55,12 +55,12 @@ _dad() {
     "-u[Set aria2c username]:username:->val" \
     "-p[Set aria2c password]:password:->val" \
     '1:cmd:->cmds' \
-    '*: : :->args'
+    '*: :->args'
 
   case "$state" in
-  (cmds)
-    _describe -t commands 'commands' commands
-    ;;
+    (cmds)
+      _describe -t commands 'commands' commands
+      ;;
   esac
 }
 

@@ -25,12 +25,12 @@ _arguments -A "-*" -n \
   '(-c --config)'{-c,--config=}'[set alternate config directory]:directory:_files -/' \
   '(-d --datepattern)'{-d,--datepattern=}'[set custom pattern used to match date/times]:DATEPATTERN' \
   '(--timezone= --TZ=)'{--timezone=,--TZ=}'[set time-zone used by convert time format]:TIMEZONE' \
-  '(-e --encoding=)'{-e,--encoding=}'[use different encoding from system locale]:ENCODING' \
+  '(-e --encoding)'{-e,--encoding=}'[use different encoding from system locale]:ENCODING' \
   '(-r --raw)'{-r,--raw}'[raw hosts,don''t resolve dns]' \
   '--usedns=[DNS specified replacement of tags <HOST> in regexp]::((yes\:matches all form of hosts no\:IP addresses only))' \
-  '(-L --maxlines=)'{-L,--maxlines}'[maxlines for multi-line regex]:MAXLINES' \
+  '(-L --maxlines)'{-L,--maxlines}'[maxlines for multi-line regex]:MAXLINES' \
   '(-m --journalmatch=)'{-m,--journalmatch=}'[journalctl style matches overriding filter file; "systemd-journal" only]:JOURNALMATCH' \
-  '(-l --log-level=)'{-l,--log-level}'[log level for the Fail2Ban logger to use]:LOG_LEVEL' \
+  '(-l --log-level)'{-l,--log-level}'[log level for the Fail2Ban logger to use]:LOG_LEVEL' \
   '-V[get version in machine-readable short format]' \
   '--verbosity=[set numerical level of verbosity]:(0 1 2 3 4)' \
   '(--verbose-date --VD)'{--verbose-date,--VD}'[verbose date patterns/regex in output]' \

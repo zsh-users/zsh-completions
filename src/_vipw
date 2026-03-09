@@ -40,7 +40,7 @@ _arguments \
   '(-g --group -p --passwd)'{-p,--passwd}'[edit passwd database]' \
   '(-q --quiet)'{-q,--quiet}'[quiet mode]' \
   '(-R --root)'{-R,--root}'[apply changes in the given directory]:dir:_files -/' \
-  '(-s --shadow)'{-s,--shadow}'[eedit shadow or gshadow database]'
+  '(-s --shadow)'{-s,--shadow}'[edit shadow or gshadow database]'
 
 # Local Variables:
 # mode: Shell-Script

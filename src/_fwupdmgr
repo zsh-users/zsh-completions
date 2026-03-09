@@ -21,35 +21,35 @@ _fwupdmgr() {
 
   _arguments -C \
     '(- : *)'{-h,--help}'[display help information]' \
-    '(- : *)'{-v,--version}'[display version information]' \
-    {-v,--verbose}'[show extra debugging information]' \
-    --offline'[schedule installation for next reboot when possible]' \
-    --allow-reinstall'[allow re-installing existing firmware versions]' \
-    --allow-older'[allow downgrading firmware versions]' \
-    --allow-branch-switch'[allow switching firmware branch]' \
-    --force'[override warnings and force the action]' \
-    '(-y, --assume-yes)'{-y,--assume-yes}'[answer yes to all questions]' \
-    --sign'[sign the uploaded data with the client certificate]' \
-    --no-unreported-check'[do not check for unreported history]' \
-    --no-metadata-check'[do not check for old metadata]' \
-    --no-reboot-check'[do not check for reboot after update]' \
-    --no-safety-check'[do not perform device safety checks]' \
-    --no-device-prompt'[do not prompt for devices]' \
-    --no-history'[do not write to the history database]' \
-    --show-all'[show all results]' \
-    --disable-ssl-strict'[ignore SSL strict checks when downloading files]' \
-    --ipfs'[only use IPFS when downloading files]' \
-    --filter'[filter with a set of device flags using a ~ prefix to exclude]:filter' \
-    --json'[output in JSON format]' \
-    --no-authenticate'[do not prompt for authentication]' \
+    '(- : *)--version[display version information]' \
+    '(-v --verbose)'{-v,--verbose}'[show extra debugging information]' \
+    '--offline[schedule installation for next reboot when possible]' \
+    '--allow-reinstall[allow re-installing existing firmware versions]' \
+    '--allow-older[allow downgrading firmware versions]' \
+    '--allow-branch-switch[allow switching firmware branch]' \
+    '--force[override warnings and force the action]' \
+    '(-y --assume-yes)'{-y,--assume-yes}'[answer yes to all questions]' \
+    '--sign[sign the uploaded data with the client certificate]' \
+    '--no-unreported-check[do not check for unreported history]' \
+    '--no-metadata-check[do not check for old metadata]' \
+    '--no-reboot-check[do not check for reboot after update]' \
+    '--no-safety-check[do not perform device safety checks]' \
+    '--no-device-prompt[do not prompt for devices]' \
+    '--no-history[do not write to the history database]' \
+    '--show-all[show all results]' \
+    '--disable-ssl-strict[ignore SSL strict checks when downloading files]' \
+    '--ipfs[only use IPFS when downloading files]' \
+    '--filter[filter with a set of device flags using a ~ prefix to exclude]:filter' \
+    '--json[output in JSON format]' \
+    '--no-authenticate[do not prompt for authentication]' \
     '(-): :->command' \
     '(-)*:: :->arguments' \
-  && ret=0
+    && ret=0
 
   case $state in
     (command)
       _fwupdmgr_commands
-    ;;
+      ;;
     (arguments)
       case $words[1] in
         (activate|downgrade|emulation-tag|emulation-untag|get-releases|get-updates|reinstall|update|verify|verify-update)
@@ -86,7 +86,7 @@ _fwupdmgr() {
         ;;
         (refresh)
           _arguments \
-            '1:file or remote ID:_alternative _files _fwupdmgr_remote_ids' \
+            '1:file or remote ID:_alternative "file\:file\:_files" "remotes\:remote ID\:_fwupdmgr_remote_ids"' \
             && ret=0
         ;;
         (switch-branch)

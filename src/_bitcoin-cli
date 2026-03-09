@@ -40,6 +40,7 @@
 
 _bitcoin-cli() {
   local context state line curcontext="$curcontext"
+  local ret=1
 
   _arguments -C \
     -?'[This help message]' \

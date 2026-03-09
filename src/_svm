@@ -47,7 +47,7 @@ _svm() {
     '-c[show the currently use scala version]' \
     "-l[show the scala version installed in svm_path(default is ${HOME}/.svm)]" \
     '-v[show the available scala version not installed]' \
-    '-i[install specific scala version]: :_svm_completion_not_installed_scala_versions' \
+    '-i[install specific scala version]: :_svm_not_installed_scala_versions' \
     '-r[uninstall specific scala version and remove their sources]: :_svm_installed_scala_versions' \
     '(-s -u)'{-s,-u}'[setup to use a specific scala version]: :_svm_not_selected_scala_versions' \
     '1: :_svm_commands' \

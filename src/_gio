@@ -48,7 +48,7 @@ _gio() {
 
   _arguments -C \
     '(- : *)'{-h,--help}'[show help information]' \
-    '(- : *)'--version'[display version information]' \
+    '(- : *)--version[display version information]' \
     '1:command:->command' \
     '*::arg:->args' \
   && ret=0

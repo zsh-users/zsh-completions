@@ -211,7 +211,6 @@ _language_codes_iso_639_1() {
     'uz:Uzbek'
     've:Venda'
     'vi:Vietnamese'
-    'vietnamien'
     'vo:Volapük'
     'cy:Welsh'
     'wa:Walloon'
@@ -238,7 +237,7 @@ _language_codes() {
       ;;
   esac
 
-  return ret    
+  return ret
 }
 
 # Local Variables:

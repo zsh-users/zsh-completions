@@ -34,9 +34,12 @@
 #
 # ------------------------------------------------------------------------------
 
+typeset -A opt_args
+local context state line
+
 local -a module_types=(
   none commonjs amd umd system es6/es2015 es2020 es2022 esnext node16 node18 nodenext preserve
-) 
+)
 
 local -a bundle_libraries=(
   es5 es6/es2015 es7/es2016 es2017 es2018 es2019 es2020 es2021 es2022
@@ -168,7 +171,7 @@ local -a opts=(
   '--plugins[Specify a list of language service plugins to include]:plugins'
   '--emitDecoratorMetadata[Emit design-type metadata for decorated declarations in source files]'
   '--experimentalDecorators[Enable experimental support for legacy experimental decorators]'
-  '--jsx[Specify what JSX code is generated]:type(preserve react react-native react-jsx react-jsxdev)'
+  '--jsx[Specify what JSX code is generated]:type:(preserve react react-native react-jsx react-jsxdev)'
   "--jsxFactory[Specify the JSX factory function used when targeting React JSX emit]:funcname"
   "--jsxFragmentFactory[Specify the JSX Fragment reference used for fragments when targeting React JSX emit]:reference"
   '--jsxImportSource[Specify module specifier used to import the JSX factory functions]'
@@ -197,7 +200,7 @@ local -a opts=(
 if (( $+opt_args[--build] )); then
   opts+=(
     '(-v --verbose)'{-v,--verbose}"[Enable verbose logging]"
-    '(-d --dry)'{-d,--dry}'[Show what would be built]'
+    '--dry[Show what would be built]'
     '(-f --force)'{-f,--force}'[Build all projects, including those that appear to be up to date]'
     '--clean[Delete the outputs of all projects]'
     '--stopBuildOnErrors[Skip building downstream projects on error in upstream project]'
@@ -208,7 +211,7 @@ else
   )
 fi
 
-_arguments $opts && return 0
+_arguments -C $opts && return 0
 
 # Local Variables:
 # mode: Shell-Script

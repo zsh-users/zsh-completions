@@ -122,7 +122,7 @@ __nvm() {
           ;;
         (deactivate)
           _arguments \
-            '--silent=[Silences stdout/stderr output]' \
+            '--silent[Silences stdout/stderr output]' \
             && ret=0
           ;;
         (alias)
@@ -138,7 +138,7 @@ __nvm() {
           ;;
         (reinstall-package)
           _arguments \
-            '--silent=[Silences stdout/stderr output]' \
+            '--silent[Silences stdout/stderr output]' \
             '1: :__nvm_installed_versions' \
             && ret=0
           ;;

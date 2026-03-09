@@ -41,7 +41,6 @@ _phing() {
   # Follow https://www.phing.info/guide/chunkhtml/sec.commandlineargs.html for more information
   _arguments -C \
     '(-h -help)'{-h,-help}'[display the help screen]' \
-    '(-v -version)'{-v,-version}'[print version information and exit]' \
     '(-l -list)'{-l,-list}'[list all available targets in buildfile]' \
     '(-i -init)'{-i,-init}'[generates an initial buildfile]:file:_files' \
     '(-q -quiet)'{-q,-quiet}'[quiet operation, no output at all]' \
@@ -63,7 +62,7 @@ _phing() {
     '-propertyfileoverride[values in property file override existing values]' \
     '-find[search for buildfile towards the root of the filesystem and use it]:file:_files' \
     '-inputhandler[the class to use to handle user input]:class' \
-    '(- *)'{-v,-version}'[show version]' \
+    '(- *)'{-v,-version}'[show version and exit]' \
     '1: :->targets' \
     '*:: :->args' \
   && ret=0
