@@ -108,8 +108,8 @@ _chromium_proxyurls () {
     do
       while _next_label prefixes expl 'URL prefix' -S '' "$@"
       do
-	compset -S '[^:/]*' && compstate[to_end]=''
-	compadd "$expl[@]" http:// socks:// socks4:// socks5:// && ret=0
+        compset -S '[^:/]*' && compstate[to_end]=''
+        compadd "$expl[@]" http:// socks:// socks4:// socks5:// && ret=0
       done
       (( ret )) || return 0
     done
@@ -123,27 +123,27 @@ _chromium_proxyurls () {
     return
   fi ;;
     (file) [[ -prefix //(127.0.0.1|localhost)/ ]] && compset -P '//(127.0.0.1|localhost)'
-	   [[ -prefix /// ]] && compset -P //
-	   if ! compset -P //
-	   then
-	     _tags -C file files
-	     while _tags
-	     do
-	       while _next_label files expl 'local file'
-	       do
-		 if [[ -prefix / ]]
-		 then
-		   _path_files "$expl[@]" -S '' "${glob[@]}" && ret=0
-		   _path_files "$expl[@]" -S/ -r '/' -/ && ret=0
-		 elif [[ -z "$PREFIX" ]]
-		 then
-		   compadd -S '/' -r '/' "$expl[@]" "$@" - "${PWD%/}" && ret=0
-		 fi
-	       done
-	       (( ret )) || return 0
-	     done
-	     return 1
-	   fi ;;
+           [[ -prefix /// ]] && compset -P //
+           if ! compset -P //
+           then
+             _tags -C file files
+             while _tags
+             do
+               while _next_label files expl 'local file'
+               do
+                 if [[ -prefix / ]]
+                 then
+                   _path_files "$expl[@]" -S '' "${glob[@]}" && ret=0
+                   _path_files "$expl[@]" -S/ -r '/' -/ && ret=0
+                 elif [[ -z "$PREFIX" ]]
+                 then
+                   compadd -S '/' -r '/' "$expl[@]" "$@" - "${PWD%/}" && ret=0
+                 fi
+               done
+               (( ret )) || return 0
+             done
+             return 1
+           fi ;;
   esac
   if ! compset -P '(#b)([^:/]#)([:/])'
   then
@@ -153,10 +153,10 @@ _chromium_proxyurls () {
     do
       while _next_label hosts expl host
       do
-	compset -S '[:/]*' || suf="/"
-	(( $#uhosts )) || _hosts -S "$suf" -r '/:' "$expl[@]" && ret=0
-	[[ "$scheme" = http ]] && uhosts=($uhosts $localhttp_servername)
-	compadd -S "$suf" -r '/:' "$expl[@]" -a uhosts && ret=0
+        compset -S '[:/]*' || suf="/"
+        (( $#uhosts )) || _hosts -S "$suf" -r '/:' "$expl[@]" && ret=0
+        [[ "$scheme" = http ]] && uhosts=($uhosts $localhttp_servername)
+        compadd -S "$suf" -r '/:' "$expl[@]" -a uhosts && ret=0
       done
       (( ret )) || return 0
     done
@@ -171,28 +171,28 @@ _chromium_proxyurls () {
     then
       if ! compset -P '(#b)([^/]#)/'
       then
-	_users -S/ "$@"
-	return
+        _users -S/ "$@"
+        return
       fi
       user="$match[1]"
       while _tags
       do
-	while _next_label files expl 'local file'
-	do
-	  _path_files "$expl[@]" "$@" -W ~$user/$localhttp_userdir "${glob[@]}" && ret=0
-	  _path_files -S/ -r '/' "$expl[@]" -W ~$user/$localhttp_userdir-/ && ret=0
-	done
-	(( ret )) || return 0
+        while _next_label files expl 'local file'
+        do
+          _path_files "$expl[@]" "$@" -W ~$user/$localhttp_userdir "${glob[@]}" && ret=0
+          _path_files -S/ -r '/' "$expl[@]" -W ~$user/$localhttp_userdir-/ && ret=0
+        done
+        (( ret )) || return 0
       done
     else
       while _tags
       do
-	while _next_label files expl 'local file'
-	do
-	  _path_files "$expl[@]" "$@" -W $localhttp_documentroot "${glob[@]}" && ret=0
-	  _path_files -S/ -r '/' "$expl[@]" -W $localhttp_documentroot -/ && ret=0
-	done
-	(( ret )) || return 0
+        while _next_label files expl 'local file'
+        do
+          _path_files "$expl[@]" "$@" -W $localhttp_documentroot "${glob[@]}" && ret=0
+          _path_files -S/ -r '/' "$expl[@]" -W $localhttp_documentroot -/ && ret=0
+        done
+        (( ret )) || return 0
       done
     fi
   else
@@ -200,8 +200,8 @@ _chromium_proxyurls () {
     do
       (( $#urls )) && while _next_label files expl 'local file'
       do
-	_path_files "$expl[@]" "$@" -W $urls/$scheme/$host "${glob[@]}" && ret=0
-	_path_files -S/ -r '/' "$expl[@]" -W $urls/$scheme/$host -/ && ret=0
+        _path_files "$expl[@]" "$@" -W $urls/$scheme/$host "${glob[@]}" && ret=0
+        _path_files -S/ -r '/' "$expl[@]" -W $urls/$scheme/$host -/ && ret=0
       done
       [[ $scheme = (scp|sftp) ]] && _requested remote-files && _remote_files -h $host -- ssh && ret=0
       (( ret )) || return 0

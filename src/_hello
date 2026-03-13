@@ -13,7 +13,16 @@
 #
 # ------------------------------------------------------------------------------
 
-_arguments -s '(- *)'{-h,--help}'[display this help and exit]' \
+_arguments -s \
+  '(- *)'{-h,--help}'[display this help and exit]' \
   '(- *)'{-v,--version}'[display version information and exit]' \
   {-t,--traditional}'[use traditional greeting]' \
   {-g,--greeting=}'[use TEXT as the greeting message]:TEXT'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et

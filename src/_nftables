@@ -12,278 +12,280 @@
 #  * Markus Richter ( https://github.com/mqus , <mqus@disroot.org>)
 #
 # ------------------------------------------------------------------------------
+
 _nft(){
-local -a rules states prev args families options descriptors
-local state="start" line nextstate cmd_obj cmd_subcmd cmd_fam cmd_tab cmd_chain #curcontext="$curcontext"
+  local -a rules states prev args families options descriptors
+  local state="start" line nextstate cmd_obj cmd_subcmd cmd_fam cmd_tab cmd_chain #curcontext="$curcontext"
 
-options=(
-  '(-)'{-h,--help}'[show help]' \
-  '(-)'{-v,--version}'[print version information]' \
-  "(-i --interactive)"{-i,--interactive}'[read input from interactive CLI]: :->end' \
-  "(-f --file)"{-f,--file}'[read input from <filename>]:nftables rule file:_files' \
-  '(-c --check -n --numeric -N)'{-c,--check}"[check command's validity without actually applying the changes]" \
-  '(-j --json)'{-j,--json}'[format output in json]' \
-  '(-c --check -N)*'{-n,--numeric}'[can be specified up to 3 times, Shows 1:network addresses(default behaviour), 2:internet services (port numbers) and 3:protocols, user IDs, and group IDs numerically]' \
-  '(-s --stateless)'{-s,--stateless}'[omit stateful information of ruleset]' \
-  '(-N -n --numeric -c --check)'-N'[translate IP addresses to names]' \
-  '(-a --handle)'{-a,--handle}'[output rule handle]' \
-  '(-e --echo)'{-e,--echo}'[echo what has been added, inserted or replaced]' \
-  {-I,--includepath}'[add specified directory to the paths searched for include files]:include directory [/usr/share]:include directory:_directories'
-)
+  options=(
+    '(-)'{-h,--help}'[show help]'
+    '(-)'{-v,--version}'[print version information]'
+    "(-i --interactive)"{-i,--interactive}'[read input from interactive CLI]: :->end'
+    "(-f --file)"{-f,--file}'[read input from <filename>]:nftables rule file:_files'
+    '(-c --check -n --numeric -N)'{-c,--check}"[check command's validity without actually applying the changes]"
+    '(-j --json)'{-j,--json}'[format output in json]'
+    '(-c --check -N)*'{-n,--numeric}'[can be specified up to 3 times, Shows 1:network addresses(default behaviour), 2:internet services (port numbers) and 3:protocols, user IDs, and group IDs numerically]'
+    '(-s --stateless)'{-s,--stateless}'[omit stateful information of ruleset]'
+    '(-N -n --numeric -c --check)'-N'[translate IP addresses to names]'
+    '(-a --handle)'{-a,--handle}'[output rule handle]'
+    '(-e --echo)'{-e,--echo}'[echo what has been added, inserted or replaced]'
+    {-I,--includepath}'[add specified directory to the paths searched for include files]:include directory [/usr/share]:include directory:_directories'
+  )
 
-# start a state machine. The state is modified by _arguments if the
-# current argument (descriptors) cannot be completed. Each state has to define is successive state and the
-# 'descriptors' for _arguments, which essentially tells _arguments how to complete
-local _i=0
-while true;do
-  (( _i+=1 ))
-  #Guard for endless loops
-  [[ $_i -gt 100 ]] && return 1
+  # start a state machine. The state is modified by _arguments if the
+  # current argument (descriptors) cannot be completed. Each state has to define is successive state and the
+  # 'descriptors' for _arguments, which essentially tells _arguments how to complete
+  local _i=0
+  while true;do
+    (( _i+=1 ))
+    #Guard for endless loops
+    [[ $_i -gt 100 ]] && return 1
 
-  descriptors=()
-  nextstate="end"
-  case $state in
-  (start)
-    ##if line is empty (at the start) or ends with semicolon, autocomplete subcommands,
-    # else if we are after a space,complete a semicolon (end the current nft command) and start anew
-    if [[ $line[1] = "" || $line[1] =~ ';$' ]] ; then
-      descriptors=( ":: :_nft_subcommands" )
-      nextstate="category"
-    else
-      if [[ $words =~ ' $' ]]; then
-        descriptors=(':: :(\;)')
-      else
-        descriptors=(':argument: ')
-      fi
+    descriptors=()
+    nextstate="end"
+    case $state in
+      (start)
+        ##if line is empty (at the start) or ends with semicolon, autocomplete subcommands,
+        # else if we are after a space,complete a semicolon (end the current nft command) and start anew
+        if [[ $line[1] = "" || $line[1] =~ ';$' ]] ; then
+          descriptors=( ":: :_nft_subcommands" )
+          nextstate="category"
+        else
+          if [[ $words =~ ' $' ]]; then
+            descriptors=(':: :(\;)')
+          else
+            descriptors=(':argument: ')
+          fi
+          nextstate="start"
+        fi
+        ;;
+      (category)
+        case $line[1] in
+          (add | list | flush | delete | create | rename | insert | replace | reset)
+            descriptors=( ":: :_nft_${line[1]}" )
+            nextstate=$line[1]
+            ;;
+          (monitor)
+            descriptors=( ":: : _nft_mon_filter"  )
+            nextstate="mon1"
+            ;;
+          (export)
+            descriptors=( ":: :(ruleset)" ":: :_nft_out_format" )
+            nextstate="preend"
+            ;;
+          (describe)
+            descriptors=( ":expression: ")
+            nextstate="start" #x restart
+            ;;
+          (*)
+            return 1;
+            ;;
+        esac
+
+        #descriptors=( "(ruleset)" )
+        #nextstate="end"
+        ;;
+      (mon1)
+        case $line[1] in
+          (new | destroy)
+            #      descriptors=( ":: :_nft_mon_keywords"  ":: :_nft_out_format")
+            descriptors=( ":: : _nft_mon_keywords")
+            nextstate="mon1"
+            ;;
+          (tables | chains | sets | rules | elements | ruleset)
+            descriptors=( ":: : _nft_out_format")
+            nextstate="preend"
+            ;;
+        esac
+        ;;
+      #all completions for create and insert match with the completions of add
+      (create | insert)
+        state="add"
+        ;|
+      #all completions for reset and flush match with the completions of list
+      (reset | flush)
+        state="list"
+        ;|
+      #(add(^table)/create(^table)/delete/flush(^ruleset)/insert/list(^ruleset)/rename/replace)[family]table
+      (reset | delete | insert | rename | replace | add | create | flush | list)
+        if [[ $state = "add" && $line[1] = "table" ]]; then
+          descriptors=( ":: :_nft_families" ":table name:")
+          nextstate="start" #x restart
+        elif [[ $state = "list" && ( $line[1] = "ruleset" || $line[1] = "tables" ) ]]; then
+          descriptors=( ":: :_nft_families")
+          nextstate="start" #x restart
+        elif [[ $state = "delete" && $line[1] = "table" ]]; then
+          descriptors=(": : _nft_table all-handle")
+          nextstate="tcomplete-delete-table"
+        else
+          cmd_obj=$line[1]
+          cmd_subcmd=$state
+          descriptors=(": : _nft_table all")
+          nextstate="tcomplete"
+        fi
+        ;;
+      (tcomplete-delete-table)
+        # if only a family was completed, complete the table name.
+        case $line[1] in
+          (arp | bridge | inet | ip | ip6 | netdev)
+            descriptors=(": : _nft_table ${line[1]}-handle")
+            cmd_fam=$line[1]
+            ;;
+          # if 'handle' was completed, complete the handle number.
+          (handle)
+            descriptors=(": : _nft_table_handle_all " )
+            ;;
+          # else, complete nothing and go to the next state. default family is 'ip'
+          (*)
+            descriptors=()
+            cmd_fam="ip"
+            ;;
+        esac
+        nextstate="delete-table"
+        ;;
+      (tcomplete)
+        # if only a family was completed, complete the table name.
+        case $line[1] in
+          (arp | bridge | inet | ip | ip6 | netdev)
+            descriptors=(": : _nft_table ${line[1]}")
+            cmd_fam=$line[1]
+            ;;
+          # else, complete nothing and go to the next state. default family is 'ip'
+          (*)
+            descriptors=()
+            cmd_fam="ip"
+            ;;
+        esac
+        nextstate="$cmd_subcmd-$cmd_obj"
+        ;;
+      (list-table)
+        descriptors=(":: :(\;)")
+        nextstate="start"
+        ;;
+      (delete-table)
+        #if family AND handle were input, complete handle number for given family.
+        if [[ $line[1] == "handle" ]]; then
+          descriptors=(":table handle: _nft_table_handle $cmd_fam" )
+        else
+          descriptors=()
+        fi
+        nextstate="start"
+        ;;
+      (delete-chain | delete-set | delete-quota | delete-counter | delete-ct\\ helper)
+      cmd_tab=$line[1]
+      descriptors=(": : _nft_object $cmd_fam $cmd_tab $cmd_obj true")
+      nextstate="delete-obj-handle"
+      ;;
+      (delete-obj-handle)
+        if [[ $line[1] == "handle" ]]; then
+          descriptors=(": : _nft_object_handle $cmd_fam $cmd_tab $cmd_obj")
+        else
+          descriptors=(": :(\;)")
+        fi
+        nextstate="start"
+        ;;
+      (add-chain)
+        descriptors=(":chain name:")
+        nextstate="start"
+        ;;
+      (rename-chain)
+        cmd_tab=$line[1]
+        descriptors=(": : _nft_object $cmd_fam $cmd_tab chain false")
+        nextstate="add-chain"
+        ;;
+      (replace-rule | delete-rule)
+        cmd_tab=$line[1]
+        descriptors=(": : _nft_object $cmd_fam $cmd_tab chain false")
+        nextstate="repdel-rule"
+        ;;
+      (repdel-rule)
+        cmd_chain=$line[1]
+        descriptors=(": :(handle)" ": : _nft_rule_handle $cmd_fam $cmd_tab ${line[1]}")
+        if [[ $cmd_subcmd = "replace" ]];then
+          nextstate="rule-stmt"
+        else
+          nextstate="start"
+        fi
+        ;;
+      (add-rule)
+        cmd_tab=$line[1]
+        descriptors=(": : _nft_object $cmd_fam $cmd_tab chain false")
+        nextstate="add-rule-2"
+        ;;
+      (add-rule-2)
+        cmd_chain=$line[1]
+        descriptors=(": :(handle index position)")
+        nextstate="add-rule-3"
+        ;;
+      (add-rule-3)
+        case $line[1] in
+          (index | position)
+            descriptors=(":${line[1]}:")
+            ;;
+          (handle)
+            descriptors=(": : _nft_rule_handle $cmd_fam $cmd_tab $cmd_chain")
+            ;;
+          (*)
+            descriptors=()
+            ;;
+        esac
+        nextstate="rule-stmt"
+        ;;
+      (rule-stmt)
+        #TODO
+        #    _nft_rule $cmd_fam $cmd_tab $cmd_chain\
+          #  && return 0;
+        descriptors=(":expression: ")
+        nextstate="start"
+        ;;
+      (list-set | list-map | delete-map | list-chain | list-flowtable | delete-flowtable | list-ct\\ helper | list-counter | list-quota | list-meter)
+      cmd_tab=$line[1]
+      descriptors=(": : _nft_object $cmd_fam $cmd_tab $cmd_obj false")
       nextstate="start"
-    fi
-  ;;
-  (category)
-    case $line[1] in
-    (add | list | flush | delete | create | rename | insert | replace | reset)
-      descriptors=( ":: :_nft_${line[1]}" )
-      nextstate=$line[1]
-    ;;
-    (monitor)
-      descriptors=( ":: : _nft_mon_filter"  )
-      nextstate="mon1"
-    ;;
-    (export)
-      descriptors=( ":: :(ruleset)" ":: :_nft_out_format" )
-      nextstate="preend"
-    ;;
-    (describe)
-      descriptors=( ":expression: ")
-      nextstate="start" #x restart
-    ;;
-    (*)
-      return 1;
-    ;;
-    esac
+      ;;
+      (add-element | delete-element)
+        cmd_tab=$line[1]
+        descriptors=(": : _nft_object $cmd_fam $cmd_tab '\(map\|set\)' false")
+        nextstate="start"
+        ;;
+      #TODO:
+      #(add-set | add-map)
+      #(add-flowtable)
+      #("add-ct\ helper")
+      #(add-counter)
+      #(add-quota)
 
-    #descriptors=( "(ruleset)" )
-    #nextstate="end"
-  ;;
-  (mon1)
-    case $line[1] in
-    (new | destroy)
-#      descriptors=( ":: :_nft_mon_keywords"  ":: :_nft_out_format")
-      descriptors=( ":: : _nft_mon_keywords")
-      nextstate="mon1"
-    ;;
-    (tables | chains | sets | rules | elements | ruleset)
-      descriptors=( ":: : _nft_out_format")
-      nextstate="preend"
-    ;;
+      (*)
+        return 1;
+        ;;
     esac
-  ;;
-  #all completions for create and insert match with the completions of add
-  (create | insert)
-    state="add"
-  ;|
-  #all completions for reset and flush match with the completions of list
-  (reset | flush)
-    state="list"
-  ;|
-  #(add(^table)/create(^table)/delete/flush(^ruleset)/insert/list(^ruleset)/rename/replace)[family]table
-  (reset | delete | insert | rename | replace | add | create | flush | list)
-    if [[ $state = "add" && $line[1] = "table" ]]; then
-      descriptors=( ":: :_nft_families" ":table name:")
-      nextstate="start" #x restart
-    elif [[ $state = "list" && ( $line[1] = "ruleset" || $line[1] = "tables" ) ]]; then
-      descriptors=( ":: :_nft_families")
-      nextstate="start" #x restart
-    elif [[ $state = "delete" && $line[1] = "table" ]]; then
-      descriptors=(": : _nft_table all-handle")
-      nextstate="tcomplete-delete-table"
-    else
-      cmd_obj=$line[1]
-      cmd_subcmd=$state
-      descriptors=(": : _nft_table all")
-      nextstate="tcomplete"
-    fi
-  ;;
-  (tcomplete-delete-table)
-    # if only a family was completed, complete the table name.
-    case $line[1] in
-    (arp | bridge | inet | ip | ip6 | netdev)
-      descriptors=(": : _nft_table ${line[1]}-handle")
-      cmd_fam=$line[1]
-    ;;
-    # if 'handle' was completed, complete the handle number.
-    (handle)
-      descriptors=(": : _nft_table_handle_all " )
-    ;;
-    # else, complete nothing and go to the next state. default family is 'ip'
-    (*)
-      descriptors=()
-      cmd_fam="ip"
-    ;;
-    esac
-    nextstate="delete-table"
-  ;;
-  (tcomplete)
-    # if only a family was completed, complete the table name.
-    case $line[1] in
-    (arp | bridge | inet | ip | ip6 | netdev)
-      descriptors=(": : _nft_table ${line[1]}")
-      cmd_fam=$line[1]
-    ;;
-    # else, complete nothing and go to the next state. default family is 'ip'
-    (*)
-      descriptors=()
-      cmd_fam="ip"
-    ;;
-    esac
-    nextstate="$cmd_subcmd-$cmd_obj"
-  ;;
-  (list-table)
-    descriptors=(":: :(\;)")
-    nextstate="start"
-  ;;
-  (delete-table)
-    #if family AND handle were input, complete handle number for given family.
-    if [[ $line[1] == "handle" ]]; then
-      descriptors=(":table handle: _nft_table_handle $cmd_fam" )
-    else
-      descriptors=()
-    fi
-    nextstate="start"
-  ;;
-  (delete-chain | delete-set | delete-quota | delete-counter | delete-ct\\ helper)
-    cmd_tab=$line[1]
-    descriptors=(": : _nft_object $cmd_fam $cmd_tab $cmd_obj true")
-    nextstate="delete-obj-handle"
-  ;;
-  (delete-obj-handle)
-    if [[ $line[1] == "handle" ]]; then
-      descriptors=(": : _nft_object_handle $cmd_fam $cmd_tab $cmd_obj")
-    else
-      descriptors=(": :(\;)")
-    fi
-    nextstate="start"
-  ;;
-  (add-chain)
-    descriptors=(":chain name:")
-    nextstate="start"
-  ;;
-  (rename-chain)
-    cmd_tab=$line[1]
-    descriptors=(": : _nft_object $cmd_fam $cmd_tab chain false")
-    nextstate="add-chain"
-  ;;
-  (replace-rule | delete-rule)
-    cmd_tab=$line[1]
-    descriptors=(": : _nft_object $cmd_fam $cmd_tab chain false")
-    nextstate="repdel-rule"
-  ;;
-  (repdel-rule)
-    cmd_chain=$line[1]
-    descriptors=(": :(handle)" ": : _nft_rule_handle $cmd_fam $cmd_tab ${line[1]}")
-    if [[ $cmd_subcmd = "replace" ]];then
-      nextstate="rule-stmt"
-    else
-      nextstate="start"
-    fi
-  ;;
-  (add-rule)
-    cmd_tab=$line[1]
-    descriptors=(": : _nft_object $cmd_fam $cmd_tab chain false")
-    nextstate="add-rule-2"
-  ;;
-  (add-rule-2)
-    cmd_chain=$line[1]
-    descriptors=(": :(handle index position)")
-    nextstate="add-rule-3"
-  ;;
-  (add-rule-3)
-    case $line[1] in
-    (index | position)
-      descriptors=(":${line[1]}:")
-    ;;
-    (handle)
-      descriptors=(": : _nft_rule_handle $cmd_fam $cmd_tab $cmd_chain")
-    ;;
-    (*)
-      descriptors=()
-    ;;
-    esac
-    nextstate="rule-stmt"
-  ;;
-  (rule-stmt)
-    #TODO
-    #    _nft_rule $cmd_fam $cmd_tab $cmd_chain\
-    #  && return 0;
-    descriptors=(":expression: ")
-    nextstate="start"
-  ;;
-  (list-set | list-map | delete-map | list-chain | list-flowtable | delete-flowtable | list-ct\\ helper | list-counter | list-quota | list-meter)
-    cmd_tab=$line[1]
-    descriptors=(": : _nft_object $cmd_fam $cmd_tab $cmd_obj false")
-    nextstate="start"
-  ;;
-  (add-element | delete-element)
-    cmd_tab=$line[1]
-    descriptors=(": : _nft_object $cmd_fam $cmd_tab '\(map\|set\)' false")
-    nextstate="start"
-  ;;
-  #TODO:
-  #(add-set | add-map)
-  #(add-flowtable)
-  #("add-ct\ helper")
-  #(add-counter)
-  #(add-quota)
+    _arguments -C -s \
+               "${options[@]}" \
+               "${descriptors[@]}" \
+               "*:: :->$nextstate" \
+      && return 0;
 
-  (*)
-    return 1;
-  ;;
-  esac
-  _arguments -C -s \
-    "${options[@]}" \
-    "${descriptors[@]}" \
-    "*:: :->$nextstate" \
-    && return 0;
-
-done
+  done
 } # end _nft
 
 _nft_subcommands(){
   local commands=(
-	'add:add a table, chain, rule, set, map, or object'
-	'list:list a ruleset, table, chain, set, map, or object'
-	'flush:flush (delete everything from) a ruleset, table, chain, set, or map'
-	'export:print the ruleset in a machine readable format (json or xml)'
-	'delete:delete a table, chain, rule, set, element, map, or object'
-	'create:similar to add but returns an error for existing chain'
-	'rename:rename the specified chain'
-	'insert:similar to the add command, but the rule is prepended to the beginning of the chain or before the rule at the given position'
-	'replace:similar to the add command, but replaces the specified rule'
-	'reset:list-and-reset stateful object'
-	'monitor:listen to Netlink events'
-	'describe:show information about the type of an expression and its data type'
+    'add:add a table, chain, rule, set, map, or object'
+    'list:list a ruleset, table, chain, set, map, or object'
+    'flush:flush (delete everything from) a ruleset, table, chain, set, or map'
+    'export:print the ruleset in a machine readable format (json or xml)'
+    'delete:delete a table, chain, rule, set, element, map, or object'
+    'create:similar to add but returns an error for existing chain'
+    'rename:rename the specified chain'
+    'insert:similar to the add command, but the rule is prepended to the beginning of the chain or before the rule at the given position'
+    'replace:similar to the add command, but replaces the specified rule'
+    'reset:list-and-reset stateful object'
+    'monitor:listen to Netlink events'
+    'describe:show information about the type of an expression and its data type'
   )
   _describe -t commands 'nft subcommand' commands "$@"
 }
+
 _nft_mon_filter(){
   local monitor_filters=(
     'new:show only events of created objects'

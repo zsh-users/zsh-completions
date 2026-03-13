@@ -727,8 +727,8 @@ _flutter_custom_devices() {
 
   _arguments -C \
     '(- *)'{-h,--help}'[Print this usage information]' \
-     '1: :_flutter_custom_devices_subcommands' \
-     '*:: :->args' \
+    '1: :_flutter_custom_devices_subcommands' \
+    '*:: :->args' \
     && ret=0
 
   case $state in

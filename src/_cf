@@ -77,7 +77,7 @@ __cf_marketplace_services() {
   declare -a cont_cmd
   cont_cmd=($(CF_COLOR=false CF_TRACE=false cf marketplace | awk 'NR>4{print $1}'))
   if [[ "X$cont_cmd" != 'X' ]]; then
-     _describe 'SERVICE' cont_cmd
+    _describe 'SERVICE' cont_cmd
   fi
 }
 
@@ -86,7 +86,7 @@ __cf_services() {
   declare -a cont_cmd
   cont_cmd=($(CF_COLOR=false CF_TRACE=false cf services | awk 'NR>4{print $1}'))
   if [[ "X$cont_cmd" != 'X' ]]; then
-     _describe 'SERVICE' cont_cmd
+    _describe 'SERVICE' cont_cmd
   fi
 }
 
@@ -95,7 +95,7 @@ __cf_domains() {
   declare -a cont_cmd
   cont_cmd=($(CF_COLOR=false CF_TRACE=false cf domains | grep -v shared | awk 'NR>2{print $1}'))
   if [[ "X$cont_cmd" != 'X' ]]; then
-     _describe 'DOMAIN' cont_cmd
+    _describe 'DOMAIN' cont_cmd
   fi
 }
 
@@ -122,7 +122,7 @@ __cf_buildpacks() {
   declare -a cont_cmd
   cont_cmd=($(CF_COLOR=false CF_TRACE=false cf buildpacks | awk 'NR>3{print $1}'))
   if [[ "X$cont_cmd" != 'X' ]]; then
-     _describe 'BUILDPACK' cont_cmd
+    _describe 'BUILDPACK' cont_cmd
   fi
 }
 

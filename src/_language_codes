@@ -230,7 +230,7 @@ _language_codes() {
 
   case $command in
     ISO-639-1)
-	  _language_codes_${${command//-/_}:l} "${@[1,-2]}" && ret=0
+      _language_codes_${${command//-/_}:l} "${@[1,-2]}" && ret=0
       ;;
     *)
       _message "unknown command: $command"

@@ -106,3 +106,11 @@ _describe 'command' instances
 # Reference:
 #   https://zsh.sourceforge.net/Doc/Release/Completion-System.html
 #   https://github.com/zsh-users/zsh-completions/blob/master/zsh-completions-howto.org
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
