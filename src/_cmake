@@ -84,7 +84,7 @@ local -a cmake_build_options=(
   '-L-[List cache variables]::_values "options" "[non-advanced cache variables]" "A[advanced cache variables]" "H[non-advanced cached variables with help]" "AH[advanced cache variables with help]"'
   '--fresh[Configure a fresh build tree, removing any existing cache file]'
 
-  '--build[Build a CMake-generated project binary tree]:project directory:_path_files -/'
+  '--build[Build a CMake-generated project binary tree]::project directory:_path_files -/'
   '--install[Install a CMake-generated project binary tree]:project directory:_path_files -/'
   '--open[Open generated project in the associated application]:project directory:_path_files -/'
 
