@@ -93,8 +93,8 @@ _tmuxp() {
             && ret=0
           ;;
         (shell)
-          local sessions="$(__tmux_sessions)"
-          local windows="$(__tmux_windows)"
+          local sessions="$(__tmuxp_tmux_sessions)"
+          local windows="$(__tmuxp_tmux_windows)"
           _arguments \
             '(- *)'{-h,--help}'[show  help message and exit]' \
             '-S[pass-through for tmux -S]: :_files' \
@@ -179,15 +179,13 @@ __tmuxp_import() {
   esac
 }
 
-__tmux_sessions () {
-  local tmux_sessions
-  tmux_sessions=($(_call_program tmux_sessions 'tmux ls -F "#{session_name}"'))
+__tmuxp_tmux_sessions() {
+  local tmux_sessions=($(_call_program tmux_sessions 'tmux ls -F "#{session_name}"'))
   echo $tmux_sessions
 }
 
-__tmux_windows () {
-  local tmux_windows
-  tmux_windows=($(_call_program tmux_sessions 'tmux ls -F "#{window_name}"'))
+__tmuxp_tmux_windows() {
+  local tmux_windows=($(_call_program tmux_sessions 'tmux ls -F "#{window_name}"'))
   echo $tmux_windows
 }
 
