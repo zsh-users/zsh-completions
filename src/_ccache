@@ -248,7 +248,7 @@ __ccache_config_keys() {
 
 if compset -P '--set-config=*='; then
   case $IPREFIX in
-     ( *=absolute_paths_in_stderr= | *=compression= | *=debug= | *=depend_mode= | *=direct_mode= | *=disable= | *=file_clone= | *=hard_link= | *=hash_dir= | *=inode_cache= | *=keep_comments_cpp= | *=read_only= | *=read_only_direct= | *=recache= | *=run_second_cpp= | *=stats= | *=unify= )
+    ( *=absolute_paths_in_stderr= | *=compression= | *=debug= | *=depend_mode= | *=direct_mode= | *=disable= | *=file_clone= | *=hard_link= | *=hash_dir= | *=inode_cache= | *=keep_comments_cpp= | *=read_only= | *=read_only_direct= | *=recache= | *=run_second_cpp= | *=stats= | *=unify= )
       local -a booleans=('true' 'false')
       _describe -t booleans 'boolean' booleans
       ;;

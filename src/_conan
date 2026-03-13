@@ -151,9 +151,9 @@ _conan_cache() {
   local ret=1
 
   _arguments -C \
-   '(- *)'{-h,--help}'[show help message and exit]' \
-   '1: :(clean path)' \
-   '*:: :->args'
+    '(- *)'{-h,--help}'[show help message and exit]' \
+    '1: :(clean path)' \
+    '*:: :->args'
 
   case $state in
     (args)

@@ -1112,22 +1112,22 @@ _openssl_genpkey() {
   done
 
   _arguments \
-   '(- *)-help[print help message]' \
-   '-out[output private key file]:file:_files' \
-   '-outpubkey[output public key file]:file:_files' \
-   '-outform[output format]:format:(DER PEM)' \
-   '-verbose[output "status dots" while generating keys]' \
-   '-quiet[do not output "status dots" while generating keys]' \
-   '-pass[output file password source]:source:_openssl_pass_phrase_options' \
-   $cipher_flags[@] \
-   '-algorithm[public key algorithm]:alg:(($builtin_algorithms))' \
-   '-pkeyopt[public key algorithm option]:option' \
-   '-genparam[generate a set of parameters instead of a private key]' \
-   '-paramfile[file to supply public key parameters]:file:_files' \
-   '-text[print an (unencrypted) text representation of private and public keys and parameters]' \
-   $openssl_random_state_options[@] \
-   $openssl_provider_options[@] \
-   '-config[configuration file]:file:_files'
+    '(- *)-help[print help message]' \
+    '-out[output private key file]:file:_files' \
+    '-outpubkey[output public key file]:file:_files' \
+    '-outform[output format]:format:(DER PEM)' \
+    '-verbose[output "status dots" while generating keys]' \
+    '-quiet[do not output "status dots" while generating keys]' \
+    '-pass[output file password source]:source:_openssl_pass_phrase_options' \
+    $cipher_flags[@] \
+    '-algorithm[public key algorithm]:alg:(($builtin_algorithms))' \
+    '-pkeyopt[public key algorithm option]:option' \
+    '-genparam[generate a set of parameters instead of a private key]' \
+    '-paramfile[file to supply public key parameters]:file:_files' \
+    '-text[print an (unencrypted) text representation of private and public keys and parameters]' \
+    $openssl_random_state_options[@] \
+    $openssl_provider_options[@] \
+    '-config[configuration file]:file:_files'
 }
 
 _openssl_genrsa() {
@@ -1441,17 +1441,17 @@ _openssl_pkcs12() {
 
 _openssl_pkcs7() {
   _arguments \
-   '(- *)-help[print help message]' \
-   '-inform[input format]:format:(DER PEM)' \
-   '-outform[output format]:format:(DER PEM)' \
-   '-in[input file name]:file:_files' \
-   '-out[output file name]:file:_files' \
-   '-print[print out the full PKCS7 object]' \
-   '-print_certs[print out any certificates or CRLs contained in the file]' \
-   '-quiet[print out just the PEM-encoded certificates without any other output]' \
-   '-text[print out certificate details in full]' \
-   '-noout[do not output the encoded version of the PKCS#7 structure]' \
-   $openssl_provider_options[@]
+    '(- *)-help[print help message]' \
+    '-inform[input format]:format:(DER PEM)' \
+    '-outform[output format]:format:(DER PEM)' \
+    '-in[input file name]:file:_files' \
+    '-out[output file name]:file:_files' \
+    '-print[print out the full PKCS7 object]' \
+    '-print_certs[print out any certificates or CRLs contained in the file]' \
+    '-quiet[print out just the PEM-encoded certificates without any other output]' \
+    '-text[print out certificate details in full]' \
+    '-noout[do not output the encoded version of the PKCS#7 structure]' \
+    $openssl_provider_options[@]
 }
 
 _openssl_pkcs8() {
@@ -1460,51 +1460,51 @@ _openssl_pkcs8() {
   )
 
   _arguments \
-   '(- *)-help[print help message]' \
-   '-topk8[read a private key and write a PkCS#8 format key]' \
-   '-inform[input format]:format:(DER PEM)' \
-   '-outform[output format]:format:(DER PEM)' \
-   '-traditional[traditional format]' \
-   '-in[input file name]:file:_files' \
-   '-passin[input password source]:source:_openssl_pass_phrase_options' \
-   '-passout[output password source]:source:_openssl_pass_phrase_options' \
-   '-out[output file name]:files:_files' \
-   '-iter[number of iterations to create PKCS#8 containers]:count' \
-   '-noiter[use 1 as iteration count]' \
-   '-nocrypt[output unencrypted PrivateKeyInfo structure]' \
-   '-v2[algorithm for PKCS#5 v2.0]:alg:_openssl_cipher_algorithms' \
-   '-v2prf[PRF algorithm to use with PKCS#5 v2.0]:alg:(($prf_algorithms))' \
-   '-v1[algorithm for PKCS#5 v1.5 or PKCS#12]:alg:_openssl_cipher_algorithms' \
-   '-scrypt[use the script algorithm for private key encryption]' \
-   '-scrypt_N[scrypt "N" parameter]:n' \
-   '-scrypt_r[scrypt "r" parameter]:r' \
-   '-scrypt_p[scrypt "p" parameter]:p' \
-   '-saltlen[length of the salt to use for the PBE algorithm]:length' \
-   $openssl_random_state_options[@] \
-   $openssl_provider_options[@]
+    '(- *)-help[print help message]' \
+    '-topk8[read a private key and write a PkCS#8 format key]' \
+    '-inform[input format]:format:(DER PEM)' \
+    '-outform[output format]:format:(DER PEM)' \
+    '-traditional[traditional format]' \
+    '-in[input file name]:file:_files' \
+    '-passin[input password source]:source:_openssl_pass_phrase_options' \
+    '-passout[output password source]:source:_openssl_pass_phrase_options' \
+    '-out[output file name]:files:_files' \
+    '-iter[number of iterations to create PKCS#8 containers]:count' \
+    '-noiter[use 1 as iteration count]' \
+    '-nocrypt[output unencrypted PrivateKeyInfo structure]' \
+    '-v2[algorithm for PKCS#5 v2.0]:alg:_openssl_cipher_algorithms' \
+    '-v2prf[PRF algorithm to use with PKCS#5 v2.0]:alg:(($prf_algorithms))' \
+    '-v1[algorithm for PKCS#5 v1.5 or PKCS#12]:alg:_openssl_cipher_algorithms' \
+    '-scrypt[use the script algorithm for private key encryption]' \
+    '-scrypt_N[scrypt "N" parameter]:n' \
+    '-scrypt_r[scrypt "r" parameter]:r' \
+    '-scrypt_p[scrypt "p" parameter]:p' \
+    '-saltlen[length of the salt to use for the PBE algorithm]:length' \
+    $openssl_random_state_options[@] \
+    $openssl_provider_options[@]
 }
 
 _openssl_pkey() {
   _arguments  \
-   '(- *)-help[print help message]' \
-   $openssl_provider_options[@] \
-   '-check[check the consistency of a key pair for both public and private components]' \
-   '-pubcheck[check the correctness of either a public key or the public components of a key pair]' \
-   '-in[input file or URI]:file_or_uri:_files' \
-   '-inform[key input format]:format:(DER PEM P12 ENGINE)' \
-   '-passin[password source for the key input]:source:_openssl_pass_phrase_options' \
-   '-pubin[read public key instead of private key]' \
-   '-out[output file name]' \
-   '-outform[key output format]:format:(DER PEM)' \
-   '-cipher[cipher to encrypt the PEM encoded private key]:cipher:_openssl_ciphers' \
-   '-passout[password source for the output file]:source:_openssl_pass_phrase_options' \
-   '-traditional[use older "traditional" format]' \
-   '-pubout[output the public components]' \
-   '-noout[do not output the key in encoded form]' \
-   '-text[output the various key components in plain text]' \
-   '-text_pub[output only the public key components in text form]' \
-   '-ec_conv_form[specify how the points on the elliptic-curve curve are converted into octet strings]:type:(compressed uncompressed hybrid)' \
-   '-ec_param_enc[specify how the elliptic curve parameters are encoded]:type:(named_curve explicit)'
+    '(- *)-help[print help message]' \
+    $openssl_provider_options[@] \
+    '-check[check the consistency of a key pair for both public and private components]' \
+    '-pubcheck[check the correctness of either a public key or the public components of a key pair]' \
+    '-in[input file or URI]:file_or_uri:_files' \
+    '-inform[key input format]:format:(DER PEM P12 ENGINE)' \
+    '-passin[password source for the key input]:source:_openssl_pass_phrase_options' \
+    '-pubin[read public key instead of private key]' \
+    '-out[output file name]' \
+    '-outform[key output format]:format:(DER PEM)' \
+    '-cipher[cipher to encrypt the PEM encoded private key]:cipher:_openssl_ciphers' \
+    '-passout[password source for the output file]:source:_openssl_pass_phrase_options' \
+    '-traditional[use older "traditional" format]' \
+    '-pubout[output the public components]' \
+    '-noout[do not output the key in encoded form]' \
+    '-text[output the various key components in plain text]' \
+    '-text_pub[output only the public key components in text form]' \
+    '-ec_conv_form[specify how the points on the elliptic-curve curve are converted into octet strings]:type:(compressed uncompressed hybrid)' \
+    '-ec_param_enc[specify how the elliptic curve parameters are encoded]:type:(named_curve explicit)'
 }
 
 _openssl_pkeyparam() {
@@ -1721,8 +1721,8 @@ _openssl_s_client() {
   local tls_start_protocols=(smtp pop3 imap ftp xmpp xmpp-server irc postgres mysql lmtp nntp sieve ldap)
 
   _arguments \
-   '(- *)-help[print help message]' \
-   '-ssl_config[section of the configuration file to configure the SSL_CTX object]:section' \
+    '(- *)-help[print help message]' \
+    '-ssl_config[section of the configuration file to configure the SSL_CTX object]:section' \
     '-connect[host and optional port to connect to]:host_port' \
     '-host[host to connect to]:host' \
     '-port[port to connect to]:port' \
@@ -1835,129 +1835,129 @@ _openssl_s_client() {
 
 _openssl_s_server() {
   _arguments  \
-   '(- *)-help[print help message]' \
-   '-port[TCP port to listen on for connections(default: 4433)]:port' \
-   '-accept[optional TCP host and port to listen on for connections(default: *:4433)]:host_port' \
-   '-unix[Unix domain socket path]:path:_files' \
-   '(-4 -6)-4[use IPv4 only]' \
-   '(-4 -6)-6[use IPv6 only]' \
-   '-unlink[for -unix, unlink any existing socket first]' \
-   '-context[SSL context ID]:id' \
-   '(-verify -Verify)'{-verify,-Verify}'[verify depth]:depth' \
-   '-cert[certificate file]:file:_files' \
-   '-cert2[certificate file to use for servername(default: server2.pem)]:file:_files' \
-   '-certform[server certificate file format]:format:(DER PEM P12)' \
-   '-cert_chain[file or URI of untrusted certificates to build the certificate chain]:file_or_uri:_files' \
-   '-build_chain[application should build the server certificate chain]' \
-   '-serverinfo[file containing one or more blocks of PEM data]:file:_files' \
-   '-key[private key file or URI]:file_or_uri:_files' \
-   '-key2[private key file or URI to use for servername]:file_or_uri:_files' \
-   '-keyform[key format]:format:(DER PEM P12 ENGINE)' \
-   '-pass[private key and certificate file password source]:source:_openssl_pass_phrase_options' \
-   '-dcert[additional certificate file]:file:_files' \
-   '-dkey[additional private key file or URI]:file_or_uri:_files' \
-   '-dcert_chain[file or URI of untrusted certificates to build the server certificate chain]:file_or_uri:_files' \
-   '-dcertform[format of the additional certificate file]:format:(DER PEM P12)' \
-   '-dkeyform[format of the additional private key]:format:(DER PEM P12 ENGINE)' \
-   '-dpass[passphrase for the additional private key and certificate]:pass:_openssl_pass_phrase_options' \
-   '-nbio_test[test non blocking I/O]' \
-   '-crlf[translate a line feed from the terminal into CR+LF]' \
-   '-debug[print extensive debugging information including a hex dump of all traffic]' \
-   '-security_debug[print output from SSL/TLS security framework]' \
-   '-security_debug_verbose[print more output from SSL/TLS security framework]' \
-   '-msg[show all protocol messages with hex dump]' \
-   '-msgfile[file to send output of -msg or -trace to]:file:_files' \
-   '-state[print the SSL session states]' \
-   '-CRL[CRL file]:file:_files' \
-   '-CRLform[CRL file format]:format:(DER PEM)' \
-   '-crl_download[download CRLs from distribution points]' \
-   '-verifyCAfile[file in PEM format CA containing trusted certificates to verify client certificates]:file:_files' \
-   '-verifyCApath[directory containing trusted certificates to verify client certificates]:dir:_files -/' \
-   '-verifyCAstore[URI of a store containing trusted certificates to verify client certificates]:uri:_urls' \
-   '-chainCAfile[file in PEM format containing trusted certificates to build the server certificate chain]:file:_files' \
-   '-chainCApath[directory containing trusted certificates for building server certificate chain]:dir:_files -/' \
-   '-chainCAstore[URI of a store containing trusted certificates for building server certificate chain]:uri:_urls' \
-   '-nocert[no certificate is used]' \
-   '-quiet[inhibit printing of session and certificate information]' \
-   '-no_resume_ephemeral[disable caching and tickets if ephemeral (EC)DH is used]' \
-   '-tlsextdebug[print a hex dump of any TLS extensions received from the server]' \
-   '-www[send a status message back to the client when it connects]' \
-   '(-WWW -HTTP)'{-WWW,-HTTP}'[emulate a simple web server]' \
-   '-http_server_binmode[acting as web-server open files in binary mode]' \
-   '-no_ca_names[disable TLS Extension CA Names]' \
-   '-ignore_unexpected_eof[peer does not need to send the close_notify alert]' \
-   '-servername[servername for HostName TLS extension]' \
-   '-servername_fatal[send fatal alert on servername mismatch]' \
-   '-id_prefix[generate SSL/TLS session IDs prefixed by this ID]:id' \
-   '-keymatexport[export keying material using label]:label' \
-   '-keymatexportlen[export the given number of bytes of keying material(default: 20)]:length' \
-   '-no_cache[disable session cache]' \
-   '-ext_cache[disable internal cache]' \
-   '-verify_return_error[close the connection when verification errors occur]' \
-   '-verify_quiet[no verify output except verify errors]' \
-   '(-no_ign_eof -ign_eof)-ign_eof[ignore input EOF]' \
-   '(-no_ign_eof -ign_eof)-no_ign_eof[do not ignore input EOF]' \
-   '-no_ems[disable Extended master secret negotiation]' \
-   '-status[enable certificate status request support]' \
-   '-status_verbose[enable certificate status request support and verbose output of OCSP response]' \
-   '-status_timeout[set the timeout for OCSP reponse to the given seconds]:seconds' \
-   '-proxy[HTTP(S) proxy server]:proxy' \
-   '-no_proxy[list of IP addresses and/or DNS names not to use an HTTP(S) proxy for]:addresses' \
-   '-status_url[set a fallback responder URL]:url:_urls' \
-   '-status_file[status file]:file:_files' \
-   '-ssl_config[configure SSL_CTX using the given configure value]:config' \
-   '-trace[show verbose trace output of protocol messages]' \
-   '-brief[provide a brief summary of connection parameters]' \
-   '-rev[simple echo server that sends back received text reserved]' \
-   '-async[switch on asynchronous mode]' \
-   '-max_send_frag[maximum size of data fragment to send]:size' \
-   '-split_send_frag[size used to split data for encrypt pipelines]:size' \
-   '-max_pipelines[maximum number of encrypt/decrypt pipelines]:number' \
-   '-naccept[server will exit after receiving the specified number of connections(default: unlimited)]:number' \
-   '-read_buf[default read buffer size for connections]:size' \
-   '-no_tx_cert_comp[disable support for sending TLSv1.3 compressed certificates]' \
-   '-no_rx_cert_comp[disable support for receiving TLSv1.3 compressed certificates]' \
-   '-no_comp[disable negotiation of TLS compression]' \
-   '-num_tickets[control the number of tickets that will be sent to the client after a full handshake in TLSv1.3]' \
-   '-dhparam[DH parameter file to use]:file:_files' \
-   '-nbio[turn on non blocking I/O]' \
-   '-timeout[enable timeout]' \
-   '-mtu[set link-layer MTU]:size' \
-   '-psk_identity[PSK identify when using a PSK cipher suite]:id' \
-   '-psk_hint[PSK identity hint when using a PSK cipher suite]:hint' \
-   '-psk[PSK key when using a PSK cipher suite]:key' \
-   '-psk_session[file contains pem encoded SSL_SESSION data]:file:_files' \
-   '-srpvfile[verifier file for SRP]:file:_files' \
-   '-listen[listen on a UDP port for incoming connections]' \
-   '-sctp[use SCTP for the transport protocol instead of UDP in DTLS]' \
-   '-sctp_label_bug[allow communication with older broken implementations]' \
-   '-use_srtp[offer SRTP key management with a colon-separated profile list]:list' \
-   '-no_dhe[no DH parameters will be loaded]' \
-   '-alpn[enable the Application-Layer Protocol Negotiation extension]:protocol' \
-   '-nextprotoneg[enable the Next Protocol Negotiation extension]:protocol' \
-   '-ktls[enable kernel TLS for sending and receiving]' \
-   '-sendfile[SSL_sendfile will be used instead of BIO_write to send response]' \
-   '-zerocopy_sendfile[SSL_sendfile will use the zerocopy TX mode]' \
-   '-keylogfile[append TLS secrets to the specified keylog file]:file:_files' \
-   '-max_early_data[change the default maximum early data bytes for new sessions and incoming early data]:size' \
-   '-recv_max_early_data[hard limit on the maximum number of early data bytes that will be accepted]:bytes' \
-   '-early_data[accept early data where possible]' \
-   '-stateless[require TLSv1.3 cookies]' \
-   '(-anti_replay -no_anti_replay)-anti_replay[switch replay protection on]' \
-   '(-anti_replay -no_anti_replay)-no_anti_replay[switch replay protection off]' \
-   '-tfo[enable acceptance of TCP fast Open connections]' \
-   '-cert_comp[pre-compresses certificates that will be sent during the handshake]' \
-   '-nameopt[how the subject or issuer names are displayed]:how:_openssl_name_display_options' \
-   $openssl_tls_flags[@] \
-   $openssl_dtls_flags[@] \
-   $openssl_supported_commands_flags[@] \
-   $openssl_extended_verification_flags[@] \
-   $openssl_trusted_certificate_options[@] \
-   $openssl_random_state_options[@] \
-   $openssl_provider_options[@] \
-   $openssl_verification_options[@] \
-   '-enable_server_rpk[enable support for sending raw public keys to the client]' \
-   '-enable_client_rpk[enable support for receiving raw public keys from the client]'
+    '(- *)-help[print help message]' \
+    '-port[TCP port to listen on for connections(default: 4433)]:port' \
+    '-accept[optional TCP host and port to listen on for connections(default: *:4433)]:host_port' \
+    '-unix[Unix domain socket path]:path:_files' \
+    '(-4 -6)-4[use IPv4 only]' \
+    '(-4 -6)-6[use IPv6 only]' \
+    '-unlink[for -unix, unlink any existing socket first]' \
+    '-context[SSL context ID]:id' \
+    '(-verify -Verify)'{-verify,-Verify}'[verify depth]:depth' \
+    '-cert[certificate file]:file:_files' \
+    '-cert2[certificate file to use for servername(default: server2.pem)]:file:_files' \
+    '-certform[server certificate file format]:format:(DER PEM P12)' \
+    '-cert_chain[file or URI of untrusted certificates to build the certificate chain]:file_or_uri:_files' \
+    '-build_chain[application should build the server certificate chain]' \
+    '-serverinfo[file containing one or more blocks of PEM data]:file:_files' \
+    '-key[private key file or URI]:file_or_uri:_files' \
+    '-key2[private key file or URI to use for servername]:file_or_uri:_files' \
+    '-keyform[key format]:format:(DER PEM P12 ENGINE)' \
+    '-pass[private key and certificate file password source]:source:_openssl_pass_phrase_options' \
+    '-dcert[additional certificate file]:file:_files' \
+    '-dkey[additional private key file or URI]:file_or_uri:_files' \
+    '-dcert_chain[file or URI of untrusted certificates to build the server certificate chain]:file_or_uri:_files' \
+    '-dcertform[format of the additional certificate file]:format:(DER PEM P12)' \
+    '-dkeyform[format of the additional private key]:format:(DER PEM P12 ENGINE)' \
+    '-dpass[passphrase for the additional private key and certificate]:pass:_openssl_pass_phrase_options' \
+    '-nbio_test[test non blocking I/O]' \
+    '-crlf[translate a line feed from the terminal into CR+LF]' \
+    '-debug[print extensive debugging information including a hex dump of all traffic]' \
+    '-security_debug[print output from SSL/TLS security framework]' \
+    '-security_debug_verbose[print more output from SSL/TLS security framework]' \
+    '-msg[show all protocol messages with hex dump]' \
+    '-msgfile[file to send output of -msg or -trace to]:file:_files' \
+    '-state[print the SSL session states]' \
+    '-CRL[CRL file]:file:_files' \
+    '-CRLform[CRL file format]:format:(DER PEM)' \
+    '-crl_download[download CRLs from distribution points]' \
+    '-verifyCAfile[file in PEM format CA containing trusted certificates to verify client certificates]:file:_files' \
+    '-verifyCApath[directory containing trusted certificates to verify client certificates]:dir:_files -/' \
+    '-verifyCAstore[URI of a store containing trusted certificates to verify client certificates]:uri:_urls' \
+    '-chainCAfile[file in PEM format containing trusted certificates to build the server certificate chain]:file:_files' \
+    '-chainCApath[directory containing trusted certificates for building server certificate chain]:dir:_files -/' \
+    '-chainCAstore[URI of a store containing trusted certificates for building server certificate chain]:uri:_urls' \
+    '-nocert[no certificate is used]' \
+    '-quiet[inhibit printing of session and certificate information]' \
+    '-no_resume_ephemeral[disable caching and tickets if ephemeral (EC)DH is used]' \
+    '-tlsextdebug[print a hex dump of any TLS extensions received from the server]' \
+    '-www[send a status message back to the client when it connects]' \
+    '(-WWW -HTTP)'{-WWW,-HTTP}'[emulate a simple web server]' \
+    '-http_server_binmode[acting as web-server open files in binary mode]' \
+    '-no_ca_names[disable TLS Extension CA Names]' \
+    '-ignore_unexpected_eof[peer does not need to send the close_notify alert]' \
+    '-servername[servername for HostName TLS extension]' \
+    '-servername_fatal[send fatal alert on servername mismatch]' \
+    '-id_prefix[generate SSL/TLS session IDs prefixed by this ID]:id' \
+    '-keymatexport[export keying material using label]:label' \
+    '-keymatexportlen[export the given number of bytes of keying material(default: 20)]:length' \
+    '-no_cache[disable session cache]' \
+    '-ext_cache[disable internal cache]' \
+    '-verify_return_error[close the connection when verification errors occur]' \
+    '-verify_quiet[no verify output except verify errors]' \
+    '(-no_ign_eof -ign_eof)-ign_eof[ignore input EOF]' \
+    '(-no_ign_eof -ign_eof)-no_ign_eof[do not ignore input EOF]' \
+    '-no_ems[disable Extended master secret negotiation]' \
+    '-status[enable certificate status request support]' \
+    '-status_verbose[enable certificate status request support and verbose output of OCSP response]' \
+    '-status_timeout[set the timeout for OCSP reponse to the given seconds]:seconds' \
+    '-proxy[HTTP(S) proxy server]:proxy' \
+    '-no_proxy[list of IP addresses and/or DNS names not to use an HTTP(S) proxy for]:addresses' \
+    '-status_url[set a fallback responder URL]:url:_urls' \
+    '-status_file[status file]:file:_files' \
+    '-ssl_config[configure SSL_CTX using the given configure value]:config' \
+    '-trace[show verbose trace output of protocol messages]' \
+    '-brief[provide a brief summary of connection parameters]' \
+    '-rev[simple echo server that sends back received text reserved]' \
+    '-async[switch on asynchronous mode]' \
+    '-max_send_frag[maximum size of data fragment to send]:size' \
+    '-split_send_frag[size used to split data for encrypt pipelines]:size' \
+    '-max_pipelines[maximum number of encrypt/decrypt pipelines]:number' \
+    '-naccept[server will exit after receiving the specified number of connections(default: unlimited)]:number' \
+    '-read_buf[default read buffer size for connections]:size' \
+    '-no_tx_cert_comp[disable support for sending TLSv1.3 compressed certificates]' \
+    '-no_rx_cert_comp[disable support for receiving TLSv1.3 compressed certificates]' \
+    '-no_comp[disable negotiation of TLS compression]' \
+    '-num_tickets[control the number of tickets that will be sent to the client after a full handshake in TLSv1.3]' \
+    '-dhparam[DH parameter file to use]:file:_files' \
+    '-nbio[turn on non blocking I/O]' \
+    '-timeout[enable timeout]' \
+    '-mtu[set link-layer MTU]:size' \
+    '-psk_identity[PSK identify when using a PSK cipher suite]:id' \
+    '-psk_hint[PSK identity hint when using a PSK cipher suite]:hint' \
+    '-psk[PSK key when using a PSK cipher suite]:key' \
+    '-psk_session[file contains pem encoded SSL_SESSION data]:file:_files' \
+    '-srpvfile[verifier file for SRP]:file:_files' \
+    '-listen[listen on a UDP port for incoming connections]' \
+    '-sctp[use SCTP for the transport protocol instead of UDP in DTLS]' \
+    '-sctp_label_bug[allow communication with older broken implementations]' \
+    '-use_srtp[offer SRTP key management with a colon-separated profile list]:list' \
+    '-no_dhe[no DH parameters will be loaded]' \
+    '-alpn[enable the Application-Layer Protocol Negotiation extension]:protocol' \
+    '-nextprotoneg[enable the Next Protocol Negotiation extension]:protocol' \
+    '-ktls[enable kernel TLS for sending and receiving]' \
+    '-sendfile[SSL_sendfile will be used instead of BIO_write to send response]' \
+    '-zerocopy_sendfile[SSL_sendfile will use the zerocopy TX mode]' \
+    '-keylogfile[append TLS secrets to the specified keylog file]:file:_files' \
+    '-max_early_data[change the default maximum early data bytes for new sessions and incoming early data]:size' \
+    '-recv_max_early_data[hard limit on the maximum number of early data bytes that will be accepted]:bytes' \
+    '-early_data[accept early data where possible]' \
+    '-stateless[require TLSv1.3 cookies]' \
+    '(-anti_replay -no_anti_replay)-anti_replay[switch replay protection on]' \
+    '(-anti_replay -no_anti_replay)-no_anti_replay[switch replay protection off]' \
+    '-tfo[enable acceptance of TCP fast Open connections]' \
+    '-cert_comp[pre-compresses certificates that will be sent during the handshake]' \
+    '-nameopt[how the subject or issuer names are displayed]:how:_openssl_name_display_options' \
+    $openssl_tls_flags[@] \
+    $openssl_dtls_flags[@] \
+    $openssl_supported_commands_flags[@] \
+    $openssl_extended_verification_flags[@] \
+    $openssl_trusted_certificate_options[@] \
+    $openssl_random_state_options[@] \
+    $openssl_provider_options[@] \
+    $openssl_verification_options[@] \
+    '-enable_server_rpk[enable support for sending raw public keys to the client]' \
+    '-enable_client_rpk[enable support for receiving raw public keys from the client]'
 }
 
 _openssl_s_time() {

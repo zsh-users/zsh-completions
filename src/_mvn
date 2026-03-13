@@ -104,11 +104,11 @@ _mvn() {
 
   if [[ $maven_version == 'maven4' ]]; then
     opts+=(
-     "($excl_opts -canf --cache-artifact-not-found)"{-canf,--cache-artifact-not-found}'[defines caching behaviour for not found artifacts]: :(false true)'
-     "($excl_opts -fos --fail-on-severity)"{-fos,--fail-on-severity}'[configure which severity of logging should cause the build to fail]: :(WARN ERROR)'
-     "($excl_opts -itr --ignore-transitive-repositories)"{-itr,--ignore-transitive-repositories}'[if set, Maven will ignore remote repositories introduced by transitive dependencies]'
-     "($excl_opts --non-interactive)"'--non-interactive[run in non-interactive mode. Alias for --batch-mode]'
-     "($excl_opts -r --resume)"{-r,--resume}'[resume reactor from the last failed project, using the resume.properties file in the build directory]'
+      "($excl_opts -canf --cache-artifact-not-found)"{-canf,--cache-artifact-not-found}'[defines caching behaviour for not found artifacts]: :(false true)'
+      "($excl_opts -fos --fail-on-severity)"{-fos,--fail-on-severity}'[configure which severity of logging should cause the build to fail]: :(WARN ERROR)'
+      "($excl_opts -itr --ignore-transitive-repositories)"{-itr,--ignore-transitive-repositories}'[if set, Maven will ignore remote repositories introduced by transitive dependencies]'
+      "($excl_opts --non-interactive)"'--non-interactive[run in non-interactive mode. Alias for --batch-mode]'
+      "($excl_opts -r --resume)"{-r,--resume}'[resume reactor from the last failed project, using the resume.properties file in the build directory]'
     )
   fi
 

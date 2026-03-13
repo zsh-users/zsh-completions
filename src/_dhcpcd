@@ -48,7 +48,7 @@ _arguments \
   '--waitip=[Wait for an address to assigned before forking to the background]: :(4 6)' \
   \*{-x,--exit}'[This will signal an existing dhcpcd process running on the interface to exit]: :_net_interfaces' \
   '(-y --reboot)'{-y,--reboot}'[Allow reboot seconds before moving to the discover phase if we have an old lease to use]:seconds' \
-   '1:network interface:_net_interfaces'
+  '1:network interface:_net_interfaces'
 
 # Local Variables:
 # mode: Shell-Script

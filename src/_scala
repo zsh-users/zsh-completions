@@ -208,13 +208,13 @@ _scala() {
       ;;
     (*)
       case $service in
-       (scala)
-         _arguments $scala_options $common_options "*::filename:_files" && ret=0
-         ;;
-       (scalac)
-         _arguments $common_options "*::filename:_files" && ret=0
-         ;;
-     esac
+        (scala)
+          _arguments $scala_options $common_options "*::filename:_files" && ret=0
+          ;;
+        (scalac)
+          _arguments $common_options "*::filename:_files" && ret=0
+          ;;
+      esac
       ;;
   esac
 
