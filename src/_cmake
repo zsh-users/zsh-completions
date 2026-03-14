@@ -79,7 +79,7 @@ local -a cmake_build_options=(
   '--list-presets[List available presets]'
   '--workflow[Run a workflow preset]'
 
-  '-E[CMake command mode]:command:_cmake_command_help'
+  '-E[CMake command mode]:command:_cmake_commands'
 
   '-L-[List cache variables]::_values "options" "[non-advanced cache variables]" "A[advanced cache variables]" "H[non-advanced cached variables with help]" "AH[advanced cache variables with help]"'
   '--fresh[Configure a fresh build tree, removing any existing cache file]'
@@ -149,7 +149,7 @@ _cmake_generator_options() {
 # --------------
 (( $+functions[_cmake_presets] )) ||
 _cmake_presets() {
-  local invoke; invoke=(${(Q)words})
+  local invoke=(${(Q)words})
   invoke[$CURRENT]=()
   # TODO: remove all arguments -* except -S
 
@@ -167,10 +167,10 @@ _cmake_presets() {
 _cmake_targets() {
   local dir="$1"
   local -a targets=()
-  if [[ -f "${dir}/Makefile" ]]; then
+  if [[ -f "${dir}/Makefile" && $+commands[make] ]]; then
     # `make help` doesn't work for Makefiles in general, but for CMake generated Makefiles it does.
-    targets=(${(f)"$(make -f $dir/Makefile help | awk '/^\.\.\./ { print $2 }')"})
-  elif [[ -f "${dir}/build.ninja" ]]; then
+    targets=(${(f)"$(make -f $dir/Makefile help 2>/dev/null | awk '/^\.\.\./ { print $2 }')"})
+  elif [[ -f "${dir}/build.ninja" && $+commands[ninja] ]]; then
     # `ninja help` doesn't seem to be the list of targets we're interested in
     targets=(${(f)"$(ninja -C $dir -t targets all 2>/dev/null | awk -F: '{print $1}' )"})
   fi
@@ -344,10 +344,10 @@ _cmake_help() {
 # -----------------
 (( $+functions[_cmake_list_names] )) ||
 _cmake_list_names() {
-  local command; command="$@[1]"
-  local desc; desc="$@[2]"
-  local opts; opts=($@[3])
-  local list_names; list_names=(${(f)"$($service $command 2> /dev/null)"})
+  local command="$@[1]"
+  local desc="$@[2]"
+  local opts=($@[3])
+  local list_names=(${(f)"$($service $command 2> /dev/null)"})
   # Older CMake (< 3.0) writes out the version
   list_names=(${^list_names##cmake version*})
 
@@ -376,7 +376,7 @@ _cmake_define_property() {
 # ----------------------------
 (( $+functions[_cmake_define_property_names] )) ||
 _cmake_define_property_names() {
-  local alternatives; alternatives=(
+  local alternatives=(
     'common-property-names:common property name:_cmake_define_common_property_names -qS='
   )
   local -A cmake_langs
@@ -396,8 +396,9 @@ _cmake_define_property_names() {
 # ---------------------------------
 (( $+functions[_cmake_define_lang_property_names] )) ||
 _cmake_define_lang_property_names() {
-  local cmake_lang="$@[-2]" cmake_lang_desc="$@[-1]"
-  local properties; properties=(
+  local cmake_lang="$@[-2]"
+  local cmake_lang_desc="$@[-1]"
+  local -a properties=(
     "CMAKE_${cmake_lang}_COMPILER:${cmake_lang_desc} compiler"
     "CMAKE_${cmake_lang}_COMPILER_LAUNCHER:${cmake_lang_desc} compiler launcher (e.g. ccache)"
     "CMAKE_${cmake_lang}_FLAGS:${cmake_lang_desc} compiler flags for all builds"
@@ -418,7 +419,7 @@ _cmake_define_lang_property_names() {
 # -----------------------------------
 (( $+functions[_cmake_define_common_property_names] )) ||
 _cmake_define_common_property_names() {
-  local properties; properties=(
+  local -a properties=(
     'CMAKE_MODULE_PATH:Search path for CMake modules (FindPROJECT.cmake)'
     'CMAKE_PREFIX_PATH:Search path for installations (PROJECTConfig.cmake)'
     'CMAKE_BUILD_TYPE:Specifies the build type for make based generators'
@@ -432,12 +433,8 @@ _cmake_define_common_property_names() {
     'CMAKE_UNITY_BUILD:Batch include source files'
   )
 
-  _describe -t 'common-property-names' 'common property name' properties $@
+  _describe -t 'common-property-names' 'common property name' properties "$@"
 }
-
-local _cmake_build_types=('Debug' 'Release' 'RelWithDebInfo' 'MinSizeRel')
-local _cmake_c_standards=(90 99 11)
-local _cmake_cxx_standards=(98 11 14 17 20)
 
 # ----------------------------
 # _cmake_define_property_values
@@ -445,38 +442,78 @@ local _cmake_cxx_standards=(98 11 14 17 20)
 (( $+functions[_cmake_define_property_values] )) ||
 _cmake_define_property_values() {
   local ret=1
+  local build_types=('Debug' 'Release' 'RelWithDebInfo' 'MinSizeRel')
+  local c_standards=(90 99 11 17 23)
+  local cxx_standards=(98 11 14 17 20 23)
+
   setopt localoptions extendedglob
   case $@[-1] in
-    (CMAKE_BUILD_TYPE)     _wanted build-types expl 'build type' _values 'build type' ${_cmake_build_types[@]} && ret=0;;
-    (BUILD_SHARED_LIBS)    _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
-    (CMAKE_CXX_STANDARD) _wanted cxx-standards expl 'cxx standard' _values 'cxx standard' ${_cmake_cxx_standards[@]} && ret=0;;
-    (CMAKE_C_STANDARD) _wanted c-standards expl 'c standard' _values 'c standard' ${_cmake_c_standards[@]} && ret=0;;
-    (CMAKE_TOOLCHAIN_FILE) _wanted toolchain-files expl 'file' _cmake_toolchain_files && ret=0;;
-    (CMAKE_COLOR_MAKEFILE) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
-    (CMAKE_RULE_MESSAGES)  _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
-    (CMAKE_VERBOSE_MAKEFILE) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
-    (CMAKE_UNITY_BUILD) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
-    (CMAKE_INSTALL_PREFIX) _files -/ && ret=0;;
-    (CMAKE_EXPORT_COMPILE_COMMANDS) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
-    (CMAKE_*_COMPILER)     _wanted compilers expl 'compiler' _cmake_compilers && ret=0;;
-    (CMAKE_*_COMPILER_LAUNCHER) _wanted compilers expl 'compiler launcher' _cmake_launchers && ret=0;;
-    (CMAKE_*_FLAGS(|_?*))  _message -e compiler-flags 'compiler flags' && _dispatch $service -value-,CPPFLAGS,-default- && ret=0;;
-    (CMAKE_*_STANDARD_REQUIRED) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
-    (CMAKE_*_EXTENSIONS) _wanted booleans expl 'boolean' _cmake_booleans && ret=0;;
-    (*)                    _files && ret=0;;
+    (CMAKE_BUILD_TYPE)
+      _wanted build-types expl 'build type' _values 'build type' ${build_types[@]} && ret=0
+      ;;
+    (BUILD_SHARED_LIBS)
+      _wanted booleans expl 'boolean' _cmake_booleans && ret=0
+      ;;
+    (CMAKE_CXX_STANDARD)
+      _wanted cxx-standards expl 'cxx standard' _values 'cxx standard' ${cxx_standards[@]} && ret=0
+      ;;
+    (CMAKE_C_STANDARD)
+      _wanted c-standards expl 'c standard' _values 'c standard' ${c_standards[@]} && ret=0
+      ;;
+    (CMAKE_TOOLCHAIN_FILE)
+      _wanted toolchain-files expl 'file' _cmake_toolchain_files && ret=0
+      ;;
+    (CMAKE_COLOR_MAKEFILE)
+      _wanted booleans expl 'boolean' _cmake_booleans && ret=0
+      ;;
+    (CMAKE_RULE_MESSAGES)
+      _wanted booleans expl 'boolean' _cmake_booleans && ret=0
+      ;;
+    (CMAKE_VERBOSE_MAKEFILE)
+      _wanted booleans expl 'boolean' _cmake_booleans && ret=0
+      ;;
+    (CMAKE_UNITY_BUILD)
+      _wanted booleans expl 'boolean' _cmake_booleans && ret=0
+      ;;
+    (CMAKE_INSTALL_PREFIX)
+      _files -/ && ret=0
+      ;;
+    (CMAKE_EXPORT_COMPILE_COMMANDS)
+      _wanted booleans expl 'boolean' _cmake_booleans && ret=0
+      ;;
+    (CMAKE_*_COMPILER)
+      _wanted compilers expl 'compiler' _cmake_compilers && ret=0
+      ;;
+    (CMAKE_*_COMPILER_LAUNCHER)
+      _wanted compilers expl 'compiler launcher' _cmake_launchers && ret=0
+      ;;
+    (CMAKE_*_FLAGS(|_?*))
+      _message -e compiler-flags 'compiler flags' && _dispatch $service -value-,CPPFLAGS,-default- && ret=0
+      ;;
+    (CMAKE_*_STANDARD_REQUIRED)
+      _wanted booleans expl 'boolean' _cmake_booleans && ret=0
+      ;;
+    (CMAKE_*_EXTENSIONS)
+      _wanted booleans expl 'boolean' _cmake_booleans && ret=0
+      ;;
+    (*)
+      _files && ret=0
+      ;;
   esac
 
   return ret
 }
-
-local -a _cmake_generator_list=(${(f)"$(cmake --help | awk '/^Generators/{flag=1} flag && /^[* ] [^ ]/ {sub(/^[* ] /, ""); sub(/=.*$/, ""); sub(/\[arch\]/, ""); sub(/ *$/, ""); print}')"})
 
 # -----------------
 # _cmake_generators
 # -----------------
 (( $+functions[_cmake_generators] )) ||
 _cmake_generators() {
-  _describe -t generators 'generator' _cmake_generator_list
+  local -a generators=(
+    ${(f)"$(cmake --help | awk '/^Generators/{flag=1} flag && /^[* ] [^ ]/ {sub(/^[* ] /, ""); sub(/=.*$/, ""); sub(/\[arch\]/, ""); sub(/ *$/, ""); print}')"}
+  )
+
+  _describe -t generators 'generator' generators
 }
 
 # ----------------------
@@ -513,45 +550,46 @@ _cmake_launchers() {
   _command_names -e
 }
 
-local -a _cmake_commands=(
-  'capabilities:Report capabilities built into cmake in JSON format' \
-  'cat:concat the files and print them to the standard output' \
-  'chdir:run command in a given directory' \
-  'compare_files:check if file1 is same as file2' \
-  'copy:copy files to destination (either file or directory)' \
-  'copy_directory:copy content of <dir>... directories to destination directory' \
-  'copy_if_different:copy files if it has changed' \
-  'echo:displays arguments as text' \
-  'echo_append:displays arguments as text but no new line' \
-  'env:run command in a modified environment' \
-  'environment:display the current environment' \
-  'make_directory:create parent and <dir> directories' \
-  'md5sum:create MD5 checksum of files' \
-  'sha1sum:create SHA1 checksum of files' \
-  'sha224sum:create SHA224 checksum of files' \
-  'sha256sum:create SHA256 checksum of files' \
-  'sha384sum:create SHA384 checksum of files' \
-  'sha512sum:create SHA512 checksum of files' \
-  'remove:remove the file(s), use -f to force it' \
-  'remove_directory:remove directories and their contents' \
-  'rename:rename a file or directory (on one volume)' \
-  'rm:remove files or directories' \
-  'server:start cmake in server mode' \
-  'sleep:sleep for given number of seconds' \
-  'tar:create or extract a tar or zip archive' \
-  'time:run command and display elapsed time' \
-  'touch:touch a <file>' \
-  'touch_nocreate:touch a <file> but do not create it' \
-  'create_symlink:create a symbolic link new -> old' \
-  'create_hardlink:create a hard link new -> old' \
-  'true:do nothing with an exit code of 0' \
-  'false:do nothing with an exit code of 1'
-)
-_cmake_command() {
-  _arguments -C \
-    '-E[CMake command mode]:command:(("${_cmake_commands[@]}"))'
+(( $+functions[_cmake_commands] )) ||
+_cmake_commands() {
+  local -a commands=(
+    'capabilities:Report capabilities built into cmake in JSON format'
+    'cat:concat the files and print them to the standard output'
+    'chdir:run command in a given directory'
+    'compare_files:check if file1 is same as file2'
+    'copy:copy files to destination (either file or directory)'
+    'copy_directory:copy content of <dir>... directories to destination directory'
+    'copy_if_different:copy files if it has changed'
+    'echo:displays arguments as text'
+    'echo_append:displays arguments as text but no new line'
+    'env:run command in a modified environment'
+    'environment:display the current environment'
+    'make_directory:create parent and <dir> directories'
+    'md5sum:create MD5 checksum of files'
+    'sha1sum:create SHA1 checksum of files'
+    'sha224sum:create SHA224 checksum of files'
+    'sha256sum:create SHA256 checksum of files'
+    'sha384sum:create SHA384 checksum of files'
+    'sha512sum:create SHA512 checksum of files'
+    'remove:remove the file(s), use -f to force it'
+    'remove_directory:remove directories and their contents'
+    'rename:rename a file or directory (on one volume)'
+    'rm:remove files or directories'
+    'server:start cmake in server mode'
+    'sleep:sleep for given number of seconds'
+    'tar:create or extract a tar or zip archive'
+    'time:run command and display elapsed time'
+    'touch:touch a <file>'
+    'touch_nocreate:touch a <file> but do not create it'
+    'create_symlink:create a symbolic link new -> old'
+    'create_hardlink:create a hard link new -> old'
+    'true:do nothing with an exit code of 0'
+    'false:do nothing with an exit code of 1'
+  )
 
+  _describe -t commands 'command' commands
 }
+
 local cmake_suggest_build;cmake_suggest_build=(
     '--build[build]:build dir:_cmake_suggest_builddirs'
 )
@@ -567,7 +605,7 @@ elif [ $CURRENT -eq 2 ] ; then
     - help \
       "$cmake_help_actions[@]" \
     - command \
-      '-E[CMake command mode]:command:( )' \
+      '-E[CMake command mode]:command:_cmake_commands' \
     - build_opts \
       "$cmake_build_options[@]" \
     - build_cmds \
@@ -580,8 +618,6 @@ elif [[ $words[2] == --build ]] ; then
   _cmake_on_build
 elif [[ $words[2] == --install ]] ; then
   _cmake_on_install
-elif [[ $words[2] == -E ]]; then
-  _cmake_command
 else
   _arguments "$cmake_build_options[@]"
 fi
