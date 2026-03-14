@@ -165,25 +165,16 @@ _cmake_presets() {
 # --------------
 (( $+functions[_cmake_targets] )) ||
 _cmake_targets() {
-  local -a targets
-  local i
-  if [ -f $1/Makefile ]
-  then
+  local dir="$1"
+  local -a targets=()
+  if [[ -f "${dir}/Makefile" ]]; then
     # `make help` doesn't work for Makefiles in general, but for CMake generated Makefiles it does.
-    i=1
-    for target in $(make -f $1/Makefile help | \grep -e "\.\.\." | sed "s/\.\.\. //" | sed "s/ (the default.*//") ; do
-      targets[$i]=$target
-      (( i = $i + 1 ))
-    done
-  elif [ -f $1/build.ninja ]
-  then
+    targets=(${(f)"$(make -f $dir/Makefile help | awk '/^\.\.\./ { print $2 }')"})
+  elif [[ -f "${dir}/build.ninja" ]]; then
     # `ninja help` doesn't seem to be the list of targets we're interested in
-    i=1
-    for target in $(ninja -C $1 -t targets all 2&>/dev/null | awk -F: '{print $1}') ; do
-      targets[$i]="$target"
-      (( i++ ))
-    done
+    targets=(${(f)"$(ninja -C $dir -t targets all 2>/dev/null | awk -F: '{print $1}' )"})
   fi
+
   _describe 'build targets' targets
 }
 
