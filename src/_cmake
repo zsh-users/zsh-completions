@@ -166,6 +166,7 @@ _cmake_presets() {
 (( $+functions[_cmake_targets] )) ||
 _cmake_targets() {
   local -a targets
+  local i
   if [ -f $1/Makefile ]
   then
     # `make help` doesn't work for Makefiles in general, but for CMake generated Makefiles it does.
@@ -203,13 +204,14 @@ _cmake_on_build() {
     '--parallel[maximum number of build processes]'
     '--use-stderr')
   local -a undescribed_build_extras
-  i=1
+  local i=1
   for be in $build_extras ; do
     undescribed_build_extras[$i]=$(echo $be | sed "s/\[.*//")
     (( i++ ))
   done
-  inbuild=false
-  dashdashposition=-1
+  local inbuild=false
+  local dashdashposition=-1
+  local buildat=$CURRENT
   for ((i = (($CURRENT - 1)); i > 1 ; i--)); do
     if [[ $words[$i] == --build ]] ; then
       inbuild=true
@@ -220,7 +222,7 @@ _cmake_on_build() {
     fi
   done
   # check if build mode has been left
-  outofbuild=false
+  local outofbuild=false
   for ((i = (($CURRENT - 1)); i > (($buildat + 1)); i--)); do
     # don't check the word after --build (should be a directory)
     if [[ ${undescribed_build_extras[(r)$words[$i]]} == $words[$i] ]] ; then continue ; fi
@@ -266,13 +268,14 @@ _cmake_on_install() {
     '--strip[Strip before installing.]'
     )
   local -a undescribed_build_extras
-  i=1
+  local i=1
   for be in $build_extras ; do
     undescribed_build_extras[$i]=$(echo $be | sed "s/\[.*//")
     (( i++ ))
   done
-  inbuild=false
-  dashdashposition=-1
+  local inbuild=false
+  local dashdashposition=-1
+  local buildat=$CURRENT
   for ((i = (($CURRENT - 1)); i > 1 ; i--)); do
     if [[ $words[$i] == --install ]] ; then
       inbuild=true
@@ -282,7 +285,7 @@ _cmake_on_install() {
       dashdashposition=$i
     fi
   done
-  outofbuild=false
+  local outofbuild=false
   for ((i = (($CURRENT - 1)); i > (($buildat + 1)); i--)); do
     # don't check the word after --install (should be a directory)
     if [[ ${undescribed_build_extras[(r)$words[$i]]} == $words[$i] ]] ; then continue ; fi
