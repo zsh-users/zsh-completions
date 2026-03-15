@@ -48,7 +48,7 @@ function _cask() {
 
   case $state in
     subcommand)
-      subcommands=(
+      local -a subcommands=(
         "build:build all Elisp files in the files directive"
         "clean-elc:remove all byte compiled Elisp files in the files directive"
         "exec:execute command with correct 'exec-path' and 'load-path'"
