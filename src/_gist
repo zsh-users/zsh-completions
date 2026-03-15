@@ -40,29 +40,34 @@
 #
 # ------------------------------------------------------------------------------
 
-local curcontext="$curcontext" state line ret=1
-typeset -A opt_args
+_gist() {
+  local ret=1
 
-_arguments -C \
-  '(--login)--login[Authenticate gist on this computer.]' \
-  '(-f --filename)'{-f,--filename}'[Sets the filename and syntax type.]:NAME' \
-  '(-t --type)'{-t,--type}'[Sets the file extension and syntax type.]:EXT' \
-  '(-p --private --no-private)'{-p,--private}'[Makes your gist private.]' \
-  '(--no-private -p --private)--no-private[Makes your gist no private.]' \
-  '(-d --description)'{-d,--description}'[Adds a description to your gist.]:DESCRIPTION' \
-  '(-s --shorten)'{-s,--shorten}'[Shorten the gist URL using git.io.]' \
-  '(-u --update)'{-u,--update}'[Update an existing gist.]:URL ID:user_gists' \
-  '(-c --copy)'{-c,--copy}'[Copy the resulting URL to the clipboard]' \
-  '(-e --embed)'{-e,--embed}'[Copy the embed code for the gist to the clipboard]' \
-  '(-o --open --no-open)'{-o,--open}'[Open the resulting URL in a browser]' \
-  '(--no-open -o --open)--no-open[No open the resulting URL in a browser]' \
-  '(-P --paste)'{-P,--paste}'[Paste from the clipboard to gist]' \
-  '(-R --raw)'{-R,--raw}'[Display raw URL of the new gist]' \
-  '(-l --list)'{-l,--list}'[List all gists for user ]::user' \
-  '(-h --help)'{-h,--help}'[print options help]' \
-  '(-v --version)'{-v,--version}'[print version]' \
-  '(-r --read)'{-r,--read}'[Read a gist and print out the contents]:user gists:_gist_read_gists' \
-  '*: :_files' && ret=0
+  _arguments \
+    '(--login)--login[Authenticate gist on this computer.]' \
+    '(-f --filename)'{-f,--filename}'[Sets the filename and syntax type.]:NAME' \
+    '(-t --type)'{-t,--type}'[Sets the file extension and syntax type.]:EXT' \
+    '(-p --private --no-private)'{-p,--private}'[Makes your gist private.]' \
+    '(--no-private -p --private)--no-private[Makes your gist no private.]' \
+    '(-d --description)'{-d,--description}'[Adds a description to your gist.]:DESCRIPTION' \
+    '(-s --shorten)'{-s,--shorten}'[Shorten the gist URL using git.io.]' \
+    '(-u --update)'{-u,--update}'[Update an existing gist.]:URL ID:_gist_ids' \
+    '(-c --copy)'{-c,--copy}'[Copy the resulting URL to the clipboard]' \
+    '(-e --embed)'{-e,--embed}'[Copy the embed code for the gist to the clipboard]' \
+    '(-o --open --no-open)'{-o,--open}'[Open the resulting URL in a browser]' \
+    '(--no-open -o --open)--no-open[No open the resulting URL in a browser]' \
+    '--skip-empty[Skip gisting empty files]' \
+    '(-P --paste)'{-P,--paste}'[Paste from the clipboard to gist]' \
+    '(-R --raw)'{-R,--raw}'[Display raw URL of the new gist]' \
+    '(-l --list)'{-l,--list}'[List all gists for user ]::user' \
+    '--delete[Delete a gist]:id:_gist_ids' \
+    '(- *)'{-h,--help}'[print options help]' \
+    '(-v --version)'{-v,--version}'[print version]' \
+    '(-r --read)'{-r,--read}'[Read a gist and print out the contents]:user gists:_gist_ids' \
+    '*: :_files' && ret=0
+
+  return ret
+}
 
 _gist_cache_policy() {
   # rebuild if cache is more than a day old
@@ -71,7 +76,7 @@ _gist_cache_policy() {
   (( $#oldp ))
 }
 
-_gist_read_gists() {
+_gist_ids() {
   local update_policy ret=1
   zstyle -s ":completion:${curcontext}:" cache-policy update_policy
   if [[ -z "$update_policy" ]]; then
@@ -79,43 +84,33 @@ _gist_read_gists() {
   fi
 
   # stores the gists of the logged in user in the format ID[Description]
-  _list=()
-  _cached_gists="user_gists"
+  local -a gist_list
 
   # retrieve/Write gists from/to cache
-  if _cache_invalid $_cached_gists  || ! _retrieve_cache $_cached_gists; then
-    _gists=$(gist -l)
+  if _cache_invalid gist_cached_list  || ! _retrieve_cache gist_cached_list; then
+    if (( $+commands[ruby] )); then
+      gist_list=(${(f)"$(gist -l | ruby -ne 'puts "#{$1}:#{$2}" if $_ =~ %r{/([^/ ]+)\s+(.+)}')"})
+    elif (( $+commands[perl])); then
+      gist_list=(${(f)"$(gist -l | perl -wln -e 'm{/([^/ ]+)\s+(.+)} and print qq($1:$2)')"})
+    fi
 
-    if [ $? -eq 0 ]; then
-      _store_cache $_cached_gists _gists
+    if [[ $? -eq 0 ]]; then
+      _store_cache gist_cached_list gist_list
     else
       # some error occurred, the user is probably not logged in
       # set _gists to an empty string so that no completion is attempted
-      _gists=""
+      gist_list=()
     fi
-  else
-    _retrieve_cache $_cached_gists
   fi
 
-  if [ -n "$_gists" ]; then
-    echo "$_gists" | while read -r line; do
-      # Splitting the gist -l output
-      url="$(echo "$line" | cut -d " " -f 1 | cut -d "/" -f 4)"
-      # gists w/o descriptions can have only one column in the output, those
-      # have their description set to an empty string
-      description="$(echo "$line" | awk '{if(NF > 1){$1=""; print $0}}')"
-
-      _list+=( "${url}[${description}]" )
-    done
-
-    _values "gists" $_list
-    ret=0
+  if [[ $#gist_list ]]; then
+    _describe -t gist_ids 'gist_ids' gist_list
   fi
 
   return ret
 }
 
-return ret
+_gist "$@"
 
 # Local Variables:
 # mode: Shell-Script
