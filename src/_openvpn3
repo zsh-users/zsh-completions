@@ -225,7 +225,7 @@ _openvpn3_command() {
     _describe -t commands 'openvpn3 commands' openvpn3_cmds
   else
     local curcontext="$curcontext"
-    cmd="${${openvpn3_cmds[(r)$words[1]:*]%%:*}}"
+    local cmd="${${openvpn3_cmds[(r)$words[1]:*]%%:*}}"
     if (($#cmd)); then
       if (( $+functions[_openvpn3_$cmd] )); then
         _openvpn3_$cmd
