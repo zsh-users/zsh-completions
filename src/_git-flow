@@ -330,9 +330,7 @@ __git-flow-support () {
 
 __git_flow_version_list () {
   local expl
-  declare -a versions
-
-  versions=(${${(f)"$(_call_program versions git flow release list 2> /dev/null | tr -d ' |*')"}})
+  local -a versions=(${${(f)"$(_call_program versions git flow release list 2> /dev/null | tr -d ' |*')"}})
   __git_command_successful || return
 
   _wanted versions expl 'version' compadd $versions
@@ -340,9 +338,7 @@ __git_flow_version_list () {
 
 __git_flow_feature_list () {
   local expl
-  declare -a features
-
-  features=(${${(f)"$(_call_program features git flow feature list 2> /dev/null | tr -d ' |*')"}})
+  local -a features=(${${(f)"$(_call_program features git flow feature list 2> /dev/null | tr -d ' |*')"}})
   __git_command_successful || return
 
   _wanted features expl 'feature' compadd $features
@@ -367,9 +363,7 @@ __git_remotes () {
 
 __git_flow_hotfix_list () {
   local expl
-  declare -a hotfixes
-
-  hotfixes=(${${(f)"$(_call_program hotfixes git flow hotfix list 2> /dev/null | tr -d ' |*')"}})
+  local -a hotfixes=(${${(f)"$(_call_program hotfixes git flow hotfix list 2> /dev/null | tr -d ' |*')"}})
   __git_command_successful || return
 
   _wanted hotfixes expl 'hotfix' compadd $hotfixes
@@ -377,9 +371,7 @@ __git_flow_hotfix_list () {
 
 __git_flow_support_list () {
   local expl
-  declare -a support
-
-  support=(${${(f)"$(_call_program support git flow support list 2> /dev/null | tr -d ' |*')"}})
+  local -a support=(${${(f)"$(_call_program support git flow support list 2> /dev/null | tr -d ' |*')"}})
   __git_command_successful || return
 
   _wanted hotfixes expl 'support' compadd $support
