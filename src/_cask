@@ -41,8 +41,11 @@
 # ------------------------------------------------------------------------------
 
 function _cask() {
-  local ret=1 state
-  _arguments \
+  typeset -A opt_args
+  local context state line ret=1
+  local curcontext="$curcontext"
+
+  _arguments -C \
     ':subcommand:->subcommand' \
     '*:: :->subcmds' && ret=0
 
