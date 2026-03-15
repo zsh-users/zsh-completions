@@ -79,7 +79,7 @@ _gist_read_gists() {
   fi
 
   # stores the gists of the logged in user in the format ID[Description]
-  _list=()
+  local list=()
   _cached_gists="user_gists"
 
   # retrieve/Write gists from/to cache
@@ -97,18 +97,18 @@ _gist_read_gists() {
     _retrieve_cache $_cached_gists
   fi
 
-  if [ -n "$_gists" ]; then
+  if [[ -n "$_gists" ]]; then
     echo "$_gists" | while read -r line; do
       # Splitting the gist -l output
-      url="$(echo "$line" | cut -d " " -f 1 | cut -d "/" -f 4)"
+      local url="$(echo "$line" | cut -d " " -f 1 | cut -d "/" -f 4)"
       # gists w/o descriptions can have only one column in the output, those
       # have their description set to an empty string
-      description="$(echo "$line" | awk '{if(NF > 1){$1=""; print $0}}')"
+      local description="$(echo "$line" | awk '{if(NF > 1){$1=""; print $0}}')"
 
-      _list+=( "${url}[${description}]" )
+      list+=( "${url}[${description}]" )
     done
 
-    _values "gists" $_list
+    _values "gists" $list
     ret=0
   fi
 
