@@ -50,7 +50,7 @@ function _cask() {
     '*:: :->subcmds' && ret=0
 
   case $state in
-    subcommand)
+    (subcommand)
       local -a subcommands=(
         "build:build all Elisp files in the files directive"
         "clean-elc:remove all byte compiled Elisp files in the files directive"
@@ -74,15 +74,20 @@ function _cask() {
         "upgrade:upgrade Cask itself and its dependencies"
         "version:print program version"
       )
-      _describe -t subcommands 'cask subcommands' subcommands && ret=0
-  esac
 
-  case "$words[1]" in
-    init)
-      _arguments \
-        '(--dev)--dev[Run in dev mode]' && ret=0 ;;
-    exec)
-      _generic
+      _describe -t subcommands 'cask subcommands' subcommands && ret=0
+      ;;
+    (subcmds)
+      case "$words[1]" in
+        (init)
+          _arguments \
+            '(--dev)--dev[Run in dev mode]' \
+            && ret=0
+          ;;
+        (exec)
+          _generic
+          ;;
+      esac
       ;;
   esac
 
