@@ -175,7 +175,7 @@ __git-flow-hotfix () {
           _arguments \
             -F'[Fetch from origin before performing finish]'\
             ':hotfix:__git_flow_version_list'\
-            ':branch-name:__git_branch_names'
+            ':branch-name:__git_flow_branch_names'
           ;;
 
         (finish)
@@ -235,7 +235,7 @@ __git-flow-feature () {
           _arguments \
             -F'[Fetch from origin before performing finish]'\
             ':feature:__git_flow_feature_list'\
-            ':branch-name:__git_branch_names'
+            ':branch-name:__git_flow_branch_names'
           ;;
 
         (finish)
@@ -259,13 +259,13 @@ __git-flow-feature () {
 
         (diff)
           _arguments \
-            ':branch:__git_branch_names'\
+            ':branch:__git_flow_branch_names'\
             ;;
 
         (rebase)
           _arguments \
             -i'[Do an interactive rebase]' \
-            ':branch:__git_branch_names'
+            ':branch:__git_flow_branch_names'
           ;;
 
         (checkout)
@@ -275,8 +275,8 @@ __git-flow-feature () {
 
         (pull)
           _arguments \
-            ':remote:__git_remotes'\
-            ':branch:__git_branch_names'
+            ':remote:__git_flow_remote'\
+            ':branch:__git_flow_branch_names'
           ;;
 
         *)
@@ -288,7 +288,7 @@ __git-flow-feature () {
   esac
 }
 
-__git-flow-support () {
+__git-flow-support() {
   local curcontext="$curcontext" state line
   typeset -A opt_args
 
@@ -316,7 +316,7 @@ __git-flow-support () {
           _arguments \
             -F'[Fetch from origin before performing finish]'\
             ':feature:__git_flow_support_list'\
-            ':branch-name:__git_branch_names'
+            ':branch-name:__git_flow_branch_names'
           ;;
 
         *)
@@ -328,30 +328,30 @@ __git-flow-support () {
   esac
 }
 
-__git_flow_version_list () {
+__git_flow_version_list() {
   local expl
   local -a versions=(${${(f)"$(_call_program versions git flow release list 2> /dev/null | tr -d ' |*')"}})
-  __git_command_successful || return
+  __git_flow_command_successful || return
 
   _wanted versions expl 'version' compadd $versions
 }
 
-__git_flow_feature_list () {
+__git_flow_feature_list() {
   local expl
   local -a features=(${${(f)"$(_call_program features git flow feature list 2> /dev/null | tr -d ' |*')"}})
-  __git_command_successful || return
+  __git_flow_command_successful || return
 
   _wanted features expl 'feature' compadd $features
 }
 
-__git_remotes () {
+__git_flow_remote() {
   local expl gitdir remotes
 
   gitdir=$(_call_program gitdir git rev-parse --git-dir 2>/dev/null)
-  __git_command_successful || return
+  __git_flow_command_successful || return
 
   remotes=(${${(f)"$(_call_program remotes git config --get-regexp '"^remote\..*\.url$"')"}//#(#b)remote.(*).url */$match[1]})
-  __git_command_successful || return
+  __git_flow_command_successful || return
 
   # TODO: Should combine the two instead of either or.
   if (( $#remotes > 0 )); then
@@ -361,33 +361,31 @@ __git_remotes () {
   fi
 }
 
-__git_flow_hotfix_list () {
+__git_flow_hotfix_list() {
   local expl
   local -a hotfixes=(${${(f)"$(_call_program hotfixes git flow hotfix list 2> /dev/null | tr -d ' |*')"}})
-  __git_command_successful || return
+  __git_flow_command_successful || return
 
   _wanted hotfixes expl 'hotfix' compadd $hotfixes
 }
 
-__git_flow_support_list () {
+__git_flow_support_list() {
   local expl
   local -a support=(${${(f)"$(_call_program support git flow support list 2> /dev/null | tr -d ' |*')"}})
-  __git_command_successful || return
+  __git_flow_command_successful || return
 
   _wanted hotfixes expl 'support' compadd $support
 }
 
-__git_branch_names () {
+__git_flow_branch_names() {
   local expl
-  declare -a branch_names
-
-  branch_names=(${${(f)"$(_call_program branchrefs git for-each-ref --format='"%(refname)"' refs/heads 2>/dev/null)"}#refs/heads/})
-  __git_command_successful || return
+  local -a branch_names=(${${(f)"$(_call_program branchrefs git for-each-ref --format='"%(refname)"' refs/heads 2>/dev/null)"}#refs/heads/})
+  __git_flow_command_successful || return
 
   _wanted branch-names expl branch-name compadd $* - $branch_names
 }
 
-__git_command_successful () {
+__git_flow_command_successful() {
   if (( ${#pipestatus:#0} > 0 )); then
     _message 'not a git repository'
     return 1
