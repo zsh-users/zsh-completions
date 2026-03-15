@@ -46,8 +46,20 @@ function _cask() {
   local curcontext="$curcontext"
 
   _arguments -C \
+    '(--proxy --http-proxy --https-proxy)--proxy[Set emacs proxy for HTTPS and HTTPS]:host:_hosts' \
+    '(--proxy --http-proxy)--http-proxy[Set emacs proxy for HTTP]:host:_hosts' \
+    '(--proxy --https-proxy)--https-proxy[Set emacs proxy for HTTPS]:host:_hosts' \
+    '(--proxy --http-proxy --https-proxy)--proxy[Set emacs proxy for HTTPS and HTTPS]:host:_hosts' \
+    '--no-proxy[Set Emacs no-proxy to HOST]:host:_hosts' \
+    '(- *)--version[Print Cask version and exit]' \
+    '(- *)'{-h,--help}'[Display usage or information for command]::command:->subcommand' \
+    '--debug[Turn on debug output]' \
+    '--path[Run command in this PATH instead of default-directory]:dir:_files -/' \
+    '(--verbose --silent)--verbose[Be verbose and show debug output]' \
+    '(--verbose --silent)--verbose[Be slient and do not show anything]' \
     ':subcommand:->subcommand' \
-    '*:: :->subcmds' && ret=0
+    '*:: :->subcmds' \
+    && ret=0
 
   case $state in
     (subcommand)
