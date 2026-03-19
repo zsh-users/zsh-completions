@@ -51,8 +51,6 @@
 #
 # -------------------------------------------------------------------------
 
-local context state line curcontext="$curcontext" cmake_args
-
 local -a cmake_build_options=(
   '-S[Explicitly specify a source directory]:source directory:_path_files -/'
   '-B[Explicitly specify a build directory]:build directory:_path_files -/'
@@ -235,7 +233,7 @@ _cmake_on_build() {
 
   if [[ "$in_build" == false || "$difference" -eq 1 ]] ; then
     # either there is no --build or completing the directory after --build
-    _arguments -C -s \
+    _arguments -s \
       - build_opts \
       "$cmake_build_options[@]" \
       - build_cmds \
@@ -303,7 +301,7 @@ _cmake_on_install() {
 
   if [[ "$in_build" == false || "$difference" -eq 1 ]] ; then
     # either there is no --install or completing the directory after --install
-    _arguments -C -s \
+    _arguments -s \
       - build_opts \
       "$cmake_build_options[@]" \
       - build_cmds \
@@ -611,7 +609,7 @@ local -a cmake_suggest_install=(
 if [[ "$service" = -value-*CMAKE_GENERATOR* ]]; then
   _cmake_generators
 elif [ $CURRENT -eq 2 ] ; then
-  _arguments -C -s \
+  _arguments -s \
     - help \
       "$cmake_help_actions[@]" \
     - command \
