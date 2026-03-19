@@ -626,6 +626,8 @@ elif [[ $words[2] == --build ]] ; then
   _cmake_on_build
 elif [[ $words[2] == --install ]] ; then
   _cmake_on_install
+elif [[ $words[2] == --help-* ]] ; then
+  _arguments "$cmake_help_actions[@]"
 else
   _arguments "$cmake_build_options[@]"
 fi
