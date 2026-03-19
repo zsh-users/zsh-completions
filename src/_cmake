@@ -600,12 +600,12 @@ _cmake_commands() {
   _describe -t commands 'command' commands
 }
 
-local cmake_suggest_build;cmake_suggest_build=(
-    '--build[build]:build dir:_cmake_suggest_builddirs'
+local -a cmake_suggest_build=(
+  '--build[build]:build dir:_cmake_suggest_builddirs'
 )
 
-local cmake_suggest_install;cmake_suggest_install=(
-    '--install[install]:install dir:_cmake_suggest_installdirs'
+local -a cmake_suggest_install=(
+  '--install[install]:install dir:_cmake_suggest_installdirs'
 )
 
 if [[ "$service" = -value-*CMAKE_GENERATOR* ]]; then
