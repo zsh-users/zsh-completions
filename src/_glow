@@ -1,0 +1,106 @@
+#compdef glow
+# ------------------------------------------------------------------------------
+# Copyright (c) 2024 Github zsh-users - https://github.com/zsh-users
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of the zsh-users nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL ZSH-USERS BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for glow 2.1.1 (https://github.com/charmbracelet/glow).
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Aaron Lichtman (https://github.com/alichtman)
+#
+# ------------------------------------------------------------------------------
+
+(( $+functions[_glow_commands] )) ||
+_glow_commands() {
+  local -a commands=(
+    'completion:generate the autocompletion script for the specified shell'
+    'config:edit the glow config file'
+    'help:help about any command'
+  )
+
+  _describe -t commands 'command' commands
+}
+
+_glow() {
+  local curcontext="$curcontext" state line
+  typeset -A opt_args
+  local ret=1
+
+  _arguments -C \
+    '(-a --all)'{-a,--all}'[show system files and directories (TUI-mode only)]' \
+    '--config[config file]:file:_files' \
+    '(- *)'{-h,--help}'[help for glow]' \
+    '(-l --line-numbers)'{-l,--line-numbers}'[show line numbers (TUI-mode only)]' \
+    '(-n --preserve-new-lines)'{-n,--preserve-new-lines}'[preserve newlines in the output]' \
+    '(-p --pager)'{-p,--pager}'[display with pager]' \
+    '(-s --style)'{-s,--style}'[style name or JSON path]:style' \
+    '(-t --tui)'{-t,--tui}'[display with TUI]' \
+    '(- *)'{-v,--version}'[version for glow]' \
+    '(-w --width)'{-w,--width}'[word-wrap at width (set to 0 to disable)]:width' \
+    '1: :_glow_commands' \
+    '*:: :->args' && ret=0
+
+  case $state in
+    (args)
+      case $words[1] in
+        (completion)
+          _arguments \
+            '(- *)'{-h,--help}'[help for completion]' \
+            '1:shell:(bash fish powershell zsh)' \
+            && ret=0
+          ;;
+        (config)
+          _arguments \
+            '(- *)'{-h,--help}'[help for config]' \
+            && ret=0
+          ;;
+        (help)
+          _glow_commands && ret=0
+          ;;
+        (*)
+          _files -g "*.md" && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return ret
+}
+
+_glow "$@"
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
