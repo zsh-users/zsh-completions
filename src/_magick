@@ -1,0 +1,666 @@
+#compdef magick magick-script convert mogrify identify composite compare montage stream display animate import conjure
+# ------------------------------------------------------------------------------
+# Copyright (c) 2026 Github zsh-users - https://github.com/zsh-users
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of the zsh-users nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL ZSH-USERS BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for ImageMagick 7.1 (https://imagemagick.org).
+#
+#  ImageMagick 7 unifies all tools under the `magick` command. Legacy tool
+#  names (convert, identify, mogrify, etc.) are also supported as standalone
+#  binaries or as subcommands of `magick`.
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Robert Jacques (https://github.com/robbyrob42)
+#
+# ------------------------------------------------------------------------------
+
+# Helper: dynamically query `magick -list <type>` for valid option values.
+# Results are cached per-session using _store_cache / _retrieve_cache.
+(( $+functions[_magick_list] )) ||
+_magick_list() {
+  local type=$1 desc=$2
+  local cache_id=_magick_list_${type}
+  local -a vals
+
+  if _cache_invalid $cache_id || ! _retrieve_cache $cache_id; then
+    vals=( ${(f)"$(magick -list $type 2>/dev/null)"} )
+    _store_cache $cache_id vals
+  fi
+
+  _describe -t "${(L)type}" "$desc" vals
+}
+
+# Helper: complete image file arguments
+(( $+functions[_magick_files] )) ||
+_magick_files() {
+  _files -g '*.(#i)(jpg|jpeg|png|gif|bmp|tiff|tif|webp|heic|heif|avif|svg|pdf|eps|ps|ico|psd|xcf|raw|cr2|nef|arw|dng|pbm|pgm|ppm|pnm|xpm|xbm|miff|mpc|fits|dpx|exr|hdr|jxl|jp2|j2k|jng|mng|pcx|tga|wbmp|xwd|cin|sgi)(-.))' \
+    || _files
+}
+
+# ---------------------------------------------------------------------------
+# Common options shared across most ImageMagick tools
+# ---------------------------------------------------------------------------
+(( $+functions[_magick_common_options] )) ||
+_magick_common_options() {
+  _arguments -s -S -C \
+    '(- *)'{-help,+help}'[print program options]' \
+    '(- *)'{-version,+version}'[print version information]' \
+    '(- *)'{-usage,+usage}'[print program usage]' \
+    '*'{-debug,+debug}'[display copious debugging information]:events:( All Accelerate Annotate Blob Cache Coder Command Configure Deprecate Draw Exception Locale Module None Pixel Policy Resource Trace Transform User Wand X11 )' \
+    '*'{-log,+log}'[format of debugging information]:format' \
+    '*'{-list,+list}'[print a list of supported option arguments]:type:( Align Alpha AutoThreshold Boolean Cache Channel Class CLI ClipPath Coder Color Colorspace Command Compliance Complex Compose Compress Configure DataType Debug Decoration Delegate Direction Dispose Distort Dither Endian Evaluate FillRule Filter Font Format Function Gradient Gravity Illuminant Intensity Intent Interlace Interpolate Kernel Layers LineCap LineJoin List Locale LogEvent Log Magic Method Metric Mime Mode Morphology Module Noise Orientation Pagesize PixelChannel PixelIntensity PixelMask PixelTrait Policy PolicyDomain PolicyRights Preview Primitive QuantumFormat Resource SparseColor Statistic Storage Stretch Style Threshold Tool Type Units Validate VirtualPixel Weight WordBreak )' \
+    '*-adjoin[join images into a single multi-image file]' \
+    '*-affine[affine transform matrix]:matrix' \
+    '*-alpha[activate, deactivate, reset, or set the alpha channel]:option:( Activate Associate Background Copy Deactivate Discrete Disassociate Extract Off OffIfOpaque On Opaque Remove Set Shape Transparent )' \
+    '*-antialias[remove pixel-aliasing]' \
+    '*-authenticate[decipher image with this password]:password' \
+    '*-attenuate[lessen or intensify when adding noise]:value' \
+    '*-background[background color]:color' \
+    '*-bias[add bias when convolving an image]:value' \
+    '*-black-point-compensation[use black point compensation]' \
+    '*-blue-primary[chromaticity blue primary point]:point' \
+    '*-bordercolor[border color]:color' \
+    '*-caption[assign a caption to an image]:string' \
+    '*-clip[clip along the first path from the 8BIM profile]' \
+    '*-clip-mask[associate a clip mask with the image]:filename:_files' \
+    '*-clip-path[clip along a named path from the 8BIM profile]:id' \
+    '*-colorspace[alternate image colorspace]:type:( Adobe98 CAT02LMS CIELab CMY CMYK DisplayP3 Gray HCL HCLp HSB HSI HSL HSV HWB Jzazbz Lab LCH LCHab LCHuv LinearGray LMS Log Luv OHTA Oklab Oklch ProPhoto Rec601YCbCr Rec709YCbCr RGB scRGB sRGB Transparent xyY XYZ YCbCr YDbDr YCC YIQ YPbPr YUV )' \
+    '*-comment[annotate image with comment]:string' \
+    '*-compose[set image composite operator]:operator:( Atop Blend Blur Bumpmap ChangeMask Clear ColorBurn ColorDodge Colorize CopyAlpha CopyBlack CopyBlue Copy CopyCyan CopyGreen CopyMagenta CopyRed CopyYellow Darken DarkenIntensity Difference Displace Dissolve Distort DivideDst DivideSrc DstAtop Dst DstIn DstOut DstOver Exclusion Freeze HardLight HardMix Hue In Intensity Interpolate LightenIntensity Lighten LinearBurn LinearDodge LinearLight Luminize Mathematics MinusDst MinusSrc Modulate ModulusAdd ModulusSubtract Multiply Negate None Out Overlay Over PegtopLight PinLight Plus Reflect Replace RMSE Saturate Screen SaliencyBlend SeamlessBlend SoftBurn SoftDodge SoftLight SrcAtop SrcIn SrcOut SrcOver Src Stamp Stereo VividLight Xor )' \
+    '*-compress[type of pixel compression when writing the image]:type:( B44A B44 BZip DWAA DWAB DXT1 DXT3 DXT5 BC7 Fax Group4 JBIG1 JBIG2 JPEG2000 JPEG LERC LosslessJPEG Lossless LZMA LZW None Piz Pxr24 RLE RunlengthEncoded WebP ZipS Zip Zstd )' \
+    '*-define[define one or more image format options]:format\:option' \
+    '*-delay[display the next image after pausing]:value' \
+    '*-density[horizontal and vertical density of the image]:geometry' \
+    '*-depth[image depth]:value' \
+    '*-direction[render text right-to-left or left-to-right]:type:( right-to-left RTL left-to-right LTR top-to-bottom TTB )' \
+    '*-display[get image or font from this X server]:server:_x_display' \
+    '*-dispose[layer disposal method]:method:( Undefined Background None Previous )' \
+    '*-dither[apply error diffusion to image]:method:( None FloydSteinberg Riemersma )' \
+    '*-encoding[text encoding type]:type' \
+    '*-endian[endianness of the image]:type:( LSB MSB )' \
+    '*-family[render text with this font family]:name:_x_font' \
+    '*-features[analyze image features]:distance' \
+    '*-fill[color to use when filling a graphic primitive]:color' \
+    '*-filter[use this filter when resizing an image]:type:( Bartlett Blackman Bohman Box Catrom Cosine Cubic Gaussian Hamming Hann Hermite Jinc Kaiser Lagrange Lanczos Lanczos2 Lanczos2Sharp LanczosRadius LanczosSharp MagicKernelSharp2013 MagicKernelSharp2021 Mitchell Parzen Point Quadratic Robidoux RobidouxSharp Sinc SincFast Spline CubicSpline Triangle Welch )' \
+    '*-font[render text with this font]:name:_x_font' \
+    '*-format[output formatted image characteristics]:string' \
+    '*-fuzz[colors within this distance are considered equal]:distance' \
+    '*-gravity[horizontal and vertical text placement]:type:( None Center East Forget NorthEast North NorthWest SouthEast South SouthWest West )' \
+    '*-green-primary[chromaticity green primary point]:point' \
+    '*-illuminant[reference illuminant]:type' \
+    '*-intensity[method to generate intensity from a pixel]:method:( Average Brightness Lightness Mean MS Rec601Luma Rec601Luminance Rec709Luma Rec709Luminance RMS )' \
+    '*-intent[type of rendering intent]:type' \
+    '*-interlace[type of image interlacing scheme]:type:( Line None Plane Partition GIF JPEG PNG )' \
+    '*-interline-spacing[set the space between two text lines]:value' \
+    '*-interpolate[pixel color interpolation method]:method:( Average Average4 Average9 Average16 Background Bilinear Blend Catrom Integer Mesh Nearest Spline )' \
+    '*-interword-spacing[set the space between two words]:value' \
+    '*-kerning[set the space between two letters]:value' \
+    '*-label[assign a label to an image]:string' \
+    '*-limit[pixel cache resource limit]:type:( Area Disk File Height Map Memory Pages Threads Throttle Time Width ):value' \
+    '*-loop[add Netscape loop extension to your GIF animation]:iterations' \
+    '*-matte[store matte channel if the image has one]' \
+    '*-mattecolor[frame color]:color' \
+    '*-moments[report image moments]' \
+    '*-monitor[monitor progress]' \
+    '*-orient[image orientation]:type:( TopLeft TopRight BottomRight BottomLeft LeftTop RightTop RightBottom LeftBottom )' \
+    '*-page[size and location of an image canvas]:geometry' \
+    '*-ping[efficiently determine image attributes]' \
+    '*-pointsize[font point size]:value' \
+    '*-precision[maximum number of significant digits to print]:value' \
+    '*-preview[image preview type]:type' \
+    '*-quality[JPEG/MIFF/PNG compression level]:value' \
+    '*-quiet[suppress all warning messages]' \
+    '*-read-mask[associate a read mask with the image]:filename:_files' \
+    '*-red-primary[chromaticity red primary point]:point' \
+    '*-regard-warnings[pay attention to warning messages]' \
+    '*-remap[transform image colors to match this set of colors]:filename:_files' \
+    '*-repage[size and location of an image canvas]:geometry' \
+    '*-respect-parentheses[settings remain in effect until parenthesis boundary]' \
+    '*-sampling-factor[horizontal and vertical sampling factor]:geometry' \
+    '*-scene[image scene number]:value' \
+    '*-seed[seed a new sequence of pseudo-random numbers]:value' \
+    '*-size[width and height of image]:geometry' \
+    '*-stretch[render text with this font stretch]:type:( Any Condensed Expanded ExtraCondensed ExtraExpanded Normal SemiCondensed SemiExpanded UltraCondensed UltraExpanded )' \
+    '*-stroke[graphic primitive stroke color]:color' \
+    '*-strokewidth[graphic primitive stroke width]:value' \
+    '*-style[render text with this font style]:type:( Any Italic Normal Oblique )' \
+    '*-support[resize support factor]:factor' \
+    '*-synchronize[synchronize image to storage device]' \
+    '*-taint[declare the image as modified]' \
+    '*-texture[name of texture to tile onto image background]:filename:_files' \
+    '*-tile-offset[tile offset]:geometry' \
+    '*-treedepth[color tree depth]:value' \
+    '*-transparent-color[transparent color]:color' \
+    '*-undercolor[annotation bounding box color]:color' \
+    '*-units[the units of image resolution]:type:( PixelsPerInch PixelsPerCentimeter )' \
+    '*-verbose[print detailed information about the image]' \
+    '*-view[FlashPix viewing transforms]' \
+    '*-virtual-pixel[virtual pixel access method]:method:( Background Black CheckerTile Dither Edge Gray HorizontalTile HorizontalTileEdge Mirror None Random Tile Transparent VerticalTile VerticalTileEdge White )' \
+    '*-weight[render text with this font weight]:type' \
+    '*-white-point[chromaticity white point]:point' \
+    '*-word-break[sets whether line breaks appear wherever text would overflow]:type' \
+    '*-write-mask[associate a write mask with the image]:filename:_files' \
+    "$@"
+}
+
+# ---------------------------------------------------------------------------
+# Image operators (transformations applied to images)
+# ---------------------------------------------------------------------------
+(( $+functions[_magick_operator_options] )) ||
+_magick_operator_options() {
+  local -a opts=(
+    '*-adaptive-blur[adaptively blur pixels]:geometry'
+    '*-adaptive-resize[adaptively resize image]:geometry'
+    '*-adaptive-sharpen[adaptively sharpen pixels]:geometry'
+    '*-annotate[annotate the image with text]:geometry:text'
+    '*-auto-gamma[automagically adjust gamma level of image]'
+    '*-auto-level[automagically adjust color levels of image]'
+    '*-auto-orient[automagically orient image]'
+    '*-auto-threshold[automatically perform image thresholding]:method:( Kapur OTSU Triangle )'
+    '*-bench[measure performance]:iterations'
+    '*-bilateral-blur[edge-preserving noise-reducing smoothing filter]:geometry'
+    '*-black-threshold[force all pixels below the threshold into black]:value'
+    '*-blue-shift[simulate a scene at nighttime in the moonlight]:factor'
+    '*-blur[reduce image noise and reduce detail levels]:geometry'
+    '*-border[surround image with a border of color]:geometry'
+    '*-brightness-contrast[improve brightness / contrast of the image]:geometry'
+    '*-canny[detect edges in the image]:geometry'
+    '*-cdl[color correct with a color decision list]:filename:_files'
+    '*-channel[set the image channel mask]:mask:( All Sync Default A Alpha Black B Blue C Chroma Cyan Gray G Green H Hue K L Lightness Luminance M Magenta R ReadMask Red S Saturation WriteMask Y Yellow )'
+    '*-charcoal[simulate a charcoal drawing]:radius'
+    '*-chop[remove pixels from the image interior]:geometry'
+    '*-clahe[contrast limited adaptive histogram equalization]:geometry'
+    '*-clamp[keep pixel values in range]'
+    '*-colorize[colorize the image with the fill color]:value'
+    '*-color-matrix[apply color correction to the image]:matrix'
+    '*-colors[preferred number of colors in the image]:value'
+    '*-connected-components[connected-components uniquely labeled]:connectivity'
+    '*-contrast[enhance or reduce the image contrast]'
+    '*-contrast-stretch[improve contrast by stretching the intensity range]:geometry'
+    '*-convolve[apply a convolution kernel to the image]:coefficients'
+    '*-crop[cut out a rectangular region of the image]:geometry'
+    '*-cycle[cycle the image colormap]:amount'
+    '*-decipher[convert cipher pixels to plain pixels]:filename:_files'
+    '*-deskew[straighten an image]:threshold'
+    '*-despeckle[reduce the speckles within an image]'
+    '*-distort[distort images according to given method]:method:( Affine RigidAffine AffineProjection ScaleRotateTranslate SRT Perspective PerspectiveProjection BilinearForward BilinearReverse Polynomial Arc Polar DePolar Barrel BarrelInverse Shepards Resize ):args'
+    '*-draw[annotate the image with a graphic primitive]:string'
+    '*-edge[apply a filter to detect edges in the image]:radius'
+    '*-encipher[convert plain pixels to cipher pixels]:filename:_files'
+    '*-emboss[emboss an image]:radius'
+    '*-enhance[apply a digital filter to enhance a noisy image]'
+    '*-equalize[perform histogram equalization to an image]'
+    '*-evaluate[evaluate an expression]:operator:( Abs Add AddModulus And Cos Cosine Divide Exp Exponential GaussianNoise ImpulseNoise InverseLog LaplacianNoise LeftShift Log Max Mean Median Min MultiplicativeNoise Multiply Or PoissonNoise Pow RightShift RMS RootMeanSquare Set Sin Sine Subtract Sum Threshold ThresholdBlack ThresholdWhite UniformNoise Xor ):value'
+    '*-extent[set the image size]:geometry'
+    '*-extract[extract area from image]:geometry'
+    '*-fft[implements the discrete Fourier transform]'
+    '*-flip[flip image vertically]'
+    '*-floodfill[floodfill the image with color]:geometry:color'
+    '*-flop[flop image horizontally]'
+    '*-frame[surround image with an ornamental border]:geometry'
+    '*-function[apply function over image values]:name:( Polynomial Sinusoid ArcSin ArcTan ):parameters'
+    '*-gamma[level of gamma correction]:value'
+    '*-gaussian-blur[reduce image noise and reduce detail levels]:geometry'
+    '*-geometry[preferred size or location of the image]:geometry'
+    '*-grayscale[convert image to grayscale]:method'
+    '*-hough-lines[identify lines in the image]:geometry'
+    '*-identify[identify the format and characteristics of the image]'
+    '*-ift[implements the inverse discrete Fourier transform]'
+    '*-implode[implode image pixels about the center]:amount'
+    '*-integral[calculate the sum of values in the image]'
+    '*-interpolative-resize[resize image using interpolation]:geometry'
+    '*-kmeans[K means color reduction]:geometry'
+    '*-kuwahara[edge preserving noise reduction filter]:geometry'
+    '*-lat[local adaptive thresholding]:geometry'
+    '*-level[adjust the level of image contrast]:value'
+    '*-level-colors[level image with the given colors]:color,color'
+    '*-linear-stretch[improve contrast by stretching with saturation]:geometry'
+    '*-liquid-rescale[rescale image with seam-carving]:geometry'
+    '*-local-contrast[enhance local contrast]:geometry'
+    '*-mean-shift[delineate arbitrarily shaped clusters in the image]:geometry'
+    '*-median[apply a median filter to the image]:geometry'
+    '*-mode[make each pixel the predominant color of the neighborhood]:geometry'
+    '*-modulate[vary the brightness, saturation, and hue]:value'
+    '*-monochrome[transform image to black and white]'
+    '*-morphology[apply a morphology method to the image]:method:( Correlate Convolve Dilate Erode Close Open DilateIntensity ErodeIntensity CloseIntensity OpenIntensity Smooth EdgeOut EdgeIn Edge TopHat BottomHat Hmt HitNMiss HitAndMiss Thinning Thicken Distance IterativeDistance ):kernel'
+    '*-motion-blur[simulate motion blur]:geometry'
+    '*-negate[replace every pixel with its complementary color]'
+    '*-noise[add or reduce noise in an image]:geometry'
+    '*-normalize[transform image to span the full range of colors]'
+    '*-opaque[change this color to the fill color]:color'
+    '*-ordered-dither[add a noise pattern to the image]:NxN'
+    '*-paint[simulate an oil painting]:radius'
+    '*-perceptible[pixel value less than |epsilon| become epsilon]:epsilon'
+    '*-polaroid[simulate a Polaroid picture]:angle'
+    '*-posterize[reduce the image to a limited number of color levels]:levels'
+    '*-profile[add, delete, or apply an image profile]:filename:_files'
+    '*-quantize[reduce colors in this colorspace]:colorspace:( Adobe98 CAT02LMS CIELab CMY CMYK DisplayP3 Gray HCL HCLp HSB HSI HSL HSV HWB Jzazbz Lab LCH LCHab LCHuv LinearGray LMS Log Luv OHTA Oklab Oklch ProPhoto Rec601YCbCr Rec709YCbCr RGB scRGB sRGB Transparent xyY XYZ YCbCr YDbDr YCC YIQ YPbPr YUV )'
+    '*-raise[lighten/darken image edges to create a 3-D effect]:value'
+    '*-random-threshold[random threshold the image]:low,high'
+    '*-range-threshold[perform hard or soft thresholding within a range]:values'
+    '*-region[apply options to a portion of the image]:geometry'
+    '*-render[render vector graphics]'
+    '*-resample[change the resolution of an image]:geometry'
+    '*-reshape[reshape the image]:geometry'
+    '*-resize[resize the image]:geometry'
+    '*-roll[roll an image vertically or horizontally]:geometry'
+    '*-rotate[apply Paeth rotation to the image]:degrees'
+    '*-rotational-blur[rotational blur the image]:angle'
+    '*-sample[scale image with pixel sampling]:geometry'
+    '*-scale[scale the image]:geometry'
+    '*-segment[segment an image]:values'
+    '*-selective-blur[selectively blur pixels within a contrast threshold]:geometry'
+    '*-sepia-tone[simulate a sepia-toned photo]:threshold'
+    '*-set[set an image property]:property:value'
+    '*-shade[shade the image using a distant light source]:degrees'
+    '*-shadow[simulate an image shadow]:geometry'
+    '*-sharpen[sharpen the image]:geometry'
+    '*-shave[shave pixels from the image edges]:geometry'
+    '*-shear[slide one edge of the image along the X or Y axis]:geometry'
+    '*-sigmoidal-contrast[increase contrast without saturating]:geometry'
+    '*-sketch[simulate a pencil sketch]:geometry'
+    '*-solarize[negate all pixels above the threshold level]:threshold'
+    '*-sort-pixels[sort each scanline in ascending order of intensity]'
+    '*-sparse-color[fill in image based on color points]:method:( Barycentric Bilinear Inverse Shepards Voronoi Manhattan ):args'
+    '*-splice[splice the background color into the image]:geometry'
+    '*-spread[displace image pixels by a random amount]:radius'
+    '*-statistic[replace each pixel with corresponding statistic]:type:( Contrast Gradient Maximum Mean Median Minimum Mode NonPeak RootMeanSquare RMS StandardDeviation ):geometry'
+    '*-strip[strip image of all profiles and comments]'
+    '*-swirl[swirl image pixels about the center]:degrees'
+    '*-threshold[threshold the image]:value'
+    '*-thumbnail[create a thumbnail of the image]:geometry'
+    '*-tile[tile image when filling a graphic primitive]:filename:_files'
+    '*-tint[tint the image with the fill color]:value'
+    '*-transform[affine transform image]'
+    '*-transparent[make this color transparent within the image]:color'
+    '*-transpose[flip image vertically and rotate 90 degrees]'
+    '*-transverse[flop image horizontally and rotate 270 degrees]'
+    '*-trim[trim image edges]'
+    '*-type[image type]:type:( Bilevel ColorSeparation ColorSeparationAlpha Grayscale GrayscaleAlpha Optimize Palette PaletteBilevelAlpha PaletteAlpha TrueColorAlpha TrueColor )'
+    '*-unique-colors[discard all but one of any pixel color]'
+    '*-unsharp[sharpen the image]:geometry'
+    '*-vignette[soften the edges of the image in vignette style]:geometry'
+    '*-wave[alter an image along a sine wave]:geometry'
+    '*-wavelet-denoise[removes noise from the image using a wavelet transform]:threshold'
+    '*-white-balance[automagically adjust white balance of image]'
+    '*-white-threshold[force all pixels above the threshold into white]:value'
+  )
+  echo "${(F)opts}"
+}
+
+# ---------------------------------------------------------------------------
+# Image sequence/stack operators
+# ---------------------------------------------------------------------------
+(( $+functions[_magick_sequence_options] )) ||
+_magick_sequence_options() {
+  local -a opts=(
+    '*-append[append an image sequence]'
+    '*-channel-fx[exchange, extract, or transfer image channels]:expression'
+    '*-clut[apply a color lookup table to the image]'
+    '*-coalesce[merge a sequence of images]'
+    '*-combine[combine a sequence of images]'
+    '*-compare[annotate the difference between images]'
+    '*-complex[perform complex mathematics on an image sequence]:operator:( Add Conjugate Divide MagnitudePhase Multiply RealImaginary Subtract )'
+    '*-composite[composite image]'
+    '*-copy[copy pixels from one area to another]:geometry:offset'
+    '*-deconstruct[break down an image sequence into constituent parts]'
+    '*-evaluate-sequence[evaluate an expression for an image sequence]:operator:( Abs Add AddModulus And Cos Cosine Divide Exp Exponential GaussianNoise ImpulseNoise InverseLog LaplacianNoise LeftShift Log Max Mean Median Min MultiplicativeNoise Multiply Or PoissonNoise Pow RightShift RMS RootMeanSquare Set Sin Sine Subtract Sum Threshold ThresholdBlack ThresholdWhite UniformNoise Xor )'
+    '*-flatten[flatten a sequence of images]'
+    '*-fx[apply mathematical expression to image channels]:expression'
+    '*-hald-clut[apply a Hald color lookup table to the image]'
+    '*-layers[optimize, merge, or compare image layers]:method:( Coalesce CompareAny CompareClear CompareOverlay Dispose Optimize OptimizeFrame OptimizePlus OptimizeTransparency RemoveDups RemoveZero Composite Merge Flatten Mosaic TrimBounds )'
+    '*-morph[morph an image sequence]:value'
+    '*-mosaic[create a mosaic from an image sequence]'
+    '*-poly[build a polynomial from the image sequence]:terms'
+    '*-print[interpret string and print to console]:string'
+    '*-process[process the image with a custom image filter]:arguments'
+    '*-separate[separate an image channel into a grayscale image]'
+    '*-smush[smush an image sequence together]:geometry'
+    '*-write[write images to this file]:filename:_magick_files'
+    '*-clone[clone an image]:indexes'
+    '*-delete[delete the image from the image sequence]:indexes'
+    '*-duplicate[duplicate an image one or more times]:count,indexes'
+    '*-insert[insert last image into the image sequence]:index'
+    '*-reverse[reverse image sequence]'
+    '*-swap[swap two images in the image sequence]:indexes'
+  )
+  echo "${(F)opts}"
+}
+
+# ---------------------------------------------------------------------------
+# Tool-specific completion dispatchers
+# ---------------------------------------------------------------------------
+
+# magick (convert) - the main tool, supports all options
+(( $+functions[_magick_convert] )) ||
+_magick_convert() {
+  _magick_common_options \
+    ${(f)"$(_magick_operator_options)"} \
+    ${(f)"$(_magick_sequence_options)"} \
+    '*-script[execute a scripting language]:filename:_files' \
+    '*:image file:_magick_files'
+}
+
+# identify - query image format and characteristics
+(( $+functions[_magick_identify] )) ||
+_magick_identify() {
+  _magick_common_options \
+    '*-crop[cut out a rectangular region of the image]:geometry' \
+    '*-extract[extract area from image]:geometry' \
+    '*-gamma[level of gamma correction]:value' \
+    '*-negate[replace every pixel with its complementary color]' \
+    '*-unique[count unique colors]' \
+    '*:image file:_magick_files'
+}
+
+# mogrify - in-place image modification
+(( $+functions[_magick_mogrify] )) ||
+_magick_mogrify() {
+  _magick_common_options \
+    ${(f)"$(_magick_operator_options)"} \
+    ${(f)"$(_magick_sequence_options)"} \
+    '*-path[write output to this directory]:directory:_files -/' \
+    '*:image file:_magick_files'
+}
+
+# composite - overlay images
+(( $+functions[_magick_composite] )) ||
+_magick_composite() {
+  _magick_common_options \
+    '*-blend[blend two images]:value' \
+    '*-displace[displacement mapping]:geometry' \
+    '*-dissolve[dissolve effect]:value' \
+    '*-geometry[preferred size or location]:geometry' \
+    '*-stegano[steganography]:offset' \
+    '*-stereo[stereo anaglyph]:geometry' \
+    '*-watermark[watermark effects]:value' \
+    '*-channel[set the image channel mask]:mask:( All Sync Default A Alpha Black B Blue C Chroma Cyan Gray G Green H Hue K L Lightness Luminance M Magenta R ReadMask Red S Saturation WriteMask Y Yellow )' \
+    '*-negate[replace every pixel with its complementary color]' \
+    '*-resize[resize the image]:geometry' \
+    '*-rotate[apply Paeth rotation to the image]:degrees' \
+    '*-sharpen[sharpen the image]:geometry' \
+    '*-strip[strip image of all profiles and comments]' \
+    '*-thumbnail[create a thumbnail of the image]:geometry' \
+    '*-transform[affine transform image]' \
+    '*-trim[trim image edges]' \
+    '*-unsharp[sharpen the image]:geometry' \
+    '*:image file:_magick_files'
+}
+
+# compare - compare two images
+(( $+functions[_magick_compare] )) ||
+_magick_compare() {
+  _magick_common_options \
+    '*-channel[set the image channel mask]:mask:( All Sync Default A Alpha Black B Blue C Chroma Cyan Gray G Green H Hue K L Lightness Luminance M Magenta R ReadMask Red S Saturation WriteMask Y Yellow )' \
+    '*-crop[cut out a rectangular region of the image]:geometry' \
+    '*-decipher[convert cipher pixels to plain pixels]:filename:_files' \
+    '*-dissimilarity-threshold[set dissimilarity threshold]:value' \
+    '*-distort[distort images according to given method]:method:( Affine RigidAffine AffineProjection ScaleRotateTranslate SRT Perspective PerspectiveProjection BilinearForward BilinearReverse Polynomial Arc Polar DePolar Barrel BarrelInverse Shepards Resize ):args' \
+    '*-extract[extract area from image]:geometry' \
+    '*-highlight-color[highlight color]:color' \
+    '*-lowlight-color[lowlight color]:color' \
+    '*-metric[measure differences between images with this metric]:type:( AE DPC DSSIM Fuzz MAE MEPP MSE NCC PAE PHASE PHASH PSNR RMSE SSIM )' \
+    '*-negate[replace every pixel with its complementary color]' \
+    '*-resize[resize the image]:geometry' \
+    '*-similarity-threshold[set similarity threshold]:value' \
+    '*-subimage-search[search for subimage]' \
+    '*-strip[strip image of all profiles and comments]' \
+    '*-trim[trim image edges]' \
+    '*:image file:_magick_files'
+}
+
+# montage - create composite by tiling images
+(( $+functions[_magick_montage] )) ||
+_magick_montage() {
+  _magick_common_options \
+    ${(f)"$(_magick_operator_options)"} \
+    '*-frame[surround image with an ornamental border]:geometry' \
+    '*-geometry[preferred tile size]:geometry' \
+    '*-mode[frame mode]:mode' \
+    '*-shadow[simulate an image shadow]:geometry' \
+    '*-tile[number of tiles per row and column]:geometry' \
+    '*:image file:_magick_files'
+}
+
+# stream - stream pixel components
+(( $+functions[_magick_stream] )) ||
+_magick_stream() {
+  _magick_common_options \
+    '*-channel[set the image channel mask]:mask:( All Sync Default A Alpha Black B Blue C Chroma Cyan Gray G Green H Hue K L Lightness Luminance M Magenta R ReadMask Red S Saturation WriteMask Y Yellow )' \
+    '*-extract[extract area from image]:geometry' \
+    '*-map[pixel map]:components' \
+    '*-storage-type[pixel storage type]:type:( Char Double Float Integer Long Short )' \
+    '*:image file:_magick_files'
+}
+
+# display - display images on X server
+(( $+functions[_magick_display] )) ||
+_magick_display() {
+  _magick_common_options \
+    ${(f)"$(_magick_operator_options)"} \
+    '*-backdrop[display image centered on a backdrop]' \
+    '*-colormap[shared or private color map]:type:( Shared Private )' \
+    '*-delay[display the next image after pausing]:value' \
+    '*-geometry[preferred size and location of the image window]:geometry' \
+    '*-immutable[displayed image cannot be modified]' \
+    '*-magnify[display image at double its size]' \
+    '*-name[name an image window]:name' \
+    '*-remote[execute a command in a remote display process]:command' \
+    '*-title[decorate the image window with a title]:title' \
+    '*-update[detect when image file is modified and redisplay]:seconds' \
+    '*-window[display image in this window]:id' \
+    '*-window-group[display image in this window group]:id' \
+    '*:image file:_magick_files'
+}
+
+# animate - animate images on X server
+(( $+functions[_magick_animate] )) ||
+_magick_animate() {
+  _magick_common_options \
+    ${(f)"$(_magick_operator_options)"} \
+    '*-backdrop[display image centered on a backdrop]' \
+    '*-colormap[shared or private color map]:type:( Shared Private )' \
+    '*-delay[display the next image after pausing]:value' \
+    '*-geometry[preferred size and location of the image window]:geometry' \
+    '*-magnify[display image at double its size]' \
+    '*-name[name an image window]:name' \
+    '*-remote[execute a command in a remote animate process]:command' \
+    '*-title[decorate the image window with a title]:title' \
+    '*-window[display image in this window]:id' \
+    '*:image file:_magick_files'
+}
+
+# import - capture screen/window to image
+(( $+functions[_magick_import] )) ||
+_magick_import() {
+  _magick_common_options \
+    '*-border[include the window border in the output image]' \
+    '*-channel[set the image channel mask]:mask:( All Sync Default A Alpha Black B Blue C Chroma Cyan Gray G Green H Hue K L Lightness Luminance M Magenta R ReadMask Red S Saturation WriteMask Y Yellow )' \
+    '*-crop[cut out a rectangular region of the image]:geometry' \
+    '*-delay[display the next image after pausing]:value' \
+    '*-descend[obtain image by descending window hierarchy]' \
+    '*-frame[include the window manager frame]' \
+    '*-geometry[preferred size and location]:geometry' \
+    '*-negate[replace every pixel with its complementary color]' \
+    '*-pause[seconds delay before selecting a window]:seconds' \
+    '*-resize[resize the image]:geometry' \
+    '*-rotate[apply Paeth rotation to the image]:degrees' \
+    '*-screen[select image from root window]' \
+    '*-silent[operate silently]' \
+    '*-snaps[number of screen snapshots]:value' \
+    '*-strip[strip image of all profiles and comments]' \
+    '*-thumbnail[create a thumbnail of the image]:geometry' \
+    '*-transparent[make this color transparent]:color' \
+    '*-trim[trim image edges]' \
+    '*-window[select window with this id or name]:id' \
+    '*:output file:_magick_files'
+}
+
+# conjure - execute MSL scripts
+(( $+functions[_magick_conjure] )) ||
+_magick_conjure() {
+  _arguments -s -S \
+    '(- *)'{-help,+help}'[print program options]' \
+    '(- *)'{-version,+version}'[print version information]' \
+    '*-debug[display copious debugging information]:events:( All Accelerate Annotate Blob Cache Coder Command Configure Deprecate Draw Exception Locale Module None Pixel Policy Resource Trace Transform User Wand X11 )' \
+    '*-log[format of debugging information]:format' \
+    '*-monitor[monitor progress]' \
+    '*-quiet[suppress all warning messages]' \
+    '*-regard-warnings[pay attention to warning messages]' \
+    '*-seed[seed a new sequence of pseudo-random numbers]:value' \
+    '*-verbose[print detailed information]' \
+    '*:MSL script file:_files -g "*.msl"'
+}
+
+# ---------------------------------------------------------------------------
+# Subcommand list for `magick <tool>`
+# ---------------------------------------------------------------------------
+(( $+functions[_magick_subcommands] )) ||
+_magick_subcommands() {
+  local -a subcmds=(
+    'convert:convert between image formats and apply transformations'
+    'mogrify:resize, blur, crop, or transform images in-place'
+    'identify:describe the format and characteristics of image files'
+    'composite:overlap one image over another'
+    'compare:mathematically annotate the difference between images'
+    'montage:create a composite image by combining several images'
+    'stream:stream pixel components for memory-efficient processing'
+    'display:display an image or sequence on an X server'
+    'animate:animate an image sequence on an X server'
+    'import:save an image of an X window'
+    'conjure:interpret and execute scripts in the Magick Scripting Language'
+  )
+  _describe -t subcommands 'magick tool' subcmds
+}
+
+# ---------------------------------------------------------------------------
+# Main dispatcher
+# ---------------------------------------------------------------------------
+_magick() {
+  local curcontext="$curcontext" ret=1
+
+  case $service in
+    (convert)
+      _magick_convert && ret=0
+      ;;
+    (mogrify)
+      _magick_mogrify && ret=0
+      ;;
+    (identify)
+      _magick_identify && ret=0
+      ;;
+    (composite)
+      _magick_composite && ret=0
+      ;;
+    (compare)
+      _magick_compare && ret=0
+      ;;
+    (montage)
+      _magick_montage && ret=0
+      ;;
+    (stream)
+      _magick_stream && ret=0
+      ;;
+    (display)
+      _magick_display && ret=0
+      ;;
+    (animate)
+      _magick_animate && ret=0
+      ;;
+    (import)
+      _magick_import && ret=0
+      ;;
+    (conjure)
+      _magick_conjure && ret=0
+      ;;
+    (magick-script)
+      _arguments -s -S \
+        '(- *)'{-help,+help}'[print program options]' \
+        '(- *)'{-version,+version}'[print version information]' \
+        '*:MSL script file:_files' && ret=0
+      ;;
+    (magick)
+      # magick can be invoked as:
+      #   magick <tool> [options...] - dispatches to that tool
+      #   magick [options...] input output - acts like convert
+      local state line
+      typeset -A opt_args
+
+      _arguments -C -s -S \
+        '(- *)'{-help,+help}'[print program options]' \
+        '(- *)'{-version,+version}'[print version information]' \
+        '(- *)'{-usage,+usage}'[print program usage]' \
+        '1: :->first_arg' \
+        '*:: :->rest' && ret=0
+
+      case $state in
+        (first_arg)
+          # Complete both subcommands and convert-style options/files
+          _alternative \
+            'subcommands:magick tool:_magick_subcommands' \
+            'files:image file:_magick_files' && ret=0
+          ;;
+        (rest)
+          # If the first arg was a known tool name, dispatch to that tool
+          case $words[1] in
+            (convert)    _magick_convert && ret=0 ;;
+            (mogrify)    _magick_mogrify && ret=0 ;;
+            (identify)   _magick_identify && ret=0 ;;
+            (composite)  _magick_composite && ret=0 ;;
+            (compare)    _magick_compare && ret=0 ;;
+            (montage)    _magick_montage && ret=0 ;;
+            (stream)     _magick_stream && ret=0 ;;
+            (display)    _magick_display && ret=0 ;;
+            (animate)    _magick_animate && ret=0 ;;
+            (import)     _magick_import && ret=0 ;;
+            (conjure)    _magick_conjure && ret=0 ;;
+            (*)
+              # No subcommand: treat as convert-style invocation
+              _magick_convert && ret=0
+              ;;
+          esac
+          ;;
+      esac
+      ;;
+  esac
+
+  return ret
+}
+
+_magick "$@"
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
