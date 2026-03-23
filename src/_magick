@@ -38,7 +38,7 @@
 # Authors
 # -------
 #
-#  * Robert Jacques (https://github.com/robbyrob42)
+#  * Robert Jacques (https://github.com/robertjacques)
 #
 # ------------------------------------------------------------------------------
 
@@ -566,6 +566,24 @@ _magick_subcommands() {
 # ---------------------------------------------------------------------------
 _magick() {
   local curcontext="$curcontext" ret=1
+
+  # Require ImageMagick 7+. Fall back to default file completion for IM6 or
+  # older so we don't offer IM7-specific options to the wrong version.
+  # For legacy binary names (convert, identify, etc.) we probe `magick` if
+  # available, otherwise the service command itself.
+  local _im_variant
+  local _im_pick_cmd
+  if (( $+commands[magick] )); then
+    _im_pick_cmd=magick
+  else
+    _im_pick_cmd=$service
+  fi
+  _pick_variant -c $_im_pick_cmd -r _im_variant \
+    im7='ImageMagick 7' im6='ImageMagick' unknown -version
+  if [[ $_im_variant != im7 ]]; then
+    _files
+    return
+  fi
 
   case $service in
     (convert)
