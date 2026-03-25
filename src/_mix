@@ -393,10 +393,23 @@ _mix() {
 }
 
 _mix_tasks() {
+  local ret=1
   local -a mix_tasks=()
   if (( $+commands[perl] )); then
-    mix_tasks=(${(f)"$(mix help | perl -lne 'm{^mix (\S+)\s+#\s+(.+)} and print qq($1:$2)')"})
-  else
+    local cache_policy
+    zstyle -s ":completion:${curcontext}:" cache-policy cache_policy
+    zstyle ":completion:${curcontext}:" cache-policy ${cache_policy:-_mix_tasks_caching_policy}
+
+    if _cache_invalid mix_cached_tasks || ! _retrieve_cache mix_cached_tasks; then
+      mix_tasks=(${(f)"$(mix help | perl -lne 'm{^mix (\S+)\s+#\s+(.+)} and print qq($1:$2)')"})
+      if (( $? == 0 )); then
+        _store_cache mix_cached_tasks mix_tasks
+      fi
+    fi
+  fi
+
+  # fallback
+  if (( $#mix_tasks == 0 )); then
     local -a builtin_tasks=(
       "app.config:Configures all registered apps"
       "app.start:Starts all registered apps"
@@ -467,7 +480,8 @@ _mix_tasks() {
     mix_tasks=($builtin_tasks[@] $hex_tasks[@])
   fi
 
-  _describe -t tasks 'task' mix_tasks
+  _describe -t tasks 'task' mix_tasks && ret=0
+  return ret
 }
 
 _mix_profile_tasks() {
@@ -809,6 +823,13 @@ _mix_escript_install_from() {
   _alternative \
     'file:file:_files' \
     'where:repo:(git github hex)'
+}
+
+_mix_tasks_caching_policy() {
+  # rebuild if cache is more than an hour
+  local -a oldp
+  oldp=( "$1"(mh+1) )
+  (( $#oldp ))
 }
 
 _mix "$@"
