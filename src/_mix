@@ -199,7 +199,7 @@ _mix() {
           _arguments \
             '--force[force compilation of deps]' \
             '--skip-umbrella-children[skip umbrella applications from compiling]' \
-            '--skip-local-deps[dekip non-remote dependencies, such as path deps, from compiling]' \
+            '--skip-local-deps[skip non-remote dependencies, such as path deps, from compiling]' \
             && ret=0
           ;;
         (deps.get)
@@ -280,9 +280,6 @@ _mix() {
             '--migrate[enable the :migrate option]' \
             '*::path:_files' \
             && ret=0
-          ;;
-        (hex.*)
-          _mix_hex_tasks "$words[1]" && ret=0
           ;;
         (local.rebar)
           _arguments \
@@ -365,7 +362,7 @@ _mix() {
             '--partitions[set the amount of partitions to split tests in]:partition' \
             '--preload-modules[preload all modules defined in applications]' \
             '--profile-require[profile the time spent to require test files]:type:(time)' \
-            '--raise[immediate raise if the the test suite fails intead of continuing]' \
+            '--raise[immediate raise if the the test suite fails instead of continuing]' \
             '--repeat-until-failure[set the number of repetitions for running the suite until it fails]:num' \
             '--seed[seed the random generator used to randomize the order of tests(0 means disable randomization)]:seed' \
             '--slowest[print timing information for the N slowest tests]:num' \
@@ -379,6 +376,12 @@ _mix() {
           ;;
         (xref)
           _mix_xref_tasks && ret=0
+          ;;
+        (hex.*)
+          _mix_hex_tasks "$words[1]" && ret=0
+          ;;
+        (phx.*)
+          _mix_phx_tasks "$words[1]" && ret=0
           ;;
         (*)
           _arguments \
@@ -814,6 +817,144 @@ _mix_environments() {
   _describe -t 'environments' 'environment' environments
 }
 
+_mix_phx_tasks() {
+  local task=$1
+  local ret=1
+
+  case $task in
+    (phx.digest.clean)
+      _arguments \
+        '(-o --output)'{-o,--output}'[indicate the path to your compiled assets directory]:dir:_files -/' \
+        '--age[specify a maximum age in seconds for assets]:age' \
+        '--keep[specify how many previous versions of assets to keep(default: 2)]:num' \
+        '--all[specify that all compiled assets will be removed]:num' \
+        '--no-compile[do not run "mix compile"]' \
+        && ret=0
+      ;;
+    (phx.digest)
+      _arguments \
+        '(-o --output)'{-o,--output}'[indicate the path to your compiled assets directory]:dir:_files -/' \
+        '--no-vsn[do not add version query string to assets]' \
+        '--no-compile[do not run "mix compile"]' \
+        && ret=0
+      ;;
+    (phx.gen.auth)
+      _arguments \
+        '(--live --no-live)--live[use LiveView]' \
+        '(--live --no-live)--no-live[do not use LiveView]' \
+        '--hashing-lib[override password hashing mechanism]:lib:(bcrypt pbkdf2 argon2)' \
+        '--assign-key[customize the generated assign key]:key' \
+        '(--binary-id --no-binary-id)--binary-id[use binary_id for its primary key and foreign keys]' \
+        '(--binary-id --no-binary-id)--no-binary-id[use normal IDs]' \
+        '--table[customize table name with the given name]:name' \
+        '--scope[customize scope name with the given name]:scope' \
+        '*::context_module:_mix_phx_context_modules' \
+        && ret=0
+      ;;
+    (phx.gen.cert)
+      _arguments \
+        '(-o --output)'{-o,--output}'[path and base filename for the certificate and key]:dir:_files -/' \
+        '(-n --name)'{-n,--name}"[the Common Name value in certificate's subject]" \
+        && ret=0
+      ;;
+    (phx.gen.context)
+      _arguments \
+        '(--no-migration --migration)--migration[force generation of the migration]' \
+        '(--no-migration --migration)--no-migration[skip migration]' \
+        '--no-scope[disable scoping]' \
+        '--no-schema[generate without a schema]' \
+        '--table[customize table name with the given name]:name' \
+        '(--binary-id --no-binary-id)--binary-id[use binary_id for its primary key and foreign keys]' \
+        '(--binary-id --no-binary-id)--no-binary-id[use normal IDs]' \
+        '(--no-merge-with-existing-context --merge-with-existing-context)--merge-with-existing-context[merge with existing context]' \
+        '(--no-merge-with-existing-context --merge-with-existing-context)--no-merge-with-existing-context[prevent changes to the existing context]' \
+        '*::context_module:_mix_phx_context_modules' \
+        && ret=0
+      ;;
+    (phx.gen.html|phx.gen.json|phx.gen.live)
+      _arguments \
+        '--no-scope[disable scoping]' \
+        '--context-app[supply context_app configuration to the generator]:app' \
+        '--web[add a namespace]:module:_mix_phx_context_modules' \
+        '--no-context[do not leave implementation of the context]' \
+        '--no-schema[do not leave implementation of the schema]' \
+        '*::context_module:_mix_phx_context_modules' \
+        && ret=0
+      ;;
+    (phx.gen.notifier)
+      _arguments \
+        '--context-app[supply context_app configuration to the generator]:app' \
+        '*::context_module:_mix_phx_context_modules' \
+        && ret=0
+      ;;
+    (phx.gen.release)
+      _arguments \
+        '(--no-ecto --ecto)--ecto[force migration-related files to be generated]' \
+        '(--no-ecto --ecto)--no-ecto[skip generating migration-related files]' \
+        '--docker[generate Dockerfile and .dockerignore]' \
+        && ret=0
+      ;;
+    (phx.gen.schema)
+      _arguments \
+        '--table[customize table name with the given name]:name' \
+        '--primary-key[change the name of the primary key column]:key' \
+        '--repo[set the migration repository folder]:dir:_files -/' \
+        '--migration-dir[set the migration folder path]:dir:_files -/' \
+        '--prefix[specify prefix]:prefix' \
+        '(--binary-id --no-binary-id)--binary-id[use binary_id for its primary key and foreign keys]' \
+        '(--binary-id --no-binary-id)--no-binary-id[use normal IDs]' \
+        '(--no-migration --migration)--migration[force generation of the migration]' \
+        '(--no-migration --migration)--no-migration[skip migration]' \
+        && ret=0
+      ;;
+    (phx.new*)
+      _arguments \
+        '--umbrella[generate an umbrella project]' \
+        '--app[name of the OTP application]:name' \
+        '--module[name of the base module in the generated skeleton]:module' \
+        '--database[specify the database adapter for Ecto]:database:(postgres mysql mssql sqlite3)' \
+        '--adapter[specify the http adapter]:adapter:(cowboy bandit)' \
+        '--no-assets[equivalent to --noesbuild and --no-tailwind]' \
+        '--no-dashboard[do not include Phoenix.LiveDashboard]' \
+        '--no-ecto[do not generate Ecto files]' \
+        '--no-esbuild[do not include esbuild dependencies and assets]' \
+        '--no-gettext[do not generate gettext files]' \
+        '--no-html[do not generate HTML views]' \
+        '--no-live[comment out LiveView socket setup in your Endpoint and assets/js/app.js]' \
+        '--no-mailer[do not generate Swoosh mailer files]' \
+        '--no-tailwind[do not include tailwind dependencies and assets]' \
+        '--binary-id[use binary_id as primary key type in Ecto schemas]' \
+        '--verbose[use verbose output]' \
+        '(- *)'{-v,--version}'[print the Phoenix installer version]' \
+        '--no-version-check[skip the version check for the latest phx_new version]' \
+        '--no-agents-md[do not generate an AGENTS.md file]' \
+        && ret=0
+      ;;
+    (phx)
+      _arguments \
+        '(- *)'{-v,--version}'[print the Phoenix version]' \
+        && ret=0
+      ;;
+    (phx.routes)
+      local -a http_methods=(get post put patch delete options connect trace head)
+      _arguments \
+        '--info[locate the controller function definition called by the given url]:url' \
+        '--method[what HTTP method to use with the given url]:method:($http_methods)' \
+        && ret=0
+      ;;
+    (phx.server)
+      _arguments \
+        '--open[open browser window for each started endpoint]' \
+        '--no-compile[without recompiling]' \
+        '--no-halt[do not halt the system after running the command]' \
+        '--no-dep-check[do not check dependencies]' \
+        && ret=0
+      ;;
+  esac
+
+  return ret
+}
+
 _mix_dependencies() {
   local -a dependencies=(${(f)"$(mix deps --all 2>/dev/null | awk '/^\* / { print $2 }')"})
   _values 'dependencies' $dependencies
@@ -823,6 +964,11 @@ _mix_escript_install_from() {
   _alternative \
     'file:file:_files' \
     'where:repo:(git github hex)'
+}
+
+_mix_phx_context_modules() {
+  local -a modules=(Accounts User UserToken Identity Client ClientToken Store Backoffice Admin)
+  _values 'context modules' $modules
 }
 
 _mix_tasks_caching_policy() {
