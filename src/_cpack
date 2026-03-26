@@ -40,7 +40,7 @@ _cpack() {
   _arguments \
     '-G[Override/define CPACK_GENERATOR]:generator:_cpack_generators' \
     '-C[Specify the project configurations]:configuration:(Debug Release)' \
-    *'-D[Set a CPack variable]:var_val' \
+    '*-D[Set a CPack variable]:var_val' \
     '--config[Specify the config file]:file:_files' \
     '(-V --verbose)'{-V,--verbose}'[Enable verbose output]' \
     '--trace[Put underlying cmake scripts in trace mode]' \
@@ -116,7 +116,7 @@ _cpack_generators() {
 }
 
 _cpack_help_manuals() {
-  local -a manuals=(${(f)"$(cpack --help-manual-list 2>/dev/null | sed 's/([0-9]\+)$//' )"})
+  local -a manuals=(${(f)"$(cpack --help-manual-list 2>/dev/null | sed 's/([0-9][0-9]*)$//' )"})
   _values 'manual' $manuals
 }
 

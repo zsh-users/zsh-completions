@@ -64,7 +64,7 @@ _ctest() {
     \*{-FS,--fixture-exclude-setup}'[Do not automatically add setup tests for fixtures matching regular expression]:regex' \
     \*{-FC,--fixture-exclude-cleanup}'[Do not automatically add cleanup tests for fixtures matching regular expression]:regex' \
     '(--dashboard)'{-D,--dashboard}'[Execute dashboard test]:dashboard' \
-    *'-D[Define a variable for script mode]:var' \
+    '*-D[Define a variable for script mode]:var' \
     '(-M --test-model)'{-M,--test-model}'[Set the model for a dashboard]:model' \
     '(-T --test-action)'{-T,--test-action}'[Set the dashboard action to perform]' \
     '--group[Specify what build group on the dashboard]:group' \
@@ -84,7 +84,7 @@ _ctest() {
     '--no-subproject-summary[Disable timing summary information for subprojects]' \
     '--test-dir[Specify the directory in which to look for tests]:dir:_files -/' \
     '--build-and-test[Configure, build and run a test]' \
-    *'--build-target[Specify a specific target to build]:target' \
+    '*--build-target[Specify a specific target to build]:target' \
     '--build-nocmake[Run the build without running cmake first]' \
     '--build-run-dir[Specify directory to run programs from]:dir:_files -/' \
     '--build-two-config[Run CMake twice]' \
@@ -96,14 +96,14 @@ _ctest() {
     '--build-makeprogram[Specify the make program to use]:make:_files' \
     '--build-noclean[Skip the make clean step]' \
     '--build-config-sample[A sample executable to use to determine the configuration]:sample' \
-    *'--build-options[Add extra options to the build step]' \
+    '*--build-options[Add extra options to the build step]' \
     '--test-command[The test to run with the --build-and-test-option]:command' \
     '--test-timeout[The time limit in seconds]:timeout' \
     '--test-load[CPU load threshold for starting new parallel tests]:threshold' \
     '--tomorrow-tag[starts with next day tag]' \
     '--overwrite[Overwrite CTest configuration option]' \
     '--extra-submit[Submit extra files to the dashboard]:file:_files' \
-    *'--http-header[Append HTTP header when submitting]:header' \
+    '*--http-header[Append HTTP header when submitting]:header' \
     '--schedule-random[Use a random order for scheduling tests]' \
     '--schedule-random-seed[Override seed for random order of tests]:seed' \
     '--submit-index[Submit individual dashboard tests with specific index]:index' \
@@ -139,7 +139,7 @@ _ctest() {
 }
 
 _ctest_help_manuals() {
-  local -a manuals=(${(f)"$(ctest --help-manual-list 2>/dev/null | sed 's/([0-9]\+)$//' )"})
+  local -a manuals=(${(f)"$(ctest --help-manual-list 2>/dev/null | sed 's/([0-9][0-9]*)$//' )"})
   _values 'manual' $manuals
 }
 
