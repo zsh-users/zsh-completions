@@ -21,7 +21,7 @@ _inxi() {
   local curcontext="$curcontext"
   local ret=1
 
-  local colors=($(seq 0 42))
+  local -a colors=({0..42})
 
   _arguments -C -s \
     '(-A --audio)'{-A,--audio}"[Show Audio/sound card(s) information]" \
