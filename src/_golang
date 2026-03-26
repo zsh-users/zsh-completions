@@ -44,7 +44,7 @@
 #
 # ------------------------------------------------------------------------------
 
-__go_buildmodes() {
+__golang_buildmodes() {
   local -a buildmodes=(
     'archive[non-main packages into .a files]'
     'c-archive[main package, plus all packages it imports, into a C archive file]'
@@ -59,7 +59,7 @@ __go_buildmodes() {
   _values 'mode' $buildmodes
 }
 
-__go_runtimedebug() {
+__golang_runtimedebug() {
   local -a vars=(
     'allocfreetrace[profile allocations]:boolean:(1 0)'
     'clobberfree[clobber memory after free]:boolean:(1 0)'
@@ -84,7 +84,7 @@ __go_runtimedebug() {
   _values -s ',' -S '=' "runtime debug behavior" $vars[@]
 }
 
-__go_gcdebugflags() {
+__golang_gcdebugflags() {
   _values -s , -S = 'debug flag' \
     'append[print information about append compilation]' \
     'checkptr[instrument unsafe pointer conversions]:pointer conversion checks:((0\:"instrumentation disabled" 1\:"conversions involving unsafe.Pointer are instrumented" 2\:"conversions to unsafe.Pointer force heap allocation"))' \
@@ -109,7 +109,7 @@ __go_gcdebugflags() {
     'ssa/help[print help about SSA debugging]'
 }
 
-__go_gcflags() {
+__golang_gcflags() {
   _arguments \
     '-%[debug non-static initializers]' \
     '-c=[concurrency during compilation]:int' \
@@ -131,7 +131,7 @@ __go_gcflags() {
     '-buildid=[record id as the build id in the export metadata]:id' \
     '-complete[compiling complete package (no C or assembly)]' \
     '-cpuprofile=[write cpu profile to file]:file' \
-    '-d=[print debug information about items in list; try -d help]:list: __go_gcdebugflags' \
+    '-d=[print debug information about items in list; try -d help]:list: __golang_gcdebugflags' \
     '-dwarf[generate DWARF symbols (default true)]' \
     '-dwarfbasentries[use base address selection entries in DWARF (default true)]' \
     '-dwarflocationlists[add location lists to DWARF in optimized mode (default true)]' \
@@ -173,7 +173,7 @@ __go_gcflags() {
     '-wb[enable write barrier (default true)]'
 }
 
-__go_pgo() {
+__golang_pgo() {
   _alternative \
     "name:name:(auto off)" \
     "file:file:_files"
@@ -203,9 +203,9 @@ local -a commands=(
   'help:get more information about a command'
 )
 
-__go_envvarvals() {
-  # if __go_envvarvals is called for -value-, I use the function argument to
-  # decide which variable to go to.  if $1 is not set, then __go_envvarvals is
+__golang_envvarvals() {
+  # if __golang_envvarvals is called for -value-, I use the function argument to
+  # decide which variable to go to.  if $1 is not set, then __golang_envvarvals is
   # called from the `go env` completion and the current word (with all after
   # the first '=' removed) is the current variable.
   local env_variable=${1-${words[$CURRENT]%%=*}}
@@ -276,7 +276,7 @@ __go_envvarvals() {
       _dispatch $service -value-,${variable#CGO_},-default-
       ;;
     (GODEBUG)
-      __go_runtimedebug
+      __golang_runtimedebug
       ;;
     (GOFLAGS)
       # not implemented, sorry
@@ -294,7 +294,7 @@ __go_envvarvals() {
   esac
 }
 
-__go_packages() {
+__golang_packages() {
   local -a gopaths=("${(s/:/)$(go env GOPATH)}")
   gopaths+=("$(go env GOROOT)")
   for p in $gopaths; do
@@ -312,7 +312,7 @@ __go_packages() {
   fi
 }
 
-__go_fix_analyzers() {
+__golang_fix_analyzers() {
   local -a fix_analyzers=(
     "any[replace interface{} with any]"
     "buildtag[check //go:build and // +build directives]"
@@ -341,7 +341,7 @@ __go_fix_analyzers() {
   _values 'analyzer' $fix_analyzers
 }
 
-__go_pprof_symbolize_types() {
+__golang_pprof_symbolize_types() {
   local -a symbolize_types=(
     "none[Do not attempt symbolization]"
     "local[Examine only local binaries]"
@@ -360,7 +360,7 @@ if [[ "$service" = -value-* ]]; then
   if (($blacklist[(I)$env_variable])); then
     return
   fi
-  __go_envvarvals $env_variable
+  __golang_envvarvals $env_variable
   return
 fi
 
@@ -382,16 +382,16 @@ case $state in
       '-work[print temporary work directory and keep it]'
       '-x[print the commands]'
       '-asmflags[arguments for each go tool asm invocation]:flags'
-      '-buildmode[build mode to use]:mode:__go_buildmodes'
+      '-buildmode[build mode to use]:mode:__golang_buildmodes'
       '-buildvcs[stamp binaries with version control information]:mode:(internal external auto)'
       '-compiler[name of compiler to use]:name'
       '-gccgoflags[arguments for gccgo]:args'
-      '*-gcflags=[arguments for each go tool compile invocation]:args:__go_gcflags'
+      '*-gcflags=[arguments for each go tool compile invocation]:args:__golang_gcflags'
       '-installsuffix[suffix to add to package directory]:suffix'
       '-ldflags[arguments to pass on each go tool link invocation.]:flags'
       '-linkshared[link against shared libraries]'
       '-overlay[read a JSON config file that provides an overlay for build operations]:file:_files -g "*.json"'
-      '-pgo[specify the file path of a profile for profile-guided optimization]:file_or_profile:__go_pgo'
+      '-pgo[specify the file path of a profile for profile-guided optimization]:file_or_profile:__golang_pgo'
       '-pkgdir[install and load all packages from dir]:dir'
       '-tags[list of build tags to consider satisfied]:tags'
       '-trimpath[remove all file system paths from the resulting executable]'
@@ -425,7 +425,7 @@ case $state in
       'help:get more information about a command'
     )
     local -a fix_flags=(
-      '-fixtool=[specify fix analyzer]:analyzer:__go_fix_analyzers'
+      '-fixtool=[specify fix analyzer]:analyzer:__golang_fix_analyzers'
       '-diff[display diffs instead of rewriting files]'
       '-fixtool=[select analysis tool]:analyzer:'
       '(- *)-V[print version and exit]'
@@ -464,7 +464,7 @@ case $state in
           '-json[emit build output in JSON suitable for automated processing]' \
           ${build_flags[@]} \
           ${mod_flags[@]} \
-          '*:importpaths:__go_packages'
+          '*:importpaths:__golang_packages'
         ;;
 
       (clean)
@@ -477,7 +477,7 @@ case $state in
           '-fuzzcache[remove files stored in the Go build cache for fuzz testing]' \
           ${build_flags[@]} \
           ${mod_flags[@]} \
-          '*:importpaths:__go_packages'
+          '*:importpaths:__golang_packages'
         ;;
 
       (doc)
@@ -489,7 +489,7 @@ case $state in
           '-short[one-line representation for each symbol]' \
           '-src[show the full source code for the symbol]' \
           '-u[show docs for unexported and exported symbols and methods]' \
-          '*:importpaths:__go_packages'
+          '*:importpaths:__golang_packages'
         ;;
 
       (env)
@@ -569,12 +569,12 @@ case $state in
         )
         local -a exclude_from_w=(GOENV)
 
-        __go_list_env_vars() {
+        __golang_list_env_vars() {
           # the parameter expansion strops off everything after the first [
           _values -s ' ' -w 'environment variable' ${goenvvars[@]%%\[*}
         }
 
-        # the ^ parameter expansion appends ": __go_envvarvals" to every element of goenvvars
+        # the ^ parameter expansion appends ": __golang_envvarvals" to every element of goenvvars
         # the :# parameter expansion removes all elements matching GOENV*
         [[ $words[2] != '-w' ]] && _arguments \
           '-C[change to directory before running the command]: :_files -/' \
@@ -582,15 +582,15 @@ case $state in
           '-changed[prints only those settings whose effective value differs from the default value]' \
           '-u[unset environment variables]' \
           '-w[change the default setting of environment variables]' \
-          '*:[show environment variable]: __go_list_env_vars' || _values \
-          -s ' ' -S "=" -w 'environment variable' ${^goenvvars:#GOENV*}": __go_envvarvals"
+          '*:[show environment variable]: __golang_list_env_vars' || _values \
+          -s ' ' -S "=" -w 'environment variable' ${^goenvvars:#GOENV*}": __golang_envvarvals"
         ;;
 
       (fix)
         _arguments \
           '-C[change to directory before running the command]: :_files -/' \
           $fix_flags[@] \
-          '*:importpaths:__go_packages'
+          '*:importpaths:__golang_packages'
         ;;
 
       (fmt)
@@ -599,7 +599,7 @@ case $state in
           '-n[print commands that would be executed]' \
           '-x[print commands as they are executed]' \
           '-mod=[set which download mode to use]:mode:(readonly vendor)' \
-          '*:importpaths:__go_packages'
+          '*:importpaths:__golang_packages'
         ;;
 
       (generate)
@@ -610,7 +610,7 @@ case $state in
           '-n[print the commands but do not run them]' \
           '-v[print the names of packages as they are compiled]' \
           ${build_flags[@]} \
-          "*:args:{ _alternative ':importpaths:__go_packages' _files }"
+          "*:args:{ _alternative ':importpaths:__golang_packages' _files }"
         ;;
 
       (get)
@@ -620,13 +620,13 @@ case $state in
           '-u[use the network to update the named packages]' \
           '-tool[instructs go to add a matching tool line to go.mod for each listed package]' \
           ${build_flags[@]} \
-          '*:importpaths:__go_packages'
+          '*:importpaths:__golang_packages'
         ;;
 
       (install)
         _arguments \
           ${build_flags[@]} \
-          '*:importpaths:__go_packages'
+          '*:importpaths:__golang_packages'
         ;;
 
       (list)
@@ -642,7 +642,7 @@ case $state in
           '-m[list modules instead of packages]'
           ${build_flags[@]}
           ${mod_flags[@]}
-          '*:importpaths:__go_packages'
+          '*:importpaths:__golang_packages'
         )
         # -u and -versions are only available if -m is present on the commandline
         if (($words[(I)-m])); then
@@ -684,7 +684,7 @@ case $state in
               (init)
                 # Use go packages as module name suggestion
                 _arguments \
-                  '*:module:__go_packages'
+                  '*:module:__golang_packages'
                 ;;
               (tidy)
                 _arguments \
@@ -705,7 +705,7 @@ case $state in
                 _arguments \
                   '-m[treats the arguments as a list of modules]' \
                   '-vendor[exclude tests of dependencies]' \
-                  '*:module:__go_packages'
+                  '*:module:__golang_packages'
                 ;;
             esac
             ;;
@@ -716,7 +716,7 @@ case $state in
         _arguments \
           ${build_flags[@]} \
           '-exec[invoke the binary using xprog]:xporg' \
-          '*:importpaths:__go_packages'
+          '*:importpaths:__golang_packages'
         ;;
 
       (telemetry)
@@ -803,7 +803,7 @@ case $state in
             ${build_flags[@]} \
             '-exec[run test binary using xprog]:xprog' \
             '-o[compile test binary to named file]:file:_files' \
-            '*:importpaths:__go_packages'
+            '*:importpaths:__golang_packages'
         fi
         ;;
 
@@ -963,7 +963,7 @@ case $state in
 
               (fix)
                 if [[ $words[2] == "help" ]]; then
-                  __go_fix_analyzers
+                  __golang_fix_analyzers
                 else
                   _arguments \
                     "*:args:{ _alternative ':subcommand:(help)' _files }"
@@ -1119,7 +1119,7 @@ case $state in
                   '-add_comment=[free-form annotation to add to the profile]:comment' \
                   '-diff_base=[source of base profile for comparison]:source:_files' \
                   '-base[show delta from this profile]:profile' \
-                  '-symbolize=[controls source of symbol information]:source:__go_pprof_symbolize_types' \
+                  '-symbolize=[controls source of symbol information]:source:__golang_pprof_symbolize_types' \
                   '-tls_cert=[TLS client certificate file for fetchign profile and symbols]:file:_files' \
                   '-tls_key=[TLS private key file for fetching profile and symbols]:file:_files' \
                   '-tls_ca=[TLS CA certs file for fetching profile and symbols]:file:_files' \
@@ -1215,7 +1215,7 @@ case $state in
           '-x[prints commands as they are executed]' \
           '-vettool[set a different analysis tool with alternative or additional checks]:prog:_files' \
           ${build_flags[@]} \
-          '*:importpaths:__go_packages'
+          '*:importpaths:__golang_packages'
         ;;
 
       (work)
