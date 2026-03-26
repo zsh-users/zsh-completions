@@ -72,7 +72,7 @@ _gist() {
 _gist_cache_policy() {
   # rebuild if cache is more than a day old
   local -a oldp
-  oldp=( "$1"(mh+1) )
+  oldp=( "$1"(m+1) )
   (( $#oldp ))
 }
 
