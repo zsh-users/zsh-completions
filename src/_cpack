@@ -1,0 +1,156 @@
+#compdef cpack
+# ------------------------------------------------------------------------------
+# Copyright (c) 2026 Github zsh-users - https://github.com/zsh-users
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for cpack 4.3.0 (https://kitware.com/cmake)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei Yoshida (https://github.com/syohex) <syohex@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+_cpack() {
+  local ret=1
+
+  _arguments \
+    '-G[Override/define CPACK_GENERATOR]:generator:_cpack_generators' \
+    '-C[Specify the project configurations]:configuration:(Debug Release)' \
+    '*-D[Set a CPack variable]:var_val' \
+    '--config[Specify the config file]:file:_files' \
+    '(-V --verbose)'{-V,--verbose}'[Enable verbose output]' \
+    '--trace[Put underlying cmake scripts in trace mode]' \
+    '--trace-expand[Put underlying cmake scripts in expanded trace mode]' \
+    '--debug[Enable debug output]' \
+    '-P[Override/define CPACK_PACKAGE_NAME]:package_name' \
+    '-R[Override/define CPACK_PACKAGE_VERSION]:package_version' \
+    '-B[Override/define CPACK_PACKAGE_DIRECTORY]:package_directory:_files -/' \
+    '--vendor[Override/define CPACK_PACKAGE_VENDOR]:vendor' \
+    '--preset[Read arguments from a package preset]' \
+    '--list-presets[List available package preset]' \
+    '(- *)'{--version,-version}=-'[Print version number and exit]::format:(json-v1)' \
+    '(- *)--help[Print usage information and exit]' \
+    '(- *)--help-full[Print all help manuals and exit]' \
+    '(- *)--help-manual[Print one help manual and exit]:manual:_cpack_help_manuals' \
+    '(- *)--help-manual-list[List help manuals available and exit]' \
+    '(- *)--help-command[Print help for one command and exit]:command:_cpack_help_commands' \
+    '(- *)--help-command-list[List commands with help available and exit]' \
+    '(- *)--help-commands[Print cmake-commands manual and exit]' \
+    '(- *)--help-module[Print help for one module and exit]:module:_cpack_help_modules' \
+    '(- *)--help-module-list[List modules with help available and exit]' \
+    '(- *)--help-modules[Print cmake-modules manual and exit]' \
+    '(- *)--help-policy[Print help for one policy and exit]:policy:_cpack_help_policies' \
+    '(- *)--help-policy-list[List policies with help available and exit]' \
+    '(- *)--help-policies[Print cmake-policies manual and exit]' \
+    '(- *)--help-property[Print help for one property and exit]:property:_cpack_help_properties' \
+    '(- *)--help-property-list[List properties with help available and exit]' \
+    '(- *)--help-properties[Print cmake-properties manual and exit]' \
+    '(- *)--help-variable[Print help for one variable and exit]:variable:_cpack_help_variables' \
+    '(- *)--help-variable-list[List variables with help available and exit]' \
+    '(- *)--help-variables[Print cmake-variables manual and exit]' \
+    && ret=0
+
+  return ret
+}
+
+_cpack_generators() {
+  local -a generators=(
+    "7Z:[7-Zip file format with default compression algorithm]"
+    "7Z_BZ2:[7-Zip file format with BZip2 compression]"
+    "7Z_DEFLATE:[7-Zip file format with Deflate compression]"
+    "7Z_LZMA:[7-Zip file format with LZMA compression]"
+    "7Z_LZMA2:[7-Zip file format with LZMA2 compression]"
+    "7Z_PPMD:[7-Zip file format with PPMd compression]"
+    "7Z_STORE:[7-Zip file format without compression]"
+    "7Z_ZSTD:[7-Zip file format with Zstandard compression]"
+    "AppImage:[AppImage packages]"
+    "DEB:[Debian packages]"
+    "External:[CPack External packages]"
+    "IFW:[Qt Installer Framework]"
+    "INNOSETUP:[Inno Setup packages]"
+    "NSIS:[Null Soft Installer]"
+    "NSIS64:[Null Soft Installer (64-bit)]"
+    "NuGet:[NuGet packages]"
+    "RPM:[RPM packages]"
+    "STGZ:[Self extracting Tar GZip compression]"
+    "TAR:[Tar no compression]"
+    "TBZ2:[Tar BZip2 compression]"
+    "TGZ:[Tar GZip compression]"
+    "TXZ:[Tar XZ compression]"
+    "TZ:[Tar Compress compression]"
+    "TZST:[Tar Zstandard compression]"
+    "ZIP:[ZIP file format with default compression algorithm]"
+    "ZIP_BZ2:[ZIP file format with BZip2 compression]"
+    "ZIP_DEFLATE:[ZIP file format with Deflate compression]"
+    "ZIP_LZMA:[ZIP file format with LZMA compression]"
+    "ZIP_LZMA2:[ZIP file format with LZMA2 compression]"
+    "ZIP_STORE:[ZIP file format without compression]"
+    "ZIP_ZSTD:[ZIP file format with Zstandard compression]"
+  )
+
+  _describe -t 'generators' generator generators
+}
+
+_cpack_help_manuals() {
+  local -a manuals=(${(f)"$(cpack --help-manual-list 2>/dev/null | sed 's/([0-9][0-9]*)$//' )"})
+  _values 'manual' $manuals
+}
+
+_cpack_help_commands() {
+  local -a commands=(${(f)"$(cpack --help-command-list 2>/dev/null )"})
+  _values 'command' $commands
+}
+
+_cpack_help_modules() {
+  local -a modules=(${(f)"$(cpack --help-module-list 2>/dev/null )"})
+  _values 'module' $modules
+}
+
+_cpack_help_policies() {
+  local -a policies=(${(f)"$(cpack --help-policy-list 2>/dev/null )"})
+  _values 'policy' $policies
+}
+
+_cpack_help_properties() {
+  local -a properties=(${(f)"$(cpack --help-property-list 2>/dev/null )"})
+  _values 'property' $properties
+}
+
+_cpack_help_variables() {
+  local -a variables=(${(f)"$(cpack --help-variable-list 2>/dev/null )"})
+  _values 'variable' $variables
+}
+
+_cpack "$@"
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et

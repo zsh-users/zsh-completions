@@ -1,0 +1,179 @@
+#compdef ctest
+# ------------------------------------------------------------------------------
+# Copyright (c) 2026 Github zsh-users - https://github.com/zsh-users
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for ctest 4.3.0 (https://kitware.com/cmake)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei Yoshida (https://github.com/syohex) <syohex@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+_ctest() {
+  local ret=1
+
+  _arguments \
+    '--preset=[Read arguments from a test preset]:preset' \
+    '--list-presets[List available test presets]' \
+    '(-C --build-config)'{-C,--build-config}'[Choose configuration to test]:config' \
+    '--progress[Enable short progress output from tests]' \
+    '(-V --verbose -VV --extra-verbose)'{-V,--verbose}'[Enable verbose output from tests]' \
+    '(-V --verbose -VV --extra-verbose)'{-VV,--extra-verbose}'[Enable more verbose output from tests]' \
+    '--debug[Displaying more verbose internals of CTest]' \
+    '--output-on-failure[Output anything outputted by the test program if the test should fail]' \
+    '--stop-on-failure[Stop running the tests after one has failed]' \
+    '--test-output-size-passed[Limit the output for passed tests to <size> bytes]:size' \
+    '--test-output-size-failed[Limit the output for failed tests to <size> bytes]:size' \
+    '--test-output-truncation[Truncate mode]:mode:(tail middle head)' \
+    '-F[Enable failover]' \
+    '(-j --parallel)'{-j,--parallel}'[Run tests in parallel]::level' \
+    '(-Q --quiet)'{-Q,--quiet}'[Make ctest quiet]' \
+    '(-O --output-log)'{-O,--output-log}'[Output to log file]:file:_files' \
+    '--output-junit[Output test results to JUnit XML file]:file:_files' \
+    '(-N --show-only)'{-N,--show-only}'[Disable actual execution of tests]::format:(format human json-v1)' \
+    \*{-L,--label-regex}'[Run tests with labels matching regular expression]:regex' \
+    \*{-R,--tests-regex}'[Run tests matching regular expression]:regex' \
+    \*{-E,--exclude-regex}'[Exclude tests matching regular expression]:regex' \
+    \*{-LE,--label-exclude}'[Exclude tests with labels matching regular expression]:regex' \
+    \*{-FA,--fixture-exclude-any}'[Do not automatically add any tests for fixtures matching regular expression]:regex' \
+    \*{-FS,--fixture-exclude-setup}'[Do not automatically add setup tests for fixtures matching regular expression]:regex' \
+    \*{-FC,--fixture-exclude-cleanup}'[Do not automatically add cleanup tests for fixtures matching regular expression]:regex' \
+    '(--dashboard)'{-D,--dashboard}'[Execute dashboard test]:dashboard' \
+    '*-D[Define a variable for script mode]:var' \
+    '(-M --test-model)'{-M,--test-model}'[Set the model for a dashboard]:model' \
+    '(-T --test-action)'{-T,--test-action}'[Set the dashboard action to perform]' \
+    '--group[Specify what build group on the dashboard]:group' \
+    \*{-S,--script,-Sp,--script-new-process}'[Execute a dashboard for a configuration]:script:_files' \
+    '(-A --add-notes)'{-A,--add-notes}'[Add a notes file with submission]:file:_files' \
+    '(-I --test-information)'{-I,--test-information}'[Run a specific number of tests by number]:number' \
+    '(-U --union)'{-U,--union}'[Take the Union of -I and -R]' \
+    '--rerun-failed[Run only the tests that failed previously]' \
+    '--tests-from-file[Run the tests listed in the given file]:file:_files' \
+    '--exclude-from-file[Run tests except those listed in the given file]:file:_files' \
+    '--repeat-until-fail[Repeat each test to run <n> times without failing]:n' \
+    '--repeat[Repeat each test to run <n> times]:condition-n:(until-fail: until-pass: after-timeout:)' \
+    '--max-width[Set the max width for a test name to output]' \
+    '--interactive-debug-mode[Set the interactive mode to 0 or 1]:n:(0 1)' \
+    '--resource-spec-file[Set the resource spec file to use]:file:_files' \
+    '--no-label-summary[Disable timing summary information for labels]' \
+    '--no-subproject-summary[Disable timing summary information for subprojects]' \
+    '--test-dir[Specify the directory in which to look for tests]:dir:_files -/' \
+    '--build-and-test[Configure, build and run a test]' \
+    '*--build-target[Specify a specific target to build]:target' \
+    '--build-nocmake[Run the build without running cmake first]' \
+    '--build-run-dir[Specify directory to run programs from]:dir:_files -/' \
+    '--build-two-config[Run CMake twice]' \
+    '--build-exe-dir[Specify the directory for the executable]:dir:_files -/' \
+    '--build-generator[Specify the generator to use]:generator' \
+    '--build-generator-platform[Specify the generator-specific platform]:generator_platform' \
+    '--build-generator-toolset[Specify the generator-specific toolset]:build_toolset' \
+    '--build-project[Specify the name of the project to build]:project' \
+    '--build-makeprogram[Specify the make program to use]:make:_files' \
+    '--build-noclean[Skip the make clean step]' \
+    '--build-config-sample[A sample executable to use to determine the configuration]:sample' \
+    '*--build-options[Add extra options to the build step]' \
+    '--test-command[The test to run with the --build-and-test-option]:command' \
+    '--test-timeout[The time limit in seconds]:timeout' \
+    '--test-load[CPU load threshold for starting new parallel tests]:threshold' \
+    '--tomorrow-tag[starts with next day tag]' \
+    '--overwrite[Overwrite CTest configuration option]' \
+    '--extra-submit[Submit extra files to the dashboard]:file:_files' \
+    '*--http-header[Append HTTP header when submitting]:header' \
+    '--schedule-random[Use a random order for scheduling tests]' \
+    '--schedule-random-seed[Override seed for random order of tests]:seed' \
+    '--submit-index[Submit individual dashboard tests with specific index]:index' \
+    '--timeout[Set the default test timeout]:timeout' \
+    '--stop-time[Set a time at which all tests should stop running]:time' \
+    '--http1.0[Submit using HTTP 1.0]' \
+    '--no-compress-output[Do not compress test output when submitting]' \
+    '--print-labels[Print all available test labels]' \
+    '--no-tests=[Regard no tests]:type:(error ignore)' \
+    '(- *)'{--help,-help,-usage,-h,-H}'[Print usage information and exit]' \
+    '(- *)'{--version,-version}'[Print version number and exit]' \
+    '(- *)--help-full[Print all help manuals and exit]' \
+    '(- *)--help-manual[Print one help manual and exit]:manual:_ctest_help_manuals' \
+    '(- *)--help-manual-list[List help manuals available and exit]' \
+    '(- *)--help-command[Print help for one command and exit]:command:_ctest_help_commands' \
+    '(- *)--help-command-list[List commands with help available and exit]' \
+    '(- *)--help-commands[Print cmake-commands manual and exit]' \
+    '(- *)--help-module[Print help for one module and exit]:module:_ctest_help_modules' \
+    '(- *)--help-module-list[List modules with help available and exit]' \
+    '(- *)--help-modules[Print cmake-modules manual and exit]' \
+    '(- *)--help-policy[Print help for one policy and exit]:policy:_ctest_help_policies' \
+    '(- *)--help-policy-list[List policies with help available and exit]' \
+    '(- *)--help-policies[Print cmake-policies manual and exit]' \
+    '(- *)--help-property[Print help for one property and exit]:property:_ctest_help_properties' \
+    '(- *)--help-property-list[List properties with help available and exit]' \
+    '(- *)--help-properties[Print cmake-properties manual and exit]' \
+    '(- *)--help-variable[Print help for one variable and exit]:variable:_ctest_help_variables' \
+    '(- *)--help-variable-list[List variables with help available and exit]' \
+    '(- *)--help-variables[Print cmake-variables manual and exit]' \
+    && ret=0
+
+  return ret
+}
+
+_ctest_help_manuals() {
+  local -a manuals=(${(f)"$(ctest --help-manual-list 2>/dev/null | sed 's/([0-9][0-9]*)$//' )"})
+  _values 'manual' $manuals
+}
+
+_ctest_help_commands() {
+  local -a commands=(${(f)"$(ctest --help-command-list 2>/dev/null )"})
+  _values 'command' $commands
+}
+
+_ctest_help_modules() {
+  local -a modules=(${(f)"$(ctest --help-module-list 2>/dev/null )"})
+  _values 'module' $modules
+}
+
+_ctest_help_policies() {
+  local -a policies=(${(f)"$(ctest --help-policy-list 2>/dev/null )"})
+  _values 'policy' $policies
+}
+
+_ctest_help_properties() {
+  local -a properties=(${(f)"$(ctest --help-property-list 2>/dev/null )"})
+  _values 'property' $properties
+}
+
+_ctest_help_variables() {
+  local -a variables=(${(f)"$(ctest --help-variable-list 2>/dev/null )"})
+  _values 'variable' $variables
+}
+
+_ctest "$@"
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
