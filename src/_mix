@@ -1,6 +1,4 @@
 #compdef mix
-#autoload
-
 # ------------------------------------------------------------------------------
 # Copyright (c) 2016 Github zsh-users - https://github.com/zsh-users
 # All rights reserved.
@@ -30,9 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Elixir Mix
-#
-#  Last updated: 18.04.2017
+#  Completion script for Elixir Mix 1.19.5 with Erlang/OTP 28 (https://github.com/elixir-lang/elixir)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -43,195 +39,946 @@
 #
 # ------------------------------------------------------------------------------
 
-local -a _1st_arguments
-_1st_arguments=(
-  'app.start:Starts all registered apps'
-  'app.tree:Prints the application tree'
-  'archive:Lists installed archives'
-  'archive.build:Archives this project into a .ez file'
-  'archive.install:Installs an archive locally'
-  'archive.uninstall:Uninstalls archives'
-  'clean:Deletes generated application files'
-  'cmd:Executes the given command'
-  'compile:Compiles source files'
-  'deps:Lists dependencies and their status'
-  "deps.clean:Deletes the given dependencies' files"
-  'deps.compile:Compiles dependencies'
-  'deps.get:Gets all out of date dependencies'
-  'deps.tree:Prints the dependency tree'
-  'deps.unlock:Unlocks the given dependencies'
-  'deps.update:Updates the given dependencies'
-  'do:Executes the tasks separated by comma'
-  'ecto:Prints Ecto help information'
-  'ecto.create:Creates the repository storage'
-  'ecto.drop:Drops the repository storage'
-  'ecto.dump:Dumps the repository database structure'
-  'ecto.gen.migration:Generates a new migration for the repo'
-  'ecto.gen.repo:Generates a new repository'
-  'ecto.load:Loads previously dumped database structure'
-  'ecto.migrate:Runs the repository migrations'
-  'ecto.migrations:Displays the repository migration status'
-  'ecto.rollback:Rolls back the repository migrations'
-  'escript:Lists installed escripts'
-  'escript.build:Builds an escript for the project'
-  'escript.install:Installs an escript locally'
-  'escript.uninstall:Uninstalls escripts'
-  'gettext.extract:Extracts translations from source code'
-  'gettext.merge:Merge template files into translation files'
-  'help:Prints help information for tasks'
-  'hex:Prints Hex help information'
-  'hex.build:Builds a new package version locally'
-  'hex.config:Reads, updates or deletes Hex config'
-  'hex.docs:Fetch or open documentation of a package'
-  'hex.info:Prints Hex information'
-  'hex.key:Manages Hex API key'
-  'hex.outdated:Shows outdated Hex deps for the current project'
-  'hex.owner:Manages Hex package ownership'
-  'hex.public_keys:Manages Hex public keys'
-  'hex.publish:Publishes a new package version'
-  'hex.retire:Retires a package version'
-  'hex.search:Searches for package names'
-  'hex.user:Registers or manages Hex user'
-  'loadconfig:Loads and persists the given configuration'
-  'local:Lists local tasks'
-  'local.hex:Installs Hex locally'
-  'local.phoenix:Updates Phoenix locally'
-  'local.phx:Updates the Phoenix project generator locally'
-  'local.public_keys:Manages public keys'
-  'local.rebar:Installs Rebar locally'
-  'new:Creates a new Elixir project'
-  'phoenix.gen.html:Generates controller, model and views for an HTML based resource'
-  'phoenix.server:Starts applications and their servers'
-  'phx.digest:Digests and compresses static files'
-  'phx.digest.clean:Removes old versions of static assets.'
-  'phx.gen.auth:Generates a flexible, pre-built authentication system'
-  'phx.gen.channel:Generates a Phoenix channel'
-  'phx.gen.context:Generates a context with functions around an Ecto schema'
-  'phx.gen.html:Generates controller, views, and context for an HTML resource'
-  'phx.gen.live:Generates controller, context and helper for a LiveView resource'
-  'phx.gen.json:Generates controller, views, and context for a JSON resource'
-  'phx.gen.presence:Generates a Presence tracker'
-  'phx.gen.schema:Generates an Ecto schema and migration file'
-  'phx.gen.secret:Generates a secret'
-  'phx.new:Creates a new Phoenix application'
-  'phx.new.ecto:Creates a new Ecto project within an umbrella project'
-  'phx.new.web:Creates a new Phoenix web project within an umbrella project'
-  'phx.routes:Prints all routes'
-  'phx.server:Starts applications and their servers'
-  'profile.fprof:Profiles the given file or expression with fprof'
-  'run:Runs the given file or expression'
-  "test:Runs a project's tests"
-  'xref:Performs cross reference checks'
-  '--help:Describe available tasks'
-  '--version:Prints the Elixir version information'
-)
+_mix() {
+  typeset -A opt_args
+  local context state line
+  local curcontext="$curcontext"
+  local ret=1
 
-__task_list () {
-  local expl
-  declare -a tasks
+  _arguments -C  \
+    '1:task:_mix_tasks' \
+    '*::arg:->args' \
+    && ret=0
 
-  tasks=(
-    'app.start'
-    'app.tree'
-    'archive'
-    'archive.build'
-    'archive.install'
-    'archive.uninstall'
-    'clean'
-    'cmd'
-    'compile'
-    'deps'
-    'deps.clean'
-    'deps.compile'
-    'deps.get'
-    'deps.tree'
-    'deps.unlock'
-    'deps.update'
-    'do'
-    'ecto'
-    'ecto.create'
-    'ecto.drop'
-    'ecto.dump'
-    'ecto.gen.migration'
-    'ecto.gen.repo'
-    'ecto.load'
-    'ecto.migrate'
-    'ecto.migrations'
-    'ecto.rollback'
-    'escript'
-    'escript.build'
-    'escript.install'
-    'escript.uninstall'
-    'gettext.extract'
-    'gettext.merge'
-    'format'
-    'help'
-    'hex'
-    'hex.build'
-    'hex.config'
-    'hex.docs'
-    'hex.info'
-    'hex.key'
-    'hex.outdated'
-    'hex.owner'
-    'hex.public_keys'
-    'hex.publish'
-    'hex.retire'
-    'hex.search'
-    'hex.user'
-    'loadconfig'
-    'local'
-    'local.hex'
-    'local.public_keys'
-    'local.rebar'
-    'new'
-    'phoenix.gen.html'
-    'phoenix.server'
-    'phx.digest'
-    'phx.digest.clean'
-    'phx.gen.auth'
-    'phx.gen.channel'
-    'phx.gen.context'
-    'phx.gen.html'
-    'phx.gen.live'
-    'phx.gen.json'
-    'phx.gen.presence'
-    'phx.gen.schema'
-    'phx.gen.secret'
-    'phx.routes'
-    'phx.server'
-    'profile.fprof'
-    'run'
-    'test'
-    'xref'
-  )
+  case $state in
+    (args)
+      case $words[1] in
+        (help)
+          _mix_tasks && ret=0
+          ;;
+        (app.config)
+          _arguments \
+            '--force[forces compilation regardless of compilation times]' \
+            '--preload-modules[preloads all modules defined in applications]' \
+            '--no-archives-check[does not load .app resource file after compilation]' \
+            '--no-compile[does not compile even if files require compilation]' \
+            '--no-deps-check[does not check dependencies]' \
+            '--no-elixir-version-check[does not check Elixir version]' \
+            '--no-validate-compile-env[does not validate the application compile]' \
+            && ret=0
+          ;;
+        (app.start)
+          _arguments \
+            '--force[forces compilation regardless of compilation times]' \
+            '--temporary[starts the application as temporary]' \
+            '--permanent[starts the application as permanent]' \
+            '--preload-modules[preloads all modules defined in applications]' \
+            '--no-archives-check[does not check archives]' \
+            '--no-compile[does not compile even if files require compilation]' \
+            '--no-deps-check[does not check dependencies]' \
+            '--no-elixir-version-check[does not check Elixir version]' \
+            '--no-start[does not actually start applications, only compiles and loads code]' \
+            && ret=0
+          ;;
+        (app.tree)
+          _arguments \
+            '*--exclude[exclude applications which you do not want to see printed]:app' \
+            '--format[format type]:type:(pretty plain dot)' \
+            && ret=0
+          ;;
+        (archive.build)
+          _arguments \
+            '-o[output file name]:file:_files' \
+            '-i[input directory to archive]:dir:_files -/' \
+            '--no-compile[skips compilation]' \
+            '--include-dot-files[add dot files to the archive]' \
+            && ret=0
+          ;;
+        (archive.install)
+          _arguments \
+            '--sha512[checks the archive matches the given SHA-512 checksum]:checksum' \
+            '--force[forces installation without a shell prompt]' \
+            '--submodules[fetches repository submodules before building archive]' \
+            '--sparse[checkout a single directory inside the Git repository and use it]' \
+            '--app[a custom app name to be used for building the archive]:name' \
+            '--organization[organization for Hex private packages]:organization' \
+            '--repo[repo for self-hosted Hex instances]:repo' \
+            '*:: :_files' \
+            && ret=0
+          ;;
+        (archive.uninstall)
+          _arguments \
+            '--force[forces uninstallation without a shell prompt]' \
+            && ret=0
+          ;;
+        (clean)
+          _arguments \
+            "--deps[clean dependencies as well as the current project's files]" \
+            '--only[only clean the given environment]:env:_mix_environments' \
+            && ret=0
+          ;;
+        (cmd)
+          _arguments \
+            '--cd[directory to run the command in]:dir:_files -/' \
+            '--shell[perform shell expansion of the arguments]' \
+            '*:: :_normal' \
+            && ret=0
+          ;;
+        (compile)
+          _arguments \
+            '(--no-all-warnings --all-warnings)--all-warnings[print all warnings, including previous compilations]' \
+            '(--no-all-warnings --all-warnings)--no-all-warnings[do not print all warnings]' \
+            '--erl-config[path to an Erlang term file]:conf:_files' \
+            '--force[forces compilation]' \
+            '--list[list all enabled compilers]' \
+            '(--listeners --no-listeners --no-deps-check)--listeners[starts Mix listeners]' \
+            '--no-app-loading[does not load .app resource file after compilation]' \
+            '--no-archives-check[skips checking of archives]' \
+            '--no-compile[does not actually compile, only loads code and perform checks]' \
+            '(--listeners --no-deps-check)--no-deps-check[skips checking of dependencies]' \
+            '--no-elixir-version-check[does not check Elixir version]' \
+            '(--listeners --no-listeners)--no-listeners[do not start Mix listeners]' \
+            '--no-optional-deps[does not compile or load optional deps]' \
+            '--no-prune-code-paths[do not prune code paths before compilation]' \
+            '--no-protocol-consolidation[skips protocol consolidation]' \
+            '--no-validate-compile-env[does not validate the application compile environment]' \
+            '--return-errors[returns error status and diagnostics instead of exiting on error]' \
+            '--warnings-as-errors[exit with non-zero status if compilation has one or more warnings]' \
+            && ret=0
+          ;;
+        (compile.app)
+          _arguments \
+            '--force[forces compilation regardless of modification times]' \
+            '--compile-path[where to find .beam files and write the resulting .app]:dir:_files -/' \
+            && ret=0
+          ;;
+        (compile.elixir)
+          _arguments \
+            '(--no-all-warnings --all-warnings)--all-warnings[print all warnings, including previous compilations]' \
+            '(--no-all-warnings --all-warnings)--no-all-warnings[do not print all warnings]' \
+            '(--docs --no-docs)--docs[attach documentation to compiled modules]' \
+            '(--docs --no-docs)--no-docs[do not attach documentation to compiled modules]' \
+            '(--debug-info --no-debug-info)--debug-info[attach debug info to compiled modules]' \
+            '(--debug-info --no-debug-info)--no-debug-info[do not attach debug info to compiled modules]' \
+            '--force[force compilation regardless of modification times]' \
+            '--ignore-module-conflict[does not emit warnings if a module was previously defined]' \
+            '--long-compilation-threshold[set the "long compilation" threshold in N seconds]:seconds' \
+            '--long-verification-threshold[set the "long verification" threshold in N seconds]:seconds' \
+            '--no-verification[disable code verification]' \
+            '--no-check-cwd[do not check current working directory]' \
+            '--purge-consolidation-path-if-stale[delete and purges modules in given path]:dir:_files -/' \
+            '--profile[output timing information of compilation steps]' \
+            '--tracer[add a compiler tracer]' \
+            '--verbose[print each file being compiled]' \
+            '--warnings-as-errors[exit with non-zero status if compilation has one or more warnings]' \
+            && ret=0
+          ;;
+        (compile.erlang|compile.leex|compile.yecc)
+          _arguments \
+            '(--no-all-warnings --all-warnings)--all-warnings[print all warnings, including previous compilations]' \
+            '(--no-all-warnings --all-warnings)--no-all-warnings[do not print all warnings]' \
+            '--force[force compilation regardless of modification times]' \
+            '--verbose[print verbose output]' \
+            && ret=0
+          ;;
+        (deps)
+          _arguments \
+            '--all[list all dependencies, regardless of specified environment]' \
+            && ret=0
+          ;;
+        (deps.clean)
+          _arguments \
+            '--unlock[also unlock the deleted dependencies]' \
+            '--build[delete only compiled files]' \
+            '--all[delete all dependencies]' \
+            '--unused[delete only unused dependencies]' \
+            '*::deps:_mix_dependencies' \
+            && ret=0
+          ;;
+        (deps.compile)
+          _arguments \
+            '--force[force compilation of deps]' \
+            '--skip-umbrella-children[skip umbrella applications from compiling]' \
+            '--skip-local-deps[skip non-remote dependencies, such as path deps, from compiling]' \
+            && ret=0
+          ;;
+        (deps.get)
+          _arguments \
+            '--check-locked[raise if there are pending changes to the lockfile]' \
+            '--no-archives-check[do not check archives before fetching deps]' \
+            '--only[only fetch dependencies for given environment]:env:_mix_environments' \
+            && ret=0
+          ;;
+        (deps.tree)
+          _arguments \
+            '--only[the environment to show dependencies for]:env:_mix_environments' \
+            '--target[the target to show dependencies for]:target' \
+            '*--exclude[exclude dependencies which you do not want to see printed]:dep:_mix_dependencies' \
+            '--umbrella-only[only include the umbrella applications]' \
+            '--format[print format]:format:(pretty plain dot)' \
+            && ret=0
+          ;;
+        (deps.unlock)
+          _arguments \
+            '--all[unlock all dependencies]' \
+            '--filter[unlock only deps matching the given name]:filter' \
+            '--unused[unlock only unused dependencies]' \
+            '--check-unused[check that the mix.lock file has no unused dependencies]' \
+            '*::deps:_mix_dependencies' \
+            && ret=0
+          ;;
+        (deps.update)
+          _arguments \
+            '--all[update all dependencies]' \
+            '--only[only fetch dependencies for given environment]:env:_mix_environments' \
+            '--target[only fetch dependencies for given target]:target' \
+            '--no-archives-check[do not check archives before fetching deps]' \
+            '*::deps:_mix_dependencies' \
+            && ret=0
+          ;;
+        (do)
+          _arguments \
+            '*--app[limit recursive tasks to the given apps]:app' \
+            '1:action:(compile)' \
+            && ret=0
+          ;;
+        (escript.install)
+          _arguments \
+            '--sha512[check the escript matches the given SHA-512 checksum]:checksum' \
+            '--force[force installation without a shell prompt]' \
+            '--submodules[fetch repository submodules before building escript from Git or GitHub]' \
+            '--sparse[checkout a single directory inside the Git repository and use it as project directory]' \
+            '--app[specify a custom app name to be used for building the escript]:name' \
+            '--organization[set this for Hex private packages belonging to an organization]:organization' \
+            '--repo[set this for self-hosted Hex instances(default: hexpm)]' \
+            '1:from:_mix_escript_install_from' \
+            && ret=0
+          ;;
+        (escript.uninstall)
+          _arguments \
+            '--force[force uninstallation without a shell prompt]' \
+            '*: :_files' \
+            && ret=0
+          ;;
+        (eval)
+          _arguments \
+            '--no-archives-check[do not check archives]' \
+            '--no-compile[do not compile even if files require compilation]' \
+            '--no-deps-check[do not check dependencies]' \
+            '--no-elixir-version-check[do not check the Elixir version from mix.exs]' \
+            '--no-mix-exs[allow the command to run even if there is no mix.exs]' \
+            && ret=0
+          ;;
+        (format)
+          _arguments \
+            '--force[force formatting to happen on all files, instead of relying on cache]' \
+            '--check-formatted[check that the file is already formatted]' \
+            '--no-exit[continue formatting if format error happens, this is valid when --check-formatted is used]' \
+            '--dry-run[do not save files after formatting]' \
+            '--dot-formatter[path to the file with formatter configuration]:file:_files' \
+            '--stdin-filename[path to the file being formatted on stdin]:name' \
+            '--migrate[enable the :migrate option]' \
+            '*::path:_files' \
+            && ret=0
+          ;;
+        (local.rebar)
+          _arguments \
+            '--sha512[check the Rebar script matches the given SHA-512 checksum]:checksum' \
+            '--force[force installation without a shell prompt]' \
+            '--if-missing[perform installation only if not installed yet]' \
+            '1:type:(rebar3)' \
+            '*::path:_files' \
+            && ret=0
+          ;;
+        (new)
+          _arguments \
+            '--app[name the OTP application for the project]:app' \
+            '--module[name the modules in the generated code skeleton]:module' \
+            '--sup[generate an OTP application skeleton including a supervision tree]' \
+            '--umbrella[generate an umbrella project]' \
+            '*:: :_files' \
+            && ret=0
+          ;;
+        (profile.*)
+          _mix_profile_tasks "$words[1]" && ret=0
+          ;;
+        (release)
+          _arguments \
+            '--force[force recompilation]' \
+            '--no-archives-check[do not check archive]' \
+            '--no-deps-check[do not check dependencies]' \
+            '--no-elixir-version-check[do not check Elixir version]' \
+            '--no-compile[do not compile before assembling the release]' \
+            '--overwrite[overwrite existing files instead of prompting the use for action]' \
+            '--path[the path of the release]:path:_files' \
+            '--quiet[do not write progress to the standard output]' \
+            '--version[the version of the release]:version' \
+            && ret=0
+          ;;
+        (run)
+          _arguments \
+            '(-e --eval)'{-e,--eval}'[evaluate the given code]:code' \
+            '(--listeners --no-listeners --no-deps-check)--listeners[start Mix listeners]' \
+            \*{-r,--require}'[execute the given pattern/file]:require:_files' \
+            '(-p --parallel)'{-p,--parallel}'[make all requires parallel]' \
+            '--preload-modules[preload all modules defined in applications]' \
+            '--no-archives-check[do not check archives]' \
+            '--no-compile[do not compile even if files require compilation]' \
+            '(--listeners --no-deps-check)--no-deps-check[do not check dependencies]' \
+            '--no-elixir-version-check[do not check the Elixir version from mix.exs]' \
+            '--no-halt[do not halt the system after running the command]' \
+            '(--listeners --no-listeners)--no-listeners[do not start Mix listeners]' \
+            '--no-mix-exs[allow the command to run even if there is no mix.exs]' \
+            '--no-start[does not start applications after compilation]' \
+            '*:: :_files' \
+            && ret=0
+          ;;
+        (test)
+          _arguments \
+            '(--all-warnings --no-all-warnings)--all-warnings[print all warnings including previous compilations]' \
+            '(--all-warnings --no-all-warnings)--no-all-warnings[do not print all warnings]' \
+            '(-b --breakpoints)'{-b,--breakpoints}'[set a breakpoint at the beginning of every test]' \
+            '(--color --no-color)--color[enable color in ExUnit formatting results]' \
+            '(--color --no-color)--no-color[disable color]' \
+            '--cover[run coverage tool]' \
+            '*--exclude[exclude tests that match the filter]:filter' \
+            '--exit-status[use an alternate exit status to use when tests fail(default: 2)]:num' \
+            '--export-coverage[the name of the file to export coverage results to]:file:_files' \
+            '--failed[run only tests that failed the last time they ran]' \
+            '--force[force compilation regardless of modification times]' \
+            '--formatter[set the formatter module that will print the results]:formatter' \
+            '*--include[include tests that match the filter]:filter' \
+            '--listen-on-stdin[run tests and then listen on stdin]' \
+            '--max-cases[set the maximum number of tests running asynchronously]:num' \
+            '--max-failures[the suite stops evaluating tests when this number of test failures is reached]:num' \
+            '--max-requires[set the maximum number of test files to compile in parallel]:num' \
+            \*{-n,--name-pattern}'[only run tests with names that match the given regular expression]:regex'  \
+            '--no-archives-check[do not check archives]' \
+            '--no-compile[do not compile even if files require compilation]' \
+            '--no-deps-check[do not check dependencies]' \
+            '--no-elixir-version-check[do not check the Elixir version from mix.exs]' \
+            '--no-start[do not start applications after compilation]' \
+            '*--only[run only tests match the filter]:filter' \
+            '--partitions[set the amount of partitions to split tests in]:partition' \
+            '--preload-modules[preload all modules defined in applications]' \
+            '--profile-require[profile the time spent to require test files]:type:(time)' \
+            '--raise[immediate raise if the the test suite fails instead of continuing]' \
+            '--repeat-until-failure[set the number of repetitions for running the suite until it fails]:num' \
+            '--seed[seed the random generator used to randomize the order of tests(0 means disable randomization)]:seed' \
+            '--slowest[print timing information for the N slowest tests]:num' \
+            '--slowest-modules[print timing information for the N slowest modules]:num' \
+            '--stale[run only test which reference modules that changed since the last time tests were ran]' \
+            '--timeout[set the timeout for the tests]:timeout' \
+            '--trace[run tests with detailed reporting]' \
+            '--warnings-as-errors[treat compilation warnings as errors and return an exit status of 1]' \
+            '*:: :_files' \
+            && ret=0
+          ;;
+        (xref)
+          _mix_xref_tasks && ret=0
+          ;;
+        (hex.*)
+          _mix_hex_tasks "$words[1]" && ret=0
+          ;;
+        (phx.*)
+          _mix_phx_tasks "$words[1]" && ret=0
+          ;;
+        (*)
+          _arguments \
+            '*:: :_files' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
 
-  _wanted tasks expl 'help' compadd $tasks
+  return ret
 }
 
-local expl
-local curcontext="$curcontext" state line
-typeset -A opt_args
+_mix_tasks() {
+  local ret=1
+  local -a mix_tasks=()
+  if (( $+commands[perl] )); then
+    local cache_policy
+    zstyle -s ":completion:${curcontext}:" cache-policy cache_policy
+    zstyle ":completion:${curcontext}:" cache-policy ${cache_policy:-_mix_tasks_caching_policy}
 
-_arguments -C \
-  ':command:->command' \
-  '*::options:->options'
+    if _cache_invalid mix_cached_tasks || ! _retrieve_cache mix_cached_tasks; then
+      mix_tasks=(${(f)"$(mix help | perl -lne 'm{^mix (\S+)\s+#\s+(.+)} and print qq($1:$2)')"})
+      if (( $? == 0 )); then
+        _store_cache mix_cached_tasks mix_tasks
+      fi
+    fi
+  fi
 
-case $state in
-  (command)
-    _describe -t commands "mix subcommand" _1st_arguments
-    ;;
-  (options)
-    case $line[1] in
-      (help)
-        _arguments ':feature:__task_list'
-        ;;
-      (test|format|run)
-        _arguments ':PATH:_files'
-        ;;
-    esac
-  ;;
-esac
+  # fallback
+  if (( $#mix_tasks == 0 )); then
+    local -a builtin_tasks=(
+      "app.config:Configures all registered apps"
+      "app.start:Starts all registered apps"
+      "app.tree:Prints the application tree"
+      "archive:Lists installed archives"
+      "archive.build:Archives this project into a .ez file"
+      "archive.install:Installs an archive locally"
+      "archive.uninstall:Uninstalls archives"
+      "clean:Deletes generated application files"
+      "cmd:Executes the given command"
+      "compile:Compiles source files"
+      "compile.app:Writes a '.app' file"
+      "compile.elixir:Compiles Elixir source files"
+      "compile.erlang:Compiles Erlang source files"
+      "compile.leex:Compiles Leex source files"
+      "compile.yecc:Compiles Yecc source files"
+      "deps:Lists dependencies and their status"
+      "deps.clean:Deletes the given dependencies' files"
+      "deps.compile:Compiles dependencies"
+      "deps.get:Fetches unavailable and out of date dependencies"
+      "deps.tree:Prints the dependency tree"
+      "deps.unlock:Unlocks the given dependencies"
+      "deps.update:Updates the given dependencies"
+      "do:Executes the tasks separated by plus"
+      "escript:Lists installed escripts"
+      "escript.build:Builds an escript for the project"
+      "escript.install:Installs an escript locally"
+      "escript.uninstall:Uninstalls escripts"
+      "eval:Evaluates the given code"
+      "format:Formats the given files/patterns"
+      "help:Prints help information for tasks, aliases, modules, and applications"
+      "loadconfig:Loads and persists the given configuration"
+      "local:Lists tasks installed locally via archives"
+      "local.rebar:Installs Rebar locally"
+      "new:Creates a new Elixir project"
+      "profile.cprof:Profiles the given file or expression with cprof"
+      "profile.eprof:Profiles the given file or expression with eprof"
+      "profile.fprof:Profiles the given file or expression with fprof"
+      "profile.tprof:Profiles the given file or expression with tprof"
+      "release:Assembles a self-contained release"
+      "release.init:Generates sample files for releases"
+      "run:Runs the current application"
+      "test:Runs a project's tests"
+      "test.coverage:Build report from exported test coverage"
+      "xref:Prints cross reference information"
+    )
+
+    # mix help | perl -wln -e 'm{^mix (hex\.\S+)\s+#\s+(.+)} and print qq("$1:$2")'
+    local -a hex_tasks=(
+      "hex.audit:Shows retired Hex deps for the current project"
+      "hex.build:Builds a new package version locally"
+      "hex.config:Reads, updates or deletes local Hex config"
+      "hex.docs:Fetches or opens documentation of a package"
+      "hex.info:Prints Hex information"
+      "hex.organization:Manages Hex.pm organizations"
+      "hex.outdated:Shows outdated Hex deps for the current project"
+      "hex.owner:Manages Hex package ownership"
+      "hex.package:Fetches or diffs packages"
+      "hex.publish:Publishes a new package version"
+      "hex.registry:Manages local Hex registries"
+      "hex.repo:Manages Hex repositories"
+      "hex.retire:Retires a package version"
+      "hex.search:Open and perform searches"
+      "hex.sponsor:Show Hex packages accepting sponsorships"
+      "hex.user:Manages your Hex user account"
+    )
+
+    mix_tasks=($builtin_tasks[@] $hex_tasks[@])
+  fi
+
+  _describe -t tasks 'task' mix_tasks && ret=0
+  return ret
+}
+
+_mix_profile_tasks() {
+  local task="$1"
+  local ret=1
+
+  local -a options=(
+    '(-e --eval)'{-e,--eval}'[evaluate the given code]:code'
+    \*{-r,--require}'[require pattern before running the code]:require'
+    '(-p --parallel)'{-p,--parallel}'[make all requires parallel]'
+    '--no-compile[do not compile even if files require compilation]'
+    '--no-deps-check[do not check dependencies]'
+    '--no-archives-check[do not check archives]'
+    '--no-start[do not start applications after compilation]'
+    '--no-elixir-version-check[do not check the Elixir version from mix.exs]'
+  )
+
+  case $task in
+    (profile.eprof|profile.tprof)
+      options+=(
+        '--matching[only profile calls matching the given Module.function/arity pattern]:pattern'
+      )
+      ;|
+    (profile.eprof|profile.fprof|profile.tprof)
+      options+=(
+        '--no-warmup[skip the warmup step before profiling]'
+      )
+      ;|
+    (profile.eprof|profile.tprof)
+      options+=(
+        '--calls[filter out any results with a call count lower than this]:count'
+        '--time[filter out any results that took lower than specified(in micro-secs)]:time'
+      )
+      ;|
+    (profile.cprof)
+      options+=(
+        '--limit[filter out any results with a call count less than the limit]:limit'
+        '--module[filter out any results not pertaining to the given module]:module'
+        '--no-halt[do not halt the system after running the command]'
+      )
+      ;;
+    (profile.eprof)
+      options+=(
+        '--sort[sort the result by time or calls(default: time)]:sort_type:(time calls)'
+      )
+      ;;
+    (profile.fprof)
+      options+=(
+        '--callers[print detailed information about immediate callers and called functions]'
+        '--details[include profile data for each profiles process]'
+        '--sort[sort the output by given key(default: acc)]:sort_type:(acc own)'
+        '--trace-to-file[use a file to trace]'
+      )
+      ;;
+    (profile.tprof)
+      options+=(
+        '--type[the type of profiling(default: time)]:type:(calls time memory)'
+        '--memory[filter out any result that used less memory than specified]:words'
+        '--sort[sort the results by calls, per_call or by the value of type]:sort_type:(calls per_call)'
+        '--report[report type(default: process)]:report_type:(process total)'
+      )
+      ;;
+  esac
+
+  _arguments $options[@] && ret=0
+  return ret
+}
+
+_mix_xref_tasks() {
+  local ret=1
+
+  _arguments \
+    '1:task:(trace graph)' \
+    '*::arg:->args' \
+    && ret=0
+
+  case $state in
+    (args)
+      local -a options=(
+        '--fail-above[generate a failure if the relevant metric is above the given threshold]:threshold'
+        '--include-siblings[include dependencies that have :in_umbrella set to true in the reports]'
+        '--no-compile[do not compile even if files requires compilation]'
+        '--no-deps-check[do not check dependencies]'
+        '--no-archives-check[do not check archives]'
+        '--no-elixir-version-check[do not check the Elixir version from mix.exs]'
+        '*:: :_files'
+      )
+
+      case $words[1] in
+        (trace)
+          options+=(
+            '--label[keep only certain traces]:label:(compile runtime export)'
+          )
+          ;;
+        (graph)
+          options+=(
+            '*--exclude[path to exclude]:path:_files'
+            '--label[only show relationships with the given label]:label:(compile-connected compile export runtime)'
+            '--group[provide comma-separated paths to consider as a group]:path:_files'
+            '--only-direct[keep only files with the direct relationships given by --label]'
+            '--only-nodes[only show the node names(no edges)]'
+            '*--source[display all files that the given source file references]:source:_files'
+            '*--sink[display all files that reference the given file]:file:_files'
+            '--min-cycle-size[control the minimum cycle size on formats like stats and cycles]:size'
+            '--min-cycle-label[control the minimum number of dependencies with the given --label on a cycle]:num'
+            '--format[format type]:format_type:(pretty plain stats cycles dot json)'
+            '--output[override the location of the files created by the dot and json formats]:path:_files'
+          )
+          ;;
+      esac
+
+      _arguments $options[@] && ret=0
+      ;;
+  esac
+
+  return ret
+}
+
+_mix_hex_tasks() {
+  local task="$1"
+  local ret=1
+
+  case $task in
+    (hex.build)
+      _arguments \
+        '--unpack[Builds the tarball and unpacks contents into a directory]' \
+        '(-o --output)'{-o,--output}'[Set output path]:dir_or_path:_files' \
+        && ret=0
+      ;;
+    (hex.config)
+      local -a config_keys=(
+        'api_key:your API key'
+        'api_url:Hex API URL'
+        'offline:use locally cached files if available'
+        'unsafe_https:not verify HTTPS certificates'
+        "unsafe_registry:not verify the registry signature against the repository's public key"
+        'no_verify_repo_origin:not verify the registry origin'
+        'http_proxy:HTTP proxy server'
+        'https_proxy:HTTPS proxy server'
+        'no_proxy:comma separated list of hostnames that will not be proxied'
+        'http_concurrency:limits the number of concurrent HTTP requests in flight'
+        'http_timeout:timeout in seconds for HTTP requests'
+        'mirror_url:Hex mirror URL'
+        'trusted_mirror_url:Hex trusted mirror URL'
+        'cacerts_path:Path to the CA certificate store PEM file'
+        'no_short_urls:not shorten any links'
+      )
+
+      _arguments \
+        '--delete[Remove a specific config key]' \
+        '1:key:(( $config_keys ))' \
+        '2:val:_files' \
+        && ret=0
+      ;;
+    (hex.docs)
+      local -a tasks=(
+        'fetch:Fetch documentation'
+        'offline:Open a browser window with offline documentation'
+        'online:Open a browser window with online documentation'
+      )
+
+      _arguments \
+        '--module[Open a specified module documentation page]:module' \
+        '--organization[Set this for private packages belonging to an organization]:organization' \
+        '--latest[Looks for the latest release of a package]' \
+        '--format[Open the epub formatted version]:type:(epub)' \
+        '1:action:(( tasks ))' \
+        '2:module' \
+        '3:version'\
+        && ret=0
+      ;;
+    (hex.info)
+      _arguments \
+        '--organization[Set this for private packages belonging to an organization]:organization' \
+        && ret=0
+      ;;
+    (hex.organization)
+      local -a tasks=(
+        'auth:Authorize an organization'
+        'deauth:Deauthorize and remove and organization'
+        'list:List all authorized organizations'
+        'key:Generate/Revoke/List organization key'
+      )
+      local -a permissions=(
+        'api\:read:API read access'
+        'api\:write:API write access'
+        'repository:Access to the given organization repository'
+      )
+      local -a key_tasks=(
+        'generate:Generate organization key'
+        'revoke:Revoke key'
+        'list:List keys'
+      )
+
+      _arguments \
+        '--key[Hash of key used to authenticate HTTP requests to repository]:key' \
+        '--key-name[Key name]:name' \
+        '--permission[Set the permissions on the key]:permission:(( $permissions ))' \
+        '--all[Revoke all keys]' \
+        '1:task:(( $tasks ))' \
+        '2:organization' \
+        '3:key_task:(( $key_tasks ))' \
+        && ret=0
+      ;;
+    (hex.outdated)
+      _arguments \
+        '--all[Show all outdated packages including children of packages defined in mix.exs]' \
+        '--pre[Include pre-releases when checking for newer versions]' \
+        '--within-requirements[Exit with non-zero code only if requirements specified in mix.exs is met]' \
+        '--sort[Sort results by the given column]:column:(status)' \
+        '--only[Show only dependencies with the given only value]:value' \
+        && ret=0
+      ;;
+    (hex.owner)
+      local -a tasks=(
+        'add:Add an owner to package'
+        'transfer:Transfer owner ship of the package'
+        'remove:Remove an owner to package'
+        'list:List all owners of package'
+        'packages:List all packages owned by the current user'
+      )
+      _arguments \
+        '--level[Maintainer level owners have all the powers of package ownership]:level:(maintainer full)' \
+        '--organization[Set this for private packages belonging to an organization]:organization' \
+        '1:action:(( $tasks ))' \
+        '2:package' \
+        '*::data' \
+        && ret=0
+      ;;
+    (hex.package)
+      local -a tasks=(
+        'fetch:Fetch a package tarball to the current directory'
+        'diff:Diff package versions'
+      )
+
+      _arguments \
+        '--unpack[Builds the tarball and unpacks contents into a directory]' \
+        '(-o --output)'{-o,--output}'[Set output path]:dir_or_path:_files' \
+        '--organization[Set this for private packages belonging to an organization]:organization' \
+        '--repo[repo for self-hosted Hex instances]:repo' \
+        '1:action:(( $tasks ))' \
+        '2:package' \
+        '*::versions' \
+        && ret=0
+      ;;
+    (hex.publish)
+      _arguments \
+        '--organization[Set this for private packages belonging to an organization]:organization' \
+        '--yes[Publish the package without any confirmation prompts]' \
+        '--dry-run[Build package and perform local check without publishing]' \
+        '--replace[Allow overwriting an existing package version if it exists]' \
+        '--revert[Revert given version]:version' \
+        && ret=0
+      ;;
+    (hex.registry)
+      _arguments \
+        '--name[Name of the registry]:name' \
+        '--private-key[Path to the private key]:key:_files' \
+        '1:action:(build)' \
+        '2:dir:_files -/' \
+        && ret=0
+      ;;
+    (hex.repo)
+      local -a tasks=(
+        'add:Add a repository'
+        'set:Set config for repository'
+        'remove:Remote repository'
+        'show:Show repository config'
+        'list:List all repos'
+      )
+
+      _arguments \
+        '--public-key[Path to the public key used to verify the registry]:path:_files' \
+        '--auth-key[Key used to authenticate HTTP requests to repository]:key' \
+        '--fetch-public-key[Download public key from the repository and verify against the fingerprint]:fingerprint' \
+        '(--oauth-exchange --no-oauth-exchange)--oauth-exchange[Enable OAuth token exchange for API keys]' \
+        '(--oauth-exchange --no-oauth-exchange --oauth-exchange-url)--no-oauth-exchange[Disable OAuth token exchange for API keys]' \
+        '(--no-oauth-exchange --oauth-exchange-url)--oauth-exchange-url[Custom URL for OAuth token exchange]:url' \
+        '1:action:(( $tasks ))' \
+        '2:name' \
+        '3:value' \
+        && ret=0
+      ;;
+    (hex.retire)
+      local -a reasons=(
+        'renamed:Package has been renamed'
+        'deprecated:Package has been deprecated'
+        'security:There are security issues with this package'
+        'invalid:Package is invalid'
+        'other:Any other reason, clarify the reason in --message'
+      )
+
+      _arguments  \
+        '--message[Retire message]:message' \
+        '--organization[Set this for private packages belonging to an organization]:organization' \
+        '1:package' \
+        '2:version' \
+        '3:reason:(( $reasons ))' \
+        && ret=0
+      ;;
+    (hex.search)
+      _arguments \
+        '--no-stdlib[No standard library]' \
+        '--package[Specify package]:package' \
+        '--organization[Set this for private packages belonging to an organization]:organization' \
+        '--print-url[Print the docs URL instead of opening it in the browser]' \
+        && ret=0
+      ;;
+    (hex.user)
+      local -a tasks=(
+        'whoami:Print the current user'
+        'auth:Authorize a new user on the local machine'
+        'deauth:Deauthorize the user from the local machine'
+      )
+      _arguments \
+        '1:task:(( $tasks ))' \
+        && ret=0
+      ;;
+  esac
+
+  return ret
+}
+
+_mix_environments() {
+  local -a environments=(
+    'dev:the default environment'
+    'test:the environment mix test runs on'
+    'prod:the environment your dependencies run on'
+  )
+  _describe -t 'environments' 'environment' environments
+}
+
+_mix_phx_tasks() {
+  local task=$1
+  local ret=1
+
+  case $task in
+    (phx.digest.clean)
+      _arguments \
+        '(-o --output)'{-o,--output}'[indicate the path to your compiled assets directory]:dir:_files -/' \
+        '--age[specify a maximum age in seconds for assets]:age' \
+        '--keep[specify how many previous versions of assets to keep(default: 2)]:num' \
+        '--all[specify that all compiled assets will be removed]:num' \
+        '--no-compile[do not run "mix compile"]' \
+        && ret=0
+      ;;
+    (phx.digest)
+      _arguments \
+        '(-o --output)'{-o,--output}'[indicate the path to your compiled assets directory]:dir:_files -/' \
+        '--no-vsn[do not add version query string to assets]' \
+        '--no-compile[do not run "mix compile"]' \
+        && ret=0
+      ;;
+    (phx.gen.auth)
+      _arguments \
+        '(--live --no-live)--live[use LiveView]' \
+        '(--live --no-live)--no-live[do not use LiveView]' \
+        '--hashing-lib[override password hashing mechanism]:lib:(bcrypt pbkdf2 argon2)' \
+        '--assign-key[customize the generated assign key]:key' \
+        '(--binary-id --no-binary-id)--binary-id[use binary_id for its primary key and foreign keys]' \
+        '(--binary-id --no-binary-id)--no-binary-id[use normal IDs]' \
+        '--table[customize table name with the given name]:name' \
+        '--scope[customize scope name with the given name]:scope' \
+        '*::context_module:_mix_phx_context_modules' \
+        && ret=0
+      ;;
+    (phx.gen.cert)
+      _arguments \
+        '(-o --output)'{-o,--output}'[path and base filename for the certificate and key]:dir:_files -/' \
+        '(-n --name)'{-n,--name}"[the Common Name value in certificate's subject]" \
+        && ret=0
+      ;;
+    (phx.gen.context)
+      _arguments \
+        '(--no-migration --migration)--migration[force generation of the migration]' \
+        '(--no-migration --migration)--no-migration[skip migration]' \
+        '--no-scope[disable scoping]' \
+        '--no-schema[generate without a schema]' \
+        '--table[customize table name with the given name]:name' \
+        '(--binary-id --no-binary-id)--binary-id[use binary_id for its primary key and foreign keys]' \
+        '(--binary-id --no-binary-id)--no-binary-id[use normal IDs]' \
+        '(--no-merge-with-existing-context --merge-with-existing-context)--merge-with-existing-context[merge with existing context]' \
+        '(--no-merge-with-existing-context --merge-with-existing-context)--no-merge-with-existing-context[prevent changes to the existing context]' \
+        '*::context_module:_mix_phx_context_modules' \
+        && ret=0
+      ;;
+    (phx.gen.html|phx.gen.json|phx.gen.live)
+      _arguments \
+        '--no-scope[disable scoping]' \
+        '--context-app[supply context_app configuration to the generator]:app' \
+        '--web[add a namespace]:module:_mix_phx_context_modules' \
+        '--no-context[do not leave implementation of the context]' \
+        '--no-schema[do not leave implementation of the schema]' \
+        '*::context_module:_mix_phx_context_modules' \
+        && ret=0
+      ;;
+    (phx.gen.notifier)
+      _arguments \
+        '--context-app[supply context_app configuration to the generator]:app' \
+        '*::context_module:_mix_phx_context_modules' \
+        && ret=0
+      ;;
+    (phx.gen.release)
+      _arguments \
+        '(--no-ecto --ecto)--ecto[force migration-related files to be generated]' \
+        '(--no-ecto --ecto)--no-ecto[skip generating migration-related files]' \
+        '--docker[generate Dockerfile and .dockerignore]' \
+        && ret=0
+      ;;
+    (phx.gen.schema)
+      _arguments \
+        '--table[customize table name with the given name]:name' \
+        '--primary-key[change the name of the primary key column]:key' \
+        '--repo[set the migration repository folder]:dir:_files -/' \
+        '--migration-dir[set the migration folder path]:dir:_files -/' \
+        '--prefix[specify prefix]:prefix' \
+        '(--binary-id --no-binary-id)--binary-id[use binary_id for its primary key and foreign keys]' \
+        '(--binary-id --no-binary-id)--no-binary-id[use normal IDs]' \
+        '(--no-migration --migration)--migration[force generation of the migration]' \
+        '(--no-migration --migration)--no-migration[skip migration]' \
+        && ret=0
+      ;;
+    (phx.new*)
+      _arguments \
+        '--umbrella[generate an umbrella project]' \
+        '--app[name of the OTP application]:name' \
+        '--module[name of the base module in the generated skeleton]:module' \
+        '--database[specify the database adapter for Ecto]:database:(postgres mysql mssql sqlite3)' \
+        '--adapter[specify the http adapter]:adapter:(cowboy bandit)' \
+        '--no-assets[equivalent to --noesbuild and --no-tailwind]' \
+        '--no-dashboard[do not include Phoenix.LiveDashboard]' \
+        '--no-ecto[do not generate Ecto files]' \
+        '--no-esbuild[do not include esbuild dependencies and assets]' \
+        '--no-gettext[do not generate gettext files]' \
+        '--no-html[do not generate HTML views]' \
+        '--no-live[comment out LiveView socket setup in your Endpoint and assets/js/app.js]' \
+        '--no-mailer[do not generate Swoosh mailer files]' \
+        '--no-tailwind[do not include tailwind dependencies and assets]' \
+        '--binary-id[use binary_id as primary key type in Ecto schemas]' \
+        '--verbose[use verbose output]' \
+        '(- *)'{-v,--version}'[print the Phoenix installer version]' \
+        '--no-version-check[skip the version check for the latest phx_new version]' \
+        '--no-agents-md[do not generate an AGENTS.md file]' \
+        && ret=0
+      ;;
+    (phx)
+      _arguments \
+        '(- *)'{-v,--version}'[print the Phoenix version]' \
+        && ret=0
+      ;;
+    (phx.routes)
+      local -a http_methods=(get post put patch delete options connect trace head)
+      _arguments \
+        '--info[locate the controller function definition called by the given url]:url' \
+        '--method[what HTTP method to use with the given url]:method:($http_methods)' \
+        && ret=0
+      ;;
+    (phx.server)
+      _arguments \
+        '--open[open browser window for each started endpoint]' \
+        '--no-compile[without recompiling]' \
+        '--no-halt[do not halt the system after running the command]' \
+        '--no-dep-check[do not check dependencies]' \
+        && ret=0
+      ;;
+  esac
+
+  return ret
+}
+
+_mix_dependencies() {
+  local -a dependencies=(${(f)"$(mix deps --all 2>/dev/null | awk '/^\* / { print $2 }')"})
+  _values 'dependencies' $dependencies
+}
+
+_mix_escript_install_from() {
+  _alternative \
+    'file:file:_files' \
+    'where:repo:(git github hex)'
+}
+
+_mix_phx_context_modules() {
+  local -a modules=(Accounts User UserToken Identity Client ClientToken Store Backoffice Admin)
+  _values 'context modules' $modules
+}
+
+_mix_tasks_caching_policy() {
+  # rebuild if cache is more than an hour
+  local -a oldp
+  oldp=( "$1"(mh+1) )
+  (( $#oldp ))
+}
+
+_mix "$@"
 
 # Local Variables:
 # mode: Shell-Script
