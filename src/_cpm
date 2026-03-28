@@ -1,0 +1,121 @@
+#compdef cpm
+# ------------------------------------------------------------------------------
+# Copyright (c) 2026 Github zsh-users - https://github.com/zsh-users
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for cpm 0.998003 (https://github.com/skaji/cpm)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei Yoshida (https://github.com/syohex) <syohex@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+_cpm() {
+  typeset -A opt_args
+  local context state line
+  local curcontext="$curcontext"
+  local ret=1
+
+  _arguments -C \
+    '(- *)'{-h,--help}'[Show help message]' \
+    '(- *)--version[Show version and exit]' \
+    '(-v --verbose)'{-v,--verbose}'[Enable debug mode]' \
+    '1: :_cpm_subcommands' \
+    '*::arg:->args' && ret=0
+
+  case $state in
+    (args)
+      case $words[1] in
+        (install)
+          _arguments \
+            '(-w --workers)'{-w,--workers=}'[number of workers(default=5)]:num' \
+            '(-L --local-lib-contained)'{-L,--local-lib-contained=}'[directory to install module into, default=local/]: :_files -/' \
+            '(-g --global)'{-g,--global}'[install modules into current @INC instead of local/]' \
+            '(-v --verbose)'{-v,--verbose}'[verbose mode]' \
+            '(--prebuilt --no-prebuilt)--prebuilt[save builds for CPAN distributions and later install the prebuilts if available]' \
+            '(--prebuilt --no-prebuilt)--no-prebuilt[no prebuilt]' \
+            '--target-perl=[install modules as if version is your perl is VERSION]:version' \
+            '--mirror[base URL for the CPAN mirror to use]:url' \
+            '(--pp --pureperl-only)'{--pp,--pureperl-only}'[prefer pureperl only build]' \
+            '(--static-install --no-static-install)--static-install[enable the static install]' \
+            '(--static-install --no-static-install)--no-static-install[disable the static install]' \
+            \*{-r,--resolver=}'[specify resolvers]:resolver' \
+            '--no-defult-resolvers[Use default resolvers if you specify --resolver option]' \
+            '--reinstall[reinstall the distribution even if you already have the latest version installed]' \
+            '--dev[resolve TRIAL distributions too]' \
+            '(--color --no-color)--color[turn on color output]' \
+            '(--color --no-color)--no-color[turn off color output]' \
+            '(--test --no-test)--test[run test cases]' \
+            '(--test --no-test)--no-test[do not run test cases]' \
+            '--man-pages[generate man pages]' \
+            '(--retry --no-retry)--retry[retry configure/build/test/install if fails]' \
+            '(--retry --no-retry)--no-retry[do not retry]' \
+            '--show-build-log-on-failure[show build.log on failure]' \
+            '--configure-timeout=[specify configure timeout second]:sec' \
+            '--build-timeout=[specify build timeout second]:sec' \
+            '--test-timeout=[specify test timeout second]:sec' \
+            '(--show-progress --no-show-progress)--show-progress[show progress]' \
+            '(--show-progress --no-show-progress)--no-show-progress[do not show progress]' \
+            '--cpmfile=[specify cpmfile path]: :_files' \
+            '--cpanfile=[specify cpanfile path]: :_files' \
+            '--metafile=[specify META file path]: :_files' \
+            '--snapshot=[specify cpanfile.snapshot path]: :_files' \
+            '(- *)'{-V,--version}'[show version]' \
+            '(- *)'{-h,--help}'[show help message]' \
+            '*--feature=[specify the feature to enable in cpanfile]:feature' \
+            '*:modules' \
+            && ret=0
+          ;;
+        (*)
+          ret=0
+          ;;
+      esac
+  esac
+
+  return ret
+}
+
+(( $+functions[_cpm_subcommands] )) ||
+_cpm_subcommands() {
+  local -a commands=(
+    "install:Install modules"
+    "help:Show help"
+    "version:Show version"
+  )
+
+  _describe -t subcommands "subcommands" commands
+}
+
+_cpm "$@"
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et

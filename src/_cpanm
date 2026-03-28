@@ -1,0 +1,103 @@
+#compdef cpanm
+# ------------------------------------------------------------------------------
+# Copyright (c) 2026 Github zsh-users - https://github.com/zsh-users
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for cpanm 1.7049 (https://github.com/miyagawa/cpanminus)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei Yoshida (https://github.com/syohex) <syohex@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+_arguments -n -C -s \
+  '(-i --install)'{-i,--install}'[Install the modules]' \
+  '--self-upgrade[Upgrades itself]' \
+  '--info[Displays the distribution information in "AUTHOR/Dist-Name-ver.tar.gz" format in the stdout]' \
+  "--installdeps[Installs the dependencies of the target distribution but won't build itself]" \
+  '--look[Download and unpack the distribution and then open the directory with your shell]' \
+  '(- *)'{-h,--help}'[Display the help message]' \
+  '(- *)'{-V,--version}'[Display the version number]' \
+  '(-f --force)'{-f,--force}'[Force install modules even when testing failed]' \
+  '(-n --notest)'{-n,--notest}'[Skip the testing of modules]' \
+  '--test-only[Run the tests only]' \
+  '(-S --sudo)'{-S,--sudo}'[Switch to the root user with "sudo" when installing modules]' \
+  '(-v --verbose)'{-v,--verbose}'[Makes the output verbose]' \
+  '(-q --quiet)'{-q,--quiet}'[Makes the output even more quiet than the default]' \
+  '(-l --local-lib)'{-l,--local-lib}'[Sets the local::lib compatible path to install modules to]' \
+  '(-L --local-lib-contained)'{-L,--local-lib-contained}'[Same with "--local-lib" but with --self-contained set]' \
+  '--self-contained[When examining the dependencies, assume no non-core modules are installed on the system]' \
+  "--exclude-vendor[Don't include module installed under the 'vendor' paths]" \
+  '--mirror=[Specifies the base URL for the CPAN mirror to use]:mirror' \
+  "--mirror-only[Download the mirror's index file instead of querying the CPAN Meta DB]" \
+  '(-M --from)'{-M,--from}='[Use the given mirror URL and its index as the only source to search and download modules from]' \
+  '--mirror-index[Specifies the file path to "02packages.details.txt" for module search index]' \
+  '--cpanmetadb[Specifies an alternate URI for CPAN MetaDB index lookups]' \
+  '--metacpan[Prefers MetaCPAN API over CPAN MetaDB]' \
+  '--cpanfile=[Specified an alternate path for cpanfile]: :_files' \
+  "--prompt[Prompts when a test fails so that you can skip, force install, retry or look what's going wrong]" \
+  '--dev[Search for a newer developer release as well]' \
+  '--reinstall[Reinstall even if your locally installed version is latest]' \
+  '--interactive[Makes the configuration interactive]' \
+  '(--pp --pureperl)'{--pp,--pureperl}'[Prefer Pure perl build of modules]' \
+  '--with-recommends[Installs dependencies declared as "recommends"]' \
+  '--with-suggests[Installs dependencies declared as "suggests"]' \
+  '--with-develop[Install develop phase dependencies in "cpanfile"]' \
+  '--with-configure[Installs configure phase dependencies in "cpanfile"]' \
+  '--with-feature=[Specifies the feature to enable]::feature' \
+  '--without-feature=[Not specifies the feature to enable]::feature' \
+  '--with-all-feature[Specifies the all features to enable]' \
+  '--configure-timeout=[Specify the timeout length to wait for the configure]' \
+  '--build-timeout=[Specify the timeout length to wait for the build]' \
+  '--test-timeout=[Specify the timeout length to wait for the test]' \
+  '--configure-args=[Pass arguments for configure]:args' \
+  '--build-args=[Pass arguments for build]:args' \
+  '--test-args=[Pass arguments for test]:args' \
+  '--install-args=[Pass arguments for install]:args' \
+  '--scandeps[Scans the dependencies of given modules and output the tree in a text format]' \
+  '--format=[Determines what format to display the scanned dependency tree]:fmt:(tree json yaml dists)' \
+  '--save-dist=[Specifies the optional directory path to copy downloaded tarballs]: :_files -/' \
+  '(-U --uninstall)'{-U,--uninstall}'[Uninstalls a module from the library path]' \
+  '--cascade-search[Specifies whether to cascade search when you specify multiple mirrors]' \
+  '--skip-installed[Skip install if specified module is already installed]' \
+  '--skip-satisfies[Skip install if specified module and version is already installed]' \
+  '--verify[Verify the integrity of distribution files]' \
+  '--report-perl-version[Report perl version as port of User-Agent]' \
+  '--auto-cleanup[Specifies the number of days in which cpanm work directories expire]::days' \
+  '--man-pages[Generate man pages for executables(man1) and libraries(man3)]' \
+  '--lwp[Uses LWP module to download stuff over HTTP]' \
+  '--wget[Uses GNU Wget(if available) to download stuff]' \
+  '--curl[Uses cURL(if available) to download stuff]' \
+  && return 0
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
