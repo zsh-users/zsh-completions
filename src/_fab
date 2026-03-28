@@ -28,9 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Fabric (https://www.fabfile.org/)
-#
-#  Source: https://github.com/vhbit/fabric-zsh-autocomplete
+#  Completion script for Fabric v3.2.2 (https://www.fabfile.org/)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -40,65 +38,42 @@
 #
 # ------------------------------------------------------------------------------
 
-
-local curcontext=$curcontext state line
-declare -A opt_args
-
-declare target_list
-target_list=(`fab --shortlist 2>/dev/null`)
-
-_targets() {
-    _describe -t commands "fabric targets" target_list
+_fab_tasks() {
+  local -a tasks=(${(f)"$(fab --list 2>/dev/null| awk '/^ /{first=$1;$1="";print first ":" substr($0, 2) }')"})
+  if (( $#tasks > 0)); then
+    _describe -t 'task' tasks tasks
+  fi
 }
 
-output_levels=(
-    'status: Status messages, i.e. noting when Fabric is done running, if the user used a keyboard interrupt, or when servers are disconnected from. These messages are almost always relevant and rarely verbose.'
-    'aborts: Abort messages. Like status messages, these should really only be turned off when using Fabric as a library, and possibly not even then. Note that even if this output group is turned off, aborts will still occur – there just won’t be any output about why Fabric aborted!'
-    'warnings: Warning messages. These are often turned off when one expects a given operation to fail, such as when using grep to test existence of text in a file. If paired with setting env.warn_only to True, this can result in fully silent warnings when remote programs fail. As with aborts, this setting does not control actual warning behavior, only whether warning messages are printed or hidden.'
-    'running: Printouts of commands being executed or files transferred, e.g. [myserver] run: ls /var/www. Also controls printing of tasks being run, e.g. [myserver] Executing task ''foo''.'
-    'stdout: Local, or remote, stdout, i.e. non-error output from commands.'
-    'stderr: Local, or remote, stderr, i.e. error-related output from commands.'
-    'user: User-generated output, i.e. local output printed by fabfile code via use of the fastprint or puts functions.'
-)
-
-_arguments -w -S -C \
-  '(-)'{-h,--help}'[show this help message and exit]: :->noargs' \
-  '(-)'{-V,--version}'[show program'\''s version number and exit]: :->noargs' \
-  '(-)--list[print list of possible commands and exit]: :->noargs' \
-  '(-)--shortlist[print non-verbose list of possible commands and exit]: :->noargs' \
-  '(--reject-unknown-hosts)--reject-unknown-hosts[reject unknown hosts]' \
-  '(--no-pty)--no-pty[do not use pseudo-terminal in run/sudo]' \
-  "(-d+ --display=-)"{-d+,--display=-}"[print detailed info about a given command]: :_targets" \
-  '(-D --disable-known-hosts)'{-D,--disable-known-hosts}'[do not load user known_hosts file]' \
-  '(-r --reject-unknown-hosts)'{-r,--reject-unknown-hosts}'[reject unknown hosts]' \
-  '(-u+ --user=-)'{-u+,--user=-}'[username to use when connecting to remote hosts]: :' \
-  '(-p+ --password=-)'{-p+,--password=-}'[password for use with authentication and/or sudo]: :' \
-  '(-H+ --hosts=-)'{-H+,--hosts=-}'[comma separated list of hosts to operate on]: :' \
-  '(-R+ --roles=-)'{-R+,--roles=-}'[comma separated list of roles to operate on]: :' \
-  '(-a --no-agent)'{-a,--no-agent}'[don'\''t use the running SSH agent]' \
-  '(-k --no-keys)'{-k,--no-keys}'[don'\''t load private key files from ~/.ssh/]' \
-  '(-w --warn-only)'{-w,--warn-only}'[warn instead of abort, when commands fail]' \
-  '-i+[path to SSH private key file. May be repeated]: :_files' \
-  "(-f+ --fabfile=)"{-f+,--fabfile=}"[Python module file to import]: :_files -g *.py" \
-  '(-c+ --config=-)'{-c+,--config=-}'[specify location of config file to use]: :_files' \
-  '(-s+ --shell=-)'{-s+,--shell=-}'[specify a new shell, defaults to ''/bin/bash -l -c'']: :' \
-  '(--ssh-config-path=)--ssh-config-path=[ssh config path]: :_files' \
-  '(--hide=-)--hide=-[comma-separated list of output levels to hide]: :->levels' \
-  '(--show=-)--show=-[comma-separated list of output levels to show]: :->levels' \
-  '*::: :->subcmds' && return 0
-
-if [[ CURRENT -ge 1 ]]; then
-    case $state in
-        noargs)
-             _message "nothing to complete";;
-        levels)
-            _describe -t commands "output levels" output_levels;;
-        *)
-            _targets;;
-    esac
-
-    return
-fi
+_arguments \
+  '--complete[Print tab-completion candidates for given parse remainder]' \
+  "--hide=[Set default value of run()'s 'hide' kwarg]:str" \
+  '(- *)--list-agent-keys[Display ssh-agent key list, and exit]' \
+  '--no-dedupe[Disable task deduplication]' \
+  '--print-completion-script=[Print the tab-completion script for your preferred shell]:shell:(bash zsh fish)' \
+  '--prompt-for-login-password[Request an upfront SSH-auth password prompt]' \
+  '--prompt-for-passphrase[Request an upfront SSH key passphrase prompt]' \
+  '--prompt-for-sudo-password[Prompt user at start of session for the sudo.password config value]' \
+  '--write-pyc[Enable creation of .pyc files]' \
+  '(-c --collection)'{-c,--collection=}'[Specify collection name to load]:name' \
+  '(-d --debug)'{-d,--debug}'[Enable debug output]' \
+  '(-D --list-depth)'{-D,--list-depth=}'[When listing tasks, only show the first INT levels]:level' \
+  '(-e --echo)'{-e,--echo}'[Echo executed commands before running]' \
+  '(-f --config)'{-f,--config=}'[Runtime configuration file to use]:file:_files' \
+  '(-F --list-format)'{-F,--list-format=}'[Change the display format used when listing tasks]:format:(flat nested json)' \
+  '(- *)'{-h,--help=-}'[Show core or per-task help and exit]::task:_fab_tasks' \
+  '(-H --hosts)'{-H,--hosts=}'[Comma-separated host name(s) to execute tasks against]:host' \
+  \*{-i,--identity=}'[Path to runtime SSH identity (key) file]:file:_files' \
+  '(-l --list)'{-l,--list=-}'[List available tasks, optionally limited to a namespace]::namespace' \
+  '(-p --pty)'{-p,--pty}'[Use a pty when executing shell commands]' \
+  '(-r --search-root)'{-r,--search-root=}'[Change root directory used for finding task modules]:dir:_files -/' \
+  '(-R --dry)'{-R,--dry}'[Echo commands instead of running]' \
+  '(-S --ssh-config)'{-S,--ssh-config=}'[Path to runtime SSH config file]:file:_files' \
+  '(-t --connect-timeout)'{-t,--connect-timeout=}'[Specifies default connection timeout, in seconds]:seconds' \
+  '(-T --command-timeout)'{-T,--command-timeout=}'[Specify a global command execution timeout, in seconds]:seconds' \
+  '(- *)'{-V,--version}'[Show version and exit]' \
+  '(-w --warn-only)'{-w,--warn-only}'[Warn, instead of failing, when shell commands fail]' \
+  '*::task:_fab_tasks'
 
 # Local Variables:
 # mode: Shell-Script
