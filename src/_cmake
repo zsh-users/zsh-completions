@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for CMake 3.31.0 (https://cmake.org).
+#  Completion script for CMake 4.3.0 (https://cmake.org).
 #
 # -------------------------------------------------------------------------
 # Authors
@@ -62,6 +62,7 @@ local -a cmake_build_options=(
   '-A[Specify platform name if supported by generator]:platform name'
   '--toolchain[Specify toolchain file]: :_files'
   '--install-prefix[Specify install directory]: :_path_files -/'
+  '--project-file[Specify an alternate project file name]:name'
 
   # Warnings
   '(-Wdev)-Wno-dev[Suppress/Enable developer warnings]'
@@ -115,6 +116,7 @@ local -a cmake_build_options=(
   '--warn-unused-vars[Warn about unused variables]'
   '--check-system-vars[Find problems with variable usage in system files]'
   '--compile-no-warning-as-error[Ignore COMPILE_WARNING_AS_ERROR property and CMAKE_COMPILE_WARNING_AS_ERROR variable]'
+  '--link-no-warning-as-error[Ignore LINK_WARNING_AS_ERROR and CMAKE_LINK_WARNING_AS_ERROR]'
 
   '--profiling-format[Output data for profiling CMake scripts]:profiling format:(google-trace)'
   '--profiling-output[Select an output path for the profiling data]:filename:_files'
