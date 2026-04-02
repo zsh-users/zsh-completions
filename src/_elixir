@@ -1,0 +1,99 @@
+#compdef elixir elixirc iex
+# ------------------------------------------------------------------------------
+# Copyright (c) 2026 Github zsh-users - https://github.com/zsh-users
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for elixir 1.19.5 (https://elixir-lang.org/)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei Yoshida (https://github.com/syohex) <syohex@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+
+if [[ $service == "iex" ]]; then
+  _arguments \
+    '--dbg[Set the backend for Kernel.dbg/2]:backend:(pry)' \
+    '--dot-iex[Evaluate file, line by line to set up IEx environment]:file:_files' \
+    '--remsh[Connect to a node using a remote shell]:name' \
+    '*::file_or_data:_files -g "*.exs"'
+else
+  local -a elixir_options=(
+    \*{-e,--eval}'[Evaluate the given command]:command'
+    '(- *)'{-h,--help}'[Print help message]'
+    '*-r[Require the given files or patterns]:file_or_pattern:_files'
+    '-S[Find and execute the given script in $PATH]:file:_files'
+    '*-pr[Require the given files or patterns in parallel]:file_or_pattern:_files'
+    '*-pa[Prepend the given path to Erlang code path]:path:_files -/'
+    '*-pz[Append the given path to Erlang code path]:path:_files -/'
+    '(- *)'{-v,--version}'[Print Erlang/OTP and Elixir versions]'
+    '(--color --no-color)--color[Enable ANSI coloring]'
+    '(--color --no-color)--no-color[Disable ANSI coloring]'
+    '*--erl[Switch to be passed down to Erlang]:switch'
+    '--logger-otp-reports[Enable or disable OTP reporting]:bool:(true false)'
+    '--logger-sasl-reports[Enable or disable SASL reporting]:bool:(true false)'
+    '--no-halt[Do not halt the Erlang VM after execution]'
+    '(- *)--short-version[Print Elixir version]'
+    '--cookie[Set a cookie for this distributed node]:cookie'
+    '--hidden[Make a hidden node]'
+    '--name[Make and assign a name to the distributed node]:name'
+    '*--rpc-eval[Evaluate the given command on the given remote node]:node_command'
+    '--sname[Make and assign a short name to the distributed node]'
+    '--boot[Use the given FILE.boot to start the system]:file:_files'
+    '*--boot-var[Make $VAR available as VALUE to FILE.boot]:var_value'
+    '*--erl-config[Load configuration in FILE.config written in Erlang]:file:_files'
+    '--pipe-to[Start the Erlang VM as a named PIPEDIR and LOGDIR]:pipe_and_log:_files -/'
+    '--vm-wargs[Pass the contents in file as arguments to the VM]:file:_files'
+  )
+
+  case $service in
+    (elixir)
+      _arguments $elixir_options[@]
+    ;;
+  (elixirc)
+    _arguments \
+      $elixir_options[@] \
+      '-o[The directory to output compiled files]:dir:_files -/' \
+      '(- *)'{-v,--version}'[Print Elixir version and exit]' \
+      '--ignore-module-conflict[Do not emit warnings if a module was previously defined]' \
+      '--no-debug-info[Do not attach debug info to compiled modules]' \
+      '--no-docs[Do not attach documentation to compiled modules]' \
+      '--profile[Profile to compile modules]:type:(time)' \
+      '--verbose[Print compilation status]' \
+      '--warnings-as-errors[Treat warnings as errors and return non-zero exit status]' \
+      '*::file:_files -g "*.ex"'
+    ;;
+  esac
+fi
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
