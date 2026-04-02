@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Node.js v25.8.0 (https://nodejs.org)
+#  Completion script for Node.js v25.9.0 (https://nodejs.org)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -70,6 +70,23 @@ _node_scripts() {
 }
 
 _node() {
+  # See https://github.com/nodejs/node/blob/main/doc/api/cli.md
+  # Note some allowed v8 options are listed in 'node --help' but others are not
+  local -a v8_options=(
+    '--max-heap-size=[max size of the heap in Mbytes]:size'
+    '--max-old-space-size=[max size of the old space in Mbytes]:size'
+    '--max-semi-space-size=[max size of a semi-space in Mbytes]:size'
+    '--stack-trace-limit=[number of stack frames to capture]:limit'
+  )
+  if [[ $OSTYPE == linux* ]]; then
+    v8_options+=(
+      '--perf-basic-prof-only-functions[only report function code ranges to perf]'
+      '--perf-basic-prof[enable basic support for perf profiler]'
+      '--perf-prof-unwinding-info[enable unwinding info for perf linux profiler]'
+      '--perf-prof[enable annotate support for perf profiler]'
+    )
+  fi
+
   local ret=1
 
   _arguments \
@@ -252,6 +269,7 @@ _node() {
     "--watch-path=[path to watch]: :_node_files" \
     '--watch-preserve-output[preserve outputs on watch mode restart]' \
     '--zero-fill-buffers[automatically zero-fill all newly allocated Buffer and SlowBuffer instances]' \
+    $v8_options[@] \
     '(- 1 *)'{-h,--help}'[print node command line options]' \
     '(- 1 *)'{-v,--version}'[print Node.js version]' \
     '*: :_node_args' && ret=0
