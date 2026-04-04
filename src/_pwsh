@@ -1,0 +1,85 @@
+#compdef pwsh
+# ------------------------------------------------------------------------------
+# Copyright (c) 2026 Github zsh-users - https://github.com/zsh-users
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for PowerShell 7.6.0 (https://github.com/PowerShell/PowerShell)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei Yoshida (https://github.com/syohex) <syohex@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+_pwsh_execution_policies() {
+  local -a policies=(
+    "AllSigned:Require that all scripts and config files are signed by a trusted publisher"
+    "Bypass:Nothing is blocked and there are no warnings or prompts"
+    "Default:Sets the default execution policy"
+    "RemoteSigned:Require that all scripts and config files downloaded from the Internet are signed by a trusted publisher"
+    "Restricted:Doesn't load configuration files or run scripts"
+    "Undefined:No execution policy is set for the scope"
+    "Unrestricted:Loads all configuration files and runs all scripts"
+  )
+
+  _describe -t policy policies policies
+}
+
+_arguments \
+  '(- *)'{-Help,-?}'[Display help for pwsh]' \
+  '(-f -File)'{-f,-File}'[Specify file name to execute, "-" means reading from standard input]:file:_files' \
+  '(-c -Command)'{-c,-Command}'[Execute the specified command, "-" means reading from standard input]:command' \
+  '(-cwa -CommandWithArgs)'{-cwa,-CommandWithArgs}'[Execute PowerShell command with arguments]:command_and_args' \
+  '(-config -ConfigurationName)'{-config,-ConfigurationName}'[Specify a configuration endpoint in which PowerShell is run]:config' \
+  '-ConfigurationFile[Specify a session configuration file path]:path:_files -g "*.pssc"' \
+  '-CustomPipeName[Specify the name to use for an additional IPC server]:pipe_name' \
+  '(-e -ec -EncodedCommand)'{-e,-ec,-EncodedCommand}'[Accept a Base64-encoded string version of a command]:encoded_command' \
+  '(-ex -ep -ExecutionPolicy)'{-ex,-ep,-ExecutionPolicy}'[Set the default execution policy for the current session]:policy:_pwsh_execution_policies' \
+  '(-inp -if -InputFormat)'{-inp,-if,-InputFormat}'[Describe the format of data sent to PowerShell]:format:(Text XML)' \
+  '(-i -Interactive -noni -NonInteractive)'{-i,-Interactive}'[Present an interactive prompt to the user]' \
+  '(-l -Login)'{-l,-Login}'[Start PowerShell as a login shell]' \
+  '(-MTA -STA)-MTA[Start PowerShell using a multi-threaded apartment, available only on Windows]' \
+  '(-noe -NoExit)'{-noe,-NoExit}'[Do not exit after running startup Completion]' \
+  '(-nol -NoLogo)'{-nol,-NoLogo}'[Hide the banner text at startup of interactive sessions]' \
+  '(-i -Interactive -noni -NonInteractive)'{-noni,-NonInteractive}'[Create sessions that should not require user input]' \
+  '(-nop -NoProfile)'{-nop,-NoProfile}'[Do not load the PowerShell profiles]' \
+  '-NoProfileLoadTime[Hide the PowerShell profile load time text shown at startup when it takes more than 500msecs]' \
+  '(-o -of -OutputFormat)'{-o,-of,-OutputFormat}'[Determine how output from PowerShell is formatted]:format:(Text XML)' \
+  '(-settings -SettingsFile)'{-settings,-SettingsFile}'[Override the system-wide settings file for the session]:file:_files -g "*.json"' \
+  '(-sshs -SSHServerMode)'{-sshs,-SSHServerMode}'[Used in sshd_config for running PowerShell as an SSH subsystem]' \
+  '(-MTA -STA)-STA[Start PowerShell using a single-threaded apartment, only available on Windows]' \
+  '(- *)'{-v,-Version}'[Display the version of PowerShell]' \
+  '(-w -WindowStyle)'{-w,-WindowStyle}'[Set the window style for the session]:style:(Normal Minimized Maximized Hidden)' \
+  '(-wd -WorkingDirectory)'{-wd,-WorkingDirectory}'[Set the initial working directory]:dir:_files -/' \
+  '*:: :_files'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
