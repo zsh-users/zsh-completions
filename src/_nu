@@ -1,0 +1,85 @@
+#compdef nu
+# ------------------------------------------------------------------------------
+# Copyright (c) 2026 Github zsh-users - https://github.com/zsh-users
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for nu 0.111.0 (https://www.nushell.sh/)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei Yoshida (https://github.com/syohex) <syohex@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+local -a table_modes=(
+  ascii_rounded basic_compact basic compact_double compact default
+  dots double heavy light markdown none psql reinforced restructured
+  rounded single thin with_love
+)
+
+_arguments \
+  '(- *)'{-h,--help}'[show help message]' \
+  '(- *)'{-v,--version}'[print the version]' \
+  '(-i --interactive)'{-i,--interactive}'[start as an interactive shell]' \
+  '(-l --login)'{-l,--login}'[start as a login shell]' \
+  '(-c --commands)'{-c,--commands}'[run the given command and then exit]:command' \
+  '(-e --execute)'{-e,--execute}'[run the given commands and then enter an interactive shell]:command' \
+  '(-m --table-mode)'{-m,--table-mode}'[table mode to use]:mode:($table_modes)' \
+  '--error-style[error style to use]:style:(fancy plain)' \
+  '--no-newline[print the result for --commands(-c) without a newline]' \
+  '--stdin[redirect standard input to a command(with "-c") or a script file]' \
+  '--testbin[run internal test binary]:binary' \
+  "--mcp[start nu's model context protocol server]" \
+  '--mcp-transport[transport to use for MCP server]:transport:(stdin http)' \
+  '--mcp-port[port for MCP HTTP transport(default: 8080)]:port' \
+  '(-I --include-path)'{-I,--include-path}'[set the NU_LIB_DIRS for the given script]:dir:_files -/' \
+  '(-n --no-config-file)'{-n,--no-config-file}'[start with no config file and no env file]' \
+  '--no-history[disable reading and writing to command history]' \
+  '--no-std-lib[start with no standard library]' \
+  '--config[start with an alternate config file]:file:_files' \
+  '--env-config[start with an alternate environment config file]:file:_files' \
+  '--log-level[log level for diagnostic logs]:level:(error warn info debug trace)' \
+  '--log-target[set the target for the log to output]:target: _alternative "std\:std\:(stdout stderr)" "files\:file\:_files"' \
+  '--log-include[set the Rust module prefixes to include in the log output]:prefix' \
+  '--log-exclude[set the Rust module prefixes to exclude from the log output]:prefix' \
+  "--lsp[start nu's language server protocol]" \
+  '--ide-goto-def[go to the definition of the item at the given position]:pos' \
+  '--ide-hover[give information about the item at the given position]:pos' \
+  '--ide-complete[list completions for the item at the given position]:pos' \
+  '--ide-check[run a diagnostic check on the given source and limit number of errors returned to provided number]:num' \
+  '--ide-ast[generate the ast on the given source]' \
+  '--experimental-options[enable or disable experimental options]:options:(all)' \
+  '--plugin-config[start with an alternative plugin registry file]:file:_files' \
+  '--plugins[list of plugin executable files to load]:file:_files' \
+  '*:: :_files'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
