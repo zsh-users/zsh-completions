@@ -1,0 +1,65 @@
+#compdef fish
+# ------------------------------------------------------------------------------
+# Copyright (c) 2026 Github zsh-users - https://github.com/zsh-users
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for fish 4.6.0 (https://fishshell.com/)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei Yoshida (https://github.com/syohex) <syohex@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+_fish_debug_categories() {
+  local -a categories=(${(f)"$(fish --print-debug-categories | awk '{n=$1;$1="";printf("%s[%s]\n",n,substr($0,2)) }')"})
+  _values -s ',' categories $categories
+}
+
+_arguments -s \
+  '(-c --command)'{-c,--command=}'[Evaluate the specified commands instead of reading from the commandline]:command' \
+  '(-C --init-command)'{-C,--init-command=}'[Evaluate specified commands after reading the configuration]:command' \
+  '(-d --debug)'{-d,--debug=}'[Enable debug output and specify a pattern for matching categories]:categories:_fish_debug_categories' \
+  '(-i --interactive)'{-i,--interactive}'[The shell is interactive]' \
+  '(-l --login)'{-l,--login}'[Act as if invoked as a login shell]' \
+  '(-N --no-config)'{-N,--no-config}'[Do not read configuration files]' \
+  '(-n --no-execute)'{-n,--no-execute}'[Do not execute any commands, only perform syntax checking]' \
+  '(-p --profile)'{-p,--profile=}'[Output timing information on all executed commands to the specified file]:file:_files' \
+  '--profile-startup=[Write timing for fish startup to specified file]:file:_files' \
+  '(-P --private)'{-P,--private}'[Enable private mode]' \
+  '--print-rusage-self[When fish exits, output stats from getrusage]' \
+  '(- *)--print-debug-categories[Print all debug categories, and then exit]' \
+  '(- *)'{-v,--version}'[Print version and exit]' \
+  '(-f --features)'{-f,--features}'[Enable one or more comma-separated feature flags]:features' \
+  '*:: :_files'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
