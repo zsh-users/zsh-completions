@@ -1,0 +1,80 @@
+#compdef ab
+# ------------------------------------------------------------------------------
+# Copyright (c) 2026 Github zsh-users - https://github.com/zsh-users
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for ab 2.4 (https://httpd.apache.org/docs/2.4/programs/ab.html)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei Yoshida (https://github.com/syohex) <syohex@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+_arguments \
+  '-A[Supply BASIC Authentication credential to the server]:auth' \
+  '-b[Size of TCP send/receive buffer in bytes]:bytes' \
+  '-B[Address to bind to when making outgoing connections]:address' \
+  '-c[Number of multiple requests to perform at a time(Default 1)]:num' \
+  '*-C[Add a cookie]:cookie' \
+  '-d[Do not display "percentage served within XX ms table"]' \
+  '-e[Write a CSV file which contains the time it took to serve that percentage of the requests]:file:_files' \
+  '-E[Specify client certificate in PEM format to authenticate with the server]:file:_files' \
+  '-f[Specify SSL/TLS protocol]:protocol:(SSL2 SSL3 TLS1 TLS1.1 TLS1.2 ALL)' \
+  '-g[Write all measured values out as a "gnuplot" or TSV file]:file:_files' \
+  '(- *)-h[Display usage information]' \
+  '*-H[Append extra headers to the request]:header' \
+  '-i[Do HEAD requests instead of GET]' \
+  '-k[Enable the HTTP KeepAlive feature]' \
+  '-l[Do not report errors if the length of the responses is not constant]' \
+  '-m[Custom HTTP method for the requests]:method:(DELETE GET HEAD POST PUT)' \
+  '-n[Number of requests to perform for the benchmarking session]:requests' \
+  '-p[File containing data to POST, remember to also set -T]:file:_files' \
+  '-P[Supply BASIC Authentication credentials to a proxy en-route]:auth' \
+  '-q[Suppress messages when processing more than 150 requests]' \
+  '-r[Do not exit on socket receive errors]' \
+  '-s[Maximum number of seconds to wait before the socket times out(Default 30seconds)]:seconds' \
+  '-S[Do not display the median and standard deviation values]' \
+  '-t[Maximum number of seconds to spend for benchmarking]:time' \
+  '-T[Content-Type header to use for POST/PUT data]:content_type' \
+  '-u[File containing data to PUT, remember to also set -T]:file:_files' \
+  '-v[Set verbosity level]:level:(1 2 3 4)' \
+  '(- *)-V[Display version number and exit]' \
+  '-w[Print out results in HTML tables]' \
+  '*-x[String to use as attributes for "table" tag]:attribute' \
+  '-X[use a proxy server for the requests]:proxy' \
+  '*-y[String to use as attributes for "tr" tag]:attribute' \
+  '*-z[String to use as attributes for "td" tag]:attribute' \
+  '-Z[Specify SSL/TLS cipher suite(See openssl ciphers)]:cipher' \
+  '*:: :_urls'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et

@@ -1,0 +1,83 @@
+#compdef h2load
+# ------------------------------------------------------------------------------
+# Copyright (c) 2026 Github zsh-users - https://github.com/zsh-users
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for h2load 1.64.0 (https://github.com/nghttp2/nghttp2)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei Yoshida (https://github.com/syohex) <syohex@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+_arguments \
+  '(-n --requests)'{-n,--requests=}'[Number of requests across all clients(Default 1)]:num' \
+  '(-c --clients)'{-c,--clients=}'[Number of concurrent clients(Default 1)]:num' \
+  '(-t --threads)'{-t,--threads=}'[Number of native threads(Default 1)]:num' \
+  '(-i --input-file)'{-i,--input-file=}'[Path of a file with multiple URIs are separated by EOLs]:file:_files' \
+  '(-m --max-concurrent-streams)'{-m,--max-concurrent-streams=}'[Max concurrent streams to issue per session(Default 1)]:num' \
+  '(-f --max-frame-size)'{-f,--max-frame-size=}'[Maximum frame size that the local endpoint is willing to receive(Default 16K)]:size' \
+  '(-w --window-bits)'{-w,--window-bits=}'[Set the stream level initial window size to (2**n)-1(Default 30)]:num' \
+  '(-W --connection-window-bits)'{-W,--connection-window-bits=}'[Set the connection level initial window size to (2**n)-1(Default 30)]:num' \
+  \*{-H,--header=}'[Add/Override a header to the requests]:header' \
+  '--ciphers=[Set allowed cipher list for TLSv1.2 or earlier]:cipher_list' \
+  '--tls13-ciphers=[Set allowed cipher list for TLSv1.3]:cipher_list' \
+  '(-p --no-tls-proto)'{-p,--no-tls-proto=}'[Specify ALPN identifier of the protocol to used when accessing without SSL/TLS(Default h2c)]:protoid' \
+  '(-d --data)'{-d,--data=}'[POST file to server]:file:_files' \
+  '(-r --rate)'{-r,--rate=}'[Specify the fixed rate at which connections are created]:num' \
+  '--rate-period=[Specify the time period between creating connections]:num' \
+  '(-D --duration)'{-D,--duration=}'[Specify the main duration for the measurements]:duration' \
+  '--warm-up-time[Specify the time period before starting the actual measurements]:duration' \
+  '(-T --connection-active-timeout)'{-T,--connection-active-timeout=}'[Specify the maximum time that h2load is willing to keep a connection open]:duration' \
+  '(-N --connection-inactivity-timeout)'{-N,--connection-inactivity-timeout=}'[Specify the amount of time that h2load willing to wait to see activity on a given connection]:duration' \
+  '(--timing-script-file --rps)--timing-script-file=[Path of a timing script file]:file:_files' \
+  '(-B --base-uri)'{-B,--base-uri=}'[Specify URI from which the scheme, host and port will be used for all requests]:uri:_urls' \
+  '--alpn-list=[Comma delimited list of ALPN protocol identifier sorted in the order of preference]:alpn_list' \
+  '--h1[Short hand for --alpn-list=http/1.1 --no-tls-proto=http/1.1]' \
+  '--header-table-size=[Specify decoder header table size(Default 4K)]:size' \
+  '--encoder-header-table-size=[Specify encoder header table size(Default 4K)]:size' \
+  '--log-file=[Path of a request information]:file:_files' \
+  '--qlog-file-base=[Enable qlog output and specify base file name for qlogs]:file:_files' \
+  '--connect-to=[Host and port to connect]:host_port' \
+  '(--timing-script-file --rps)--rps=[Specify request per second for each client]:num' \
+  '--groups=[Specify the supported groups]:groups' \
+  '--no-udp-gso[Disable UDP GSO]' \
+  '--max-udp-payload-size=[Specify the maximum outgoing UDP datagram payload size]:size' \
+  '--ktls[Enable ktls]' \
+  '--sni=[Send given DNS name in TLS SNI]:dns_name' \
+  '(-v --verbose)'{-v,--verbose}'[Output debug information]' \
+  '(- *)--version[Display version information and exit]' \
+  '(- *)'{-h,--help}'[Display help and exit]' \
+  '*:: :_urls'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
