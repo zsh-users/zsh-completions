@@ -908,7 +908,7 @@ _yarn_scripts() {
   fi
 
   local -a candidates=($scripts $binaries)
-  _values 'scripts' $candidates
+  compadd -a candidates
 }
 
 _yarn "$@"
