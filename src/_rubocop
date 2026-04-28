@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for rubocop 1.82.1 (https://github.com/rubocop/rubocop)
+#  Completion script for rubocop 1.86.1 (https://github.com/rubocop/rubocop)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -73,6 +73,7 @@ _arguments \
   '(-C --cache)'{-C,--cache}'[Use result caching or not]:flag:(true false)' \
   '--cache-root[Set the cache root directory]:dir:_files -/' \
   '--lsp[Start a language server listening on STDIN]' \
+  '--mcp[Start an MCP server that communicates over stdio]' \
   '--server[If a server process has not been started yet start the server process and execute inspection with server]' \
   '(--restart-server --start-server --stop-server)--restart-server[Restart server process]' \
   '(--restart-server --start-server --stop-server)--start-server[Start server process]' \
