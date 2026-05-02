@@ -37,10 +37,10 @@
 _arguments \
   '(- *)'{-h,--help}'[display this help]' \
   '(- *)'{-V,--version}'[display version]' \
-  '(-c --configure)'{-c,--configure}'[configure the specified CPUs]:cpu_list' \
-  '(-d --disable)'{-d,--disable}'[disable the specified CPUs]:cpu_list' \
-  '(-e --enable)'{-e,--enable}'[enable the specified CPUs]:cpu_list' \
-  '(-g --deconfigure)'{-g,--deconfigure}'[deconfigure the specified CPUs]:cpu_list' \
+  '(-c --configure)'{-c,--configure}'[configure the specified CPUs]:cpu list (0,5,7,9-11)' \
+  '(-d --disable)'{-d,--disable}'[disable the specified CPUs]:cpu list (0,5,7,9-11)' \
+  '(-e --enable)'{-e,--enable}'[enable the specified CPUs]:cpu list (0,5,7,9-11)' \
+  '(-g --deconfigure)'{-g,--deconfigure}'[deconfigure the specified CPUs]:cpu_list (0,5,7,9-11)' \
   '(-p --dispatch)'{-p,--dispatch}'[set the CPU dispatching mode]:mode:(horizontal vertical)' \
   '(-r --rescan)'{-r,--rescan}'[trigger a rescan of CPUs]'
 
