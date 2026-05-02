@@ -64,7 +64,7 @@ args=(
   '--forecast=[apply periodic transaction rules to generate future transactions]'
 )
 
-_arguments -C "$args[@]" -A "-*" \
+_arguments -C -A "-*" "$args[@]" \
   '(- *)--version[print version information]' \
   '--debug[show debug output]' \
   '1: :->cmds' \
