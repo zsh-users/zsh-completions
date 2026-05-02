@@ -35,14 +35,29 @@
 #   *Aditi Sharma (https://github.com/Aditi76117)
 # ------------------------------------------------------------------------------
 
+local arg
+if (( ${words[(I)(-b|--blocks)]} )); then
+  arg=blockrange
+else
+  arg='size or range'
+fi
+if (( ${words[(I)(-e|-d|-c|-m|--disable|--enable|--deconfigure|--configure)]} )); then
+  arg="1:${arg}"
+else
+  unset arg
+fi
 _arguments -s \
   '(-b --blocks)'{-b,--blocks}'[Use a BLOCKRANGE parameter instead of RANGE or SIZE]' \
-  '(-d --disable)'{-d,--disable}'[Set the specified RANGE, SIZE, or BLOCKRANGE of memory offline]' \
-  '(-e --enable)'{-e,--enable}'[Set the specified RANGE, SIZE, or BLOCKRANGE of memory online]' \
-  '(-z --zone)'{-z,--zone}'[Select the memory ZONE where to set the specified RANGE, SIZE, or BLOCKRANGE of memory online or offline]' \
+  '(-e --enable -d --disable -c --configure -g --deconfigure -m --memmap-on-memory)'{-d,--disable}'[Set the specified RANGE, SIZE, or BLOCKRANGE of memory offline]' \
+  '(-e --enable -d --disable -c --configure -g --deconfigure -m --memmap-on-memory)'{-e,--enable}'[Set the specified RANGE, SIZE, or BLOCKRANGE of memory online]' \
+  '(-e --enable -d --disable -c --configure -g --deconfigure -m --memmap-on-memory)'{-g,--deconfigure}'[Deconfigure the specified RANGE, SIZE, or BLOCKRANGE of memory]' \
+  '(-e --enable -d --disable -c --configure -g --deconfigure                      )'{-c,--configure}'[Configure the specified RANGE, SIZE, or BLOCKRANGE of memory]' \
+  '(-e --enable -d --disable                -g --deconfigure -m --memmap-on-memory)'{-m,--memmap-on-memory}'[Select memmap-on-memory for the specified memory]:memmap-on-memory' \
+  '(-z --zone)'{-z,--zone}'[Select the memory ZONE where to set the specified RANGE, SIZE, or BLOCKRANGE of memory online or offline]:zone' \
   '(-v --verbose)'{-v,--verbose}'[Verbose mode]' \
   '(- *)'{-h,--help}'[Display help text and exit]' \
-  '(- *)'{-V,--version}'[Print version and exit]'
+  '(- *)'{-V,--version}'[Print version and exit]' \
+  ${arg}
 
 # Local Variables:
 # mode: Shell-Script
