@@ -46,7 +46,7 @@ _bundle() {
 
   local ret=1
 
-  _arguments -C -A "-v" -A "--version" \
+  _arguments -C \
     '(- 1 *)'{-v,--version}'[display version information]' \
     '(-r --retry)'{-r,--retry}'[specify the number of times you with to attempt network commands]:number:' \
     '(-V --verbose)'{-V,--verbose}'[print out additional logging information]' \
