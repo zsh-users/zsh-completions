@@ -46,17 +46,16 @@ function _cask() {
   local curcontext="$curcontext"
 
   _arguments -C \
-    '(--proxy --http-proxy --https-proxy)--proxy[Set emacs proxy for HTTPS and HTTPS]:host:_hosts' \
-    '(--proxy --http-proxy)--http-proxy[Set emacs proxy for HTTP]:host:_hosts' \
-    '(--proxy --https-proxy)--https-proxy[Set emacs proxy for HTTPS]:host:_hosts' \
-    '(--proxy --http-proxy --https-proxy)--proxy[Set emacs proxy for HTTPS and HTTPS]:host:_hosts' \
-    '--no-proxy[Set Emacs no-proxy to HOST]:host:_hosts' \
+    '(--proxy --http-proxy              )--http-proxy[Set emacs proxy for HTTP]:host:_hosts' \
+    '(--proxy              --https-proxy)--https-proxy[Set emacs proxy for HTTPS]:host:_hosts' \
+    '(        --http-proxy --https-proxy)--proxy[Set emacs proxy for HTTPS and HTTPS]:host:_hosts' \
+    '--no-proxy[Set Emacs no-proxy to HOST (emacs pattern of hosts to not use proxy for)]:pattern:_hosts' \
     '(- *)--version[Print Cask version and exit]' \
     '(- *)'{-h,--help}'[Display usage or information for command]::command:->subcommand' \
     '--debug[Turn on debug output]' \
     '--path[Run command in this PATH instead of default-directory]:dir:_files -/' \
     '(--verbose --silent)--verbose[Be verbose and show debug output]' \
-    '(--verbose --silent)--verbose[Be slient and do not show anything]' \
+    '(--verbose --silent)--silent[Be silent and do not show anything]' \
     ':subcommand:->subcommand' \
     '*:: :->subcmds' \
     && ret=0
@@ -66,6 +65,8 @@ function _cask() {
       local -a subcommands=(
         "build:build all Elisp files in the files directive"
         "clean-elc:remove all byte compiled Elisp files in the files directive"
+        "emacs:run emacs"
+        "eval:evaluate FORM as a lisp form"
         "exec:execute command with correct 'exec-path' and 'load-path'"
         "exec-path:print 'exec-path' for all packages and dependencies"
         "files:print list of files specified in the files directive"
@@ -98,6 +99,19 @@ function _cask() {
           ;;
         (exec)
           _generic
+          ;;
+        (emacs)
+          _as_if emacs && ret=0
+          ;;
+        (help)
+          _as_if cask --help && ret=0
+          ;;
+        (link)
+          _message "completion unimplemented"
+          ret=0
+          ;;
+        (package)
+          _wanted package-dir expl 'package directory' _files -/ && ret=0
           ;;
       esac
       ;;
