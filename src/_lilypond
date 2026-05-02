@@ -90,7 +90,7 @@ case $state in
       'gs-load-lily-fonts[load only LilyPond fonts via Ghostscript]:gs-load-lily-fonts:(\#t \#f)' \
       'gs-never-embed-fonts[make Ghostscript embed only TrueType fonts and no other font format]:gs-never-embed-fonts:(\#t \#f)' \
       'gui[run LilyPond from a GUI and redirect stderr to a log file]:gui:(\#t \#f)' \
-      'help[show this help]:help:(\#t \#f)' \
+      'help[show help]:help:(\#t \#f)' \
       'include-book-title-preview[include book titles in preview images]:include-book-title-preview:(\#t \#f)' \
       'include-eps-fonts[include fonts in separate-system EPS files]:include-eps-fonts:(\#t \#f)' \
       'include-settings[included file before the score is processed]:include-settings:_files -g "*.(#i)ly(-.)"' \

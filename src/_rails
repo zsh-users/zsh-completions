@@ -45,7 +45,7 @@ _rails() {
 
   local -a runtime_options rails_options
   runtime_options=(
-    '(- *)'{-h,--help}'[Show this help message and quit]'
+    '(- *)'{-h,--help}'[Show help message and quit]'
     '(- *)'{-v,--version}'[Show Rails version and quit]'
   )
 
@@ -74,14 +74,14 @@ _rails() {
           ;;
         (console|c)
           _arguments \
-            '(- *)'{-h,--help}'[Show this help message and quit]' \
+            '(- *)'{-h,--help}'[Show help message and quit]' \
             '(-e --environment)'{-e,--environment=}'[The environment to run "console" in]:env:(test development production)' \
             '(-s --sandbox)'{-s,--sandbox}'[Rollback database modifications on exit]' \
             && ret=0
           ;;
         (server|s)
           _arguments \
-            '(- *)'{-h,--help}'[Show this help message and quit]' \
+            '(- *)'{-h,--help}'[Show help message and quit]' \
             '(-e --environment)'{-e,--environment=}'[The environment to run "server" in]:env:(test development production)' \
             '(-p --port)'{-p,--port}'[Run Rails on the specified port]:port' \
             '(-b --binding)'{-b,--binding=}'[Bind Rails to the specified IP]:binding' \
@@ -98,7 +98,7 @@ _rails() {
           ;;
         (dbconsole|db)
           _arguments \
-            '(- *)'{-h,--help}'[Show this help message and quit]' \
+            '(- *)'{-h,--help}'[Show help message and quit]' \
             '(-e --environment)'{-e,--environment=}'[The environment to run "server" in]:env:(test development production)' \
             '(-p --include-password)'{-p,--include-password}'[Automatically provide the password from database.yml]' \
             '--mode=[Automatically put the sqlite3 database in the specified mode]:mode:(html list line column)' \
@@ -109,7 +109,7 @@ _rails() {
           ;;
         (test|t|test:system)
           _arguments \
-            '(- *)'{-h,--help}'[Show this help message and quit]' \
+            '(- *)'{-h,--help}'[Show help message and quit]' \
             '--no-plugins[Bypass minitest plugin auto-loading]' \
             '(-s --seed)'{-s,--seed=}'[Sets random seed]:seed' \
             '(-v --verbose -q --quiet)'{-v,--verbose}'[Show progress processing files]' \
@@ -133,7 +133,7 @@ _rails() {
           ;;
         (runner|r)
           _arguments \
-            '(- *)'{-h,--help}'[Show this help message and quit]' \
+            '(- *)'{-h,--help}'[Show help message and quit]' \
             '(-e --environment)'{-e,--environment=}'[The environment to run "runner"]:env:(test development production)' \
             '(-w --skip-executor)'{-w,--skip-executor}'[Do not wrap with Rails Executor]' \
             '*:: :_files -g "*.rb"' \
@@ -147,7 +147,7 @@ _rails() {
           ;;
         (routes)
           _arguments \
-            '(- *)'{-h,--help}'[Show this help message and quit]' \
+            '(- *)'{-h,--help}'[Show help message and quit]' \
             '(-c --controller)'{-c,--controller=}'[Filter by a specific controller]:controller' \
             '(-g --grep)'{-g,--grep}'[Grep routes by a specific pattern]' \
             '(-E --expanded)'{-E,--expanded}'[Print routes expanded vertically with parts explained]' \
@@ -353,7 +353,7 @@ _rails_generate() {
     (generate)
       local -a opts
       opts=(
-        '(- *)'{-h,--help}'[Show this help message and quit]'
+        '(- *)'{-h,--help}'[Show help message and quit]'
         $runtime_options
         '--skip-namespace[Skip namespace]'
         '--skip-collision-check[Skip collision check]'

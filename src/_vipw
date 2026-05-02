@@ -35,7 +35,7 @@
 # ------------------------------------------------------------------------------
 
 _arguments \
-  '(- *)'{-h,--help}'[display this help]' \
+  '(- *)'{-h,--help}'[display help]' \
   '(-g --group -p --passwd)'{-g,--group}'[edit group database]' \
   '(-g --group -p --passwd)'{-p,--passwd}'[edit passwd database]' \
   '(-q --quiet)'{-q,--quiet}'[quiet mode]' \

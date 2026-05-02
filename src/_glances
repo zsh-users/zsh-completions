@@ -41,7 +41,7 @@
 
 _glances() {
   _arguments \
-    '(- *)'{-h,--help}'[show this help message and exit]' \
+    '(- *)'{-h,--help}'[show help message and exit]' \
     '--print-completion[print shell completion script]:shell:(bash zsh tcsh)' \
     '(- *)'{-V,--version}"[show program's version number and exit]" \
     '(-d --debug)'{-d,--debug}'[enable debug mode]' \

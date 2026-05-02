@@ -35,7 +35,7 @@
 # ------------------------------------------------------------------------------
 
 _arguments \
-  '(- *)'{-h,--help}'[display this help]' \
+  '(- *)'{-h,--help}'[display help]' \
   '(-c --crypt-method)'{-c,--crypt-method}'[use the specified method to encrypt the passwords]:method:(DES MD5 SHA256 SHA512 YESCRYPT NONE)' \
   '(-e --encrypted)'{-e,--encrypted}'[supplied passwords are in encrypted form]' \
   '(-m --md5)'{-m,--md5}'[use MD5 encryption instead of DES]' \

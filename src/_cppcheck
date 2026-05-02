@@ -78,7 +78,7 @@ _cppcheck() {
     "(-f --force)"{-f,--force}"[Force checking of all configurations in files]" \
     "(--fsigned-char --funsigned-char)--fsigned-char[Treat char type as signed]" \
     "(--fsigned-char --funsigned-char)--funsigned-char[Treat char type as unsigned]" \
-    "(- 1 *)"{-h,--help}"[Print this help]" \
+    "(- 1 *)"{-h,--help}"[Print help]" \
     "-I[A file that contains a list of config-excludes]:directory:_files -/" \
     "--include-file=[Specify directory paths to search for included header files in a text file]:file:_files" \
     "--include=[Force inclusion of a file before the checked file]:file:_files" \

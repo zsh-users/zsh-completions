@@ -48,7 +48,7 @@ _wdctl_output_columns() {
 }
 
 _arguments -s \
-  '(- *)'{-h,--help}'[display this help]' \
+  '(- *)'{-h,--help}'[display help]' \
   '(- *)'{-V,--version}'[display version]' \
   '(-f --flags)'{-f,--flags}'[print selected flags only]:flags' \
   '(-F --noflags)'{-F,--noflags}'[do not print information about flags]' \

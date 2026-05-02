@@ -47,7 +47,7 @@ _arguments -s -S \
   '(-b --bare)'{-b,--bare}'[compile without a top-level function wrapper]' \
   '(-c --compile)'{-c,--compile}'[compile to JavaScript and save as .js files]' \
   '(-e --eval)'{-e,--eval}'[pass a string from the command line as input]:Inline Script' \
-  '(- *)'{-h,--help}'[display this help message]' \
+  '(- *)'{-h,--help}'[display help message]' \
   '(-i --interactive)'{-i,--interactive}'[run an interactive CoffeeScript REPL]' \
   '(-j --join)'{-j,--join}'[concatenate the source CoffeeScript before compiling]: :_files -g "*.coffee"' \
   '(-l --literate)'{-l,--literate}'[treat stdio as literate style coffeescript]' \

@@ -80,7 +80,7 @@ _lscpu_cache() {
 }
 
 _arguments \
-  '(- *)'{-h,--help}'[display this help]' \
+  '(- *)'{-h,--help}'[display help]' \
   '(- *)'{-V,--version}'[display version]' \
   '(-a --all)'{-a,--all}'[print both online and offline CPUs(default for -e)]' \
   '(-b --online)'{-b,--online}'[print online CPUs only]' \

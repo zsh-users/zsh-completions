@@ -56,7 +56,7 @@ _zramctl_output_columns() {
 }
 
 _arguments \
-  '(- *)'{-h,--help}'[display this help]' \
+  '(- *)'{-h,--help}'[display help]' \
   '(- *)'{-V,--version}'[display version]' \
   '(-a --algorithm)'{-a,--algorithm}'[compression algorithm to use]:algorithm:(lzo lz4 lz4hc deflate 842 zstd)' \
   '(-b --bytes)'{-b,--bytes}'[print sizes in bytes rather than in human readable format]:bytes' \

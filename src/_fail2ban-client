@@ -54,7 +54,7 @@ _fail2ban_client() {
     '-b[start server in background]' \
     '-f[start server in foreground]' \
     '--str2sec[convert time abbreviation format to seconds]:_message str2sec' \
-    '(-h --help)'{-h,--help}'[display this help message]' \
+    '(-h --help)'{-h,--help}'[display help message]' \
     '(-V --version)'{-V,--version}'[print the version]' \
     '1:fail2ban command:_fail2ban_client_commands' \
     '*:fail2ban command argument:_fail2ban_client_command_arguments'

@@ -40,7 +40,7 @@
 # ------------------------------------------------------------------------------
 
 local -a args=(
-  '(-h --help)'{-h+,--help}'[show this help message and exit]'
+  '(-h --help)'{-h+,--help}'[show help message and exit]'
   '(-)'--version'[display version information and exit]'
   '(-)1:directory: _path_files -/'
   '(-)2:command: _command_names -e'

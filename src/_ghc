@@ -922,7 +922,7 @@ _ghc_pkg() {
         '--expand-env-vars[expand environment variables in input package descriptions]'
         '(--expand-pkgroot --no-expand-pkgroot)--expand-pkgroot[expand pkgroot-relative paths in output package descriptions]'
         '(--expand-pkgroot --no-expand-pkgroot)--no-expand-pkgroot[preserve pkgroot-relative paths in output package descriptions]'
-        '(- *)'{-?,--help}'[display this help and exit]'
+        '(- *)'{-?,--help}'[display help and exit]'
         '(- *)'{-V,--version}'[output version information and exit]'
         '--simple-output[print output in easy-to-parse format for some commands]'
         '--show-unit-ids[print unit-ids instead of package identifiers]'

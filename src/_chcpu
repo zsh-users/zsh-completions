@@ -35,7 +35,7 @@
 # ------------------------------------------------------------------------------
 
 _arguments \
-  '(- *)'{-h,--help}'[display this help]' \
+  '(- *)'{-h,--help}'[display help]' \
   '(- *)'{-V,--version}'[display version]' \
   '(-c --configure)'{-c,--configure}'[configure the specified CPUs]:cpu list (0,5,7,9-11)' \
   '(-d --disable)'{-d,--disable}'[disable the specified CPUs]:cpu list (0,5,7,9-11)' \

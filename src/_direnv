@@ -49,7 +49,7 @@ _direnv_commands() {
     'exec:Executes a command after loading the first .envrc or .env found in DIR'
     'export:Loads an .envrc or .env and prints the diff in terms of exports'
     "fetchurl:Fetches a given URL into direnv's CAS"
-    'help:shows this help'
+    'help:shows help'
     'hook:Used to setup the shell hook'
     'prune:removes old allowed files'
     'reload:triggers an env reload'

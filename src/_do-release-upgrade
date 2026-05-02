@@ -35,7 +35,7 @@
 # ------------------------------------------------------------------------------
 
 _arguments \
-  '(- *)'{-h,--help}'[Show this help message and exit]' \
+  '(- *)'{-h,--help}'[Show help message and exit]' \
   '(- *)'{-v,--version}'[Show version and exit]' \
   '(-d --devel-release)'{-d,--devel-release}'[Upgrade to the development release]' \
   '--data-dir=[Directory that contains the data files]:dir:_files -/' \

@@ -56,7 +56,7 @@ _lslocks_output_columns() {
 }
 
 _arguments \
-  '(- *)'{-h,--help}'[display this help]' \
+  '(- *)'{-h,--help}'[display help]' \
   '(- *)'{-V,--version}'[display version]' \
   '(-b --bytes)'{-b,--bytes}'[print SIZE in bytes rather]' \
   '(-J --json)'{-J,--json}'[use the JSON output format]' \

@@ -70,7 +70,7 @@ _lslogins_output_columns() {
 }
 
 _arguments \
-  '(- *)'{-h,--help}'[display this help]' \
+  '(- *)'{-h,--help}'[display help]' \
   '(- *)'{-V,--version}'[display version]' \
   '(-a --acc-expiration)'{-a,--acc-expiration}'[display info about passwords expiration]' \
   '(-c --colon-separate)'{-c,--colon-separate}'[display data in a format similar to /etc/passwd]' \

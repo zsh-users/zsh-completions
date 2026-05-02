@@ -29,7 +29,7 @@ _pre_commit() {
   case "$state" in
     (args)
       local -a options=(
-        '(- : *)'{-h,--help}'[show this help message and exit]'
+        '(- : *)'{-h,--help}'[show help message and exit]'
         "--color[Whether to use color in output(default: auto)]:color:(auto always never)"
       )
       local -a hook_types=(

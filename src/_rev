@@ -35,7 +35,7 @@
 # ------------------------------------------------------------------------------
 
 _arguments \
-  '(- *)'{-h,--help}'[display this help]' \
+  '(- *)'{-h,--help}'[display help]' \
   '(- *)'{-V,--version}'[display version]' \
   '(-0 --zero)'{-0,--zero}'[use the nul character as line separator]'
 

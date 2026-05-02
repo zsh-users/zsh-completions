@@ -19,7 +19,7 @@ _chatblade() {
   typeset -A opt_args
 
   args+=(
-    '(- *)'{-h,--help}'[show this help message and exit]'
+    '(- *)'{-h,--help}'[show help message and exit]'
     '(- *)--version[display the chatblade version]'
     '--openai-api-key[the OpenAI API key can also be set as env variable OPENAI_API_KEY]:key'
     '--openai-base-url[a custom URL to use the openAI against a local or custom model]:key'

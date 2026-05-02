@@ -43,7 +43,7 @@ _bitcoin-cli() {
   local ret=1
 
   _arguments -C \
-    -?'[This help message]' \
+    -?'[Show help message]' \
     -addrinfo'[Get the number of addresses known to the node, per network and total]' \
     -chain='[Use the chain <chain> (default: main). Allowed values: main, test, signet, regtest]:chain:(main test signet regtest)' \
     -color='[Color setting for CLI output (default: auto)]:when:(always auto never)' \

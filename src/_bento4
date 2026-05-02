@@ -91,7 +91,7 @@ case $service in
     ;;
   (mp4dash)
     options+=(
-      '(- *)'{-h,--help}'[Show this help message and exit]'
+      '(- *)'{-h,--help}'[Show help message and exit]'
       '(-v --verbose)'{-v,--verbose}'[Be verbose]'
       '(-d --debug)'{-d,--debug}'[Print out debugging information]'
       '(-o --output-dir)'{-o,--output-dir=}'[Output directory]:dir:_files -/'
@@ -148,7 +148,7 @@ case $service in
     ;;
   (mp4dashclone)
     options+=(
-      '(- *)'{-h,--help}'[Show this help message and exit]'
+      '(- *)'{-h,--help}'[Show help message and exit]'
       '--quiet[Be quiet]'
       '--encrypt=[Encrypt the media with KID and KEY specified in HEX(32 characters each)]:key'
       '--exec-dir=[Directory where the Bento4 executables are located]:dir:_files -/'
@@ -226,7 +226,7 @@ case $service in
     ;;
   (mp4hls)
     options+=(
-      '(- *)'{-h,--help}'[Show this help message and exit]'
+      '(- *)'{-h,--help}'[Show help message and exit]'
       '(-v --verbose)'{-v,--verbose}'[Be verbose]'
       '(-d --debug)'{-d,--debug}'[Print out debugging information]'
       '(-o --output-dir)'{-o,--output-dir=}'[Output directory]:dir:_files -/'

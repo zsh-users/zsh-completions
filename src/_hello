@@ -14,7 +14,7 @@
 # ------------------------------------------------------------------------------
 
 _arguments -s \
-  '(- *)'{-h,--help}'[display this help and exit]' \
+  '(- *)'{-h,--help}'[display help and exit]' \
   '(- *)'{-v,--version}'[display version information and exit]' \
   {-t,--traditional}'[use traditional greeting]' \
   {-g,--greeting=}'[use TEXT as the greeting message]:TEXT'

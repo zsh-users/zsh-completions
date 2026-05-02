@@ -61,7 +61,7 @@ case $OSTYPE in
     ;;
   (*)
     _arguments \
-      '(- *)'{-h,--help}'[display this help]' \
+      '(- *)'{-h,--help}'[display help]' \
       '(- *)'{-V,--version}'[display version]' \
       '(-r --random)'{-r,--random}'[generate random-based uuid]' \
       '(-t --time)'{-t,--time}'[generate time-based uuid]' \

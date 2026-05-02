@@ -39,7 +39,7 @@
 # ------------------------------------------------------------------------------
 
 _arguments \
-  '(- *)--help[display this help message]' \
+  '(- *)--help[display help message]' \
   '-d-[Verbose debug]:level:(0 1 2)' \
   '-v-[SSH debug levels]:level:(0 1 2 3)' \
   '-m-[Run concurrently on the specified hosts at a time. "0" is used for infinite]:count' \

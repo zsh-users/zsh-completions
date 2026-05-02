@@ -50,7 +50,7 @@ _lsmem_output_columns() {
 }
 
 _arguments \
-  '(- *)'{-h,--help}'[display this help]' \
+  '(- *)'{-h,--help}'[display help]' \
   '(- *)'{-V,--version}'[display version]' \
   '(-J --json)'{-J,--json}'[use the JSON output format]' \
   '(-P --pairs)'{-P,--pairs}'[use key=value output format]' \
