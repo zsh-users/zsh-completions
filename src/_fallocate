@@ -38,16 +38,16 @@
 # ------------------------------------------------------------------------------
 
 _arguments \
-  '(-c --collapse-range)'{-c,--collapse-range}'[Removes a byte range from a file without leaving a hole]' \
-  '(-d --dig-holes)'{-d,--dig-holes}'[Detect and dig holes]' \
+  '(-c --collapse-range -d --dig-holes -p --punch-hole -z --zero-range -n --keep-size)'{-c,--collapse-range}'[Removes a byte range from a file without leaving a hole]' \
+  '(-c --collapse-range -d --dig-holes -p --punch-hole -z --zero-range -n --keep-size)'{-d,--dig-holes}'[Detect and dig holes]' \
+  '(-c --collapse-range -d --dig-holes -p --punch-hole -z --zero-range -n --keep-size)'{-p,--punch-hole}'[Deallocates space in the byte range starting at offset and continuing for length bytes]' \
+  '(-c --collapse-range -d --dig-holes -p --punch-hole -z --zero-range               )'{-z,--zero-range}'[Zeroes space in the byte range starting at offset and continuing for length bytes]' \
+  '(-c --collapse-range -d --dig-holes -p --punch-hole                 -n --keep-size)'{-n,--keep-size}'[Do not modify the apparent length of the file]' \
   '(-i --insert-range)'{-i,--insert-range}'[Insert a hole of length bytes from offset]' \
   '(-l --length)'{-l+,--length}'[Specifies the length of the range, in bytes]:bytes' \
-  '(-n --keep-size)'{-n,--keep-size}'[Do not modify the apparent length of the file]' \
   '(-o --offset)'{-o+,--offset}'[Specifies the beginning offset of the range, in bytes]:offset' \
-  '(-p --punch-hole)'{-p,--punch-hole}'[Deallocates space in the byte range starting at offset and continuing for length bytes]' \
   '(-v --verbose)'{-v,--verbose}'[Enable verbose mode]' \
   '(-x --posix)'{-x,--posix}'[Enable POSIX operation mode]' \
-  '(-z --zero-range)'{-z,--zero-range}'[Zeroes space in the byte range starting at offset and continuing for length bytes]' \
   '(- *)'{-h,--help}'[Display help text and exit]' \
   '(- *)'{-V,--version}'[Print version and exit]' \
   '*:filename:_files'
