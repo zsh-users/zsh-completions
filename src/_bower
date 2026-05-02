@@ -43,6 +43,15 @@ local curcontext="$curcontext" state line _opts ret=1
 
 _arguments -C \
   '(- 1 *)'{-v,--version}'[display version information]' \
+  '--force[make various commands more forceful]' \
+  '--json[output consumable JSON]' \
+  '--log-level[what level of logs to report]:log level:(error conflict warn action info debug)' \
+  "--offline[don't hit the network]" \
+  '--quiet[only output important information]' \
+  "--silent[don't output anything, besides errors]" \
+  '--verbose[make output more verbose]' \
+  '--allow-root[allow running commands as root]' \
+  '--no-color[disable colors]' \
   '1: :->cmds' \
   '*:: :->args' && ret=0
 
@@ -66,17 +75,6 @@ case $state in
       "uninstall[remove a local package]" \
       "unregister[remove a package from the registry]" \
       "version[bump a package version]" && ret=0
-    _arguments \
-      '(--force)--force[make various commands more forceful]' \
-      '(--json)--json[output consumable JSON]' \
-      '(--log-level)--log-level[what level of logs to report]' \
-      "(--offline)--offline[don't hit the network]" \
-      '(--quiet)--quiet[only output important information]' \
-      "(--silent)--silent[don't output anything, besides errors]" \
-      '(--verbose)--verbose[make output more verbose]' \
-      '(--allow-root)--allow-root[allow running commands as root]' \
-      '(--version)--version[output Bower version]' \
-      '(--no-color)--no-color[disable colors]' && ret=0
     ;;
   args)
     case $line[1] in
@@ -101,42 +99,42 @@ case $state in
         ;;
       (home|info|init|link|lookup|prune|register|search|unregister)
         _arguments \
-          '(--help)--help[show help message]' && ret=0
+          '--help[show help message]' && ret=0
         ;;
       install)
         _arguments \
-          '(--force-latest)--force-latest[force latest version on conflict]' \
-          '(--help)--help[show help message]' \
-          "(--production)--production[don't install project devDependencies]" \
-          "(--save)--save[save installed packages into the project's bower.json dependencies]" \
-          "(--save-dev)--save-dev[save installed packages into the project's bower.json devDependencies]" && ret=0
+          '--force-latest[force latest version on conflict]' \
+          '--help[show help message]' \
+          "--production[don't install project devDependencies]" \
+          "--save[save installed packages into the project's bower.json dependencies]" \
+          "--save-dev[save installed packages into the project's bower.json devDependencies]" && ret=0
         ;;
       list)
         _arguments \
-          '(--help)--help[show help message]' \
-          '(--paths)--paths[generate a simple JSON source mapping]' \
-          '(--relative)--relative[make paths relative to the directory config property, which defaults to bower_components]' && ret=0
+          '--help[show help message]' \
+          '--paths[generate a simple JSON source mapping]' \
+          '--relative[make paths relative to the directory config property, which defaults to bower_components]' && ret=0
         ;;
       login)
         _arguments \
-          '(--help)--help[show help message]' \
+          '--help[show help message]' \
           '(-t --token)'{-t,--token}'[Pass GitHub auth token (will not prompt for username/password)]' && ret=0
         ;;
       uninstall)
         _arguments \
-          '(--help)--help[show help message]' \
-          "(--save)--save[save installed packages into the project's bower.json dependencies]" \
-          "(--save-dev)--save-dev[save installed packages into the project's bower.json devDependencies]" && ret=0
+          '--help[show help message]' \
+          "--save[save installed packages into the project's bower.json dependencies]" \
+          "--save-dev[save installed packages into the project's bower.json devDependencies]" && ret=0
         ;;
       update)
         _arguments \
-          '(--force-latest)--force-latest[force latest version on conflict]' \
-          '(--help)--help[show help message]' \
-          "(--production)--production[don't install project devDependencies]" && ret=0
+          '--force-latest[force latest version on conflict]' \
+          '--help[show help message]' \
+          "--production[don't install project devDependencies]" && ret=0
         ;;
       version)
         _arguments \
-          '(--message)--message[custom git commit and tag message]' && ret=0
+          '--message[custom git commit and tag message]' && ret=0
         ;;
       exec)
         _normal && ret=0
