@@ -345,7 +345,8 @@ _yarn_cache() {
           _arguments \
             '(- *)'{-h,--help}'[show help message and exit]' \
             '--mirror[remove the global cache files instead of the local cache files]' \
-            '--all[remove both the global cache files and the local cache files of the current project]'
+            '--all[remove both the global cache files and the local cache files of the current project]' \
+            && ret=0
           ;;
       esac
     ;;
@@ -640,8 +641,6 @@ _yarn_plugin_subcommands() {
 
 (( $+functions[_yarn_run] )) ||
 _yarn_run() {
-  local ret=1
-
   _arguments \
     '(- *)'{-h,--help}'[show help message and exit]' \
     '--json[format the output as an NDJSON stream]' \
@@ -651,10 +650,7 @@ _yarn_run() {
     '(-B --binaries-only)'{-B,--binaries-only}'[ignore any user defined scripts and only check binaries]' \
     '*--require[preload given module]:module' \
     '1: :_yarn_scripts' \
-    '*:: :_files' \
-    && ret=0
-
-  return ret
+    '*:: :_files'
 }
 
 (( $+functions[_yarn_set] )) ||
@@ -908,7 +904,7 @@ _yarn_scripts() {
   fi
 
   local -a candidates=($scripts $binaries)
-  compadd -a candidates
+  _wanted candidates expl 'scripts' compadd -a candidates
 }
 
 _yarn "$@"
