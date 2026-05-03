@@ -37,7 +37,7 @@
 
 _arguments \
   {-f,--file}'[Use file as as cookie seed]:file:_files' \
-  {-m,--max-size}'[Set maximum length of output]:number' \
+  {-m,--max-size}'[Set maximum length of output]:bytes' \
   {-v,--verbose}'[Print entropy source and random seed info]' \
   '(- *)'{-h,--help}'[Display help message and exit]' \
   '(- *)'{-V,--version}'[Display version information and exit]'
