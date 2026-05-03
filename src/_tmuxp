@@ -173,7 +173,7 @@ __tmuxp_import() {
     (project)
       if [[ $line[1] == 'tmuxinator' ]]
       then
-        _wanted tmuxinator-projects exp 'tmuxinator projects' compadd $(tmuxinator completions start)
+        _wanted tmuxinator-projects expl 'tmuxinator projects' compadd $(tmuxinator completions start)
       fi
       ;;
   esac
