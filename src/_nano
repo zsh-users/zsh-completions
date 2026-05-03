@@ -77,8 +77,8 @@ if [[ -n $state ]]; then
     +) _message -e lines "start at a given line" ;;
     +[crCR]#[/?]) _message -e 'search string' ;;
     +<->,) _message -e 'column number' ;;
-    *) _files && ret=0 ;;
-  esac
+    *) _files ;;
+  esac && ret=0
 fi
 
 return ret
