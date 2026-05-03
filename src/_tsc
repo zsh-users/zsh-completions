@@ -194,7 +194,7 @@ local -a opts=(
   "--excludeFiles[Remove a list of files from the watch mode's processing]:files:_files"
   "--libReplacement[Enable library replacement]"
   "--erasableSyntaxOnly[Ensures that runtime constructs which are not part of ECMAScript are not allowed]"
-  '*:: :_files' \
+  '*:: :_files'
 )
 
 if (( $+opt_args[--build] )); then
