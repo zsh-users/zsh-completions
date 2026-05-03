@@ -54,7 +54,7 @@ _kitchen() {
     args)
       case $line[1] in
         converge|create|destroy|diagnose|list|setup|test|verify)
-          compadd 'all'
+          _wanted all-instances expl 'all instances' compadd 'all'
           _kitchen_instances
           ;;
         login)
