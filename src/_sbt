@@ -93,7 +93,7 @@ _sbt() {
             unfiltered/unfiltered.g8
             scalatra/scalatra-sbt.g8
           )
-          _values 'g8_templates' $g8_templates
+          _values 'g8_templates' $g8_templates && ret=0
         ;;
       esac
       ;;
