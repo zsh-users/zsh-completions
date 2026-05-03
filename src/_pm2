@@ -73,7 +73,7 @@ _pm2() {
     '--no-color[skip colors]' \
     '--no-vizion[start an app without vizion feature]' \
     '--np-autorestart[start an app without automatic restart]' \
-    '--no-treekill[Only kill the main process, not detached children]' \
+    '--no-treekill[only kill the main process, not detached children]' \
     '--no-pmx[start an app without pmx]' \
     '--no-automation[start an app without automation]' \
     '(--disable-trace --trace)--trace[enable transaction tracing with km]' \
@@ -93,9 +93,9 @@ _pm2() {
         (start)
           _arguments \
             '--watch[watch folder for changes]' \
-            '--fresh[Rebuild Dockerfile]' \
-            '--daemon[Run container in Daemon mode(debug purposes)]' \
-            '--container[Start application in container mode]' \
+            '--fresh[rebuild Dockerfile]' \
+            '--daemon[run container in daemon mode(debug purposes)]' \
+            '--container[start application in container mode]' \
             '--dist[--with-container; change local Dockerfile to containerize all files in current directory]' \
             '--image-name[with --dist; set the exported image name]:name' \
             '--node-version[with --container, set a specific major Node.js version]:version' \
@@ -119,7 +119,7 @@ _pm2() {
         (stop|restart)
           _arguments \
             '(- *)'{-h,--help}'[output usage information]' \
-            '--watch[Stop watching folder for changes]' \
+            '--watch[stop watching folder for changes]' \
             '*: :_pm2_id_namespace_all' \
             && ret=0
           ;;
@@ -231,8 +231,8 @@ _pm2_subcommands() {
     "stop:stop a process"
     "restart:restart a process"
     "scale:scale up/down a process in cluster mode depending on total_number param"
-    "profile\:mem:Sample PM2 heap memory"
-    "profile\:cpu:Profile PM2 cpu"
+    "profile\:mem:sample PM2 heap memory"
+    "profile\:cpu:profile PM2 cpu"
     "reload:reload processes (note that its for app using HTTP/HTTPS)"
     "id:get process id by name"
     "inspect:inspect a process"
@@ -244,12 +244,12 @@ _pm2_subcommands() {
     "install:install or update a module and run it forever"
     "module\:install:install or update a module and run it forever"
     "module\:update:update a module and run it forever"
-    "module\:generate:Generate a sample module in current folder"
+    "module\:generate:generate a sample module in current folder"
     "uninstall:stop and uninstall a module"
     "module\:uninstall:stop and uninstall a module"
-    "package:Check & Package TAR type module"
-    "publish:Publish the module you are currently on"
-    "module\:publish:Publish the module you are currently on"
+    "package:check & package TAR type module"
+    "publish:publish the module you are currently on"
+    "module\:publish:publish the module you are currently on"
     "set:sets the specified config <key> <value>"
     "multiset:multiset eg \"key1 val1 key2 val2\""
     "get:get value for <key>"
@@ -263,11 +263,11 @@ _pm2_subcommands() {
     "unmonitor:unmonitor target process"
     "open:open the pm2 monitoring dashboard"
     "plus:enable pm2 plus"
-    "login:Login to pm2 plus"
-    "logout:Logout from pm2 plus"
+    "login:login to pm2 plus"
+    "logout:logout from pm2 plus"
     "dump:dump all processes for resurrecting them later"
     "save:dump all processes for resurrecting them later"
-    "cleardump:Create empty dump file"
+    "cleardump:create empty dump file"
     "send:send stdin to <pm_id>"
     "attach:attach stdin/stdout to application identified by <pm_id>"
     "resurrect:resurrect previously dumped processes"
@@ -297,7 +297,7 @@ _pm2_subcommands() {
     "dash:launch dashboard with monitoring and logs"
     "flush:flush logs"
     "reloadLogs:reload all logs"
-    "logs:stream logs file. Default stream all logs"
+    "logs:stream logs file (default is to stream all logs)"
     "kill:kill daemon"
     "pull:updates repository for a given app"
     "forward:updates repository to the next commit for a given app"
