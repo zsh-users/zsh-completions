@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for OpenSSL 3.5.3 (https://www.openssl-library.org/)
+#  Completion script for OpenSSL 4.0.0 (https://www.openssl-library.org/)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -844,6 +844,8 @@ _openssl_dgst() {
     '-prverify[private key file to verify the signature]:file:_files' \
     '-signature[actual signature file to verify]:file:_files' \
     '-hmac[key to create a hashed MAC]:key' \
+    '-hmac-env[create a hashed MAC using a key from the given environment variable]:var:_parameters -g "*export*"' \
+    '-hmac-stdin[create a hashed MAC using a key obtained from the standard input]' \
     '-mac[MAC algorithm]:alg:_openssl_mac_algorithms' \
     '-macopt[options of MAC algorithm]:options' \
     '-fips-fingerprint[compute HMAC using a specific key for certain OpenSSL-FIPS operations]' \
@@ -1830,6 +1832,15 @@ _openssl_s_client() {
     $openssl_verification_options[@] \
     '-enable_server_rpk[enable support for receiving raw public keys from the server]' \
     '-enable_client_rpk[enable support for sending raw public keys to the server]' \
+    '*-expected-rpks[specify public keys expected from the remote peer used to authenticate the connection]:file:_files' \
+    '-ech_outer_alpn[specify ALPN values to use in the outer ClientHello]:protocol' \
+    '-ech_grease[emit a GREASE value]' \
+    '-ech_grease_suite[specify ECH ciphersuites to use when -ech_grease is specified]:suite' \
+    '-ech_grease_type[specify a GREASEd ECH value]:type' \
+    '-ech_ignore_cid[use random value for ECH]' \
+    '-ech_outer_sni[specify a subject name indication value to use in hte outer ClientHello]:value' \
+    '-ech_no_outer_sni[no SNI will be emitted in the outer ClientHello]' \
+    '-ech_select[specify which ECHConfigList to use using a zero-based index]:index' \
     '*::host_port'
 }
 
@@ -1957,7 +1968,13 @@ _openssl_s_server() {
     $openssl_provider_options[@] \
     $openssl_verification_options[@] \
     '-enable_server_rpk[enable support for sending raw public keys to the client]' \
-    '-enable_client_rpk[enable support for receiving raw public keys from the client]'
+    '-enable_client_rpk[enable support for receiving raw public keys from the client]' \
+    '*-expected-rpks[specify public keys expected from the remote peer used to authenticate the connection]:file:_files' \
+    '-ech_key[load one Encrypted Client Hello(ECH) key pair]:file:_files' \
+    '-ech_dir[load an ECH key pair from every file in the named directory]:dir:_files -/' \
+    '-ech_noretry_dir[load an ECH key pair from every file in the named directory. not return in "retry_configs"]:file:_files -/' \
+    '-ech_trialdecrypt[ECH config_id is used to match against the loaded ECH private keys and decryption is only attempted]' \
+    '-ech_greaseretries[servers will add GREASEy ECHConfigList values to those sent in retry_configs]'
 }
 
 _openssl_s_time() {
