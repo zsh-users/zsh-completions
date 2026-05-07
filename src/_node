@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Node.js v25.9.0 (https://nodejs.org)
+#  Completion script for Node.js v26.0.0 (https://nodejs.org)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -138,7 +138,6 @@ _node() {
     '--experimental-storage-inspection[experimental storage inspection support]' \
     '--experimental-test-coverage[enable code coverage in the test runner]' \
     '--experimental-test-module-mocks[enable module mocking in the test runner]' \
-    '--experimental-transform-types[enable transformation of TypeScript-onlysyntax into JavaScript code]' \
     '--experimental-vm-modules[experimental ES Module support in vm module]' \
     '--experimental-worker-inspection[experimental worker inspection support]' \
     '--expose-gc[expose gc extension]' \
@@ -175,15 +174,18 @@ _node() {
     '--no-experimental-global-navigator[expose experimental Navigator API on the global scope]' \
     '--no-experimental-repl-await[disable experimental await keyword support in REPL]' \
     '--no-experimental-sqlite[disable experimental node sqlite module]' \
-    '(--no-strip-types --no-experimental-strip-types)'{--no-strip-types,--no-experimental-strip-types}'[disable type-stripping for TypeScript files]' \
-    '--no-experimental-websocket[experimental WebSocket API (currently set)]' \
+    '--no-experimental-websocket[disable experimental WebSocket API]' \
+    '(--webstorage --no-experimental-webstorage)--webstorage[enable experimental Web Storage API]' \
+    '(--webstorage --no-experimental-webstorage)--no-experimental-webstorage[disable experimental Web Storage API]' \
     '--no-extra-info-on-fatal-exception[hide extra information on fatal exception that causes exit]' \
     '--no-force-async-hooks-checks[disable checks for async_hooks]' \
     '--no-global-search-paths[disable global module search paths]' \
-    '(--no-network-family-autoselection --enable-network-family-autoselection)'{--no-network-family-autoselection,--enable-network-family-autoselection}'[disable network address family autodetection algorithm]' \
-    '(--require-module --no-require-module --no-experimental-require-module)'{--no-require-module,--no-experimental-require-module}'[disable support for loading a synchronous ES module graph in require()]' \
+    '(--no-network-family-autoselection --enable-network-family-autoselection)--enable-network-family-autoselection[enable network address family autodetection algorithm]' \
+    '(--no-network-family-autoselection --enable-network-family-autoselection)--no-network-family-autoselection[disable network address family autodetection algorithm]' \
+    '(--require-module --no-require-module)--no-require-module[disable support for loading a synchronous ES module graph in require()]' \
+    '(--experimental-strip-types --no-strip-types)--experimental-strip-types[enable Type-stripping for TypeScript files]' \
+    '(--experimental-strip-types --no-strip-types)--no-strip-types[disable Type-stripping for TypeScript files]' \
     '--no-warnings[silence all process warnings]' \
-    '(--no-webstorage --no-experimental-webstorage)'{--no-webstorage,--no-experimental-webstorage}'[disable Web Storage API]' \
     '--node-memory-debug[run with extra debug checks for memory leaks in Node.js itself]' \
     '--openssl-config=[load OpenSSL configuration from the specified file (overrides OPENSSL_CONF)]:file:_files' \
     '--openssl-legacy-provider[enable OpenSSL 3.0 legacy provider]' \
