@@ -138,7 +138,7 @@ _node() {
     '--experimental-storage-inspection[experimental storage inspection support]' \
     '--experimental-test-coverage[enable code coverage in the test runner]' \
     '--experimental-test-module-mocks[enable module mocking in the test runner]' \
-    '--experimental-transform-types[enable transformation of TypeScript-onlysyntax into JavaScript code]' \
+    '--experimental-transform-types[enable transformation of TypeScript-only syntax into JavaScript code]' \
     '--experimental-vm-modules[experimental ES Module support in vm module]' \
     '--experimental-worker-inspection[experimental worker inspection support]' \
     '--expose-gc[expose gc extension]' \
@@ -244,7 +244,7 @@ _node() {
     '--trace-deprecation[show stack traces on deprecations]' \
     '--trace-env[print accesses to the environment variables]' \
     '--trace-env-js-stack[print accesses to the environment variables and the JavaScript stack trace]' \
-    '--trace-env-native-stack[print accesses to the environment variables and the native stack trace ]' \
+    '--trace-env-native-stack[print accesses to the environment variables and the native stack trace]' \
     '--trace-event-categories[comma separated list of trace event categories to record]: :{_values -s , categories node node.async_hooks node.bootstrap node.perf node.perf.usertiming node.perf.timerify node.fs.sync node.vm.script v8}' \
     '--trace-event-file-pattern[Template string specifying the filepath for the trace-events data, it supports ${rotation} and ${pid} log-rotation id. %2$u is the pid.]:template string' \
     '--trace-exit[show stack trace when an environment exits]' \

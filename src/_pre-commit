@@ -89,7 +89,7 @@ _pre_commit() {
             '--commit-msg-filename[file name to check when running during "commit-msg"]:file:_files'
             '--prepare-commit-message-source[source of the commit message]:source'
             '--commit-object-name[commit object name]:object_name'
-            '--remote-name[Remote name used by "git push"]:name:remote:_pre_commit_git_remotes'
+            '--remote-name[Remote name used by "git push"]:remote:_pre_commit_git_remotes'
             '--remote-url[Remote url used by "git push"]:url:_urls'
             '--checkout-type[branch check out or a file checkout]:type:_pre_commit_commit_types'
             '--is-squash-merge[use squash merge]:flag:(0 1)'

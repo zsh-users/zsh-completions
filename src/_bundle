@@ -48,7 +48,7 @@ _bundle() {
 
   _arguments -C \
     '(- 1 *)'{-v,--version}'[display version information]' \
-    '(-r --retry)'{-r,--retry}'[specify the number of times you with to attempt network commands]:number:' \
+    '(-r --retry)'{-r,--retry}'[specify the number of times to attempt network commands]:number:' \
     '(-V --verbose)'{-V,--verbose}'[print out additional logging information]' \
     '--no-color[print all output without color]' \
     '1: :_bundle_commands' \
@@ -226,7 +226,7 @@ _bundle() {
             '--bundler=-[update the locked version of bundler to the given version or the latest version]:version' \
             '--local[do not attempt to connect to rubygems.org]' \
             '--print[prints the lockfile to STDOUT instead of writing to the file system]' \
-            '--lockfile=[the path where the lick file should be written to]: :_files' \
+            '--lockfile=[the path where the lock file should be written to]: :_files' \
             '--full-index[fall back to using the single file index of all gems]' \
             '--gemfile=[use the specified gemfile instead of Gemfile]:file:_files' \
             '--add-checksums[add checksums to the lockfile]' \
@@ -235,7 +235,7 @@ _bundle() {
             '--normalize-platforms[normalize lockfile platforms]' \
             '--patch[if updating, prefer updating only to next patch version]' \
             '--minor[if updating, prefer updating only to next minor version]' \
-            '--major[if updating, prefer updating  to next major version(default)]' \
+            '--major[if updating, prefer updating to next major version(default)]' \
             '--pre[if updating, always choose the highest allowed version]' \
             '--strict[if updating, do not allow any gem to be updated past latest --patch | --minor | --major]' \
             '--conservative[if updating, use bundle install conservative update behavior]' \

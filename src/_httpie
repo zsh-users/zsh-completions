@@ -167,7 +167,7 @@ _arguments -n -C -s \
   '--unsorted[Disables all sorting while formatting output]' \
   '--sorted[Re-enables all sorting options while formatting output]' \
   '--response-charset=[Override the response encoding for terminal display purposes]:encoding' \
-  '--response-mime=[Override the response mime type for coloring and formatting for the terminal]:mine' \
+  '--response-mime=[Override the response mime type for coloring and formatting for the terminal]:mime' \
   '--format-options=[Controls output formatting]:format' \
   '(-p --print)'{-p,--print}'=[String specifying what the output should contain]:print flags:_httpie_printflags' \
   '(-v --verbose)'{-v,--verbose}'[Print the whole request as well as the response]' \

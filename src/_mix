@@ -362,7 +362,7 @@ _mix() {
             '--partitions[set the amount of partitions to split tests in]:partition' \
             '--preload-modules[preload all modules defined in applications]' \
             '--profile-require[profile the time spent to require test files]:type:(time)' \
-            '--raise[immediate raise if the the test suite fails instead of continuing]' \
+            '--raise[immediate raise if the test suite fails instead of continuing]' \
             '--repeat-until-failure[set the number of repetitions for running the suite until it fails]:num' \
             '--seed[seed the random generator used to randomize the order of tests(0 means disable randomization)]:seed' \
             '--slowest[print timing information for the N slowest tests]:num' \
@@ -751,7 +751,7 @@ _mix_hex_tasks() {
       local -a tasks=(
         'add:Add a repository'
         'set:Set config for repository'
-        'remove:Remote repository'
+        'remove:Remove repository'
         'show:Show repository config'
         'list:List all repos'
       )

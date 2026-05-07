@@ -147,7 +147,7 @@ _yarn() {
             '--immutable-cache[abort if the cache folder was to be modified]' \
             '--refresh-lockfile[refresh the package metadata stored in the lockfile]' \
             '--check-cache[always refetch the packages and ensure that their checksums are consistent]' \
-            '--check-resolutions[valudata that the package resolutions are coherent]' \
+            '--check-resolutions[validate that the package resolutions are coherent]' \
             '--inline-builds[verbosely print the output of the build steps of dependencies]' \
             '--mode[change what artifacts installs generate]:mode:(skip-build update-lockfile)' \
             && ret=0
@@ -189,7 +189,7 @@ _yarn() {
         (patch-commit)
           _arguments \
             '(- *)'{-h,--help}'[show help message and exit]' \
-            '(-s --save)'{-s,--save}'[add the patch to your resoltion entries]' \
+            '(-s --save)'{-s,--save}'[add the patch to your resolution entries]' \
             '*:dir:_files -/' \
             && ret=0
           ;;
@@ -380,7 +380,7 @@ _yarn_config() {
         (set)
           _arguments \
             '(- *)'{-h,--help}'[show help message and exit]' \
-            '--json[set complete configuration settins to JSON values]' \
+            '--json[set complete configuration settings to JSON values]' \
             '(-H --home)'{-H,--home}'[update the home configuration instead of the project one]' \
             '1:name' \
             '2:value' \
@@ -805,7 +805,7 @@ _yarn_workspaces() {
           _arguments \
             '(- *)'{-h,--help}'[show help message and exit]' \
             '--json[format the output as an NDJSON stream]' \
-            '--production[only install regular dependencies by ommiting dev dependencies]' \
+            '--production[only install regular dependencies by omitting dev dependencies]' \
             '(-A --all)'{-A,--all}'[install the entire project]' \
             && ret=0
           ;;

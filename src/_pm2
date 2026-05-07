@@ -54,7 +54,7 @@ _pm2() {
     '--max-restarts[only start the script COUNT times]:count' \
     '(-u --user)'{-u,--user}'[define user when generating startup script]:username' \
     '--uid[run target script with <uid> rights]:uid' \
-    '--gid[run target script with <gid> rights]:gui' \
+    '--gid[run target script with <gid> rights]:gid' \
     '--namespace[start application within specified namespace]:namespace' \
     '--cwd[run target script from path <cwd>]:cwd:_files -/' \
     '--hp[define home path when generating startup script]: :_paths -/' \
@@ -72,7 +72,7 @@ _pm2() {
     '*--ignore-watch[list of paths to ignore]: :_files' \
     '--no-color[skip colors]' \
     '--no-vizion[start an app without vizion feature]' \
-    '--np-autorestart[start an app without automatic restart]' \
+    '--no-autorestart[start an app without automatic restart]' \
     '--no-treekill[only kill the main process, not detached children]' \
     '--no-pmx[start an app without pmx]' \
     '--no-automation[start an app without automation]' \

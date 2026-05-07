@@ -427,7 +427,6 @@ case $state in
     local -a fix_flags=(
       '-fixtool=[specify fix analyzer]:analyzer:__golang_fix_analyzers'
       '-diff[display diffs instead of rewriting files]'
-      '-fixtool=[select analysis tool]:analyzer:'
       '(- *)-V[print version and exit]'
       '-any[enable any analysis]'
       '-buildtag[enable buildtag analysis]'
@@ -747,7 +746,6 @@ case $state in
             '-test.fuzzminimizetime[time to spend minimizing a value after finding a failing input (default 1m0s)]:t' \
             '-test.fuzztime[time to spend fuzzing; default is to run indefinitely]:t' \
             '-test.fuzzworker[coordinate with the parent process to fuzz random values (for use only by cmd/go)]' \
-            '-test.list[list tests, examples, and benchmarks matching regexp then exit]:regexp' \
             '-test.memprofile[write an allocation profile to file]:file:_files' \
             '-test.memprofilerate[set memory allocation profiling rate (see runtime.MemProfileRate)]:rate' \
             '-test.mutexprofile[write a mutex contention profile to the named file after execution]:string' \

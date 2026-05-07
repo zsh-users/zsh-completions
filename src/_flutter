@@ -463,7 +463,7 @@ _flutter() {
           _arguments \
              '(- *)'{-h,--help}'[Print this usage information]' \
              '(-d --debug-info)'{-d,--debug-info=}'[A path to the symbols file generated with "--split-debug-info"]: :_files' \
-             '(-u --unit-id-debug-info)'{-d,--unit-id-debug}'[A loading unit id and the path to the symbols file]:id' \
+             '(-u --unit-id-debug-info)'{-u,--unit-id-debug}'[A loading unit id and the path to the symbols file]:id' \
              '(-i --input)'{-i,--input=}'[A file path containing a Dart stack trace]: :_files' \
              '(-o --output)'{-o,--output=}'[A file path for a symbolized stack trace to be written to]: :_files' \
             && ret=0
@@ -936,7 +936,7 @@ _flutter_pub_cache() {
         (clean)
           _arguments \
             '(- *)'{-h,--help}'[Print this usage information]' \
-            '(-f --force)'{f,--force}'[Do not ask for confirmation]' \
+            '(-f --force)'{-f,--force}'[Do not ask for confirmation]' \
             && ret=0
           ;;
         (repair)

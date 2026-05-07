@@ -142,7 +142,7 @@ _arguments -C -s \
   '(-u --updateSnapshot)'{-u,--updateSnapshot}'[Re-record snapshots]' \
   '--useStderr[Divert all output to stderr]' \
   '--verbose[Display individual test results with the test suite hierarchy]' \
-  '--waitForUnhandledRejections[Give one event loop turn to handle unhandles rejections]' \
+  '--waitForUnhandledRejections[Give one event loop turn to handle unhandled rejections]' \
   '--watch[Watch files for changes and rerun tests related to changed files]' \
   '--watchAll[Watch files for changes and rerun all tests]' \
   '--watchPathIgnorePatterns[Ignore patterns of watch path]:array' \

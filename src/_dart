@@ -176,8 +176,8 @@ _dart() {
             '--write-service-info=[Outputs information necessary to connect to the VM service]:service_info:_files' \
             '(--no-dds --dds)--dds[Use the Dart Development Service for enhanced debugging functionality]' \
             '(--no-dds --dds)--no-dds[Not use the Dart Development Service for enhanced debugging functionality]' \
-            '(--no-serve-observatory --serve-observatory)--serve-observatory[Enable hosting Observatory throught the VM service]' \
-            '(--no-serve-observatory --serve-observatory)--no-serve-observatory[Disable hosting Observatory throught the VM service]' \
+            '(--no-serve-observatory --serve-observatory)--serve-observatory[Enable hosting Observatory through the VM service]' \
+            '(--no-serve-observatory --serve-observatory)--no-serve-observatory[Disable hosting Observatory through the VM service]' \
             '(--no-print-dtd --print-dtd)--print-dtd[Prints connection details for the Dart Tooling Daemon]' \
             '(--no-print-dtd --print-dtd)--no-print-dtd[Not print connection details for the Dart Tooling Daemon]' \
             '--enable-experiment=[Enable one or more experimental features]:features:_dart_run_enable_experiment' \
@@ -679,7 +679,7 @@ _dart_run_timeline_streams() {
 (( $+functions[_dart_run_enable_experiment] )) ||
 _dart_run_enable_experiment() {
   local -a features=(
-    'augumentations:Augumentations - enhancing declarations from outside'
+    'augumentations:Augmentations - enhancing declarations from outside'
     'const-function:Allow more of the Dart language to be executed in const expression'
     'dot-shorthands:Shorter dot syntax for static accesses'
     'enhanced-parts:Generalize parts to be nested and have exports/imports'

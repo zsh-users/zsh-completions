@@ -104,8 +104,8 @@ __git-flow-release () {
         'start:Start a new release branch.'
         'finish:Finish a release branch.'
         'list:List all your release branches. (Alias to `git flow release`)'
-        'publish:Publish this release branch to origin.`)'
-        'track:Track a release branch from origin.`)'
+        'publish:Publish this release branch to origin.'
+        'track:Track a release branch from origin.'
       )
       _describe -t commands 'git flow release' subcommands
       _arguments \
@@ -162,7 +162,7 @@ __git-flow-hotfix () {
         'start:Start a new hotfix branch.'
         'finish:Finish a hotfix branch.'
         'list:List all your hotfix branches. (Alias to `git flow hotfix`)'
-        'publish:Publish this hotfix branch to origin`)'
+        'publish:Publish this hotfix branch to origin'
       )
       _describe -t commands 'git flow hotfix' subcommands
       _arguments \

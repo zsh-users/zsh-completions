@@ -141,7 +141,7 @@ _fwupdmgr_commands() {
     'set-approved-firmware:sets the list of approved firmware'
     'set-bios-setting:sets one or more BIOS settings'
     'switch-branch:switch the firmware branch on device'
-    'sync-bkc:sync firmware versions to the host best known configuration '
+    'sync-bkc:sync firmware versions to the host best known configuration'
     'unblock-firmware:unblocks a specific firmware from being installed'
     'uninhibit:uninhibit the system to allow upgrades'
     'unlock:unlocks the device for firmware access'
