@@ -42,7 +42,7 @@ _arguments \
   '(- *)--help-list[Display list of available options]' \
   '(- *)--help-list-hidden[Display list of more available options]' \
   '--Wclang-format-violations[Warnings about individual formatting changes needed]' \
-  '--Werror=[If set, changes formatting warnings to errors]' \
+  '--Werror[If set, changes formatting warnings to errors]' \
   '*--Wno-error=[If set, do not error out on the specified warning type]:warn' \
   '--assume-filename=[Set filename used to determine the language and to find .clang-format file]: :_files' \
   '--cursor=[The position of the cursor when invoking clang-format from an editor integration]:pos' \
