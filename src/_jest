@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Jest 30.1.3 (https://jestjs.io/)
+#  Completion script for Jest 30.4.0 (https://jestjs.io/)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -58,6 +58,7 @@ _arguments -C -s \
   '--clearCache[Clear the configured Jest cache directory and then exits]' \
   '--clearMocks[Automatically clear mock calls, instances, contexts and results before every test]' \
   '--collectCoverageFrom[A glob pattern for collecting coverage info]:string' \
+  '--collectTests[Discover and report all test cases without executing them]' \
   '(--color --colors)'{--color,--colors}'[Force test results output color highlighting (even if stdout is not a TTY)]' \
   '(-c --config)'{-c,--config}'[The path to a jest config file specifying how to find and execute tests]:files:_files' \
   '(--coverage --collectCoverage)'{--coverage,--collectCoverage}'[Indicate that test coverage information should be collected and reported in the output]' \
@@ -148,6 +149,7 @@ _arguments -C -s \
   '--watchPathIgnorePatterns[Ignore patterns of watch path]:array' \
   '(--watchman --no-watchman)--watchman[Use watchman for file crawling]' \
   '(--watchman --no-watchman)--no-watchman[Do not use watchman for file crawling]' \
+  '--workerGracefulExitTimeout[Timeout msecs for worker processes to exit gracefully after test complete(Default 500ms)]:ms' \
   '--workerThreads[Use worker threads for parallelization]' \
   '*: :->file' \
   && ret=0
