@@ -1,0 +1,68 @@
+#compdef peco
+# ------------------------------------------------------------------------------
+# Copyright (c) 2026 Github zsh-users - https://github.com/zsh-users
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for peco v0.6.0 (https://github.com/peco/peco)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei Yoshida (https://github.com/syohex) <syohex@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+local -a filters=(IgnoreCase CaseSensitive SmartCase IRegexp Regexp Fuzzy)
+local -a layouts=(top-down bottom-up top-down-query-bottom)
+
+_arguments \
+  '(- *)'{-h,--help}'[show help message and exit]' \
+  '--query[initial value for query]:query' \
+  '--rcfile[path to the settings file]:file:_files' \
+  '(- *)--version[print the version and exit]' \
+  '(-b --buffer-size)'{-b,--buffer-size}'[number of lines to keep in search buffer]:lines' \
+  '--null[expect NUL(\0) as separator for target/output]' \
+  '--initial-index[position of the initial index of the selection (0 base)]:index' \
+  '--initial-filter[specify the default filter]:filter:($filters)' \
+  '--prompt[specify the prompt string]:prompt' \
+  '--layout[layout to be used(default: top-down)]:layout:($layouts)' \
+  '--select-1[select first item and immediately exit if the input contains only 1 item]' \
+  '--exit-0[exit immediately with status 1 if the input is empty]' \
+  '--select-all[select all items and immediately exit]' \
+  '--on-cancel[specify action on user cancel(default: success)]:action:(success error)' \
+  '--selection-prefix[use a prefix instead of changing line color to indicate currently selected lines]:prefix' \
+  '--exec[execute command instead of finishing/terminating peco]:exec' \
+  '--print-query[print out the current query as first line of output]' \
+  '--color[color mode(default: auto)]:mode:(auto none)' \
+  '--height[display height in lines or percentage(e.g. 10, 50%)]:height' \
+  '*::file:_files'
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
