@@ -1,0 +1,340 @@
+#compdef playwright
+# ------------------------------------------------------------------------------
+# Copyright (c) 2026 Github zsh-users - https://github.com/zsh-users
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for playwright 1.60.0 (https://playwright.dev/)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Shohei Yoshida (https://github.com/syohex) <syohex@gmail.com>
+#
+# ------------------------------------------------------------------------------
+
+_playwright() {
+  typeset -A opt_args
+  local context state line
+  local curcontext="$curcontext"
+  local ret=1
+
+  local -a browsers=(chromium firefox webkit)
+  local -a installable_browsers=(chromium firefox webkit chromium-headless-shell)
+  local -a target_languages=(javascript playwright-test python python-async python-pytest
+                            csharp csharp-mstest csharp-nunit csharp-xunit java java-junit)
+  local -a channels=(chrome chrome-beta msedge-dev)
+  local -a pager_formats=(Letter Legal Tabloid Ledger A0 A1 A2 A3 A4 A5 A6)
+  local -a loop_providers=(claude copilot opencode vscode vscode-legacy)
+  local -a trace_modes=(on off on-first-retry on-all-retries retain-on-failure
+                        retain-on-first-failure retain-on-failure-and-retries)
+
+  _arguments -C -A "-*" \
+    '(-v --verbose)'{-v,--verbose}'[output the version number]' \
+    '(- *)'{-h,--help}'[display help for command]' \
+    '1: :_playwright_subcommands' \
+    '*::arg:->args' \
+    && ret=0
+
+  case "$state" in
+    (args)
+      local -a options=('(- *)'{-h,--help}'[display help for command]')
+
+      case $words[1] in
+        (help)
+          options+=('1: :_playwright_subcommands')
+          ;;
+        (open|codegen|cr|ff|wk|screenshot|pdf|show-trace|test)
+          options+=(
+            '(-b --browser)'{-b,--browser}'[browser to use(default: chromium)]:browser:($browsers)'                )
+          ;|
+        (open|codegen|cr|ff|wk|screenshot|pdf)
+          options+=(
+            '--block-service-workers[block service workers]'
+            '--channel[Chromium distribution channel]:channel:($channels)'
+            '--color-scheme[emulate preferred color scheme]:scheme:(light dark)'
+            '--device[emulate device(e.g. "iPhone 11")]:device'
+            '--geolocation[specify geolocation coordinates]:coordinates'
+            '--ignore-https-errors[ignore https errors]'
+            '--load-storage[load context storage state from the file]:file:_files'
+            '--lang[specify language/locale(e.g. "en-GB")]:language'
+            '--proxy-server[specify proxy server]:proxy'
+            '--proxy-bypass[comma-separated domains to bypass proxy]:bypass'
+            '--save-har[save HAR file with all network activity at the end]:file:_files'
+            '--save-har-glob[filter entries in the HAR by matching URL against this glob pattern]:pattern'
+            '--save-storage[save context storage state at the end]:file:_files'
+            '--timezone[time zone to emulate]:time_zone'
+            '--timeout[timeout for Playwright actions in milliseconds(default: no timeout)]:timeout'
+            '--user-agent[specify user agent string]:user_agent'
+            '--user-data-dir[use the specified user data directory instead of a new context]:dir:_files -/'
+            '--viewport-size[specify browser viewport size in pixels(e.g. "1280, 720")]:size'
+            '*::url:_urls'
+          )
+          ;|
+        (install)
+          options+=(
+            '--with-deps[install system dependencies for browsers]'
+            '--dry-run[do not execute installation, only print information]'
+            '(- *)--list[prints list of browsers from all playwright installations]'
+            '--force[force reinstall of already installed browsers]'
+            '--only-shell[only install headless shell when installing chromium]'
+            '--no-shell[do not install chromium headless shell]'
+            '*::browser:($installable_browsers)'
+          )
+          ;;
+        (uninstall)
+          options+=('--all[remove all browsers used by any Playwright installation from the system]')
+          ;;
+        (install-deps)
+          options+=('--dry-run[do not modify the system]')
+          ;;
+        (screenshot|pdf)
+          options+=(
+            '--wait-for-selector[wait for selector before taking a screenshot]:selector'
+            '--wait-for-timeout[wait for timeout in milliseconds before taking a screenshot]:timeout'
+            '*:: :_files'
+          )
+          ;|
+        (screenshot)
+          options+=(
+            '--full-page[take a full page screenshot]'
+            '*:: :_files'
+          )
+          ;;
+        (pdf)
+          options+=(
+            '--pager-format[pager format]:format:($pager_formats)'
+            '*:: :_files'
+          )
+          ;;
+        (show-trace)
+          options+=(
+            '(-h --host)'{-h,--host}'[host to serve trace on]:host'
+            '(-p --port)'{-p,--port}'[port to serve trace on]:port'
+            '--stdin[accept trace URLs over stdin to update the viewer]'
+            '*:: :_files'
+          )
+          ;;
+        (trace)
+          _playwright_trace && ret=0
+          return ret
+          ;;
+        (test)
+          options+=(
+            '(-c --config)'{-c,--config}'[configuration file or a test directory]:config:_files'
+            '--debug[run tests with Playwright Inspector]:mode:(inspector cli)'
+            '--fail-on-flaky-tests[fail if any test is flagged as flaky]'
+            '--forbid-only[fail if test.only is called]'
+            '--fully-parallel[run all tests in parallel]'
+            '(-g --grep)'{-g,--grep}'[only run tests matching this regular expression]:pattern'
+            '--global-timeout[maximum time this test suite can run in milliseconds]:timeout'
+            '--grep-invert[only run tests that do not match this regular expression]:pattern'
+            '--headed[run tests in headed browsers]'
+            '--ignore-snapshots[ignore screenshot and snapshot expectations]'
+            '(-j --workers)'{-j,--workers}'[number of concurrent workers or percentage of logical CPU cores]:workers'
+            '--last-failed[only re-run the failures]'
+            '--list[collect all the tests and report them, but do not run]'
+            '--max-failures[stop after the first N failures]:num'
+            '--no-deps[do not run project dependencies]'
+            '--only-changed[only run test files that have been changed between "HEAD" and "ref"]:ref'
+            '--output[folder for output artifacts(default: "test-results")]:dir:_files -/'
+            '--pass-with-no-tests[make test run succeed even if no tests were found]'
+            '*--project[only run tests from the specified list of projects]:project'
+            '--quiet[suppress stdio]'
+            '--repeat-each[run each test N times(default: 1)]:num'
+            '--reporter[reporter to use, comma-separated]:reporter:_playwright_reporters'
+            '--retries[maximum retry count for flaky tests(default: no retries)]:num'
+            '--run-agents[run agents to generate the code for page.perform]:agent:(missing all none)'
+            '--shard[shard tests and execute only the selected shard(e.g. "3/5")]:shard'
+            '--test-list[path to a file containing a list of tests to run]:file:_files'
+            '--test-list-invert[path to a file containing a list of tests to skip]:file:_files'
+            '--timeout[specify test timeout threshold in milliseconds, zero for unlimited(default: 30000)]:timeout'
+            '--trace[force tracing mode]:mode:($trace_modes)'
+            '--tsconfig[path to a single tsconfig applicable to all imported files]:file:_files'
+            '(-u --update-snapshots)'{-u,--update-snapshots}'[update snapshots with actual results]:mode:(all changed missing none)'
+            '--ui[run tests in interactive UI mode]'
+            '--ui-host[host to server UI on]:host'
+            '--ui-port[port to server UI on]:port'
+            '--update-source-method[choose the way source is updated(default: patch)]:method:(overwrite 3way patch)'
+            '-x[stop after the first failure]'
+            '*:: :_files'
+          )
+          ;;
+        (show-report)
+          options+=(
+            '(-h --host)'{-h,--host}'[host to serve report on]:host'
+            '(-p --port)'{-p,--port}'[port to serve report on]:port'
+          )
+          ;;
+        (merge-reports)
+          options+=(
+            '(-c --config)'{-c,--config}'[configuration file]:file:_files'
+            '--reporter[reporter to use, comma-separated (default: list)]:reporter:_playwright_reporters'
+            '*:: :_files -/'
+          )
+          ;;
+        (clear-cache)
+          options+=(
+            '(-c --config)'{-c,--config}'[configuration file or a test directory]:file:_files'
+          )
+          ;;
+        (init-agents)
+          options+=(
+            '--loop[agentic loop provider]:provider:($loop_providers)'
+            '(-c --config)'{-c,--config}'[configuration file to find a project to use for seed test]:file:_files'
+            '--project[project to use for seed test]:_files -/'
+            '--prompts[include prompts in the agent initialization]'
+          )
+          ;;
+      esac
+
+      _arguments "$options[@]" && ret=0
+      ;;
+  esac
+
+  return ret
+}
+
+(( $+functions[_playwright_subcommands] )) ||
+_playwright_subcommands() {
+  local -a commands=(
+    "open:open page in browser specified via -b, --browser"
+    "codegen:open page and generate code for user actions"
+    "install:ensure browsers necessary for this version of Playwright are installed"
+    "uninstall:remove browsers used by this installation of Playwright from the system"
+    "install-deps:install dependencies necessary to run browsers"
+    "cr:open page in Chromium"
+    "ff:open page in Firefox"
+    "wk:open page in WebKit"
+    "screenshot:capture a page screenshot"
+    "pdf:save page as PDF"
+    "show-trace:show trace viewer"
+    "trace:inspect trace files from the command line"
+    "test:run tests with Playwright Test"
+    "show-report:show HTML report"
+    "merge-reports:merge multiple blob reports into a single report"
+    "clear-cache:clear build and test caches"
+    "init-agents:Initialize repository agents"
+    "help:display help for command"
+  )
+  _describe -t commands 'command' commands "$@"
+}
+
+(( $+functions[_playwright_trace] )) ||
+_playwright_trace() {
+  local ret=1
+
+  _arguments -C \
+    '(- *)'{-h,--help}'[Print this usage information]' \
+    '1: :_playwright_trace_subcommands' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      local -a options=(
+        '(- *)'{-h,--help}'[display help for command]'
+        '*:: :_files'
+      )
+
+      case $words[1] in
+        (help)
+          options=('1:command:_playwright_trace_subcommands')
+          ;;
+        (actions)
+          options+=(
+            '--grep[filter actions by title pattern]:pattern'
+            '--errors-only[only show failed actions]'
+          )
+          ;;
+        (requests)
+          options+=(
+            '--grep[filter by URL pattern]:pattern'
+            '--method[filter by HTTP method]:method:(DELETE GET HEAD POST PUT CONNECT OPTIONS TRACE PATCH)'
+            '--status[filter by status code]:code'
+            '--failed[only show failed request(status >= 400)]'
+          )
+          ;;
+        (console)
+          options+=(
+            '--errors-only[only show errors]'
+            '--warnings[show errors and warnings]'
+            '--browser[only browser console messages]'
+            '--stdio[only stdout/stderr]'
+          )
+          ;;
+        (snapshot)
+          options+=(
+            '--name[snapshot phase]:name:(before input after)'
+            '--serve[serve snapshot on localhost and keep running]'
+          )
+          ;;
+        (screenshot|attachment)
+          options+=('(-o --output)'{-o,--output}'[output file path]:file:_files')
+          ;;
+      esac
+
+      _arguments "$options[@]" && ret=0
+    ;;
+  esac
+
+  return ret
+}
+
+(( $+functions[_playwright_trace_subcommands] )) ||
+_playwright_trace_subcommands() {
+  local -a commands=(
+    "open:extract trace file for inspection"
+    "close:remove extracted trace data"
+    "actions:list actions in the trace"
+    "action:show details of a specific action"
+    "requests:show network requests"
+    "request:show details of a specific network request"
+    "console:show console messages"
+    "errors:show errors with stack traces"
+    "snapshot:run a playwright-cli command against a DOM snapshot"
+    "screenshot:save screencast screenshot for an action"
+    "attachments:list trace attachments"
+    "attachment:extract a trace attachment by its number"
+    "install-skill:install SKILL.md for LLM integration"
+    "help:display help for command"
+  )
+  _describe -t commands 'command' commands "$@"
+}
+
+(( $+functions[_playwright_reporters] )) ||
+_playwright_reporters() {
+  local -a reporters=(list line dot json junit null github html blob)
+  _values -s ',' reporter $reporters
+}
+
+_playwright "$@"
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
