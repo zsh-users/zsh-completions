@@ -24,7 +24,7 @@
 # Description
 # -----------
 #
-#  Completion script for dart 3.11.0 (https://dart.dev/)
+#  Completion script for dart 3.12.0 (https://dart.dev/)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -89,6 +89,7 @@ _dart() {
             '--host=[Hostname to serve DevTools on(defaults to localhost)]:host' \
             '--port=[Port to serve DevTools on, specify 0 to automatically use any available port(defaults to 9100)]:port' \
             '--dtd-uri=[A URI pointing to a Dart Tooling Daemon]:uri' \
+            '--dtd-exposed-uri=[An optional URI for DartTooling Daemon that has been exposed to the front-end]:uri' \
             '(--no-launch-browser --launch-browser)--launch-browser[Launches DevTools in a browser immediately at start]' \
             '(--no-launch-browser --launch-browser)--no-launch-browser[Do not launches DevTools in a browser immediately at start]' \
             '--machine[Sets output format to JSON for consumption in tools]' \
@@ -96,15 +97,15 @@ _dart() {
             '--app-size-base=[Path to the base app size file used for app size]' \
             '(--no-disable-cors --disable-cors)--disable-cors[Disable CORS]' \
             '(--no-disable-cors --disable-cors)--no-disable-cors[Do not disable CORS]' \
-            '*:server_uri :' \
+            '*::server_uri' \
             && ret=0
           ;;
         (doc)
           _arguments \
             '(- *)'{-h,--help}'[Print this usage information]' \
             '(-o --output)'{-o,--output=}'[Configuration the output directory(defaults to "doc/api")]:dir:_files -/' \
-            '(--dry-run)--validate-links[Display warnings for broken links]' \
-            '(--validate-links)--dry-run[Try to generate the docs without saving them]' \
+            '(--dry-run --validate-links)--validate-links[Display warnings for broken links]' \
+            '(--dry-run --validate-links)--dry-run[Try to generate the docs without saving them]' \
             '*:dir:_files -/' \
             && ret=0
           ;;
@@ -122,27 +123,12 @@ _dart() {
             '(- *)'{-h,--help}'[Print this usage information]' \
             '(-v --verbose)'{-v,--verbose}'[Show all options and flags with --help]' \
             '(-o --output)'{-o,--output}'[Set where to write formatted output]:format:_dart_format_output' \
-            '--show[Set which filenames to print]:show type:(all changed none)' \
-            '--summary[Show the specified summary after formatting]:summary type:(line none profile)' \
             '--set-exit-if-changed[Return exit code 1 if there are any formatting changes]' \
-            '--page-width[Try to keep lines no longer than this(defaults to 80)]:width' \
-            '--trailing-commas[How trailing commas in input affect formatting]:style:(automate preserve)' \
-            '(-i --indent)'{-i,--indent}'[Add this many spaces of leading indentation]' \
-            '--follow-links[Follow links to files and directories]' \
-            '(- *)--version[Show dart_style version]' \
-            '--enable-experiment[Enable one or more experimental features]:features' \
-            '--selection[Track selection through formatting]:selection' \
-            '--stdin-name[Use this path in error messages when input is read from stdin]:name' \
             '*:file_or_directory:_files' \
             && ret=0
           ;;
         (info)
-          _arguments \
-            '(- *)'{-h,--help}'[Print this usage information]' \
-            '(--no-remove-file-paths --remove-file-paths)--remove-file-paths[Remove file paths in displayed information]' \
-            '(--no-remove-file-paths --remove-file-paths)--no-remove-file-paths[Do not remove file paths in displayed information]' \
-            '*: :_files' \
-            && ret=0
+          _dart_info && ret=0
           ;;
         (pub)
           _dart_pub && ret=0
@@ -150,41 +136,17 @@ _dart() {
         (run)
           _arguments \
             '(- *)'{-h,--help}'[Print this usage information]' \
-            '(-r --resident)'{-r,--resident}'[Enable faster startup times with the resident frontend compiler]' \
-            '--resident-compiler-info-file[The path to an info file to use to communicate with a resident frontend compiler]:file:_files' \
             '--observe=[Specify debug port and bind address]:port_address' \
-            '--enable-vm-service=[Enable the VM service and listens on the specified port for connections(default port 8181)]:port_address' \
-            '(--serve-devtools --no-serve-devtools)--serve-devtools[Serves an instance of the Dart DevTools debugger and profiler]' \
-            '(--serve-devtools --no-serve-devtools)--no-serve-devtools[Do not serve an instance of the Dart DevTools debugger and profiler]' \
-            '--pause-isolates-on-exit[Pause isolates on exit when running with --enable-vm-service]' \
-            '--pause-isolates-on-unhandled-exceptions[Pause isolates when an unhandled exception is encountered when running with --enable-vm-service]' \
-            '--warn-on-pause-with-no-debugger[Print a warning when an isolate pauses with no attached debugger when running with --enable-vm-service]' \
-            '--timeline-streams=[Enables recording for specific timeline streams]:stream:_dart_run_timeline_streams' \
-            '--pause-isolates-on-start[Pause isolates on start when running with --enable-vm-service]' \
-            '--profile-microtasks[Record information about each microtask]' \
             '(--enable-asserts --no-enable-asserts)--enable-asserts[Enable assert statements]' \
             '(--enable-asserts --no-enable-asserts)--no-enable-asserts[Do not enable assert statements]' \
-            '--timeline-recorder=[Selects the timeline recorder to use]:recorder:(none ring endless startup systrace file callback)' \
-            '--verbosity[Sets the verbosity level of the compilation]:level:(all error info warning)' \
-            '*'{-d,--define=}'[Define an environment declaration]:key_value:' \
-            '--disable-service-auth-codes[Disables the requirement for an authentication code]' \
-            '--enable-service-port-fallback[Use 0 if binding port is failed]' \
-            '--root-certs-file=[The path to a file containing the trusted root certificates]:file:_files' \
-            '--root-certs-cache=[The path to a cache directory containing the trusted root certificates]:file:_files -/' \
-            '--trace-loading[Enable tracing of library and script loading]' \
-            '--packages=[The path to the package resolution configuration file]:file:_files'\
-            '--write-service-info=[Outputs information necessary to connect to the VM service]:service_info:_files' \
-            '(--no-dds --dds)--dds[Use the Dart Development Service for enhanced debugging functionality]' \
-            '(--no-dds --dds)--no-dds[Not use the Dart Development Service for enhanced debugging functionality]' \
-            '(--no-serve-observatory --serve-observatory)--serve-observatory[Enable hosting Observatory through the VM service]' \
-            '(--no-serve-observatory --serve-observatory)--no-serve-observatory[Disable hosting Observatory through the VM service]' \
-            '(--no-print-dtd --print-dtd)--print-dtd[Prints connection details for the Dart Tooling Daemon]' \
-            '(--no-print-dtd --print-dtd)--no-print-dtd[Not print connection details for the Dart Tooling Daemon]' \
-            '--enable-experiment=[Enable one or more experimental features]:features:_dart_run_enable_experiment' \
+            '--verbosity[Set the verbosity level of the compilation]:verbosity:(error warning info all)' \
             '*: :_files' \
             && ret=0
           ;;
         (test)
+          local -a test_platforms=(vm vm-asan vm-msan vm-tsan chrome firefox edge node)
+          local -a test_compilers=(dart2js dart2wasm exe kernel source)
+
           _arguments \
             '(- *)'{-h,--help}'[Print this usage information]' \
             '(- *)--version[Show the package:test version]' \
@@ -193,14 +155,14 @@ _dart() {
             '*'{-t,--tags}'[Run only tests with all of the specified tags]:tag' \
             '*'{-x,--exclude-tags}'[Do not run tests with any of the specified tags]:tag' \
             '--run-skipped[Run skipped tests instead of skipping them]' \
-            '(-p --platform)'{-p,--platform}'[The platform on which to run the tests]:platform:(vm chrome firefox edge node experimental-chrome-wasm)' \
-            '(-c --compiler)'{-c,--compiler}'[The compiler to use to run tests]:compiler:(dart2js dart2wasm exe kernel source)' \
+            '(-p --platform)'{-p,--platform}'[The platform on which to run the tests]:platform:($test_platforms)' \
+            '(-c --compiler)'{-c,--compiler}'[The compiler to use to run tests]:compiler:($test_compilers)' \
             '(-P --preset)'{-P,--preset}'[The configuration preset to use]:preset' \
             '(-j --concurrency)'{-j,--concurrency}'[The number of concurrent test suites run(defaults to 1)]:concurrency' \
             '--total-shards[The total number of invocations of the test runner being run]:number' \
             '--shard-index[The index of this test runner invocation]:index' \
-            '(--ignore-timeouts --timeout)--timeout[The default test timeout]:timeout' \
-            '(--ignore-timeouts --timeout)--ignore-timeouts[Ignore all timeouts]' \
+            '(--suite-load-timeout --ignore-timeouts)--suite-load-timeout[The timeout for loading a test suite]:timeout' \
+            '(--suite-load-timeout --ignore-timeouts)--ignore-timeouts[Ignore all timeouts]' \
             '--pause-after-load[Pause for debugging before any tests execute]' \
             '--debug[Run the VM and Chrome tests in debug mode]' \
             '--coverage=[Gather coverage and output it to the specified directory]:dir:_files -/' \
@@ -298,7 +260,7 @@ _dart_compile() {
     ;;
   esac
 
-  return $ret
+  return ret
 }
 
 (( $+functions[_dart_compile_subcommands] )) ||
@@ -323,6 +285,60 @@ _dart_format_output() {
     "write:Overwrite formatted files on disk(default)"
   )
   _describe -t outputs 'output' outputs "$@"
+}
+
+(( $+functions[_dart_info] )) ||
+_dart_info() {
+  local ret=1
+  local -a streams=(api compiler compilerVerbose dart debugger embedder gc isolate microtask vm all)
+
+  _arguments -C \
+    '(- *)'{-h,--help}'[Print this usage information]' \
+    '1: :_dart_info_subcommands' \
+    '*:: :->arg' \
+    && ret=0
+
+  case $state in
+    (arg)
+      local -a opts=(
+        '(- *)'{-h,--help}'[Print this usage information]'
+      )
+
+      case $words[1] in
+        (dump)
+          opts+=(
+            '(--remove-file-paths --no-remove-file-paths)--remove-file-paths[Remove file paths in displayed information(default)]'
+            '(--remove-file-paths --no-remove-file-paths)--no-remove-file-paths[Do not remove file paths in displayed information(default)]'
+          )
+          ;;
+        (record-performance)
+          opts+=(
+            '(-o --output-dir)'{-o,--output-dir}'[Output directory]:dir:_files -/'
+            '--tag[Tag to filter processes by]:tab'
+            '--record-new-processes[Record processes that start after the recorder]'
+            '--record-only-new-process[Record only processes that start after the recorder]'
+            '--enable-async-spans[Enable async spancs]'
+            '(--enable-profiler --no-enable-profiler)--enable-profiler[Enable profiler(default)]'
+            '(--enable-profiler --no-enable-profiler)--no-enable-profiler[Disable profiler(default)]'
+            '--streams[Streams to record]:type:($streams)'
+          )
+          ;;
+      esac
+
+      _arguments "$opts[@]" && ret=0
+    ;;
+  esac
+
+  return ret
+}
+
+(( $+functions[_dart_info_subcommands] )) ||
+_dart_info_subcommands() {
+  local -a commands=(
+    'dump:Show diagnostic information about the installed tooling(default)'
+    'record-performance:Record performance data of running Dart tooling processes'
+  )
+  _describe -t commands 'command' commands "$@"
 }
 
 (( $+functions[_dart_pub] )) ||
@@ -386,6 +402,7 @@ _dart_pub() {
           ;|
         (bump)
           _dart_pub_bump && return 0
+          return 1
           ;;
         (cache)
           _dart_pub_cache && return 0
@@ -403,7 +420,6 @@ _dart_pub() {
           ;;
         (global)
           _dart_pub_global && return 0
-          return 1
           ;;
         (outdated)
           opts+=(
@@ -424,13 +440,17 @@ _dart_pub() {
           _dart_pub_token && return 0
           return 1
           ;;
+        (workspace)
+          _dart_pub_workspace && return 0
+          return 1
+          ;;
       esac
 
       _arguments "$opts[@]" && ret=0
     ;;
   esac
 
-  return $ret
+  return ret
 }
 
 (( $+functions[_dart_pub_subcommands] )) ||
@@ -476,7 +496,7 @@ _dart_pub_bump() {
     ;;
   esac
 
-  return $ret
+  return ret
 }
 
 (( $+functions[_dart_pub_bump_subcommands] )) ||
@@ -524,7 +544,7 @@ _dart_pub_cache() {
     ;;
   esac
 
-  return $ret
+  return ret
 }
 
 (( $+functions[_dart_pub_cache_subcommands] )) ||
@@ -578,7 +598,7 @@ _dart_pub_global() {
     ;;
   esac
 
-  return $ret
+  return ret
 }
 
 (( $+functions[_dart_pub_global_subcommands] )) ||
@@ -625,7 +645,7 @@ _dart_pub_token() {
     ;;
   esac
 
-  return $ret
+  return ret
 }
 
 (( $+functions[_dart_pub_token_subcommands] )) ||
@@ -658,7 +678,7 @@ _dart_pub_workspace() {
     ;;
   esac
 
-  return $ret
+  return ret
 }
 
 (( $+functions[_dart_pub_workspace_subcommands] )) ||
@@ -667,34 +687,6 @@ _dart_pub_workspace_subcommands() {
     'list:List all packages in the workspace and their directory'
   )
   _describe -t commands 'command' commands "$@"
-}
-
-
-(( $+functions[_dart_run_timeline_streams] )) ||
-_dart_run_timeline_streams() {
-  local -a streams=(all API Compiler CompilerVerbose Dart Debugger Embedder GC Isolate VM)
-  _values -s ',' streams $streams
-}
-
-(( $+functions[_dart_run_enable_experiment] )) ||
-_dart_run_enable_experiment() {
-  local -a features=(
-    'augumentations:Augmentations - enhancing declarations from outside'
-    'const-function:Allow more of the Dart language to be executed in const expression'
-    'dot-shorthands:Shorter dot syntax for static accesses'
-    'enhanced-parts:Generalize parts to be nested and have exports/imports'
-    'getter-setter-error:Stop reporting errors about mismatching types in a getter/setter pair'
-    'inference-update-4:A bundle of updates to type inference'
-    'macros:Static meta-programming'
-    'native-asserts:Compile and bundle native asserts'
-    'null-aware-elements:Null-aware elements and map entries in collections'
-    'record-use:Output arguments used by static functions'
-    'sound-flow-analysis:Assume sound null safety when computing type promotion, reachability, definite assignment'
-    'test-experiment:Has no effect'
-    'unquoted-imports:Shorter import syntax'
-    'variance:Sound variance'
-  )
-  _describe -t features 'command' features "$@"
 }
 
 (( $+functions[_dart_test_reporter] )) ||
