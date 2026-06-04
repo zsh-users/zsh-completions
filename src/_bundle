@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Bundler 4.0.0 (https://bundler.io/).
+#  Completion script for Bundler 4.0.13 (https://bundler.io/).
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -66,6 +66,7 @@ _bundle() {
           local -a policies=('HighSecurity' 'MediumSecurity' 'LowSecurity' 'AlmostNoSecurity' 'NoSecurity')
           _arguments \
             '(- *)'{-h,--help}'[show help message]' \
+            '--cooldown=[only consider gem versions published at least number days ago when resolving]:num' \
             '(--force --redownload)'{--force,--redownload}'[force reinstalling every gem]' \
             '--full-index[download and cache the index file of all gems]' \
             '--gemfile=-[use the specified gemfile instead of Gemfile]:gemfile:_files' \
@@ -78,7 +79,8 @@ _bundle() {
             '--quiet[only output warnings and errors]' \
             '--retry=[retry number when network or git requests failed]:number' \
             '--standalone=-[create standalone bundles]:groups:_bundle_groups' \
-            "--trust-policy=-[apply the Rubygems security policy]:arg:($policies)" \
+            '--trust-policy=-[apply the Rubygems security policy]:arg:($policies)' \
+            '--target-rbconfig=[path to rbconfig.rb for the deployment target platform]:file:_files' \
             && ret=0
           ;;
         (update)
@@ -92,6 +94,7 @@ _bundle() {
             '--bundler[update the locked version of bundler to invoked bundler version]' \
             '(--force --redownload)'{--force,--redownload}'[force reinstalling every gem]' \
             '--full-index[fall back to using the single-file index of all gems]' \
+            '--gemfile[use the specified gemfile instaed of Gemfile]:file:_files' \
             '(-j --jobs)'{-j,--jobs}'[specify the number of jobs to run in parallel]:number' \
             '--retry=-[retry failed network or git requests for number times]:number' \
             '--quiet[only output warnings and errors]' \
@@ -101,6 +104,7 @@ _bundle() {
             '--pre[always choose the highest allowed version]' \
             '--strict[do not allow any gem to be updated past latest --patch | --minor | --major]' \
             '--conservative[use bundle install conservative update behavior]' \
+            '--cooldown=[only consider gem versions published at least number days ago when resolving]:num' \
             '*:: :_bundle_gems' \
             && ret=0
           ;;
@@ -146,6 +150,7 @@ _bundle() {
             '--skip-install[adds the gem to the Gemfile but does not install it]' \
             '--optimistic[adds optimistic declaration of version]' \
             '--strict[adds strict declaration of version]' \
+            '--cooldown=[only consider gem versions published at least number days ago when resolving]:num' \
             '1::gem' \
             && ret=0
           ;;
@@ -191,6 +196,7 @@ _bundle() {
             '--filter-minor[only list minor new versions]' \
             '--filter-patch[only list patch new versions]' \
             '--only-explicit[only list gems specified in your Gemfile, not their dependencies]' \
+            '--cooldown=[annotate versions that are still inside the cooldown window]:num' \
             '*:: :_bundle_gems' \
             && ret=0
           ;;
