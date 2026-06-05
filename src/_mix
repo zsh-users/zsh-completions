@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Elixir Mix 1.19.5 with Erlang/OTP 28 (https://github.com/elixir-lang/elixir)
+#  Completion script for Elixir Mix 1.20.0 with Erlang/OTP 28 (https://github.com/elixir-lang/elixir)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -84,6 +84,7 @@ _mix() {
           _arguments \
             '*--exclude[exclude applications which you do not want to see printed]:app' \
             '--format[format type]:type:(pretty plain dot)' \
+            '--output[override the location of the file created by the "dot" format]:file:_files' \
             && ret=0
           ;;
         (archive.build)
@@ -216,6 +217,7 @@ _mix() {
             '*--exclude[exclude dependencies which you do not want to see printed]:dep:_mix_dependencies' \
             '--umbrella-only[only include the umbrella applications]' \
             '--format[print format]:format:(pretty plain dot)' \
+            '--output[override the location of the file created by the "dot" format]:file:_files' \
             && ret=0
           ;;
         (deps.unlock)
@@ -278,6 +280,7 @@ _mix() {
             '--dot-formatter[path to the file with formatter configuration]:file:_files' \
             '--stdin-filename[path to the file being formatted on stdin]:name' \
             '--migrate[enable the :migrate option]' \
+            '--no-compile[do not compile before formatting]' \
             '*::path:_files' \
             && ret=0
           ;;
@@ -341,6 +344,7 @@ _mix() {
             '(--color --no-color)--color[enable color in ExUnit formatting results]' \
             '(--color --no-color)--no-color[disable color]' \
             '--cover[run coverage tool]' \
+            '--dry-run[print which tests would be run based on current options, but not run any tests]' \
             '*--exclude[exclude tests that match the filter]:filter' \
             '--exit-status[use an alternate exit status to use when tests fail(default: 2)]:num' \
             '--export-coverage[the name of the file to export coverage results to]:file:_files' \
