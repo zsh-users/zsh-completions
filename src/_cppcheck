@@ -40,7 +40,7 @@
 # Notes
 # -----
 #
-#  Created for Cppcheck version 2.17.1 (https://github.com/danmar/cppcheck)
+#  Created for Cppcheck version 2.19.0 (https://github.com/danmar/cppcheck)
 #
 # ------------------------------------------------------------------------------
 
@@ -49,9 +49,16 @@ _cppcheck_files() {
 }
 
 _cppcheck() {
-  local check_ids='(all warning style performance portability information unusedFunction missingInclude)'
-  local platforms='(unix32 unix64 win32A win32W win64 avr8 elbrus-e1cp pic8 pic8-enhanced pic16 mips32 native unspecified)'
-  local coding_standards='(normal autosar cert-c-2016 cert-cpp-2016 misra-c-2012 misra-c-2023 misra-cpp-2008 misra-cpp-2023)'
+  local -a check_ids=(
+    all warning style performance portability information unusedFunction missingInclude
+  )
+  local -a platforms=(
+    unix32 unix64 win32A win32W win64 avr8 elbrus-e1cp pic8 pic8-enhanced pic16 mips32 native unspecified
+  )
+  local -a coding_standards=(
+    normal autosar cert-c-2016 cert-cpp-2016 misra-c-2012 misra-c-2023 misra-c-2025
+    misra-cpp-2008 misra-cpp-2023
+  )
 
   _arguments \
     "--addon=[Execute addon]" \
@@ -65,11 +72,11 @@ _cppcheck() {
     "--config-exclude=[Path to be excluded from configuration checking]:directory:_files -/" \
     "--config-exclude-files=[A file that contains a list of config-excludes]:file:_files" \
     "--doc[Print a list of all available checks]" \
-    "*--disable=[Disable individual checks]:id:$check_ids" \
+    '*--disable=[Disable individual checks]:id:($check_ids)' \
     "--dump[Dump xml data for each translation unit]" \
-    "-D[Define preprocessor symbol]" \
+    "*-D[Define preprocessor symbol]:symbol" \
     "-E[Print preprocessor output on stdout and don't do any further processing]" \
-    "--enable=[Enable additional checks]:id:$check_ids" \
+    '--enable=[Enable additional checks]:id:($check_ids)' \
     "--error-exitcode=[Integer to return if errors are found]" \
     "--errorlist[Print a list of all the error messages in XML format]" \
     "--exitcode-suppressions=[Used when certain messages should be displayed but should not cause a non-zero exitcode]:_files" \
@@ -79,7 +86,7 @@ _cppcheck() {
     "(--fsigned-char --funsigned-char)--fsigned-char[Treat char type as signed]" \
     "(--fsigned-char --funsigned-char)--funsigned-char[Treat char type as unsigned]" \
     "(- 1 *)"{-h,--help}"[Print help]" \
-    "-I[A file that contains a list of config-excludes]:directory:_files -/" \
+    "*-I[A file that contains a list of config-excludes]:directory:_files -/" \
     "--include-file=[Specify directory paths to search for included header files in a text file]:file:_files" \
     "--include=[Force inclusion of a file before the checked file]:file:_files" \
     "-i[Give a source file or source file directory to exclude from the check]:directory or file:_files" \
@@ -92,24 +99,24 @@ _cppcheck() {
     "--max-configs=[Maximum number of configurations to check in a file]" \
     "--max-ctu-depth=[Maximum depth in whole program analysis]:num" \
     "--output-file=[File to save results]:file:_files" \
-    "--output-format=[Specify the output format]:format:(text sarif xml)" \
-    "--platform=[Specified platform specific types and sizes]:platform:$platforms" \
+    "--output-format=[Specify the output format]:format:(text sarif xml xmlv2 xmlv3)" \
+    '--platform=[Specified platform specific types and sizes]:platform:($platforms)' \
     "--plist-output=[Generate Clang-plist output files in folder]:file:_files" \
     "--project=[Run Cppcheck on project]:file:_files" \
     "--project-configuration=[Limit the configuration cppcheck should check]:configuration" \
     "(-q --quiet)"{-q,--quiet}"[Do not show progress reports]" \
     {-rp,--relative-paths}"=[Use relative paths in output (separated with ;)]:file:_files" \
     "--report-progress[Report progress messages while checking a file]" \
-    "--report-type=[Add guideline and classification fields for specified coding standard]:standard:$coding_standards" \
+    '--report-type=[Add guideline and classification fields for specified coding standard]:standard:($coding_standards)' \
     "--rule=[Match regular expression]:rule" \
     "--rule-file=[Use given rule file]:file:_files" \
-    "--showtime=[show timing information]:type:(none file file-total summary top5_file top5_summary top5)" \
+    "--showtime=[show timing information]:type:(none file file-total summary top5_file top5_summary)" \
     "--std=[Set standard]:std:(c89 c99 c11 c++03 c++11 c++14 c++17 c++20)" \
     "--suppress=[Suppress warnings (format: \[error id\]:\[filename\]:\[line\])]" \
     "--suppressions-list=[Suppress warnings listed in the file]:file:_files" \
     "--suppress-xml=[Suppress warnings listed in a xml file]:file:_files" \
-    "--template=[Format the error messages]" \
-    "--template-location=[Format the error message location]" \
+    "--template=[Format the error messages]:text" \
+    "--template-location=[Format the error message location]:text" \
     "*-U[Undefine preprocessor symbol]:symbol" \
     "(-v --verbose)"{-v,--verbose}"[Output more detailed error information]" \
     "--version[Print out version number]" \
