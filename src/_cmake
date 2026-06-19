@@ -156,14 +156,115 @@ _cmake_build_presets() {
   _describe 'build presets' list_presets
 }
 
+# ----------------------
+# _cmake_json_field
+#
+# Given a JSON string $1, returns the string value of the first  "<key>": "<value>"  pair, where key is $2.
+# Handles arbitrary whitespace/newlines between tokens. Returns empty if not found.
+# ----------------------
+(( $+functions[_cmake_json_field] )) ||
+_cmake_json_field() {
+  local json="$1" key="$2"
+  # Non-greedy match of:  "key" <ws> : <ws> " value "
+  if [[ $json =~ "\"$key\"[[:space:]]*:[[:space:]]*\"([^\"]*)\"" ]]; then
+    print -r -- "$match[1]"
+  fi
+}
+
+# ----------------------
+# _cmake_json_preset_dir
+#
+# build-preset name -> binaryDir
+#   $1 = full JSON text (both preset files concatenated)
+#   $2 = build preset name
+#
+# Steps:
+#   a) Slice out the build preset object (from its "name" entry up to the next "name" entry)
+#      and read its "configurePreset".
+#   b) Slice out that configure preset object the same way and read its "binaryDir".
+#   c) Expand the ${sourceDir} macro and strip a trailing slash.
+# Inheritance ("inherits") is not resolved; the caller's glob fallback covers
+# those uncommon setups.
+# ----------------------
+(( $+functions[_cmake_json_preset_dir] )) ||
+_cmake_json_preset_dir() {
+  emulate -L zsh
+  setopt extendedglob
+  local json="$1" name="$2"
+
+  # --- a) locate the build preset object, read its configurePreset ---
+  # Everything from `"name": "<name>"` onward:
+  local after="${json#*\"name\"[[:space:]]#:[[:space:]]#\"$name\"}"
+  [[ $after == "$json" ]] && return    # name not found
+  # Trim at the start of the *next* preset object's name field, so we only
+  # look inside this preset.
+  local block="${after%%\"name\"[[:space:]]#:*}"
+
+  local configPreset
+  configPreset=$(_cmake_json_field "$block" configurePreset)
+  [[ -z $configPreset ]] && return
+
+  # --- b) locate that configure preset object, read its binaryDir ---
+  after="${json#*\"name\"[[:space:]]#:[[:space:]]#\"$configPreset\"}"
+  [[ $after == "$json" ]] && return
+  block="${after%%\"name\"[[:space:]]#:*}"
+
+  local bd
+  bd=$(_cmake_json_field "$block" binaryDir)
+  [[ -z $bd ]] && return
+
+  # --- c) expand macros ---
+  bd="${bd//\$\{sourceDir\}/$PWD}"
+  bd="${bd%/}"
+  print -r -- "$bd"
+}
+
 # --------------------------
 # _cmake_preset_build_dir
 #
-# Finds the build directory by locating the nearest CMakeCache.txt.
+# Resolves the build directory for a given build preset name.
+#
+# Strategy (no external deps beyond the cmake/make/ninja already used elsewhere in this file):
+#   1. Read CMakePresets.json / CMakeUserPresets.json as one string and pull
+#      out, with zsh parameter expansion + the (M)/regex flags:
+#        build preset "<name>"  ->  its "configurePreset"
+#        that configure preset  ->  its "binaryDir"
+#      Then expand the ${sourceDir} macro.
+#      Inherited binaryDir (preset "inherits") is intentionally NOT followed here —
+#      it is rare and the glob fallback below handles those cases.
+#   2. Fall back to a BFS glob for the nearest CMakeCache.txt when step 1 finds nothing.
 # --------------------------
 (( $+functions[_cmake_preset_build_dir] )) ||
 _cmake_preset_build_dir() {
-  find . -maxdepth 5 -name CMakeCache.txt -print -quit | xargs -I{} dirname {}
+  local preset_name="$1"
+
+  if [[ -n "$preset_name" ]]; then
+    local json="" f
+    for f in CMakePresets.json CMakeUserPresets.json; do
+      [[ -f $f ]] && json+=$(<$f)$'\n'
+    done
+
+    if [[ -n $json ]]; then
+      local dir
+      dir=$(_cmake_json_preset_dir "$json" "$preset_name")
+      [[ -n "$dir" && -d "$dir" ]] && { print -r -- "$dir"; return 0 }
+    fi
+  fi
+
+  # Fallback: BFS glob — level by level, stop at first match, no subprocess.
+  local -a matches
+  local pattern
+  for pattern in \
+    'CMakeCache.txt' \
+    '*/CMakeCache.txt' \
+    '*/*/CMakeCache.txt' \
+    '*/*/*/CMakeCache.txt' \
+    '*/*/*/*/CMakeCache.txt' \
+    '*/*/*/*/*/CMakeCache.txt'
+  do
+    matches=( $~pattern(N[1]) )
+    (( $#matches )) && { print -r -- ${matches[1]:h}; return 0 }
+  done
 }
 
 
