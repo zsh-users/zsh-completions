@@ -52,7 +52,8 @@ _conan_common_options=(
   '-vdebug[verbose level debug]'
   '-vvv[more and more verbose output]'
   '-vtrace[verbose level trace]'
-  '--logger[show the output with log format, with time, type and message]'
+  '--out-file[write the output of the command to the specified file instead of stdout]:file:_files'
+  \*{-cc,--core-conf}'[define core configuration, overwriting global.conf values]:value'
 )
 
 _conan_package_options=(
@@ -88,30 +89,43 @@ _conan_lockfile_options=(
   '(-l --lockfile)'{-l,--lockfile}'[path to a lockfile]: :_files'
   '--lockfile-partial[do not raise an error if some dependency is not found in lockfile]'
   '--lockfile-out[filename of the updated lockfile]: :_files'
-  '--lockfile-packages[lock package-id and package-revision information]'
   '--lockfile-clean[remove unused entries from the lockfile]'
+  '*--lockfile-overrides[overwrite lockfile overrides]:overrides'
 )
 
 _conan_remote_options=(
   '(-r --remote -nr --no-remote)'{-r,--remote}'[look in the specified remote server]:remote'
   '(-r --remote -nr --no-remote)'{-nr,--no-remote}'[do not use remote, resolve exclusively in the cache]'
+  \*{-u,--update}'[will install newer versions for the given references]:update'
 )
 
 _conan() {
-  local context state state_descr line
+  local context state state_descr line ret=1
   typeset -A opt_args
+
+  local -a conan_reference_options=(
+    '--name[provide a package name if not specified in conanfile]:name'
+    '--version[provide a package version if not specified in conanfile]:version'
+    '--user[provide a user if not specified in conanfile]:user'
+    '--channel[provide a channel if not specified in conanfile]:channel'
+  )
 
   _arguments -C \
     '(- : *)'{-h,--help}'[display help information]' \
     '(- : *)'{-v,--version}'[display version information]' \
     '(-h --help)1: :_conan_commands' \
-    '(-h --help)*:: :->command_args'
+    '(-h --help)*:: :->command_args' \
+    && ret=0
 
   case $state in
     command_args)
-      (( $+functions[_conan_${words[1]}] )) && _conan_${words[1]}
+      if (( $+functions[_conan_${words[1]}] )); then
+        _call_function ret _conan_${words[1]} && ret=1
+      fi
     ;;
   esac
+
+  return ret
 }
 
 (( $+functions[_conan_commands] )) ||
@@ -125,12 +139,17 @@ _conan_commands() {
     'install:installs the requirements specified in a "conanfile.py" or "conanfile.txt"'
     'list:list recipes, revisions or packages in the cache or the remotes'
     'lock:create or manage lockfiles'
+    'pkglist:Several operations over package lists'
     'profile:manage profiles'
     'remote:manage the remote list and the users authenticated on them'
     'remove:remove recipes or packages from local cache or a remote'
+    'require:Add/remove requirements to/from your local cananfile'
+    'run:run a command given a set of requirements from a recipe or command line'
     'search:search for package recipes in all the remotes or a remote'
+    'version:give information about the Conan client version'
+    'workspace:manage Conan workspaces'
 
-    # create commands
+    # creator commands
     'build:install dependencies and call the build() method'
     'create:create a package'
     'download:download(without installing) a single conan package from a remote server'
@@ -141,10 +160,18 @@ _conan_commands() {
     'source:call the source() method'
     'test:test a package from a test_package folder'
     'upload:upload packages to a remote'
+
+    # security commands
+    'audit:find vulnerabilities in your dependencies'
+    'report:get information about the recipe and its sources'
   )
 
   _describe -t 'subcommands' 'subcommands' commands
 }
+
+#
+# consumer commands
+#
 
 (( $+functions[_conan_cache] )) ||
 _conan_cache() {
@@ -185,12 +212,27 @@ _conan_cache() {
 
 (( $+functions[_conan_config] )) ||
 _conan_config() {
+  local curcontext=$curcontext state state_descr line ret=1
+  typeset -A opt_args
+
   _arguments -C \
     '(- : *)'{-h,--help}'[display help information]' \
-    '1: :_conan_config_commands' \
-    '*:: :->args'
+    '1: :->subcommand' \
+    '*:: :->args' \
+    && ret=0
 
   case $state in
+    (subcommand)
+      local -a commands=(
+        'clean:clean the configuration files in the Conan home folder'
+        'home:show the Conan home folder'
+        'install:install the configuration into the Conan home folder'
+        'install-pkg:install the configuration from a Conan package or a conanconfig.yml file'
+        'list:show all the Conan available configurations, core and tools'
+        'show:get the value of the specified conf'
+      )
+      _describe -t 'commands' "command" commands && ret=0
+      ;;
     (args)
       local -a opts=($_conan_common_options[@])
       case $words[1] in
@@ -203,26 +245,31 @@ _conan_config() {
             '(-tf --target-folder)'{-tf,--target-folder}'[Install to that path in the conan cache]: :_files -/'
           )
           ;;
-        (list)
+        (install-pkg)
+          opts++(
+            '(-l --lockfile)'{-l,--lockfile}'[path to a lockfile]:file:_files'
+            '--lockfile-partial[do not raise an error if some dependency is not found in lockfile]'
+            '--lockfile-out[file name of the updated lockfile]:file:_files'
+            '(-f --force)'{-f,--force}'[force the re-installation of configuration]'
+            '--insecure[allow insecure server connections when using SSL]'
+            '--url[provide Conan repository URL]:url'
+            '(-pr --profile)'{-pr,--profile}'[profile to install config]:profile'
+            '(-s --settings)'{-s,--settings}'[settings to install config]:settings'
+            '(-o --options)'{-o,--options}'[options to install config]:options'
+          )
+          ;;
+        (list|show)
           opts+=(
             '(-f --format)'{-f,--format}'[select the output format]:format:(json)'
           )
           ;;
       esac
 
-      _arguments "$opts[@]"
+      _arguments "$opts[@]" && ret=0
     ;;
   esac
-}
 
-(( $+functions[_conan_config_commands] )) ||
-_conan_config_commands() {
-  local -a commands=(
-    'home:show the Conan home folder'
-    'install:install the configuration into the Conan home folder'
-    'list:show all the Conan available configurations:'
-  )
-  _describe -t 'commands' "command" commands
+  return ret
 }
 
 (( $+functions[_conan_graph] )) ||
@@ -558,6 +605,21 @@ _conan_search() {
   _arguments "$opts[@]"
 }
 
+(( $+functions[_conan_version] )) ||
+_conan_version() {
+  local ret=1
+  _arguments \
+    $_conan_common_options[@] \
+    '(-f --format)'{-f,--format}'[select the output format]:format:(json)' \
+    && ret=0
+
+  return ret
+}
+
+#
+# creator commands
+#
+
 (( $+functions[_conan_build] )) ||
 _conan_build() {
   local -a opts=(
@@ -682,6 +744,56 @@ _conan_export-pkg() {
   _arguments "$opts[@]"
 }
 
+(( $+functions[_conan_require] )) ||
+_conan_require() {
+  local context state state_descr line ret=1
+  typeset -A opt_args
+
+  _arguments -C \
+    $_conan_common_options[@] \
+    '1: :->subcommand' \
+    '*:: :->args' \
+    && ret=1
+
+  case $state in
+    (subcommand)
+      local -a commands=(
+        'add:add a new requirement to your local conanfile as a version range'
+        'remove:removes a requirement from your local conanfile'
+      )
+      _describe -t 'commands' "command" commands && ret=0
+      ;;
+    (args)
+      local -a common_options=(
+        '--folder[path to a folder containing a recipe(conanfile.py)]:folder:_files -/'
+        '(-tor --tool)'{-tor,--tool}'[tool requirement name]:name'
+        '(-ter --test)'{-ter,--test}'[test requirement name]:name'
+      )
+
+      case $words[1] in
+        (add)
+          _arguments \
+            $_conan_common_options[@] \
+            $common_options[@] \
+            '(-r --remote -nr --no-remote)'{-r,--remote}'[remote names. Accepts wildcards("*")]:remote' \
+            '(-r --remote -nr --no-remote)'{-nr,--no-remote}'[do not use remote]' \
+            '*::requires' \
+            && ret=0
+          ;;
+        (remove)
+          _arguments \
+            $_conan_common_options[@] \
+            $common_options[@] \
+            '*::name' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return ret
+}
+
 (( $+functions[_conan_new] )) ||
 _conan_new() {
   local -a templates=(
@@ -702,7 +814,7 @@ _conan_new() {
 _conan_source() {
   local -a opts=(
     $_conan_common_options[@]
-    $_conan_package_options[@]
+    $conan_reference_options[@]
     '1: :_files'
   )
 
@@ -713,7 +825,6 @@ _conan_source() {
 _conan_test() {
   local -a opts=(
     $_conan_common_options[@]
-    $_conan_package_options[@]
     \*{-b,--build}'[optional, specify which packages to build from source]:build'
     $_conan_remote_options[@]
     '(-u --update)'{-u,--update}'[will check the remote and in case a newer version]'
@@ -739,12 +850,127 @@ _conan_upload() {
     '--force[force the upload of the artifacts]'
     '--check[perform an integrity check before upload]'
     '(-c --confirm)'{-c,--confirm}'[upload all matching recipes without confirmation]'
+    '--dry-run[do not execute the real upload]'
+    '--allow-disabled[allow uploading to disabled remote]'
+    '(-l --list)'{-l,--list}'[package list file]:list:_files'
+    '(-m --metadata)'{-m,--metadata}'[upload the metadata]:metadata:_files'
     '1::reference'
   )
 
   _arguments "$opts[@]"
 }
 
+#
+# security commands
+#
+
+(( $+functions[_conan_audit] )) ||
+_conan_audit() {
+  local curcontext=$curcontext state state_descr line ret=1
+  typeset -A opt_args
+
+  _arguments -C \
+    $_conan_common_options[@] \
+    '1: :->subcommand' \
+    '*:: :->args' \
+    && ret=1
+
+  case $state in
+    (subcommand)
+      local -a commands=(
+        'list:list the vulnerabilities of the given reference'
+        'provider:manage security providers for the "conan audit" command'
+        'scan:scan a given recipe for vulnerabilities in its dependencies'
+      )
+      _describe -t 'commands' "command" commands && ret=0
+      ;;
+    (args)
+      case $words[1] in
+        (list)
+          _arguments \
+            $_conan_common_options[@] \
+            '(-f --format)'{-f,--format}'[select the output format]:format:(json html)' \
+            '(-l --list)'{-l,--list}'[package list file to list vulnerabilities for]:list:_files' \
+            '(-s --sbom)'{-s,--sbom}'[SBOM file to list vulnerabilities for]:sbom:_files' \
+            '(-l --lockfile)'{-l,--lockfile}'[path to the lockfile to check for vulnerabilities]:file:_files' \
+            '(-r --remote)'{-r,--remote}'[remote to use for listing]:remote' \
+            '(-p --provider)'{-p,--provider}'[provider to use for scanning]:provider' \
+            '*::reference' \
+            && ret=0
+          ;;
+        (provider)
+          _arguments \
+            $_conan_common_options[@] \
+            '(-f --format)'{-f,--format}'[select the output format]:format:(json html)' \
+            '--url[provider URL]:url' \
+            '--type[provider type]:type:(conan-center-proxy private)' \
+            '--token[provider token]:token' \
+            '1:action:(add list auth remove)' \
+            '*::name' \
+            && ret=0
+          ;;
+        (scan)
+          _arguments \
+            $_conan_common_options[@] \
+            \*{-b,--build}'[specify which packages to build from source]:build:(never missing cascade)' \
+            '--requires[directly provide requires instead of a conanfile]:requires' \
+            '--tool-requires[directly provide tool-requires instead of a conanfile]:tool-requires' \
+            '(-sl --severity-level)'{-sl,--severity-level}'[set threshold for severity level to raise an error]:level' \
+            '--context[context to scan]:context:(host build)' \
+            '(-p --provider)'{-p,--provider}'[provider to use for scanning]' \
+            $_conan_remote_options[@] \
+            $_conan_profile_options[@] \
+            $conan_reference_options[@] \
+            $_conan_lockfile_options[@] \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return ret
+}
+
+(( $+functions[_conan_report] )) ||
+_conan_report() {
+  local curcontext=$curcontext state state_descr line ret=1
+  typeset -A opt_args
+
+  _arguments -C \
+    $_conan_common_options[@] \
+    '1: :->subcommand' \
+    '*:: :->args' \
+    && ret=1
+
+  case $state in
+    (subcommand)
+      local -a commands=(
+        'diff:get the difference between two recipes with their sources'
+      )
+      _describe -t 'commands' "command" commands && ret=0
+      ;;
+    (args)
+      case $words[1] in
+        (diff)
+          _arguments \
+            $_conan_common_options[@] \
+            '(-op --old-path)'{-op,--old-path}'[path to the old recipe]:path:_files' \
+            '(-or --old-reference)'{-or,--old-reference}'[old reference]:reference' \
+            '(-np --new-path)'{-np,--new-path}'[path to the new recipe]:path:_files' \
+            '(-nr --new-reference)'{-nr,--new-reference}'[new reference]:reference' \
+            '(-r --remote)'{-r,--remote}'[look in the specified remote or remotes server]:remote' \
+            && ret=0
+          ;;
+      esac
+      ;;
+  esac
+
+  return ret
+}
+
+#
+# Utilities
+#
 (( $+functions[_conan_remotes] )) ||
 _conan_remotes() {
   local -a remotes=(${(f)"$(_call_program remotes $service remote list)"})
