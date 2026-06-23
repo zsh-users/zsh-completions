@@ -717,15 +717,19 @@ _conan_create() {
 
 (( $+functions[_conan_download] )) ||
 _conan_download() {
+  local ret=1
   local -a opts=(
     $_conan_common_options[@]
     '--only-recipe[download only the recipe, not the binary packages]'
     \*{-p,--package-query}'[only download packages matching a specific query]:query'
     '(-r --remote)'{-r,--remote}'[download from the specific remote]:remote:_conan_remotes'
+    '(-m --metadata)'{-m,--metadata}'[download the metadata matching the pattern]:pattern'
+    '(-l --list)'{-l,--list}'[package list file]:list:_files'
     '*:recipe_or_package_reference:_files'
   )
 
-  _arguments "$opts[@]"
+  _arguments "$opts[@]" && ret=0
+  return ret
 }
 
 (( $+functions[_conan_editable] )) ||
