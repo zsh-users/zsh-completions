@@ -734,42 +734,52 @@ _conan_download() {
 
 (( $+functions[_conan_editable] )) ||
 _conan_editable() {
+  local curcontext=$curcontext state state_descr line ret=1
+  typeset -A opt_args
+
   _arguments -C \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '1: :_conan_editable_commands' \
-    '*:: :->args'
+    $_conan_common_options[@] \
+    '1:subcommand:->subcommand' \
+    '*:: :->args' \
+    && ret=0
 
   case $state in
+    (subcommand)
+      local -a commands=(
+        'add:define the given path location as the package reference'
+        'list:list all the packages in editable mode'
+        'remove:remove the editable mode for this reference'
+      )
+      _describe -t 'commands' "command" commands && ret=0
+    ;;
     (args)
       local opts=($_conan_common_options[@])
       case $words[1] in
         (add)
           opts+=(
-            $_conan_package_options[@]
             '(-of --output-folder)'{-of,--output-folder}'[the root output folder]:folder:_files -/'
+            '(-r --remote -nr --no-remote)'{-r,--remote}'[look in the specified remote server]:remote'
+            '(-r --remote -nr --no-remote)'{-nr,--no-remote}'[do not use remote]'
+            $conan_reference_options[@]
+            '*:folder:_files -/'
           )
           ;;
         (list)
           opts+=('(-f --format)'{-f,--format}'[select the output format]:format:(json)')
           ;;
         (remove)
-          opts+=('(-r --refs)'{-r,--refs}'[directly provide reference patterns]:refs')
+          opts+=(
+            '(-r --refs)'{-r,--refs}'[directly provide reference patterns]:refs'
+            '*:folder:_files -/'
+          )
           ;;
       esac
 
-      _arguments "$opts[@]"
+      _arguments "$opts[@]" && ret=0
     ;;
   esac
-}
 
-(( $+functions[_conan_editable_commands] )) ||
-_conan_editable_commands() {
-  local -a commands=(
-    'add:define the given path location as the package reference'
-    'list:list all the packages in editable mode'
-    'remove:remove the editable mode for this reference'
-  )
-  _describe -t 'commands' "command" commands
+  return ret
 }
 
 (( $+functions[_conan_export] )) ||
