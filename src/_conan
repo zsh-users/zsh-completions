@@ -851,18 +851,22 @@ _conan_require() {
 
 (( $+functions[_conan_new] )) ||
 _conan_new() {
+  local ret=1
   local -a templates=(
-    basic cmake_lib cmake_exe meson_lib meson_exe msbuild_lib msbuild_exe
-    bezel_lib bezel_exe autotools_lib autotools_exe
+    basic cmake_lib cmake_exe header_lib meson_lib meson_exe msbuild_lib msbuild_exe
+    bezel_lib bezel_exe autotools_lib autotools_exe premake_lib premake_exe
+    local_recipes_index workspace
   )
   local -a opts=(
     $_conan_common_options[@]
     \*{-d,--define}'[define a template argument as key=value]:key_value'
     '(-f --force)'{-f,--force}'[overwrite file if it already exists]'
-    "1:template:($templates)"
+    '(-o --output)'{-o,--output}'[output folder for the generated files]:folder:_files -/'
+    '1:template:($templates)'
   )
 
-  _arguments "$opts[@]"
+  _arguments "$opts[@]" && ret=0
+  return ret
 }
 
 (( $+functions[_conan_source] )) ||
