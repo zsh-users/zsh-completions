@@ -175,39 +175,85 @@ _conan_commands() {
 
 (( $+functions[_conan_cache] )) ||
 _conan_cache() {
-  local ret=1
+  local curcontext=$curcontext state state_descr line ret=1
+  typeset -A opt_args
 
   _arguments -C \
-    '(- *)'{-h,--help}'[show help message and exit]' \
-    '1: :(clean path)' \
-    '*:: :->args'
+    $_conan_common_options[@] \
+    '1:subcommand:->subcommand' \
+    '*:: :->args' \
+    && ret=0
 
   case $state in
+    (subcommand)
+      local -a commands=(
+        'backup-upload:upload all the source backups present in the cache'
+        'check-integrity:check the integrity of the local cache for the given references'
+        'clean:remove non-critical folders from the cache'
+        'path:show the path to the Conan cache for a given reference'
+        'ref:show the reference for a given Conan cache folder'
+        'restore:put the artifacts from an archive into the cache'
+        'save:get the artifacts from a package list and archive them'
+        'sign:sign packages with the Package Signing Plugin'
+        'verify:check the signature of packages with the Package Signing Plugin'
+      )
+      _describe -t 'commands' "command" commands && ret=0
+      ;;
     (args)
       local -a opts=($_conan_common_options[@])
       case $words[1] in
+        (check-integrity|sign|verify)
+          opts+=(
+            '(-f --format)'{-f,--format}'[select the output format]:format:(json)'
+            '(-l --list)'{-l,--list}'[package list of packages to check integrity for]:list'
+            \*{-p,--package-query}'[only the packages matching a specific query]:query'
+            '1:pattern'
+          )
+          ;;
         (clean)
           opts+=(
+            '(-l --list)'{-l,--list}'[package list of packages to clean]:list'
             '(-s --source)'{-s,--source}'[clean source folders]'
             '(-b --build)'{-b,--build}'[clean build folders]'
             '(-d --download)'{-d,--download}'[clean download folders]'
+            '(-t --temp)'{-t,--temp}'[clean temporary folders]'
+            '(-bs --backup-sources)'{-bs,--backup-sources}'[clean backup sources]'
             \*{-p,--package-query}'[remove only the packages matching a specific query]:query'
             '1:pattern'
           )
           ;;
         (path)
           opts+=(
-            '--folder[path to show]::type:(export_source source build)' \
+            '--folder[path to show]::type:(export_source source build metadata)' \
             '1:recipe_or_package_reference:_files'
+          )
+          ;;
+        (ref)
+          opts+=(
+            '1:folder:_files -/'
+          )
+          ;;
+        (restore)
+          opts+=(
+            '1:path:_files'
+          )
+          ;;
+        (save)
+          opts+=(
+            '(-f --format)'{-f,--format}'[select the output format]:format:(json)'
+            '(-l --list)'{-l,--list}'[package list of packages to check integrity for]:list'
+            '--file[save to this file]:file:_files -g "*.(tgz|txz|tzst)"'
+            '--no-source[exclude the sources]'
+            '1:pattern'
           )
           ;;
       esac
 
-      _arguments "$opts[@]"
+      _arguments "$opts[@]" && ret=0
     ;;
   esac
 
-  return $ret
+  return ret
 }
 
 (( $+functions[_conan_config] )) ||
