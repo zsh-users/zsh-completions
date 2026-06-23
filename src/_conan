@@ -381,10 +381,19 @@ _conan_graph_commands() {
 
 (( $+functions[_conan_inspect] )) ||
 _conan_inspect() {
+  local ret=1
+
   _arguments \
-    "$_conan_common_options[@]" \
+    $_conan_common_options[@] \
     '(-f --format)'{-f,--format}'[select the output format]:format:(json)' \
-    '*:recipe_folder:_files -/'
+    '(-r --remote -nr --no-remote)'{-r,--remote}'[remote names. Accepts wildcards("*")]:remote' \
+    '(-r --remote -nr --no-remote)'{-nr,--no-remote}'[do not use remote]' \
+    '(-l --lockfile)'{-l,--lockfile}'[path to a lockfile]:path:_files' \
+    '--lockfile-partial[do not raise an error if some dependnecy is not found in lockfile]' \
+    '*:recipe_folder:_files -/' \
+    && ret=0
+
+  return ret
 }
 
 (( $+functions[_conan_install] )) ||
