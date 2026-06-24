@@ -56,15 +56,6 @@ _conan_common_options=(
   \*{-cc,--core-conf}'[define core configuration, overwriting global.conf values]:value'
 )
 
-_conan_package_options=(
-  '--name[Provide a package name if not specified in conanfile]:name'
-  '--version[Provide a package version if not specified in conanfile]:version'
-  '--user[Provide a user]:user'
-  '--channel[Provide a channel]:channel'
-  '--requires[directly provide requires instead of a conan file]:requires'
-  '--tool-requires[directly provide tool-requires instead of a conanfile]:tool_requires'
-)
-
 _conan_lockfile_options=(
   '(-l --lockfile)'{-l,--lockfile}'[path to a lockfile]: :_files'
   '--lockfile-partial[do not raise an error if some dependency is not found in lockfile]'
@@ -811,16 +802,23 @@ _conan_export() {
 
 (( $+functions[_conan_export-pkg] )) ||
 _conan_export-pkg() {
+  local ret=1
   local -a opts=(
     $_conan_common_options[@]
-    $_conan_package_options[@]
-    $_conan_remote_options[@]
+    '(-of --output-folder)'{-of,--output-folder}'[root output folder for generated and build files]:folder:_files -/'
+    '--build-require[whether the provided reference is a build-require]'
+    '(-tf --test-folder)'{-tf,--test-folder}'[alternative test folder name]:folder:_files -/'
+    '(-sb --skip-binaries)'{-sb,--skip-binaries}'[skip installing dependencies binaries]'
+    '(-r --remote -nr --no-remote)'{-r,--remote}'[look in the specified remote or remote servers]:remote'
+    '(-r --remote -nr --no-remote)'{-nr,--no-remote}'[do not use remote]'
+    $conan_reference_options[@]
     $_conan_lockfile_options[@]
     $conan_profile_options[@]
     '*: :_files -/'
   )
 
-  _arguments "$opts[@]"
+  _arguments "$opts[@]" && ret=0
+  return ret
 }
 
 (( $+functions[_conan_require] )) ||
