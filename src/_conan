@@ -786,10 +786,13 @@ _conan_editable() {
 _conan_export() {
   local -a opts=(
     $_conan_common_options[@]
-    $_conan_package_options[@]
-    $_conan_remote_options[@]
-    $_conan_lockfile_options[@]
+    '(-r --remote -nr --no-remote)'{-r,--remote}'[remote names. Accepts wildcards("*")]:remote'
+    '(-r --remote -nr --no-remote)'{-nr,--no-remote}'[do not use remote]'
+    '(-l --lockfile)'{-l,--lockfile}'[path to a lockfile]:file:_files'
+    '--lockfile-out[file name of the updated lockfile]:file:_files'
+    '--lockfile-partial[do not raise an error if some dependency is not found in lockfile]'
     '--build-require[whether the provided reference is a build-require]'
+    $conan_reference_options[@]
     '*: :_files -/'
   )
 
