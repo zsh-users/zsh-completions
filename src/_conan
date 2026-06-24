@@ -429,16 +429,26 @@ _conan_install() {
 
 (( $+functions[_conan_list] )) ||
 _conan_list() {
+  local ret=1
   local -a opts=(
     $_conan_common_options[@]
-    '(-f --format)'{-f,--format}'[select the output format]:format:(json html)'
+    '(-f --format)'{-f,--format}'[select the output format]:format:(json html compact)'
     \*{-p,--package-query}'[remove only the packages matching a specific query]:query'
+    \*{-fp,--filter-profile}'[profiles to filter the binaries]:filter_profile'
+    \*{-fs,--filter-settings}'[settings to filter the binaries]:filter_settings'
+    \*{-fo,--filter-options}'[options to filter the binaries]:filter_options'
     '(-r --remote)'{-r,--remote}'[remote names]:remote'
     '(-c --cache)'{-c,--cache}'[search in the local cache]'
+    '(-g --graph)'{-g,--graph}'[graph json file]:file:_files'
+    '(-gb --graph-binaries)'{-gb,--graph-binaries}'[which binaries are listed]:graph_binaries'
+    '(-gr --graph-recipes)'{-gr,--graph-recipes}'[which recipes are listed]:graph_recipes'
+    '(-gc --graph-context)'{-gc,--graph-context}'[filter the results by the given context]:context:(build host build-only host-only)'
+    '--lru[list recipes and binaries that have not been recently used]:lru'
     '1:recipe_or_package_reference:_files'
   )
 
-  _arguments "$opts[@]"
+  _arguments "$opts[@]" && ret=0
+  return ret
 }
 
 (( $+functions[_conan_lock] )) ||
