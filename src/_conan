@@ -65,26 +65,6 @@ _conan_package_options=(
   '--tool-requires[directly provide tool-requires instead of a conanfile]:tool_requires'
 )
 
-_conan_define_options=(
-  \*{-o,--options,'-o\:h','--options\:host'}'[define options of host machine]:option'
-  \*{'-o\:b','--options\:build'}'[define options of build machine]:option'
-)
-
-_conan_profile_options=(
-  '(-pr --profile -pr\:h --profile\:host)'{-pr,--profile,-pr:h,--profile:host}'[apply the specified profile to the host machine]: :_conan_profiles'
-  '(-pr\:b --profile\:build)'{-pr:b,--profile:build}'[apply the specified profile to the build machine]: :_conan_profiles'
-)
-
-_conan_setting_options=(
-  \*{-s,--settings,'-s\:h','--settings\:host'}'[overwrite the defaults of host machine to build]:setting'
-  \*{'-s\:b','--settings\:build'}'[overwrite the defaults of build machine to build]:setting'
-)
-
-_conan_configuration_options=(
-  \*{-c,--conf,'-c\:h','--conf\:host'}'[overwrite the defaults of host machine to configure]:config'
-  \*{'-c\:b','--conf\:build'}'[overwrite the defaults of build machine to configure]:config'
-)
-
 _conan_lockfile_options=(
   '(-l --lockfile)'{-l,--lockfile}'[path to a lockfile]: :_files'
   '--lockfile-partial[do not raise an error if some dependency is not found in lockfile]'
@@ -108,6 +88,25 @@ _conan() {
     '--version[provide a package version if not specified in conanfile]:version'
     '--user[provide a user if not specified in conanfile]:user'
     '--channel[provide a channel if not specified in conanfile]:channel'
+  )
+
+  local -a conan_profile_options=(
+    '(-pr --profile)'{-pr,--profile}'[apply the specified profile]:profile'
+    '(-pr\:b --profile\:build)'{-pr\\:b,--profile\\:build}'[apply the specified profile build]:profile_build'
+    '(-pr\:h --profile\:host)'{-pr\\:h,--profile\\:host}'[apply the specified profile host]:profile_host'
+    '(-pr\:a --profile\:all)'{-pr\\:a,--profile\\:apply}'[apply the specified profile all]:profile_all'
+    '(-o --options)'{-o,--options}'[apply the specified options]:options'
+    '(-o\:b --options\:build)'{-o\\:b,--options\\:build}'[apply the specified options build]:options_build'
+    '(-o\:h --options\:host)'{-o\\:h,--options\\:host}'[apply the specified options host]:options_host'
+    '(-o\:a --options\:all)'{-o\\:a,--options\\:all}'[apply the specified options all]:options_all'
+    '(-s --settings)'{-s,--settings}'[apply the specified settings]:settings'
+    '(-s\:b --settings\:build)'{-s\\:b,--settings\\:build}'[apply the specified settings build]:settings_build'
+    '(-s\:h --settings\:host)'{-s\\:h,--settings\\:host}'[apply the specified settings host]:settings_host'
+    '(-s\:a --settings:all)'{-s\\:a,--settings\\:all}'[apply the specified settings all]:settings_all'
+    '(-c --conf)'{-c,--conf}'[apply the specified conf]:conf'
+    '(-c\:b --conf\:build)'{-c\\:b,--conf\\:build}'[apply the specified conf]:conf_build'
+    '(-c\:h --conf\:host)'{-c\\:h,--conf\\:host}'[apply the specified conf]:conf_host'
+    '(-c\:a --conf\:all)'{-c\\:a,--conf\\:all}'[apply the specified conf all]:conf_all'
   )
 
   _arguments -C \
@@ -330,10 +329,7 @@ _conan_graph() {
     \*{-b,--build}'[optional, specify which packages to build from source]:build'
     $_conan_remote_options[@]
     '(-u --update)'{-u,--update}'[will check the remote and in case a newer version]'
-    $_conan_define_options[@]
-    $_conan_profile_options[@]
-    $_conan_setting_options[@]
-    $_conan_configuration_options[@]
+    $conan_profile_options[@]
     $_conan_lockfile_options[@]
   )
 
@@ -410,10 +406,7 @@ _conan_install() {
     \*{-b,--build}'[optional, specify which packages to build from source]:build'
     $_conan_remote_options[@]
     '(-u --update)'{-u,--update}'[will check the remote and in case a newer version]'
-    $_conan_define_options[@]
-    $_conan_profile_options[@]
-    $_conan_setting_options[@]
-    $_conan_configuration_options[@]
+    $conan_profile_options[@]
     $_conan_lockfile_options[@]
     '(-g --generator)'{-g,--generator}"[generators to use]:generator:($generators)"
     '(-of --output)'{-of,--output-folder}'[the root output folder for generated and build files]:dir:_files -/'
@@ -463,10 +456,7 @@ _conan_lock() {
             \*{-b,--build}'[optional, specify which packages to build from source]:build'
             $_conan_remote_options[@]
             '(-u --update)'{-u,--update}'[will check the remote and in case a newer version]'
-            $_conan_define_options[@]
-            $_conan_profile_options[@]
-            $_conan_setting_options[@]
-            $_conan_configuration_options[@]
+            $conan_profile_options[@]
             $_conan_lockfile_options[@]
             '1: :_files'
           )
@@ -518,10 +508,7 @@ _conan_profile() {
           ;;
         (path|show)
           opts+=(
-            $_conan_define_options[@]
-            $_conan_profile_options[@]
-            $_conan_setting_options[@]
-            $_conan_configuration_options[@]
+            $conan_profile_options[@]
           )
           ;;
       esac
@@ -683,10 +670,7 @@ _conan_build() {
     \*{-b,--build}'[optional, specify which packages to build from source]:build'
     $_conan_remote_options[@]
     '(-u --update)'{-u,--update}'[will check the remote and in case a newer version]'
-    $_conan_define_options[@]
-    $_conan_profile_options[@]
-    $_conan_setting_options[@]
-    $_conan_configuration_options[@]
+    $conan_profile_options[@]
     $_conan_lockfile_options[@]
     '*: :_files'
   )
@@ -696,23 +680,22 @@ _conan_build() {
 
 (( $+functions[_conan_create] )) ||
 _conan_create() {
+  local ret=1
   local -a opts=(
     $_conan_common_options[@]
-    $_conan_package_options[@]
     \*{-b,--build}'[optional, specify which packages to build from source]:build'
-    $_conan_remote_options[@]
     '(-u --update)'{-u,--update}'[will check the remote and in case a newer version]'
-    $_conan_define_options[@]
-    $_conan_profile_options[@]
-    $_conan_setting_options[@]
-    $_conan_configuration_options[@]
-    $_conan_lockfile_options[@]
     '--build-require[whether the provided reference is a build-require]'
     '(-tf --test-folder)'{-tf,--test-folder}'[alternative test folder name]:folder:_files -/'
+    $conan_reference_options[@]
+    $_conan_lockfile_options[@]
+    $_conan_remote_options[@]
+    $conan_profile_options[@]
     '*: :_files -/'
   )
 
-  _arguments "$opts[@]"
+  _arguments "$opts[@]" && ret=0
+  return ret
 }
 
 (( $+functions[_conan_download] )) ||
@@ -806,10 +789,7 @@ _conan_export-pkg() {
     $_conan_package_options[@]
     $_conan_remote_options[@]
     $_conan_lockfile_options[@]
-    $_conan_define_options[@]
-    $_conan_profile_options[@]
-    $_conan_setting_options[@]
-    $_conan_configuration_options[@]
+    $conan_profile_options[@]
     '*: :_files -/'
   )
 
@@ -904,10 +884,7 @@ _conan_test() {
     \*{-b,--build}'[optional, specify which packages to build from source]:build'
     $_conan_remote_options[@]
     '(-u --update)'{-u,--update}'[will check the remote and in case a newer version]'
-    $_conan_define_options[@]
-    $_conan_profile_options[@]
-    $_conan_setting_options[@]
-    $_conan_configuration_options[@]
+    $conan_profile_options[@]
     $_conan_lockfile_options[@]
     '1:path:_files -/'
     '2:reference'
@@ -995,7 +972,7 @@ _conan_audit() {
             '--context[context to scan]:context:(host build)' \
             '(-p --provider)'{-p,--provider}'[provider to use for scanning]' \
             $_conan_remote_options[@] \
-            $_conan_profile_options[@] \
+            $conan_profile_options[@] \
             $conan_reference_options[@] \
             $_conan_lockfile_options[@] \
             && ret=0
