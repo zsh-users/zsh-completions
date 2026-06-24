@@ -453,12 +453,27 @@ _conan_list() {
 
 (( $+functions[_conan_lock] )) ||
 _conan_lock() {
+  local curcontext=$curcontext state state_descr line ret=1
+  typeset -A opt_args
+
   _arguments -C \
     '(- : *)'{-h,--help}'[display help information]' \
-    '1: :_conan_lock_commands' \
+    '1:subcommand:->subcommand' \
     '*:: :->args'
 
   case $state in
+    (subcommand)
+      local -a commands=(
+        'add:add requires, build-requires or python requires to an existing or new lockfile'
+        'create:create a lockfile from a conanfile or a reference'
+        'merge:merge 2 or more lockfiles'
+        'remove:remove requires, build-requires or python-requires from an existing lockfile'
+        'update:update requires'
+        'upgrade:upgrade requires, build-requires or python-requires from an exiting lockfile'
+        'upgrade-config:upgrade config requires in a lockfile'
+      )
+      _describe -t 'commands' "command" commands && ret=0
+      ;;
     (args)
       local -a opts=($_conan_common_options)
       case $words[1] in
@@ -474,34 +489,73 @@ _conan_lock() {
         (create)
           opts+=(
             \*{-b,--build}'[optional, specify which packages to build from source]:build'
+            '--requires[directly provide requires instead of a conanfile]:requires'
+            '--tool-requires[directly provide tool-requires instead of a conanfile]:tool-requires'
+            '--build-require[whether the provided reference is a build-require]'
             $_conan_remote_options[@]
-            '(-u --update)'{-u,--update}'[will check the remote and in case a newer version]'
             $conan_profile_options[@]
+            $conan_reference_options[@]
             $_conan_lockfile_options[@]
             '1: :_files'
           )
-        ;;
+          ;;
         (merge)
           opts+=(
+            '--lockfile[file name of the input lockfile]:filename:_files'
+            '--lockfile-out[file name of the created lockfile]:filename:_files'
+          )
+          ;;
+        (remove)
+          opts+=(
+            '*--build-requires[remove build-requires from lockfile]:build_requires'
+            '*--python-requires[remove python-requires from lockfile]'
+            '*--config-requires[remove config-requires from lockfile]'
             '--lockfile-out[file name of the created lockfile]:filename:_files'
             '--lockfile[file name of the input lockfile]:filename:_files'
           )
-        ;;
+          ;;
+        (update)
+          opts+=(
+            '*--requires[update references to lockfile]:requires'
+            '*--build-requires[update build-requires from lockfile]:build_requires'
+            '*--python-requires[update python-requires from lockfile]'
+            '*--config-requires[update config-requires from lockfile]'
+            '--lockfile-out[file name of the created lockfile]:filename:_files'
+            '--lockfile[file name of the input lockfile]:filename:_files'
+          )
+          ;;
+        (upgrade)
+          opts+=(
+            '--requires[directly provide requires instead of a conanfile]:requires'
+            '--tool-requires[directly provide tool-requires instead of a conanfile]:tool-requires'
+            \*{-ur,--update-requires}'[update requires from lockfile]:update_requires'
+            \*{-ubr,--update-build-requires}'[update build-requires from lockfile]:update_build_requires'
+            \*{-upr,--update-python-requires}'[update python-requires from lockfile]:update_python_requires'
+            '*--build-requires[update build-requires from lockfile]:build_requires'
+            $_conan_remote_options[@]
+            $conan_profile_options[@]
+            $conan_reference_options[@]
+            $_conan_lockfile_options[@]
+          )
+          ;;
+        (upgrade-config)
+          opts+=(
+            '--requires[directly provide requires instead of a conanfile]:requires'
+            '--tool-requires[directly provide tool-requires instead of a conanfile]:tool-requires'
+            '*--update-config-requires[update config-requires from lockfile]:update_config_requires'
+            $_conan_remote_options[@]
+            $conan_profile_options[@]
+            $conan_reference_options[@]
+            $_conan_lockfile_options[@]
+          )
+          ;;
       esac
 
-      _arguments "$opts[@]"
-    ;;
+      _arguments "$opts[@]" && ret=1
+      ;;
   esac
-}
 
-(( $+functions[_conan_lock_commands] )) ||
-_conan_lock_commands() {
-  local -a commands=(
-    'add:add requires, build-requires or python requires to an existing or new lockfile'
-    'create:create a lockfile from a conanfile or a reference'
-    'merge:merge 2 or more lockfiles'
-  )
-  _describe -t 'commands' "command" commands
+  return ret
 }
 
 (( $+functions[_conan_profile] )) ||
