@@ -104,8 +104,8 @@ _conan() {
     '(-s\:h --settings\:host)'{-s\\:h,--settings\\:host}'[apply the specified settings host]:settings_host'
     '(-s\:a --settings:all)'{-s\\:a,--settings\\:all}'[apply the specified settings all]:settings_all'
     '(-c --conf)'{-c,--conf}'[apply the specified conf]:conf'
-    '(-c\:b --conf\:build)'{-c\\:b,--conf\\:build}'[apply the specified conf]:conf_build'
-    '(-c\:h --conf\:host)'{-c\\:h,--conf\\:host}'[apply the specified conf]:conf_host'
+    '(-c\:b --conf\:build)'{-c\\:b,--conf\\:build}'[apply the specified conf build]:conf_build'
+    '(-c\:h --conf\:host)'{-c\\:h,--conf\\:host}'[apply the specified conf host]:conf_host'
     '(-c\:a --conf\:all)'{-c\\:a,--conf\\:all}'[apply the specified conf all]:conf_all'
   )
 
@@ -683,18 +683,26 @@ _conan_version() {
 
 (( $+functions[_conan_build] )) ||
 _conan_build() {
+  local ret=1
+
   local -a opts=(
     $_conan_common_options[@]
-    $_conan_package_options[@]
+    \*{-g,--generator}'[generators to use]:generator'
+    '(-of --output-folder)'{-of,--output-folder}'[root output folder for generated and build files]:folder:_files -/'
+    '(-d --deployer)'{-d,--deployer}'[deploy using the provided deployer to the output folder]:deployer:(full_deploy direct_deploy)'
+    '(-df --deployer-folder)'{-df,--deployer-folder}'[deployer output folder]:folder:_files -/'
+    '--build-require[whether the provided reference is a build-require]'
+    '--envs-generation[generation strategy for virtual environment files for the root]:flag:(false)'
     \*{-b,--build}'[optional, specify which packages to build from source]:build'
+    $conan_reference_options[@]
     $_conan_remote_options[@]
-    '(-u --update)'{-u,--update}'[will check the remote and in case a newer version]'
     $conan_profile_options[@]
     $_conan_lockfile_options[@]
     '*: :_files'
   )
 
-  _arguments "$opts[@]"
+  _arguments "$opts[@]" && ret=0
+  return ret
 }
 
 (( $+functions[_conan_create] )) ||
