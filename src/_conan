@@ -319,60 +319,79 @@ _conan_config() {
 
 (( $+functions[_conan_graph] )) ||
 _conan_graph() {
-  _arguments -C \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '1: :_conan_graph_commands' \
-    '*:: :->args'
+  local curcontext=$curcontext state state_descr line ret=1
+  typeset -A opt_args
 
-  local -a common_opts=(
-    $_conan_package_options[@]
-    \*{-b,--build}'[optional, specify which packages to build from source]:build'
-    $_conan_remote_options[@]
-    '(-u --update)'{-u,--update}'[will check the remote and in case a newer version]'
-    $conan_profile_options[@]
-    $_conan_lockfile_options[@]
-  )
+  _arguments -C \
+    '1:subcommand:->subcommand' \
+    '*:: :->args' \
+    && ret=0
 
   case $state in
+    (subcommand)
+      local -a commands=(
+        'build-order:compute the build order of a dependency graph'
+        'build-order-merge:merge more than 1 build-order file'
+        'explain:explan what is wrong with the dependency graph'
+        'info:compute the dependency graph and shows information about it'
+        'outdated:list the dependencies in the graph and it is newer versions in the remote'
+      )
+      _describe -t 'commands' "command" commands && ret=0
+      ;;
     (args)
       local -a opts=($_conan_common_options[@])
       case $words[1] in
-        (build-order)
+        (build-order|explain|info|outdated)
           opts+=(
-            '(-f --format)'{-f,--format}'[select the output format]:format:(json)'
-            $common_opts[@]
+            \*{-b,--build}'[optional, specify which packages to build from source]:build'
+            '--requires[directly provide requires instead of a conanfile]:requires'
+            '--tool-requires[directly provide tool-requires instead of a conanfile]:tool-requires'
+            $_conan_remote_options[@]
+            $conan_profile_options[@]
+            $conan_reference_options[@]
+            $_conan_lockfile_options[@]
+            '*:folder:_files -/'
+          )
+          ;|
+        (explain|info|outdated)
+          opts+=(
+            '--check-updates[check if there are recipe updates]'
+            '--build-require[whether the provided reference is a build-require]'
           )
           ;;
-        (build-order-merge)
+        (build-order)
           opts+=(
-            '--file[files to be merged]:file:_files'
+            '--order-by[select how to order the output(default "recipe")]:type:(recipe configuration)'
+            '--reduce[reduce the build order, output only those to build]'
+          )
+          ;;
+        (explain)
+          opts+=(
+            '*--missing[a pattern in the form "pkg/version#revision:package_id#revision"]:pattern'
           )
           ;;
         (info)
           opts+=(
-            $common_opts[@]
-            '(-f --format)'{-f,--format}'[select the output format]:format:(html json dot)'
-            '--check-updates[check if there are recipe updates]'
-            '*--filter[show only the specified fields]:filter'
-            '*--package-filter[print information only for packages that match the patterns]:package_filter'
-            '--deploy[deploy using the provided deployer to the output folder]:deployer'
+            '*--filter[show only the specified fields]:pattern'
+            '*--package-filter[print information only for packages that match the patterns]:pattern'
+            '(-d --deployer)'{-d,--deployer}'[deploy using the provided deployer to the output folder]:deployer:(full_deploy direct_deploy)'
+            '(-df --deployer-folder)'{-df,--deployer-folder}'[deployer output folder]:folder:_files -/'
+          )
+          ;;
+        (build-order-merge)
+          opts+=(
+            '(-f --format)'{-f,--format}'[select the output format]:format:(json html)'
+            '*--file[files to be merged]:file:_files'
+            '--reduce[reduce the build order, output only those to build]'
           )
           ;;
       esac
 
-      _arguments "$opts[@]"
+      _arguments "$opts[@]" && ret=0
     ;;
   esac
-}
 
-(( $+functions[_conan_graph_commands] )) ||
-_conan_graph_commands() {
-  local -a commands=(
-    'build-order:compute the build order of a dependency graph'
-    'build-order-merge:merge more than 1 build-order file'
-    'info:compute the dependency graph and shows information about it'
-  )
-  _describe -t 'commands' "command" commands
+  return ret
 }
 
 (( $+functions[_conan_inspect] )) ||
