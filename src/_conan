@@ -323,7 +323,7 @@ _conan_graph() {
       local -a commands=(
         'build-order:compute the build order of a dependency graph'
         'build-order-merge:merge more than 1 build-order file'
-        'explain:explan what is wrong with the dependency graph'
+        'explain:explain what is wrong with the dependency graph'
         'info:compute the dependency graph and shows information about it'
         'outdated:list the dependencies in the graph and it is newer versions in the remote'
       )
@@ -395,7 +395,7 @@ _conan_inspect() {
     '(-r --remote -nr --no-remote)'{-r,--remote}'[remote names. Accepts wildcards("*")]:remote' \
     '(-r --remote -nr --no-remote)'{-nr,--no-remote}'[do not use remote]' \
     '(-l --lockfile)'{-l,--lockfile}'[path to a lockfile]:path:_files' \
-    '--lockfile-partial[do not raise an error if some dependnecy is not found in lockfile]' \
+    '--lockfile-partial[do not raise an error if some dependency is not found in lockfile]' \
     '*:recipe_folder:_files -/' \
     && ret=0
 
@@ -421,7 +421,7 @@ _conan_install() {
     '(-of --output)'{-of,--output-folder}'[the root output folder for generated and build files]:dir:_files -/'
     '(-d --deployer)'{-d,--deployer}'[deploy using the provided deployer to the output folder]:deployer:(full_deploy direct_deploy runtime_deploy)'
     '--deployer-folder[deployer output folder]:folder:_files -/'
-    '*--deployer-packge[execute the deploy() method of the packages matching the provided patterns]:pattern'
+    '*--deployer-package[execute the deploy() method of the packages matching the provided patterns]:pattern'
     '--build-require[whether the provided path is a build-require]'
     '--envs-generation[generation strategy for virtual environment files for the root]:bool:(false)'
     $conan_remote_options[@]
