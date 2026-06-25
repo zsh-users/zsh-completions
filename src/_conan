@@ -279,6 +279,7 @@ _conan_config() {
             \*{-a,--args}'[String with extra arguments for "git clone"]:arg'
             \*{-sf,--source-folder}'[Install files only from a source subfolder from specified origin]: :_files -/'
             '(-tf --target-folder)'{-tf,--target-folder}'[Install to that path in the conan cache]: :_files -/'
+            '*:item:_files'
           )
           ;;
         (install-pkg)
@@ -292,11 +293,13 @@ _conan_config() {
             '(-pr --profile)'{-pr,--profile}'[profile to install config]:profile'
             '(-s --settings)'{-s,--settings}'[settings to install config]:settings'
             '(-o --options)'{-o,--options}'[options to install config]:options'
+            '*:package_reference'
           )
           ;;
         (list|show)
           opts+=(
             '(-f --format)'{-f,--format}'[select the output format]:format:(json)'
+            '*:pattern'
           )
           ;;
       esac
@@ -367,6 +370,7 @@ _conan_graph() {
             '*--package-filter[print information only for packages that match the patterns]:pattern'
             '(-d --deployer)'{-d,--deployer}'[deploy using the provided deployer to the output folder]:deployer:(full_deploy direct_deploy)'
             '(-df --deployer-folder)'{-df,--deployer-folder}'[deployer output folder]:folder:_files -/'
+            '*:path:_files'
           )
           ;;
         (build-order-merge)
@@ -543,6 +547,7 @@ _conan_lock() {
             $conan_profile_options[@]
             $conan_reference_options[@]
             $conan_lockfile_options[@]
+            '*:path:_files'
           )
           ;;
         (upgrade-config)
@@ -554,6 +559,7 @@ _conan_lock() {
             $conan_profile_options[@]
             $conan_reference_options[@]
             $conan_lockfile_options[@]
+            '*:path:_files'
           )
           ;;
       esac
@@ -1108,6 +1114,7 @@ _conan_audit() {
             $conan_profile_options[@] \
             $conan_reference_options[@] \
             $conan_lockfile_options[@] \
+            '*::path:_files' \
             && ret=0
           ;;
       esac
