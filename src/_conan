@@ -560,12 +560,25 @@ _conan_lock() {
 
 (( $+functions[_conan_profile] )) ||
 _conan_profile() {
+  local curcontext=$curcontext state state_descr line ret=1
+  typeset -A opt_args
+
   _arguments -C \
     '(- : *)'{-h,--help}'[display help information]' \
-    '1: :_conan_profile_commands' \
-    '*:: :->args'
+    '1:subcommand:->subcommand' \
+    '*:: :->args' \
+    && ret=0
 
   case $state in
+    (subcommand)
+      local -a commands=(
+        'detect:generate a profile using auto-detected values'
+        'list:list all profiles in the cache'
+        'path:show profile path location'
+        'show:show aggregated profiles from the passed arguments'
+      )
+      _describe -t 'commands' "command" commands && ret=0
+      ;;
     (args)
       local opts=($_conan_common_options[@])
       case $words[1] in
@@ -573,6 +586,7 @@ _conan_profile() {
           opts+=(
             '--name[profile name, "default" if not specified]::name'
             '(-f --force)'{-f,--force}'[overwrite if exists]'
+            '(-e --exist-ok)'{-e,--exist-ok}'[if the profile already exist, do not detect a new one]'
           )
           ;;
         (list)
@@ -580,27 +594,22 @@ _conan_profile() {
             '(-f --format)'{-f,--format}'[select the output format]:format:(json)'
           )
           ;;
-        (path|show)
+        (path)
+          opts+=('*:name')
+          ;;
+        (show)
           opts+=(
+            '(-cx --context)'{-cx,--context}'[context to profile]:context:(host build)'
             $conan_profile_options[@]
           )
           ;;
       esac
 
-      _arguments "$opts[@]"
+      _arguments "$opts[@]" && ret=0
     ;;
   esac
-}
 
-(( $+functions[_conan_profile_commands] )) ||
-_conan_profile_commands() {
-  local -a commands=(
-    'detect:generate a profile using auto-detected values'
-    'list:list all profiles in the cache'
-    'path:show profile path location'
-    'show:show aggregated profiles from the passed arguments'
-  )
-  _describe -t 'commands' "command" commands
+  return ret
 }
 
 (( $+functions[_conan_remote] )) ||
