@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Node.js v26.1.0 (https://nodejs.org)
+#  Completion script for Node.js v26.4.0 (https://nodejs.org)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -84,6 +84,19 @@ _node() {
       '--perf-basic-prof[enable basic support for perf profiler]'
       '--perf-prof-unwinding-info[enable unwinding info for perf linux profiler]'
       '--perf-prof[enable annotate support for perf profiler]'
+    )
+  fi
+
+  local -a inspect_options=()
+  if [[ "$words[2]" == 'inspect' ]]; then
+    inspect_options+=(
+      '*--probe[source location of the probe]:location:_files'
+      '--expr[expression to evaluate of the preceding --probe each time execution reaches it]:expr'
+      '--max-hit[per-probe limit on evaluated hits, when not specified, there is no limit]::num'
+      '--json[output JSON, when not specified, human-readable text]'
+      '--preview[include V8 object previews in JSON output]'
+      '--timeout[global session timeout(default 30000ms)]:msecs'
+      '--port[inspector port for the debuggee(default or 0 use random port)]:port'
     )
   fi
 
@@ -274,6 +287,7 @@ _node() {
     '--watch-preserve-output[preserve outputs on watch mode restart]' \
     '--zero-fill-buffers[automatically zero-fill all newly allocated Buffer and SlowBuffer instances]' \
     $v8_options[@] \
+    $inspect_options[@] \
     '(- 1 *)'{-h,--help}'[print node command line options]' \
     '(- 1 *)'{-v,--version}'[print Node.js version]' \
     '*: :_node_args' && ret=0
