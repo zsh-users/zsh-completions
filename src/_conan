@@ -605,12 +605,33 @@ _conan_profile_commands() {
 
 (( $+functions[_conan_remote] )) ||
 _conan_remote() {
+  local curcontext=$curcontext state state_descr line ret=1
+  typeset -A opt_args
+
   _arguments -C \
-    '(- : *)'{-h,--help}'[display help information]' \
-    '1: :_conan_remote_commands' \
-    '*:: :->args'
+    $_conan_common_options[@] \
+    '1:subcommand:->subcommand' \
+    '*:: :->args' \
+    && ret=0
 
   case $state in
+    (subcommand)
+      local -a commands=(
+        'add:add a remote'
+        'auth:authenticate in the defined remotes'
+        'disable:disable all the remotes matching a pattern'
+        'enable:enable all the remotes matching a pattern'
+        'list:list current remotes'
+        'list-users:list the users logged into all the remotes'
+        'login:login into the specified remotes matching a pattern'
+        'logout:clear the existing credentials for the specified remotes matching a pattern'
+        'remove:remove a remote'
+        'rename:rename a remote'
+        'set-user:associate a username with a remote matching pattern without performing the authentication'
+        'update:update a remote'
+      )
+      _describe -t 'commands' "command" commands && ret=0
+    ;;
     (args)
       local -a opts=($_conan_common_options[@])
       case $words[1] in
@@ -619,6 +640,9 @@ _conan_remote() {
             '--insecure[allow insecure server connections when using SSL]'
             '--index[insert the remote at a specific position in the remote list]:index'
             '(-f --force)'{-f,--force}'[force the definition of the remote even if duplicated]'
+            \*{-ap,--allowed-packages}'[add recipe reference pattern to list of allowed packages]:allowed_packages'
+            '(-t --type)'{-t,--type}'[define the remote type]:type:(local-recipes-index)'
+            '--recipes-only[disallow binary downloads from this remote, only recipes will be downloaded]'
             '1:name'
             '2:url'
           )
@@ -626,6 +650,8 @@ _conan_remote() {
         (auth)
           opts+=(
             '--with-user[only try to auth in those remotes that already have a user name]'
+            '--force[force authentication for anonymous-enabled repositories]'
+            '--strict[return exit code 1 if authentication fails for any remote]'
             '1:remote:_conan_remotes'
           )
           ;;
@@ -637,7 +663,7 @@ _conan_remote() {
             '(-f --format)'{-f,--format}'[select the output format]:format:(json)'
             '(-p --password)'{-p,--password}'[user password]:password'
             '1:remote:_conan_remotes'
-            '2:username:'
+            '2:username'
           )
           ;;
         (logout)
@@ -664,37 +690,22 @@ _conan_remote() {
           ;;
         (update)
           opts+=(
-            '--url[new url for the remote]'
+            '--url[new url for the remote]:url'
             '--secure[do not allow insecure server connections when using SSL]'
             '--insecure[allow insecure server connections when using SSL]'
             '--index[insert the remote at a specific position in the remote list]:index'
+            \*{-ap,--allowed-packages}'[add recipe reference pattern to list of allowed packages]:allowed_packages'
+            '--recipes-only[disallow binary downloads from this remote, only recipes will be downloaded]:bool:(True False)'
             '1:remote:_conan_remotes'
           )
           ;;
       esac
 
-      _arguments "${opts[@]}"
-    ;;
+      _arguments "${opts[@]}" && ret=0
+      ;;
   esac
-}
 
-(( $+functions[_conan_remote_commands] )) ||
-_conan_remote_commands() {
-  local -a commands=(
-    'add:add a remote'
-    'auth:authenticate in the defined remotes'
-    'disable:disable all the remotes matching a pattern'
-    'enable:enable all the remotes matching a pattern'
-    'list:list current remotes'
-    'list-users:list the users logged into all the remotes'
-    'login:login into the specified remotes matching a pattern'
-    'logout:clear the existing credentials for the specified remotes matching a pattern'
-    'remove:remove a remote'
-    'rename:rename a remote'
-    'set-user:associate a username with a remote matching pattern without performing the authentication'
-    'update:update a remote'
-  )
-  _describe -t 'commands' "command" commands
+  return ret
 }
 
 (( $+functions[_conan_remove] )) ||
