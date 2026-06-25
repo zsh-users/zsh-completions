@@ -110,7 +110,7 @@ _conan() {
   case $state in
     command_args)
       if (( $+functions[_conan_${words[1]}] )); then
-        _call_function ret _conan_${words[1]} && ret=1
+        _call_function ret _conan_${words[1]} && ret=0
       fi
     ;;
   esac
@@ -404,6 +404,7 @@ _conan_inspect() {
 
 (( $+functions[_conan_install] )) ||
 _conan_install() {
+  local ret=1
   local -a generators=(
     cmake cmake_multi cmake_paths cmake_find_package cmake_find_package_multi
     msbuild visual_studio visual_studio_multi visual_studio_legacy xcode compiler_args gcc
@@ -414,17 +415,23 @@ _conan_install() {
     $_conan_common_options[@]
     '(-f --format)'{-f,--format}'[select the output format]:format:(json)'
     \*{-b,--build}'[optional, specify which packages to build from source]:build'
+    '--requires[directly provide requires instead of a conanfile]:requires'
+    '--tool-requires[directly provide tool-requires instead of a conanfile]:tool-requires'
+    '(-g --generator)'{-g,--generator}'[generators to use]:generator:($generators)'
+    '(-of --output)'{-of,--output-folder}'[the root output folder for generated and build files]:dir:_files -/'
+    '(-d --deployer)'{-d,--deployer}'[deploy using the provided deployer to the output folder]:deployer:(full_deploy direct_deploy runtime_deploy)'
+    '--deployer-folder[deployer output folder]:folder:_files -/'
+    '*--deployer-packge[execute the deploy() method of the packages matching the provided patterns]:pattern'
+    '--build-require[whether the provided path is a build-require]'
+    '--envs-generation[generation strategy for virtual environment files for the root]:bool:(false)'
     $_conan_remote_options[@]
-    '(-u --update)'{-u,--update}'[will check the remote and in case a newer version]'
     $conan_profile_options[@]
     $_conan_lockfile_options[@]
-    '(-g --generator)'{-g,--generator}"[generators to use]:generator:($generators)"
-    '(-of --output)'{-of,--output-folder}'[the root output folder for generated and build files]:dir:_files -/'
-    '--deploy[deploy using the provided deployer to the output folder]:deployer'
     '1:recipe_dir_or_conanfile:_files'
   )
 
-  _arguments "$opts[@]"
+  _arguments "$opts[@]" && ret=0
+  return ret
 }
 
 (( $+functions[_conan_list] )) ||
@@ -719,26 +726,35 @@ _conan_remote() {
 
 (( $+functions[_conan_remove] )) ||
 _conan_remove() {
+  local ret=1
   local -a opts=(
     $_conan_common_options[@]
+    '(-f --format)'{-f,--format}'[select the output format]:format:(json)'
     '(-c --confirm)'{-c,--confirm}'[remove without requesting a confirmation]'
     \*{-p,--package-query}'[remove only the packages matching a specific query]:query'
     \*{-r,--remote}'[will remove from the specified remote]:remote'
+    \*{-l,--list}'[package list file]:list:_files'
+    '--lru[remove recipes and binaries that have not been recently used]:lru'
+    '--dry-run[do not remove any items, only print those which would be removed]'
     '*:recipe_or_package_reference:_files'
   )
 
-  _arguments "$opts[@]"
+  _arguments "$opts[@]" && ret=0
+  return ret
 }
 
 (( $+functions[_conan_search] )) ||
 _conan_search() {
+  local ret=1
   local -a opts=(
     $_conan_common_options[@]
+    '(-f --format)'{-f,--format}'[select the output format]:format:(json)'
     \*{-r,--remote}'[will remove from the specified remote]:remote'
     '*:recipe_reference:_files'
   )
 
-  _arguments "$opts[@]"
+  _arguments "$opts[@]" && ret=0
+  return ret
 }
 
 (( $+functions[_conan_version] )) ||
@@ -869,8 +885,10 @@ _conan_editable() {
 
 (( $+functions[_conan_export] )) ||
 _conan_export() {
+  local ret=1
   local -a opts=(
     $_conan_common_options[@]
+    '(-f --format)'{-f,--format}'[select output format]:format:(json pkglist)'
     '(-r --remote -nr --no-remote)'{-r,--remote}'[remote names. Accepts wildcards("*")]:remote'
     '(-r --remote -nr --no-remote)'{-nr,--no-remote}'[do not use remote]'
     '(-l --lockfile)'{-l,--lockfile}'[path to a lockfile]:file:_files'
@@ -881,7 +899,8 @@ _conan_export() {
     '*: :_files -/'
   )
 
-  _arguments "$opts[@]"
+  _arguments "$opts[@]" && ret=0
+  return ret
 }
 
 (( $+functions[_conan_export-pkg] )) ||
@@ -907,7 +926,7 @@ _conan_export-pkg() {
 
 (( $+functions[_conan_require] )) ||
 _conan_require() {
-  local context state state_descr line ret=1
+  local curcontext=$curcontext state state_descr line ret=1
   typeset -A opt_args
 
   _arguments -C \
@@ -977,33 +996,37 @@ _conan_new() {
 
 (( $+functions[_conan_source] )) ||
 _conan_source() {
+  local ret=1
   local -a opts=(
     $_conan_common_options[@]
     $conan_reference_options[@]
     '1: :_files'
   )
 
-  _arguments "$opts[@]"
+  _arguments "$opts[@]" && ret=0
+  return ret
 }
 
 (( $+functions[_conan_test] )) ||
 _conan_test() {
+  local ret=1
   local -a opts=(
     $_conan_common_options[@]
     \*{-b,--build}'[optional, specify which packages to build from source]:build'
     $_conan_remote_options[@]
-    '(-u --update)'{-u,--update}'[will check the remote and in case a newer version]'
     $conan_profile_options[@]
     $_conan_lockfile_options[@]
     '1:path:_files -/'
     '2:reference'
   )
 
-  _arguments "$opts[@]"
+  _arguments "$opts[@]" && ret=0
+  return ret
 }
 
 (( $+functions[_conan_upload] )) ||
 _conan_upload() {
+  local ret=1
   local -a opts=(
     $_conan_common_options[@]
     \*{-p,--package-query}'[only upload packages matching a specific query]:query'
@@ -1019,7 +1042,8 @@ _conan_upload() {
     '1::reference'
   )
 
-  _arguments "$opts[@]"
+  _arguments "$opts[@]" && ret=0
+  return ret
 }
 
 #
