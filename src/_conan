@@ -71,7 +71,7 @@ _conan() {
     '(-pr --profile)'{-pr,--profile}'[apply the specified profile]:profile'
     '(-pr\:b --profile\:build)'{-pr\\:b,--profile\\:build}'[apply the specified profile build]:profile_build'
     '(-pr\:h --profile\:host)'{-pr\\:h,--profile\\:host}'[apply the specified profile host]:profile_host'
-    '(-pr\:a --profile\:all)'{-pr\\:a,--profile\\:apply}'[apply the specified profile all]:profile_all'
+    '(-pr\:a --profile\:all)'{-pr\\:a,--profile\\:all}'[apply the specified profile all]:profile_all'
     '(-o --options)'{-o,--options}'[apply the specified options]:options'
     '(-o\:b --options\:build)'{-o\\:b,--options\\:build}'[apply the specified options build]:options_build'
     '(-o\:h --options\:host)'{-o\\:h,--options\\:host}'[apply the specified options host]:options_host'
@@ -79,7 +79,7 @@ _conan() {
     '(-s --settings)'{-s,--settings}'[apply the specified settings]:settings'
     '(-s\:b --settings\:build)'{-s\\:b,--settings\\:build}'[apply the specified settings build]:settings_build'
     '(-s\:h --settings\:host)'{-s\\:h,--settings\\:host}'[apply the specified settings host]:settings_host'
-    '(-s\:a --settings:all)'{-s\\:a,--settings\\:all}'[apply the specified settings all]:settings_all'
+    '(-s\:a --settings\:all)'{-s\\:a,--settings\\:all}'[apply the specified settings all]:settings_all'
     '(-c --conf)'{-c,--conf}'[apply the specified conf]:conf'
     '(-c\:b --conf\:build)'{-c\\:b,--conf\\:build}'[apply the specified conf build]:conf_build'
     '(-c\:h --conf\:host)'{-c\\:h,--conf\\:host}'[apply the specified conf host]:conf_host'
@@ -283,7 +283,7 @@ _conan_config() {
           )
           ;;
         (install-pkg)
-          opts++(
+          opts+=(
             '(-l --lockfile)'{-l,--lockfile}'[path to a lockfile]:file:_files'
             '--lockfile-partial[do not raise an error if some dependency is not found in lockfile]'
             '--lockfile-out[file name of the updated lockfile]:file:_files'
@@ -422,7 +422,7 @@ _conan_install() {
     '--requires[directly provide requires instead of a conanfile]:requires'
     '--tool-requires[directly provide tool-requires instead of a conanfile]:tool-requires'
     '(-g --generator)'{-g,--generator}'[generators to use]:generator:($generators)'
-    '(-of --output)'{-of,--output-folder}'[the root output folder for generated and build files]:dir:_files -/'
+    '(-of --output-folder)'{-of,--output-folder}'[the root output folder for generated and build files]:dir:_files -/'
     '(-d --deployer)'{-d,--deployer}'[deploy using the provided deployer to the output folder]:deployer:(full_deploy direct_deploy runtime_deploy)'
     '--deployer-folder[deployer output folder]:folder:_files -/'
     '*--deployer-package[execute the deploy() method of the packages matching the provided patterns]:pattern'
@@ -564,7 +564,7 @@ _conan_lock() {
           ;;
       esac
 
-      _arguments "$opts[@]" && ret=1
+      _arguments "$opts[@]" && ret=0
       ;;
   esac
 
@@ -939,7 +939,7 @@ _conan_require() {
     $conan_common_options[@] \
     '1: :->subcommand' \
     '*:: :->args' \
-    && ret=1
+    && ret=0
 
   case $state in
     (subcommand)
@@ -1065,7 +1065,7 @@ _conan_audit() {
     $conan_common_options[@] \
     '1: :->subcommand' \
     '*:: :->args' \
-    && ret=1
+    && ret=0
 
   case $state in
     (subcommand)
@@ -1133,7 +1133,7 @@ _conan_report() {
     $conan_common_options[@] \
     '1: :->subcommand' \
     '*:: :->args' \
-    && ret=1
+    && ret=0
 
   case $state in
     (subcommand)
@@ -1166,7 +1166,7 @@ _conan_report() {
 #
 (( $+functions[_conan_remotes] )) ||
 _conan_remotes() {
-  local -a remotes=(${(f)"$(_call_program remotes $service remote list)"})
+  local -a remotes=(${${(f)"$(_call_program remotes $service remote list 2>/dev/null)"}%%:*})
   _describe -t remotes 'remote' remotes "$@"
 }
 
