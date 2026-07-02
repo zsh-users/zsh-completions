@@ -1,0 +1,6 @@
+#compdef xmake
+
+_xmake() {
+    local completions=("${(@f)$(XMAKE_SKIP_HISTORY=1 XMAKE_ROOT=y XMAKE_COLORTERM=nocolor xmake lua private.utils.complete 0 nospace "$words" 2>/dev/null)}")
+    compadd -Q -S '' -- ${completions[@]}
+}
