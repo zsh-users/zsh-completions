@@ -1,0 +1,454 @@
+* 目录
+- [[#介绍][介绍]]
+- [[#开始][开始]]
+  - [[#让zsh知道用哪个函数补全命令][让zsh知道用哪个函数补全命令]]
+  - [[#补全gnu格式命令][补全gnu格式命令]]
+  - [[#从其它命令复制补全][从其它命令复制补全]]
+- [[#编写你自己的补全代码][编写你自己的补全代码]]
+  - [[#工具函数][工具函数]]
+  - [[#用_describe编写简单的补全函数][用_describe编写简单的补全函数]]
+  - [[#用_alternative编写补全函数][用_alternative编写补全函数]]
+  - [[#用_arguments编写补全函数][用_arguments编写补全函数]]
+  - [[#用_regex_arguments和_regex_words编写补全函数][用_regex_arguments和_regex_words编写补全函数]]
+  - [[#用_values_sep_parts和_multi_parts实现复杂补全][用_values、_sep_parts和_multi_parts实现复杂补全]]
+  - [[#用compadd直接添加补全词][用compadd直接添加补全词]]
+- [[#测试与debug][测试与debug]]
+- [[#踩坑了吧-需要小心的东西][踩坑了吧 （需要小心的东西）]]
+- [[#小贴士][小贴士]]
+- [[#其它资源][其它资源]]
+
+> 译注：本文可能有不通顺的地方，或者采用的词汇不是很正确。
+> 如果你有更好的主意，欢迎提交PR。
+
+* 介绍
+Zsh官方的补全函数文档令人费解，而且也没提供多少示例。
+写这份文档的当下我已经在网上找到了其它几份教程，但是那些教程只涉及了补全系统的一小部分。
+这份文档目的在于补全网上其它地方没涵盖的部分，同时附带示例，这样读者就可以学会如何写更高级的补全函数。
+我不会展开每一细节，但给你提供的内容和示例足以从零开始。
+如果你需要了解更多细节，你可以自行查询[[https://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-System][官方文档]]。
+
+还请公开你所创作的任何脚本（比如fork这个仓库然后[[id:64bcd501-b0f0-48c7-b8e2-07af708b95ec][pr]]）。
+此外如果你有任何更多补充内容或对此教程的改进，欢迎做贡献。
+* 开始
+** 让zsh知道用哪个函数补全命令
+补全命令用的补全函数储存于名字以下划线“_”起始的文件，这些文件应存于$fpath变量所列出的某目录中。
+你可以将下面的代码写入你的~/.zshrc以在$fpath中新增目录：
+#+BEGIN_SRC sh
+fpath=(~/newdir $fpath)
+#+END_SRC
+一个补全函数文件的第一行长这个样：
+#+BEGIN_SRC sh
+#compdef foobar
+#+END_SRC
+这行代码表示这个文件含有补全foobar命令的代码。
+多数情况下第一行都采用这个格式，但你也可以用同一个文件补全多个不同的函数。
+查阅[[https://zsh.sourceforge.net/Doc/Release/Completion-System.html#Autoloaded-files][官方文档]]以了解更多细节。
+
+你也可以直接使用compdef命令(比如在你的~/.zshrc文件里)来告诉zsh用哪个函数补全命令：
+#+BEGIN_SRC sh
+> compdef _function foobar
+#+END_SRC
+或者对多个命令使用同一种补全：
+#+BEGIN_SRC sh
+> compdef _function foobar goocar hoodar
+#+END_SRC
+如果你想提供参数的话：
+#+BEGIN_SRC sh
+> compdef '_function arg1 arg2' foobar
+#+END_SRC
+查阅[[https://zsh.sourceforge.net/Doc/Release/Completion-System.html#Functions-4][官方文档]]以了解更多细节。
+** 补全gnu格式命令
+很多[[https://www.gnu.org/][gnu]]命令以标准化的方式列出选项描述（使用--help选项时）。
+对于这些命令你可以使用_gnu_generic函数自动创建补全，比如这样：
+#+BEGIN_SRC sh
+> compdef _gnu_generic foobar
+#+END_SRC
+或者对多个不同命令使用_gnu_generic：
+#+BEGIN_SRC sh
+> compdef _gnu_generic foobar goocar hoodar
+#+END_SRC
+你可以把这行代码放进~/.zshrc文件里。
+** 从其它命令复制补全
+如果你想要让一个命令（比如cmd1）和另一个已有补全的命令（比如cmd2)拥有相同的补全，你可以：
+#+BEGIN_SRC sh
+> compdef cmd1=cmd2
+#+END_SRC
+比如当你给一个命令创建了一个助记alias的时候会很有帮助。
+* 编写你自己的补全代码
+你可以通过阅读已有的补全函数来开始入门。
+在我的Linux系统上这些补全函数在/usr/share/zsh/functions/Completion/Unix、
+/usr/share/zsh/functions/Completion/Linux和一些其它子目录下。
+
+你会注意到这些文件频繁使用_arguments函数。
+该函数是一个工具函数，可用于编写简单的补全函数。
+_arguments函数是一个compadd内置函数的包装函数。
+compadd内置函数是一个核心函数，用于向命令行加入补全词，并控制其行为。
+不过，多数情况下你不需要使用compadd，因为有很多更易于使用的工具函数，如_arguments和_describe。
+
+对于非常基础的补全，_describe函数已经够用了。
+
+** 工具函数
+下面是一个工具函数列表，你或许会用到它们。
+工具函数的完整列表及使用方法在[[https://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-Functions][此]]可供查阅。
+这些函数的使用示例在下一节给出。
+
+> 译注：从这里开始会出现一些术语，如定义（specification）、描述（description）、动作（action）、词汇（word）等。
+> 初次阅读可能会觉得比较困难，尤其是下面的工具函数表格，稍后教程开始一一讲解并给出示例的时候就好懂多了。
+> 定义指的是对补全规则的定义，如`_describe 定义`。
+> 描述当然指的是对命令行选项和参数的用户友好描述，补全时会显示在屏幕上，如：'-o  输出文件'
+> 词汇指的是如同'word'、'-o'、'--help'、'start'等连续的一小段字符串
+> 动作指的是匹配成功后执行的操作，比如执行某函数生成补全，或直接补全等等。
+> 选项（option）和参数指给命令提供的选项和参数，如`cp -r src dst`中，`-r`为选项，`src`和`dst`为参数。有些选项带参，如`tar -f file ...`中`-f`选项带`file`参数。
+> 候选（candidate）指可能的补全结果，如补全`tar -f`时目录下所有文件会被作为候选，补全`systemctl`时`start`、`stop`、`list-units`等指令会被作为候选。
+> 还请不要感到灰心，读下去就是了。
+
+*** 用于大部分补全的主要工具函数
+| _alternative     | 从其它工具函数或shell代码生成补全候选。                                |
+| _arguments       | 指定如何补全一命令的各选项和参数（命令选项风格为unix风格）。           |
+| _describe        | 创建由带描述的词汇（但不包含动作）组成的简单补全。比_arguments更简单。 |
+| _gnu_generic     | 为带有“--help”选项的命令补全选项。                                     |
+| _regex_arguments | 创建一先用regex表达式匹配命令行参数再执行动作/补全的函数。             |
+*** 对单个词汇进行复杂补全的工具函数
+| _values      | 补全任意词汇（值）及其参数，或逗号分隔的词汇与参数列表。                           |
+| _combination | 补全值的组合，比如域名和用户名的二元组。                                           |
+| _multi_parts | 对词汇的由符号分隔的多个部分分别补全，比如补全路径：/u/i/sy -> /usr/include/sys    |
+| _sep_parts   | 类似_multi_parts但在补全的不同部分中允许不同的分隔符。                             |
+| _sequence    | 包装另一补全函数，并补全由该函数生成的匹配列表。                                   |
+*** 用于补全特定对象种类的函数
+| _path_files     | 补全文件目录。用多个选项控制行为。                                              |
+| _files          | 使用所有选项调用_path_files，除了-g和-/。这些选项取决于file-patterns风格设置。  |
+| _net_interfaces | 补全网络接口名称。                                                              |
+| _users          | 补全用户名                                                                      |
+| _groups         | 补全组名                                                                        |
+| _options        | 补全shell选项名。                                                               |
+| _parameters     | 补全shell参数/变量名（可用模式匹配限制要补全的参数/变量名）。                   |
+*** 处理已缓存的补全的函数
+如果你有大量的补全，你可以将补全保存于一个缓存文件以快速加载。
+| _cache_invalid  | 指明补全缓存是否需要重新构建（rebuild），缓存由标识符指定   |
+| _retrieve_cache | 从缓存文件获取补全信息                          |
+| _store_cache    | 储存缓存于缓存文件，缓存由标识符指定            |
+*** 其它函数
+| _message     | 当无补全可生成时显示帮助信息。                               |
+| _regex_words | 为_regex_arguments命令生成参数。比手写参数更简单。           |
+| _guard       | 检查被补全的词汇，用于_arguments和类似函数的定义的ACTION中。 |
+*** 动作（Actions）
+许多工具函数，如_arguments、_regex_arguments、_alternative和_values，在选项/参数末尾有一个action。
+这个action指定如何补全对应的参数。
+这些action可以是如下形式之一：
+| ( )                               | 需要提供参数但未生成任何匹配                                                          |
+| (ITEM1 ITEM2)                     | 匹配列表                                                                              |
+| ((ITEM1\:'DESC1' ITEM2\:'DESC2')) | 匹配列表，带有描述。引号必须和整个定义所使用的引号不同。                              |
+| ->STRING                          | 将$state设为STRING然后继续（可在调用工具函数后用case语句检查$state的值）              |
+| FUNCTION                          | 生成匹配或完成其它操作的函数的函数名，比如_files或_message                            |
+| {EVAL-STRING}                     | 把字符串当作shell代码执行（evaluate）。可用于带参调用工具函数，如_values或_describe   |
+| =ACTION                           | 在补全命令行中插入占位词汇不改变补全点。                                              |
+
+并非所有的action种类都可用于使用action的工具函数。比如->STRING类不可用于_regex_arguments或_alternative函数。
+** 用_describe编写简单的补全函数
+_describe函数可以用于简单的补全，此类补全的选项/参数的位置与顺序无关紧要。
+你只需用一个数组参数储存这些选项和其描述，然后将数组参数的名作为参数传入_describe。
+下面的示例创建补全候选c和d（注意代码文件名应为_cmd，并且文件存于$fpath所列出的目录之下）。
+#+BEGIN_SRC sh
+#compdef cmd
+local -a subcmds
+subcmds=('c:c命令描述' 'd:d命令描述')
+_describe 'command' subcmds
+#+END_SRC
+
+你可以像下面一样使用由双横杠分隔的列表，但注意实操时会混合匹配结果，所以不应该用于不同种类的补全候选：
+#+BEGIN_SRC sh
+local -a subcmds topics
+subcmds=('c:c命令描述' 'd:d命令的描述')
+topics=('e:e帮助主题的描述' 'f:f帮助主题的描述')
+_describe 'command' subcmds -- topics
+#+END_SRC
+
+如果两个候选有相同的描述，_describe把它们集于一行，并确保描述严格按列对齐。
+_describe函数可用在_alternative、_arguments或_regex_arguments的ACTION中。
+在这种情况下你需要用括号将_describe和参数包起来，比如'TAG:DESCRIPTION:{_describe 'values' options}'
+** 用_alternative编写补全函数
+如同_describe，该函数进行简单补全，其选项/参数的顺序和位置并不重要。
+然而，与_describe的固定匹配不同，_alternative可进一步调用函数生成补全候选。
+此外，_alternative允许混合不同种类的补全候选。
+
+关于参数，该函数接受一列定义（specification），每项定义的形式为“TAG:DESCRIPTION:ACTION”（即“标签:描述:动作”），其中TAG是一个标识补全匹配种类的特殊标签。
+DESCRIPTION以标题（heading）的形式描述补全候选组，而ACTION是先前列出的动作种类之一（除了->STRING和=ACTION之外）。
+例如：
+#+BEGIN_SRC sh
+_alternative 'arguments:自定义参数:(a b c)' 'files:文件名:_files'
+#+END_SRC
+第一个定义增加了补全候选a、b和c，而第二个定义调用_files函数以补全文件目录。
+
+我们可以用反斜杠 \ 将不同定义分成几行并给每个自定义参数加入描述文字：
+#+BEGIN_SRC sh
+_alternative \
+  'args:自定义参数:((a\:"描述a" b\:"描述b" c\:"描述c"))' \
+  'files:文件名:_files'
+#+END_SRC
+
+如果我们想向_files传递参数，我们可以直接写在_files后面：
+#+BEGIN_SRC sh
+_alternative \
+  'args:自定义参数:((a\:"描述a" b\:"描述b" c\:"描述c"))' \
+  'files:文件名:_files -/'
+#+END_SRC
+
+如要用变量展开创建补全列表，必须用双引号将定义括起来，
+如：
+#+BEGIN_SRC sh
+_alternative \
+  "dirs:用户目录:($userdirs)" \
+  "pids:进程ID:($(ps -A o pid=))"
+#+END_SRC
+在此例子中第一个定义加入$userdirs变量中的词汇，第二个定义执行'ps -A o pid='并获取pid表，pid表用作补全候选。
+实操中，我们使用已有的_pids函数，而不是像上面那样手写。
+
+我们可以在ACTION中使用_values等其它工具函数以完成更复杂的补全，如：
+#+BEGIN_SRC sh
+_alternative \
+  "directories:用户目录:($userdirs)" \
+  'options:逗号分隔选项: _values -s , letter a b c'
+#+END_SRC
+该示例补全$userdirs里的项目，以及用逗号分隔的、含有a、b和/或c的列表。
+注意_values前面的空格。空格不可省略，因为_values不能接受标准compadd描述选项。
+
+和_describe一样，_alternative可用作ACTION并作为_arguments或_regex_arguments的一部分。
+** 用_arguments编写补全函数
+只需要调用_arguments函数一次就可以创造出非常智能的补全函数。该函数本身就是用于处理这种带有带参选项的命令的。
+如同_alternative函数，_arguments接受一列定义字符串参数。
+这些定义字符串指定选项和任何对应的选项参数（如：-f 文件名），或命令参数。
+
+简单的选项定义用'-OPT[DESCRIPTION]'（即'-选项[描述]'），比如：
+#+BEGIN_SRC sh
+_arguments '-s[排序后输出]' '--l[更多输出]' '-l[更多输出]'
+#+END_SRC
+选项参数可在选项描述后指定，形式用'-OPT[DESCRIPTION]:MESSAGE:ACTION'（即'-选项[描述]:消息:动作'）,
+其中MESSAGE是待显示的信息，而ACTION可以是前面的动作（Actions）章节提到的任何形式。
+比如：
+#+BEGIN_SRC sh
+_arguments '-f[输入文件]:文件名:_files'
+#+END_SRC
+
+命令参数定义用'N:MESSAGE:ACTION'（即'N:消息:动作'），其中N指定这是第N个命令参数，而MESSAGE和ACTION都和前面的一样。
+如果N被省略，则其仅表示这是（在所有已定义的参数之后的）下一个参数。如果开头（在N后面）用的是双冒号，则参数非必需。
+比如：
+#+BEGIN_SRC sh
+_arguments '-s[排序后输出]' '1:第一个参数:_net_interfaces' '::可选参数:_files' ':下一个参数:(a b c)'
+#+END_SRC
+这里第一个参数是网络接口，下一个可选参数是一个文件名，最后一个参数可以是a、b或c，而-s选项可以在任何位置被补全。
+
+_arguments函数允许所有ACTION形式（在前面的动作(Actions)章节列出）。
+这表示你可以用动作来选择case语句分支，如：
+#+BEGIN_SRC sh
+_arguments '-m[音乐文件]:文件名:->files' '-f[flags]:flag:->flags'
+case "$state" in
+    files)
+        local -a music_files
+        music_files=( Music/**/*.{mp3,wav,flac,ogg} )
+        _multi_parts / music_files
+        ;;
+    flags)
+        _values -s , 'flags' a b c d e
+        ;;
+esac
+#+END_SRC
+在此例子中指向音乐文件的路径被_multi_parts一步步地沿目录下降补全，
+而flags被_values函数按照逗号分隔列表补全。
+
+我已经介绍了_arguments定义的基础部分，你还可以定义互斥选项、重复选项和参数、以+开头的选项等。有关更多细节，查阅[[https://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-System][官方文档]]。
+同时你也可以看看本文末尾列出的教程，以及[[https://github.com/vapniks/zsh-completions/tree/master/src][src目录]]下的补全函数。
+** 用_regex_arguments和_regex_words编写补全函数
+如果你的命令行定义比较复杂，有多个可能的参数序列，那你可能需要_regex_arguments函数。
+该函数也适用于有一系列跟着多个参数的关键词的情况。
+
+_regex_arguments创建名字由第一个参数给出的补全函数。
+因此你需要先调用_regex_arguments来创建补全函数，然后再调用该函数，比如：
+#+BEGIN_SRC sh
+_regex_arguments _cmd OTHER_ARGS..
+_cmd "$@"
+#+END_SRC
+
+OTHER_ARGS（即“其它参数”）是一序列用于在命令行上匹配和补全词汇的定义。
+这些序列可被'|'分隔来表示备选词汇序列。
+你可以用任意嵌套深度的括号来指定备选序列，但括号必须带反斜杠前缀，如\( \)，或用引号括起来，如'(' ')'。
+
+比如：
+#+BEGIN_SRC sh
+_regex_arguments _cmd 序列1 '|' 序列2 \( 序列2a '|' 序列2b \)
+_cmd "$@"
+#+END_SRC
+该示例定义一个匹配序列1或序列2后跟着序列2a或序列2b的命令行。这种方式和正则表达式语法类似。
+
+一个序列中的每个定义必须在开头包含一个/ PATTERN/ （即/ 模式/）部分，后跟着可选的':TAG:DESCRIPTION:ACTION'（即':标签:描述:动作'）部分。
+
+每个PATTERN是一个匹配一命令行词汇的正则表达式。这些模式按顺序匹配，直到某个模式不匹配，不匹配的模式将执行对应的ACTION（动作）以进行补全。
+注意，一定要有一个匹配命令自身的模式。
+下面有对PATTERN（模式）更详细的解释。
+
+':TAG:DESCRIPTION:ACTION'的使用方法和_alternative相同，只是开头多了个冒号“:”，并且前面列出的所有ACTION格式都可用。
+
+例如：
+#+BEGIN_SRC sh
+_regex_arguments _cmd /$'[^\0]##\0'/ \( /$'word1(a|b|c)\0'/ ':word:first word:(word1a word1b word1c)' '|'\
+   /$'word11(a|b|c)\0'/ ':word:first word:(word11a word11b word11c)' \( /$'word2(a|b|c)\0'/ ':word:second word:(word2a word2b word2c)'\
+   '|' /$'word22(a|b|c)\0'/ ':word:second word:(word22a word22b word22c)' \) \)
+_cmd "$@"
+#+END_SRC
+TODO 英文原文和例子有出入
+
+在这个例子中第一个词可以是word1（即“词1”，下同）或者word11后紧跟a、b或c，并且如果第一个词含有11，则第二个词可以是word2后紧跟a、b或c，或一个文件名。
+
+如果感觉太复杂，你也可以用更简单的_regex_words函数达到相同效果。
+*** 模式
+你可能注意到了上个例子中的/ PATTERN/和普通的正则表达式不太一样。
+通常使用的是形如$'foo\0'的字符串参数。这是为了让\0表示成null字符，而zsh内部用来分隔词汇的也是null字符。
+如果不在末尾包含\0的话，可能会无法匹配下一个词。如果你要把一个变量的值作为模式的一部分，你可以用双括号包起来，
+这样变量就会展开，然后再在后面加个包含null字符的字符串参数，比如："$somevar"$'\0'（somevar即“某变量”）。
+
+表示模式用的正则表达式语法和正常的正则表达式不太一样，但我也找不到有关的文档。
+不过我还是试图搞清楚了这些特殊字符的意义：
+| *  | 通配符 - 任何数量的字符                              |
+| ?  | 通配符 - 单个字符                                    |
+| #  | 零个或更多的上一个字符（和一般正则表达式里的*一样）  |
+| ## | 一个或更多的上一个字符（和一般正则表达式里的+一样）  |
+*** _regex_words
+_regex_words函数比_regex_arguments更简单易用。
+调用_regex_words后的结果可以存在变量里。
+
+要用_regex_words创建一个定义（specification），你需要提供一个标签，后跟一段描述，后跟一个定义不同词汇的列表。
+这些定义采用'WORD:DESCRIPTION:SPEC'（即'词汇:描述:定义'）的格式，WORD即待补全的词，DESCRIPTION是对应的描述，
+SPEC可以是由_regex_words创建的另一个变量以指定当前词后的下一个词汇，也可以留空以表示没有更多的词。
+比如：
+#+BEGIN_SRC sh
+_regex_words firstword '第一个词' 'word1a:词a:' 'word1b:词b:' 'word1c:词c'
+#+END_SRC
+该函数的返回结果将被存入$reply（reply即“回复”、“回应”）数组里，所以我们需要在$reply变化前将结果存进另一个数组里，如：
+#+BEGIN_SRC sh
+local -a firstword
+_regex_words word 'The first word' 'word1a:a word:' 'word1b:b word:' 'word1c:c word'
+firstword="$reply[@]"
+#+END_SRC
+firstword即“第一个词”。
+然后我们可以把结果用在_regex_arguments里，如：
+#+BEGIN_SRC sh
+_regex_arguments _cmd /$'[^\0]##\0'/ "$firstword[@]"
+_cmd "$@"
+#+END_SRC
+注意到我给命令自身也加了模式。
+
+这里还有个更复杂的词汇，我们调用_regex_words以匹配不同词汇
+#+BEGIN_SRC sh
+local -a firstword firstword2 secondword secondword2
+_regex_words word1 '第二个词' 'woo:鄧族' 'hoo:不关我事'
+secondword=("$reply[@]")
+_regex_words word2 '另一个第二个词' 'yee:汝' 'haa:很搞笑！'
+secondword2=("$reply[@]")
+_regex_words commands '第一个词' 'foo:做foo' 'man:yeah man' 'chu:at chu' # 译注：作者在自嗨，at chu除了比较像at you外没什么特殊意义
+firstword=("$reply[@]")
+_regex_words word4 '另一个第一个词' 'boo:吓死某人:$secondword' 'ga:嘤嘤嘤:$secondword'\
+ 'loo:上厕所:$secondword2'
+firstword2=("$reply[@]")
+
+_regex_arguments _hello /$'[^\0]##\0'/ "${firstword[@]}" "${firstword2[@]}"
+_hello "$@"
+#+END_SRC
+在这个例子中第一个词可以是"foo"、"man"、"chu"、"boo"、"ga"或"loo"。
+如果第一个词是"boo"或"ga"，那下一个词可以是"woo"或"hoo"，
+而如果第一个词是"loo"则第二个词可以是"yee"或"haa"，其它情况下没有第二个词。
+
+_ip函数是_regex_words的一个好用例。
+** 用_values、_sep_parts和_multi_parts实现复杂补全
+_values、_sep_parts和_multi_parts可以单独使用，也可以作为_alternative、_arguments或_regex_arguments定义里的ACTION。可以看看下面的例子。
+查阅[[https://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-System][官方文档]]以了解更多信息。
+
+空格分隔的mp3文件列表：
+#+BEGIN_SRC sh
+_values 'mp3文件' ~/*.mp3
+#+END_SRC
+
+逗号分隔的会话id列表：
+#+BEGIN_SRC sh
+_values -s , '会话id' "${(uonzf)$(ps -A o sid=)}"
+#+END_SRC
+
+补全foo@news:woo、foo@news:laa或bar@news:woo等：
+#+BEGIN_SRC sh
+_sep_parts '(foo bar)' @ '(news ftp)' : '(woo laa)'
+#+END_SRC
+
+补全MAC地址，一次补全一个字节：
+#+BEGIN_SRC sh
+_multi_parts : '(00:11:22:33:44:55 00:23:34:45:56:67 00:23:45:56:67:78)'
+#+END_SRC
+
+** 用compadd直接添加补全词
+你可以使用内置的compadd函数增加补全词，以获得更细致的控制。
+这个函数有各种选项控制如何显示补全以及补全时如何替换命令行上的文字。
+阅读[[https://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-System][官方文档]]以获得更多细节。
+这里我只给出几个简单的示例。
+
+向补全列表里加入若干词汇：
+#+BEGIN_SRC sh
+compadd foo bar blah
+#+END_SRC
+
+同上但显示注释：
+#+BEGIN_SRC sh
+compadd -X '一些注释' foo bar blah
+#+END_SRC
+
+同上但在补全前自动插入"what_"前缀
+#+BEGIN_SRC sh
+compadd -P what_ foo bar blah
+#+END_SRC
+
+同上但补全后自动插入"_todo"后缀：
+#+BEGIN_SRC sh
+compadd -S _todo foo bar blah
+#+END_SRC
+
+同上但在后缀后打空格时自动移除"_todo"后缀：
+#+BEGIN_SRC sh
+compadd -P _todo -q foo bar blah
+#+END_SRC
+
+向补全数组$wordsarray（wordsarray即“词数组”）加入词汇
+#+BEGIN_SRC sh
+compadd -a wordsarray
+#+END_SRC
+
+* 测试与debug
+重新加载补全函数：
+#+BEGIN_SRC sh
+> unfunction _func
+> autoload -U _func
+#+END_SRC
+
+这些函数会提供有用的信息。
+如果默认按键没有用，你可以尝试Alt+x然后再输入命令名。
+| 函数            | 默认按键           | 作用                                                           |
+|-----------------+--------------------+----------------------------------------------------------------|
+| _complete_help  | Ctrl+x h           | 在当前光标位置补全时显示有关上下文名称、标签和补全函数的信息   |
+| _complete_help  | Alt+2 Ctrl+x h     | 同上但显示更多信息                                             |
+| _complete_debug | Ctrl+x ?           | 执行正常补全，但跟踪补全系统执行的shell命令并存入一个临时文件  |
+* 踩坑了吧 （需要小心的东西）
+记得在补全函数的文件开头加那行#compdef
+
+_arguments或_regex_arguments的定义中要使用正确的引号：
+如果定义中有变量要展开，用双引号，其它情况用单引号，
+并且记得在ITEM（项目）描述处用不同的引号。（译注：见[[#动作Actions][动作（Actions）]]章节）
+
+_arguments、_alternative、_regex_arguments等的定义处要在正确的地方使用正确数量的冒号“:”。
+
+使用_regex_arguments时要记得在开头写匹配命令的模式（不需要加入匹配动作（action））。
+
+记得在_regex_arguments的任何PATTERN（模式）参数后加上null字符$'\0'
+* 小贴士
+有时一个子命令后只会跟一个选项，这时zsh会在tab在子命令后按下时自动补全。如果你想要在补全前先列出选项和描述，
+你可以向ACTION（动作）加入另一个空选项（比如\:），如':TAG:DESCRIPTION:((opt1\:"opt1描述" \:))'
+注意这只对在定义参数中使用ACTION的工具函数（_arguments、_regex_arguments等）有效。
+
+* 其它资源
+[[https://wikimatze.de/writing-zsh-completion-for-padrino/][这]]是个展示_arguments函数的基本使用方法的教程，短小精悍，
+而[[https://web.archive.org/web/20190411104837/http://www.linux-mag.com/id/1106/][这]]是_arguments函数的稍稍更进阶的教程。
+[[https://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-System][这]]是zshcompsys手册页（man page）。
