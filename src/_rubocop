@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for rubocop 1.86.1 (https://github.com/rubocop/rubocop)
+#  Completion script for rubocop 1.88.2 (https://github.com/rubocop/rubocop)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -58,6 +58,8 @@ _arguments \
   '(-F --fail-fast)'{-F,--fail-fast}'[Inspect files in order of modification time and stop after the first file containing offenses]' \
   '(--disable-pending-cops --enable-pending-cops)--disable-pending-cops[Run without pending cops]' \
   '(--disable-pending-cops --enable-pending-cops)--enable-pending-cops[Run with pending cops]' \
+  '(--disable-all-cops --enable-all-cops)--disable-all-cops[Run with all cops disabled by default, except "Lint/Syntax"]' \
+  '(--disable-all-cops --enable-all-cops)--enable-all-cops[Run with all enabled]' \
   '--ignore-disable-comments[Run cops even when they are disabled locally by a "rubocop:disable" directive]' \
   '--force-exclusion[Any files excluded by `Exclude` in configuration files will be excluded, even if given explicitly as arguments]' \
   '--only-recognized-file-types[Inspect files given on the command line only if they are listed in configuration]' \
