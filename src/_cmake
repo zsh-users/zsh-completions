@@ -276,6 +276,9 @@ _cmake_preset_build_dir() {
 _cmake_presets() {
   local invoke=(${(Q)words})
   invoke[$CURRENT]=()
+  # drop a dangling --preset/--preset=... so it doesn't swallow --list-presets as its value
+  invoke=(${invoke:#--preset})
+  invoke=(${invoke:#--preset=*})
   # TODO: remove all arguments -* except -S
 
   local list_presets=(${(f)"$(${invoke} --list-presets 2>/dev/null |
@@ -346,7 +349,9 @@ _cmake_on_build() {
   local out_of_build=false
   for ((i = (($CURRENT - 1)); i > (($build_at + 1)); i--)); do
     # don't check the word after --build (should be a directory)
-    if [[ ${undescribed_build_extras[(r)$words[$i]]} == $words[$i] ]]; then
+    # strip a possible "=value" suffix so --target=foo matches like --target
+    local _wi=${words[$i]%%=*}
+    if [[ ${undescribed_build_extras[(r)$_wi]} == $_wi ]]; then
       continue
     fi
 
@@ -369,20 +374,36 @@ _cmake_on_build() {
       "$cmake_build_options[@]" \
       - build_cmds \
       "$cmake_suggest_build[@]" && return 0
+  elif [[ "$difference" -eq 1 && $words[$CURRENT] == --preset=* ]] ; then
+    # --build --preset=<TAB> as the very first arg (joined form)
+    compset -P '*='
+    _cmake_build_presets && return 0
+  elif [[ "$difference" -eq 1 && $words[$CURRENT] == --target=* ]] ; then
+    # --build --target=<TAB> as the very first arg (joined form, implicit '.' dir)
+    compset -P '*='
+    _cmake_targets "." && return 0
   elif [[ "$difference" -eq 1 ]] ; then
     # completing first arg after --build: dir, --preset, or --list-presets
     _alternative \
       ':current directory:(.)' \
       'directory::_directories' \
       'preset-flags:flag:((--preset\:"Specify a build preset" --list-presets\:"List available build presets"))' && return 0
-  elif [[ $words[(($CURRENT - 1))] == --preset ]] ; then
-    # after --build --preset, complete build presets
+  elif [[ $words[(($CURRENT - 1))] == --preset || $words[$CURRENT] == --preset=* ]] ; then
+    # after --build --preset or --build --preset=, complete build presets
+    compset -P '*='
     _cmake_build_presets && return 0
-  elif [[ $words[(($CURRENT - 1))] == --target ]] ; then
-    # after --build <dir|--preset name> --target, suggest targets
+  elif [[ $words[(($CURRENT - 1))] == --target || $words[$CURRENT] == --target=* ]] ; then
+    # after --build <dir|--preset name> --target(=), suggest targets
+    compset -P '*='
     local _tgt_first=$words[(($build_at + 1))]
-    if [[ $_tgt_first == --preset ]]; then
-      local _tgt_dir=$(_cmake_preset_build_dir "$words[(($build_at + 2))]")
+    local _preset_name=
+    if [[ $_tgt_first == --preset=* ]]; then
+      _preset_name=${_tgt_first#--preset=}
+    elif [[ $_tgt_first == --preset ]]; then
+      _preset_name=$words[(($build_at + 2))]
+    fi
+    if [[ -n $_preset_name ]]; then
+      local _tgt_dir=$(_cmake_preset_build_dir "$_preset_name")
       [[ -n "$_tgt_dir" ]] && _cmake_targets "$_tgt_dir"
     elif [[ $_tgt_first != --* ]]; then
       _cmake_targets "$_tgt_first"
@@ -435,7 +456,9 @@ _cmake_on_install() {
   local out_of_build=false
   for ((i = (($CURRENT - 1)); i > (($build_at + 1)); i--)); do
     # don't check the word after --install (should be a directory)
-    if [[ ${undescribed_build_extras[(r)$words[$i]]} == $words[$i] ]] ; then continue ; fi
+    # strip a possible "=value" suffix so --prefix=foo matches like --prefix
+    local _wi=${words[$i]%%=*}
+    if [[ ${undescribed_build_extras[(r)$_wi]} == $_wi ]] ; then continue ; fi
     if [[ $words[(($i - 1))] == --prefix ]]; then continue ; fi
     if [[ $words[(($i - 1))] == --config ]]; then continue ; fi
     if [[ $words[(($i - 1))] == --component ]]; then continue ; fi
