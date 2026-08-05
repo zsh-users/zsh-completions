@@ -291,16 +291,35 @@ _cmake_presets() {
 # --------------
 # _cmake_targets
 # --------------
+typeset -gA _cmake_targets_cache
 (( $+functions[_cmake_targets] )) ||
 _cmake_targets() {
   local dir="$1"
   local -a targets=()
+  local file mtime key
+
   if [[ -f "${dir}/Makefile" && $+commands[make] ]]; then
-    # `make help` doesn't work for Makefiles in general, but for CMake generated Makefiles it does.
-    targets=(${(f)"$(make -f $dir/Makefile help 2>/dev/null | awk '/^\.\.\./ { print $2 }')"})
+    file="${dir}/Makefile"
   elif [[ -f "${dir}/build.ninja" && $+commands[ninja] ]]; then
-    # `ninja help` doesn't seem to be the list of targets we're interested in
-    targets=(${(f)"$(ninja -C $dir -t targets all 2>/dev/null | awk -F: '{print $1}' )"})
+    file="${dir}/build.ninja"
+  fi
+
+  if [[ -n $file ]]; then
+    zmodload -F zsh/stat b:zstat 2>/dev/null
+    mtime=$(zstat +mtime "$file" 2>/dev/null)
+    key="${file:A}:${mtime}"
+    if (( $+_cmake_targets_cache[$key] )); then
+      targets=(${(f)_cmake_targets_cache[$key]})
+    else
+      if [[ $file == */Makefile ]]; then
+        # `make help` doesn't work for Makefiles in general, but for CMake generated Makefiles it does.
+        targets=(${(f)"$(make -f $file help 2>/dev/null | awk '/^\.\.\./ { print $2 }')"})
+      else
+        # `ninja help` doesn't seem to be the list of targets we're interested in
+        targets=(${(f)"$(ninja -C $dir -t targets all 2>/dev/null | awk -F: '{print $1}' )"})
+      fi
+      _cmake_targets_cache[$key]="${(F)targets}"
+    fi
   fi
 
   _describe 'build targets' targets
@@ -325,12 +344,7 @@ _cmake_on_build() {
     '--preset[Specify a build preset]:preset:_cmake_build_presets'
     '--list-presets[List available build presets]'
   )
-  local -a undescribed_build_extras
-  local i=1
-  for be in $build_extras ; do
-    undescribed_build_extras[$i]=$(echo $be | sed "s/\[.*//")
-    (( i++ ))
-  done
+  local -a undescribed_build_extras=(${build_extras%%\[*})
 
   local in_build=false
   local dash_dash_position=-1
@@ -433,12 +447,7 @@ _cmake_on_install() {
     '--strip[Strip before installing.]'
   )
 
-  local -a undescribed_build_extras
-  local i=1
-  for be in $build_extras ; do
-    undescribed_build_extras[$i]=$(echo $be | sed "s/\[.*//")
-    (( i++ ))
-  done
+  local -a undescribed_build_extras=(${build_extras%%\[*})
 
   local in_build=false
   local dash_dash_position=-1
