@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Node.js v26.5.0 (https://nodejs.org)
+#  Completion script for Node.js v26.7.0 (https://nodejs.org)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -236,6 +236,7 @@ _node() {
     '--test-coverage-exclude=[exclude files from coverage report that match this glob pattern]:pattern' \
     '--test-coverage-functions=[the function coverage minimum threshold]:threshold' \
     '--test-coverage-include=[include files from coverage report that match this glob pattern]:pattern' \
+    '--test-coverage-include-all[include source files that were never loaded in the coverage report]' \
     '--test-coverage-lines=[the line coverage minimum threshold]:threshold' \
     '--test-force-exit[force test runner to exit upon completion]' \
     '--test-global-setup=[specify the path to the global setup file]:file:_files' \
