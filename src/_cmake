@@ -173,6 +173,61 @@ _cmake_json_field() {
 }
 
 # ----------------------
+# _cmake_json_preset_block
+#
+# Slice out one preset object (by its "name") from a presets-array section
+# (the text following the "buildPresets"/"configurePresets" key). Returns the
+# object's text from its "name" entry up to the start of the next preset's
+# "name" entry.
+# ----------------------
+(( $+functions[_cmake_json_preset_block] )) ||
+_cmake_json_preset_block() {
+  local section="$1" name="$2"
+  local after="${section#*\"name\"[[:space:]]#:[[:space:]]#\"$name\"}"
+  [[ $after == "$section" ]] && return 1
+  print -r -- "${after%%\"name\"[[:space:]]#:*}"
+}
+
+# ----------------------
+# _cmake_json_inherited_field
+#
+# Look up $field on preset $name inside array-section $section, following
+# "inherits" (a string or an array of strings) when the preset itself
+# doesn't set the field, depth-first with first-match-wins -- matching
+# CMake's own resolution order. $4 is an internal "seen names" guard
+# against cyclic (invalid) inherits.
+# ----------------------
+(( $+functions[_cmake_json_inherited_field] )) ||
+_cmake_json_inherited_field() {
+  local section="$1" name="$2" field="$3" seen="$4"
+  [[ " $seen " == *" $name "* ]] && return 1
+
+  local block
+  block=$(_cmake_json_preset_block "$section" "$name") || return 1
+
+  local value
+  value=$(_cmake_json_field "$block" "$field")
+  if [[ -n $value ]]; then
+    print -r -- "$value"
+    return 0
+  fi
+
+  local parent
+  if [[ $block =~ '"inherits"[[:space:]]*:[[:space:]]*\[([^]]*)\]' ]]; then
+    for parent in ${(s:,:)match[1]}; do
+      parent=${parent//[\"[:space:]]/}
+      [[ -z $parent ]] && continue
+      value=$(_cmake_json_inherited_field "$section" "$parent" "$field" "$seen $name") && \
+        { print -r -- "$value"; return 0 }
+    done
+  elif [[ $block =~ '"inherits"[[:space:]]*:[[:space:]]*"([^"]*)"' ]]; then
+    _cmake_json_inherited_field "$section" "$match[1]" "$field" "$seen $name"
+    return
+  fi
+  return 1
+}
+
+# ----------------------
 # _cmake_json_preset_dir
 #
 # build-preset name -> binaryDir
@@ -180,12 +235,9 @@ _cmake_json_field() {
 #   $2 = build preset name
 #
 # Steps:
-#   a) Slice out the build preset object (from its "name" entry up to the next "name" entry)
-#      and read its "configurePreset".
-#   b) Slice out that configure preset object the same way and read its "binaryDir".
-#   c) Expand the ${sourceDir} macro and strip a trailing slash.
-# Inheritance ("inherits") is not resolved; the caller's glob fallback covers
-# those uncommon setups.
+#   a) Find the build preset's "configurePreset" (following "inherits" if needed).
+#   b) Find that configure preset's "binaryDir" (following "inherits" if needed).
+#   c) Expand the ${sourceDir}/${presetName} macros and strip a trailing slash.
 # ----------------------
 (( $+functions[_cmake_json_preset_dir] )) ||
 _cmake_json_preset_dir() {
@@ -193,29 +245,23 @@ _cmake_json_preset_dir() {
   setopt extendedglob
   local json="$1" name="$2"
 
-  # --- a) locate the build preset object, read its configurePreset ---
-  # Everything from `"name": "<name>"` onward:
-  local after="${json#*\"name\"[[:space:]]#:[[:space:]]#\"$name\"}"
-  [[ $after == "$json" ]] && return    # name not found
-  # Trim at the start of the *next* preset object's name field, so we only
-  # look inside this preset.
-  local block="${after%%\"name\"[[:space:]]#:*}"
+  # Restrict the "name" search to the right array so a configurePreset and
+  # a buildPreset sharing the same name (a common CMakePresets pattern)
+  # don't get confused for one another.
+  local build_section="${json#*\"buildPresets\"}"
+  local configure_section="${json#*\"configurePresets\"}"
 
   local configPreset
-  configPreset=$(_cmake_json_field "$block" configurePreset)
+  configPreset=$(_cmake_json_inherited_field "$build_section" "$name" configurePreset)
   [[ -z $configPreset ]] && return
 
-  # --- b) locate that configure preset object, read its binaryDir ---
-  after="${json#*\"name\"[[:space:]]#:[[:space:]]#\"$configPreset\"}"
-  [[ $after == "$json" ]] && return
-  block="${after%%\"name\"[[:space:]]#:*}"
-
   local bd
-  bd=$(_cmake_json_field "$block" binaryDir)
+  bd=$(_cmake_json_inherited_field "$configure_section" "$configPreset" binaryDir)
   [[ -z $bd ]] && return
 
   # --- c) expand macros ---
   bd="${bd//\$\{sourceDir\}/$PWD}"
+  bd="${bd//\$\{presetName\}/$configPreset}"
   bd="${bd%/}"
   print -r -- "$bd"
 }
@@ -276,6 +322,9 @@ _cmake_preset_build_dir() {
 _cmake_presets() {
   local invoke=(${(Q)words})
   invoke[$CURRENT]=()
+  # drop a dangling --preset/--preset=... so it doesn't swallow --list-presets as its value
+  invoke=(${invoke:#--preset})
+  invoke=(${invoke:#--preset=*})
   # TODO: remove all arguments -* except -S
 
   local list_presets=(${(f)"$(${invoke} --list-presets 2>/dev/null |
@@ -288,16 +337,35 @@ _cmake_presets() {
 # --------------
 # _cmake_targets
 # --------------
+typeset -gA _cmake_targets_cache
 (( $+functions[_cmake_targets] )) ||
 _cmake_targets() {
   local dir="$1"
   local -a targets=()
+  local file mtime key
+
   if [[ -f "${dir}/Makefile" && $+commands[make] ]]; then
-    # `make help` doesn't work for Makefiles in general, but for CMake generated Makefiles it does.
-    targets=(${(f)"$(make -f $dir/Makefile help 2>/dev/null | awk '/^\.\.\./ { print $2 }')"})
+    file="${dir}/Makefile"
   elif [[ -f "${dir}/build.ninja" && $+commands[ninja] ]]; then
-    # `ninja help` doesn't seem to be the list of targets we're interested in
-    targets=(${(f)"$(ninja -C $dir -t targets all 2>/dev/null | awk -F: '{print $1}' )"})
+    file="${dir}/build.ninja"
+  fi
+
+  if [[ -n $file ]]; then
+    zmodload -F zsh/stat b:zstat 2>/dev/null
+    mtime=$(zstat +mtime "$file" 2>/dev/null)
+    key="${file:A}:${mtime}"
+    if (( $+_cmake_targets_cache[$key] )); then
+      targets=(${(f)_cmake_targets_cache[$key]})
+    else
+      if [[ $file == */Makefile ]]; then
+        # `make help` doesn't work for Makefiles in general, but for CMake generated Makefiles it does.
+        targets=(${(f)"$(make -f $file help 2>/dev/null | awk '/^\.\.\./ { print $2 }')"})
+      else
+        # `ninja help` doesn't seem to be the list of targets we're interested in
+        targets=(${(f)"$(ninja -C $dir -t targets all 2>/dev/null | awk -F: '{print $1}' )"})
+      fi
+      _cmake_targets_cache[$key]="${(F)targets}"
+    fi
   fi
 
   _describe 'build targets' targets
@@ -322,12 +390,7 @@ _cmake_on_build() {
     '--preset[Specify a build preset]:preset:_cmake_build_presets'
     '--list-presets[List available build presets]'
   )
-  local -a undescribed_build_extras
-  local i=1
-  for be in $build_extras ; do
-    undescribed_build_extras[$i]=$(echo $be | sed "s/\[.*//")
-    (( i++ ))
-  done
+  local -a undescribed_build_extras=(${build_extras%%\[*})
 
   local in_build=false
   local dash_dash_position=-1
@@ -346,7 +409,9 @@ _cmake_on_build() {
   local out_of_build=false
   for ((i = (($CURRENT - 1)); i > (($build_at + 1)); i--)); do
     # don't check the word after --build (should be a directory)
-    if [[ ${undescribed_build_extras[(r)$words[$i]]} == $words[$i] ]]; then
+    # strip a possible "=value" suffix so --target=foo matches like --target
+    local _wi=${words[$i]%%=*}
+    if [[ ${undescribed_build_extras[(r)$_wi]} == $_wi ]]; then
       continue
     fi
 
@@ -369,20 +434,36 @@ _cmake_on_build() {
       "$cmake_build_options[@]" \
       - build_cmds \
       "$cmake_suggest_build[@]" && return 0
+  elif [[ "$difference" -eq 1 && $words[$CURRENT] == --preset=* ]] ; then
+    # --build --preset=<TAB> as the very first arg (joined form)
+    compset -P '*='
+    _cmake_build_presets && return 0
+  elif [[ "$difference" -eq 1 && $words[$CURRENT] == --target=* ]] ; then
+    # --build --target=<TAB> as the very first arg (joined form, implicit '.' dir)
+    compset -P '*='
+    _cmake_targets "." && return 0
   elif [[ "$difference" -eq 1 ]] ; then
     # completing first arg after --build: dir, --preset, or --list-presets
     _alternative \
       ':current directory:(.)' \
       'directory::_directories' \
       'preset-flags:flag:((--preset\:"Specify a build preset" --list-presets\:"List available build presets"))' && return 0
-  elif [[ $words[(($CURRENT - 1))] == --preset ]] ; then
-    # after --build --preset, complete build presets
+  elif [[ $words[(($CURRENT - 1))] == --preset || $words[$CURRENT] == --preset=* ]] ; then
+    # after --build --preset or --build --preset=, complete build presets
+    compset -P '*='
     _cmake_build_presets && return 0
-  elif [[ $words[(($CURRENT - 1))] == --target ]] ; then
-    # after --build <dir|--preset name> --target, suggest targets
+  elif [[ $words[(($CURRENT - 1))] == --target || $words[$CURRENT] == --target=* ]] ; then
+    # after --build <dir|--preset name> --target(=), suggest targets
+    compset -P '*='
     local _tgt_first=$words[(($build_at + 1))]
-    if [[ $_tgt_first == --preset ]]; then
-      local _tgt_dir=$(_cmake_preset_build_dir "$words[(($build_at + 2))]")
+    local _preset_name=
+    if [[ $_tgt_first == --preset=* ]]; then
+      _preset_name=${_tgt_first#--preset=}
+    elif [[ $_tgt_first == --preset ]]; then
+      _preset_name=$words[(($build_at + 2))]
+    fi
+    if [[ -n $_preset_name ]]; then
+      local _tgt_dir=$(_cmake_preset_build_dir "$_preset_name")
       [[ -n "$_tgt_dir" ]] && _cmake_targets "$_tgt_dir"
     elif [[ $_tgt_first != --* ]]; then
       _cmake_targets "$_tgt_first"
@@ -412,12 +493,7 @@ _cmake_on_install() {
     '--strip[Strip before installing.]'
   )
 
-  local -a undescribed_build_extras
-  local i=1
-  for be in $build_extras ; do
-    undescribed_build_extras[$i]=$(echo $be | sed "s/\[.*//")
-    (( i++ ))
-  done
+  local -a undescribed_build_extras=(${build_extras%%\[*})
 
   local in_build=false
   local dash_dash_position=-1
@@ -435,7 +511,9 @@ _cmake_on_install() {
   local out_of_build=false
   for ((i = (($CURRENT - 1)); i > (($build_at + 1)); i--)); do
     # don't check the word after --install (should be a directory)
-    if [[ ${undescribed_build_extras[(r)$words[$i]]} == $words[$i] ]] ; then continue ; fi
+    # strip a possible "=value" suffix so --prefix=foo matches like --prefix
+    local _wi=${words[$i]%%=*}
+    if [[ ${undescribed_build_extras[(r)$_wi]} == $_wi ]] ; then continue ; fi
     if [[ $words[(($i - 1))] == --prefix ]]; then continue ; fi
     if [[ $words[(($i - 1))] == --config ]]; then continue ; fi
     if [[ $words[(($i - 1))] == --component ]]; then continue ; fi
