@@ -1,0 +1,357 @@
+#compdef yt-dlp
+
+# ------------------------------------------------------------------------------
+# Copyright (c) 2026 Github zsh-users - https://github.com/zsh-users
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for yt-dlp (https://github.com/yt-dlp/yt-dlp)
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Mustafa Senoglu (https://github.com/mmustafasenoglu)
+#
+# ------------------------------------------------------------------------------
+
+local -a _yt_dlp_general_options
+local -a _yt_dlp_network_options
+local -a _yt_dlp_geo_options
+local -a _yt_dlp_video_selection_options
+local -a _yt_dlp_download_options
+local -a _yt_dlp_filesystem_options
+local -a _yt_dlp_thumbnail_options
+local -a _yt_dlp_internet_shortcut_options
+local -a _yt_dlp_verbosity_options
+local -a _yt_dlp_workaround_options
+local -a _yt_dlp_format_options
+local -a _yt_dlp_subtitle_options
+local -a _yt_dlp_authentication_options
+local -a _yt_dlp_postprocessor_options
+local -a _yt_dlp_sponsorblock_options
+local -a _yt_dlp_extractor_options
+
+_yt_dlp_general_options=(
+  '(- *)'{-h,--help}'[show help message and exit]'
+  '(- *)--version[print program version and exit]'
+  '(-U --update)'{-U,--update}'[check if updates are available]'
+  '--no-update[do not check for updates (default)]'
+  '--update-to[upgrade/downgrade to a specific version]:channel:->update_channel'
+  '(-i --ignore-errors)'{-i,--ignore-errors}'[ignore download and postprocessing errors]'
+  '--no-abort-on-error[continue with next video on download errors]'
+  '--abort-on-error[abort downloading of further videos if an error occurs]'
+  '--list-extractors[list all supported extractors and exit]'
+  '--extractor-descriptions[output descriptions of all supported extractors]'
+  '--use-extractors[extractor names to use separated by commas]:names'
+  '--default-search[use this prefix for unqualified URLs]:prefix'
+  '--ignore-config[do not load any more configuration files]'
+  '--no-config-locations[do not load any custom configuration files (default)]'
+  '--config-locations[location of the main configuration file]:path:_files'
+  '--plugin-dirs[path to an additional directory to search for plugins]:dir:_directories'
+  '--no-plugin-dirs[clear plugin directories to search]'
+  '--js-runtimes[additional JavaScript runtime to enable]:runtime'
+  '--no-js-runtimes[disable all JavaScript runtimes except explicitly enabled ones]'
+  '--legacy-options[do not use those in options anymore]'
+)
+
+_yt_dlp_network_options=(
+  '--proxy[use the specified HTTP/HTTPS/SOCKS proxy]:url'
+  '--socket-timeout[timeout in seconds]:seconds'
+  '--source-address[client-side IP address to bind to]:address'
+  '--impersonate[impersonate a browser]:target'
+  '--impersonate-targets[list available clients to impersonate]'
+  '(-4 --force-ipv4)'{-4,--force-ipv4}'[make all connections via IPv4]'
+  '(-6 --force-ipv6)'{-6,--force-ipv6}'[make all connections via IPv6]'
+  '--enable-file-urls[enable file:// URLs (disabled by default for security)]'
+)
+
+_yt_dlp_geo_options=(
+  '--geo-verification-proxy[use this proxy to verify the IP address for geo-restricted sites]:url'
+  '--xff[how to fake X-Forwarded-For HTTP header]:value:(default never)'
+)
+
+_yt_dlp_video_selection_options=(
+  '(-I --playlist-items)'{-I,--playlist-items}'[comma-separated playlist_index of the items to download]:items'
+  '--min-filesize[abort download if filesize is smaller than size]:size'
+  '--max-filesize[abort download if filesize is larger than size]:size'
+  '--date[download only videos uploaded on this date]:date'
+  '--datebefore[download only videos uploaded on or before this date]:date'
+  '--dateafter[download only videos uploaded on or after this date]:date'
+  '--match-filters[generic video filter]:filter'
+  '--no-match-filters[do not use any --match-filters (default)]'
+  '--break-match-filters[same as --match-filters but stops download when rejected]:filter'
+  '--no-break-match-filters[do not use any --break-match-filters (default)]'
+  '--no-playlist[download only the video if the URL refers to a video and a playlist]'
+  '--yes-playlist[download the playlist if the URL refers to a video and a playlist]'
+  '--age-limit[download only videos suitable for the given age]:years'
+  '--download-archive[download only videos not listed in the archive file]:file:_files'
+  '--no-download-archive[do not use archive file (default)]'
+  '--max-downloads[abort after downloading NUMBER files]:number'
+  '--break-on-existing[stop download when encountering a file that is in the archive]'
+  '--no-break-on-existing[do not stop download when encountering a file in the archive (default)]'
+  '--break-per-input[alters --max-downloads etc. to reset per input URL]'
+  '--no-break-per-input[--break-on-existing etc. terminates the entire download queue (default)]'
+  '--skip-playlist-after-errors[number of allowed failures until rest of the playlist is skipped]:n'
+)
+
+_yt_dlp_download_options=(
+  '(-N --concurrent-fragments)'{-N,--concurrent-fragments}'[number of fragments of a dash/hlsnative video to download concurrently]:n'
+  '(-r --limit-rate)'{-r,--limit-rate}'[maximum download rate in bytes per second]:rate'
+  '--throttled-rate[minimum download rate below which throttling is assumed]:rate'
+  '(-R --retries)'{-R,--retries}'[number of retries (default is 10) or "infinite"]:retries'
+  '--file-access-retries[number of times to retry on file access error]:retries'
+  '--fragment-retries[number of retries for a fragment]:retries'
+  '--retry-sleep[time to sleep between retries in seconds]:expr'
+  '--skip-unavailable-fragments[skip unavailable fragments (default)]'
+  '--abort-on-unavailable-fragments[abort download if a fragment is unavailable]'
+  '--keep-fragments[keep downloaded fragments on disk after downloading]'
+  '--no-keep-fragments[delete downloaded fragments after downloading (default)]'
+  '--buffer-size[size of download buffer]:size'
+  '--resize-buffer[buffer size is automatically resized (default)]'
+  '--no-resize-buffer[do not automatically adjust the buffer size]'
+  '--http-chunk-size[size of a chunk for chunk-based HTTP downloading]:size'
+  '--playlist-random[download playlist videos in random order]'
+  '--lazy-playlist[process entries in the playlist as they are received]'
+  '--no-lazy-playlist[process videos in the playlist only after entire playlist is parsed (default)]'
+  '--hls-use-mpegts[use the mpegts container for HLS videos (default for live streams)]'
+  '--no-hls-use-mpegts[do not use the mpegts container for HLS videos (default for non-live)]'
+  '--download-sections[download only chapters that match the regular expression]:regex'
+  '--downloader[name or path of the external downloader to use]:name:->downloader_choice'
+  '--downloader-args[give these arguments to the external downloader]:args'
+)
+
+_yt_dlp_filesystem_options=(
+  '(-a --batch-file)'{-a,--batch-file}'[file containing URLs to download]:file:_files'
+  '--no-batch-file[do not read URLs from batch file (default)]'
+  '(-P --paths)'{-P,--paths}'[the paths where the files should be downloaded]:path:_directories'
+  '(-o --output)'{-o,--output}'[output filename template]:template'
+  '--output-na-placeholder[placeholder for unavailable fields in --output]:text'
+  '--restrict-filenames[restrict filenames to only ASCII characters]'
+  '--no-restrict-filenames[allow Unicode characters and spaces in filenames (default)]'
+  '--windows-filenames[force filenames to be Windows-compatible]'
+  '--no-windows-filenames[sanitize filenames only minimally (default)]'
+  '--trim-filenames[limit the filename length to the specified number of characters]:length'
+  '(-w --no-overwrites)'{-w,--no-overwrites}'[do not overwrite any files]'
+  '--force-overwrites[overwrite all video and metadata files]'
+  '--no-force-overwrites[do not overwrite the video but overwrite related files (default)]'
+  '(-c --continue)'{-c,--continue}'[resume partially downloaded files/fragments (default)]'
+  '--no-continue[do not resume partially downloaded fragments]'
+  '--part[use .part files instead of writing directly into output file (default)]'
+  '--no-part[do not use .part files]'
+  '--mtime[use the Last-modified header to set the file modification time]'
+  '--no-mtime[do not use the Last-modified header to set the file modification time (default)]'
+  '--write-description[write video description to a .description file]'
+  '--no-write-description[do not write video description (default)]'
+  '--write-info-json[write video metadata to a .info.json file]'
+  '--no-write-info-json[do not write video metadata (default)]'
+  '--write-playlist-metafiles[write playlist metadata in addition to video metadata (default)]'
+  '--no-write-playlist-metafiles[do not write playlist metadata]'
+  '--clean-info-json[remove some internal metadata from the infojson (default)]'
+  '--no-clean-info-json[write all fields to the infojson]'
+  '--write-comments[retrieve video comments to be placed in the infojson]'
+  '--no-write-comments[do not retrieve video comments (default)]'
+  '--load-info-json[JSON file containing the video information]:file:_files'
+  '--cookies[Netscape formatted file to read cookies from]:file:_files'
+  '--no-cookies[do not read/dump cookies from/to file (default)]'
+  '--cookies-from-browser[the name of the browser to load cookies from]:browser:->browser_choice'
+  '--no-cookies-from-browser[do not load cookies from browser (default)]'
+  '--cache-dir[location to store downloaded information permanently]:dir:_directories'
+  '--no-cache-dir[disable filesystem caching]'
+  '--rm-cache-dir[delete all filesystem cache files]'
+)
+
+_yt_dlp_thumbnail_options=(
+  '--write-thumbnail[write thumbnail image to disk]'
+  '--no-write-thumbnail[do not write thumbnail image to disk (default)]'
+  '--write-all-thumbnails[write all thumbnail image formats to disk]'
+  '--list-thumbnails[list available thumbnails of each video]'
+)
+
+_yt_dlp_internet_shortcut_options=(
+  '--write-link[write an internet shortcut file]'
+  '--write-url-link[write a .url Windows internet shortcut]'
+  '--write-webloc-link[write a .webloc macOS internet shortcut]'
+  '--write-desktop-link[write a .desktop Linux internet shortcut]'
+)
+
+_yt_dlp_verbosity_options=(
+  '(-q --quiet)'{-q,--quiet}'[activate quiet mode]'
+  '--no-quiet[deactivate quiet mode (default)]'
+  '--no-warnings[ignore warnings]'
+  '(-s --simulate)'{-s,--simulate}'[do not download the video and do not write anything to disk]'
+  '--no-simulate[download the video even if printing/listing options are used]'
+  '--ignore-no-formats-error[ignore "No video formats" error (experimental)]'
+  '--no-ignore-no-formats-error[throw error when no downloadable video formats are found (default)]'
+  '--skip-download[do not download the video but write all related files]'
+  '(-O --print)'{-O,--print}'[field name or output template to print to screen]:template'
+  '--print-to-file[append given template to the file]:template file:_files'
+  '(-j --dump-json)'{-j,--dump-json}'[quiet, but print JSON information for each video]'
+  '(-J --dump-single-json)'{-J,--dump-single-json}'[quiet, but print JSON information for each URL or infojson passed]'
+  '--force-write-archive[force download archive entries to be written]'
+  '--newline[output progress bar as new lines]'
+  '--no-progress[do not print progress bar]'
+  '--progress[show progress bar, even if in quiet mode]'
+  '--console-title[display progress in console titlebar]'
+  '--progress-template[template for progress outputs]:template'
+  '--progress-delta[time between progress output (default: 0)]:seconds'
+  '(-v --verbose)'{-v,--verbose}'[print various debugging information]'
+  '--dump-pages[print downloaded pages encoded using base64]'
+  '--write-pages[write downloaded intermediary pages to files]'
+  '--print-traffic[display sent and read HTTP traffic]'
+)
+
+_yt_dlp_workaround_options=(
+  '--encoding[force the specified encoding (experimental)]:encoding'
+  '--legacy-server-connect[explicitly allow HTTPS connection to servers without RFC 5746]'
+  '--no-check-certificates[suppress HTTPS certificate validation]'
+  '--prefer-insecure[use an unencrypted connection to retrieve information about the video]'
+  '--add-headers[specify a custom HTTP header and its value]:field:value'
+  '--bidi-workaround[work around terminals that lack bidirectional text support]'
+  '--sleep-requests[number of seconds to sleep between requests]:seconds'
+  '--sleep-interval[number of seconds to sleep before each download]:seconds'
+  '--max-sleep-interval[maximum number of seconds to sleep]:seconds'
+  '--sleep-subtitles[number of seconds to sleep before each subtitle download]:seconds'
+)
+
+_yt_dlp_format_options=(
+  '(-f --format)'{-f,--format}'[video format code]:format'
+  '(-S --format-sort)'{-S,--format-sort}'[sort the formats by the fields given]:sortorder'
+  '--format-sort-reset[disregard previous user specified sort order]'
+  '--format-sort-force[force user specified sort order to have precedence over all fields]'
+  '--no-format-sort-force[some fields have precedence over user specified sort order (default)]'
+  '--video-multistreams[allow multiple video streams to be merged into a single file]'
+  '--no-video-multistreams[only one video stream is downloaded for each output file (default)]'
+  '--audio-multistreams[allow multiple audio streams to be merged into a single file]'
+  '--no-audio-multistreams[only one audio stream is downloaded for each output file (default)]'
+  '--prefer-free-formats[prefer video formats with free containers over non-free ones]'
+  '--no-prefer-free-formats[do not give any special preference to free containers (default)]'
+  '--check-formats[make sure formats are selected only from those that are actually downloadable]'
+  '--check-all-formats[check all formats for whether they are actually downloadable]'
+  '--no-check-formats[do not check that the formats are actually downloadable (default)]'
+  '(-F --list-formats)'{-F,--list-formats}'[list available formats of each video]'
+  '--merge-output-format[containers that may be used when merging formats]:format:((avi\:"AVI format") flv\:"FLV format" mkv\:"MKV format" mov\:"MOV format" mp4\:"MP4 format" webm\:"WebM format"))'
+)
+
+_yt_dlp_subtitle_options=(
+  '--write-subs[write subtitle file]'
+  '--no-write-subs[do not write subtitle file (default)]'
+  '--write-auto-subs[write automatically generated subtitle file]'
+  '--no-write-auto-subs[do not write auto-generated subtitles (default)]'
+  '--list-subs[list available subtitles of each video]'
+  '--sub-format[subtitle format]:format'
+  '--sub-langs[languages of the subtitles to download separated by commas]:langs'
+)
+
+_yt_dlp_authentication_options=(
+  '(-u --username)'{-u,--username}'[login with this account ID]:username'
+  '(-p --password)'{-p,--password}'[account password]:password'
+  '(-2 --twofactor)'{-2,--twofactor}'[two-factor authentication code]:code'
+  '(-n --netrc)'{-n,--netrc}'[use .netrc authentication data]'
+  '--netrc-location[location of .netrc authentication data]:path:_files'
+  '--netrc-cmd[command to execute to get the credentials for an extractor]:cmd'
+  '--video-password[video-specific password]:password'
+  '--ap-mso[Adobe Pass multiple-system operator identifier]:mso'
+  '--ap-username[multiple-system operator account login]:username'
+  '--ap-password[multiple-system operator account password]:password'
+  '--ap-list-mso[list all supported multiple-system operators]'
+  '--client-certificate[path to client certificate file in PEM format]:certfile:_files'
+  '--client-certificate-key[path to private key file for client certificate]:keyfile:_files'
+  '--client-certificate-password[password for client certificate private key if encrypted]:password'
+)
+
+_yt_dlp_postprocessor_options=(
+  '(-x --extract-audio)'{-x,--extract-audio}'[convert video files to audio-only files (requires ffmpeg and ffprobe)]'
+  '--audio-format[format to convert the audio to when -x is used]:format:((best\:"best format (default)") aac\:"AAC format" alac\:"ALAC format" flac\:"FLAC format" m4a\:"M4A format" mp3\:"MP3 format" opus\:"Opus format" vorbis\:"Vorbis format" wav\:"WAV format"))'
+  '--audio-quality[specify ffmpeg audio quality when converting with -x]:quality'
+  '--remux-video[remux the video into another container if necessary]:format:((avi\:"AVI format") flv\:"FLV format" gif\:"GIF format" mkv\:"MKV format" mov\:"MOV format" mp4\:"MP4 format" webm\:"WebM format"))'
+  '--recode-video[re-encode the video into another format if necessary]:format:((avi\:"AVI format") flv\:"FLV format" gif\:"GIF format" mkv\:"MKV format" mov\:"MOV format" mp4\:"MP4 format" webm\:"WebM format"))'
+  '--postprocessor-args[give these arguments to the postprocessors]:args'
+  '(-k --keep-video)'{-k,--keep-video}'[keep the intermediate video file on disk after post-processing]'
+  '--no-keep-video[delete the intermediate video file after post-processing (default)]'
+  '--post-overwrites[overwrite post-processed files (default)]'
+  '--no-post-overwrites[do not overwrite post-processed files]'
+  '--embed-subs[embed subtitles in the video (only for mp4, webm and mkv videos)]'
+  '--no-embed-subs[do not embed subtitles (default)]'
+  '--embed-thumbnail[embed thumbnail in the video as cover art]'
+  '--no-embed-thumbnail[do not embed thumbnail (default)]'
+  '--embed-metadata[embed metadata to the video file]'
+  '--no-embed-metadata[do not add metadata to file (default)]'
+  '--embed-chapters[add chapter markers to the video file]'
+  '--no-embed-chapters[do not add chapter markers (default)]'
+  '--embed-info-json[embed the infojson as an attachment to mkv/mka video files]'
+  '--no-embed-info-json[do not embed the infojson as an attachment to the video file]'
+  '--parse-metadata[parse additional metadata like title/artist from other fields]:from:to'
+  '--replace-in-metadata[replace text in a metadata field using the given regex]:fields:regex:replace'
+  '--xattrs[write metadata to the video file xattrs (using Dublin Core and XDG standards)]'
+  '--concat-playlist[concatenate videos in a playlist]:policy:(never always multi_video)'
+  '--fixup[automatically correct known faults of the file]:policy:(never warn detect_or_warn force)'
+  '--ffmpeg-location[location of the ffmpeg binary]:path:_files'
+  '--exec[execute a command after each video download]:cmd'
+  '--no-exec[remove any previously defined --exec]'
+  '--convert-subs[convert the subtitles to another format]:format:((ass\:"ASS format") lrc\:"LRC format" srt\:"SRT format" vtt\:"VTT format"))'
+  '--convert-thumbnails[convert the thumbnails to another format]:format:((jpg\:"JPEG format") png\:"PNG format" webp\:"WebP format"))'
+  '--split-chapters[split video into multiple files based on internal chapters]'
+  '--no-split-chapters[do not split video based on chapters (default)]'
+  '--remove-chapters[remove chapters whose title matches the given regular expression]:regex'
+  '--no-remove-chapters[do not remove any chapters from the file (default)]'
+  '--force-keyframes-at-cuts[force keyframes at cuts when downloading/splitting/removing sections]'
+  '--no-force-keyframes-at-cuts[do not force keyframes around the chapters when cutting/splitting (default)]'
+  '--use-postprocessor[the name of plugin postprocessors to be enabled]:name:args'
+)
+
+_yt_dlp_sponsorblock_options=(
+  '--sponsorblock-mark[SponsorBlock categories to create chapters for separated by commas]:cats'
+  '--sponsorblock-remove[SponsorBlock categories to be removed from the video file]:cats'
+  '--sponsorblock-chapter-title[an output template for the title of the SponsorBlock chapters]:template'
+  '--no-sponsorblock[disable both --sponsorblock-mark and --sponsorblock-remove]'
+  '--sponsorblock-api[SponsorBlock API location (default: https://sponsor.ajay.app)]:url'
+)
+
+_yt_dlp_extractor_options=(
+  '--extractor-retries[number of retries for known extractor errors]:retries'
+  '--allow-dynamic-mpd[process dynamic DASH manifests (default)]'
+  '--ignore-dynamic-mpd[do not process dynamic DASH manifests]'
+  '--hls-split-discontinuity[split HLS playlists to different formats at discontinuities such as ad breaks]'
+  '--no-hls-split-discontinuity[do not split HLS playlists at discontinuities (default)]'
+  '--extractor-args[pass ARGS arguments to the IE_KEY extractor]:key:args'
+)
+
+_arguments -s -S \
+  "${_yt_dlp_general_options[@]}" \
+  "${_yt_dlp_network_options[@]}" \
+  "${_yt_dlp_geo_options[@]}" \
+  "${_yt_dlp_video_selection_options[@]}" \
+  "${_yt_dlp_download_options[@]}" \
+  "${_yt_dlp_filesystem_options[@]}" \
+  "${_yt_dlp_thumbnail_options[@]}" \
+  "${_yt_dlp_internet_shortcut_options[@]}" \
+  "${_yt_dlp_verbosity_options[@]}" \
+  "${_yt_dlp_workaround_options[@]}" \
+  "${_yt_dlp_format_options[@]}" \
+  "${_yt_dlp_subtitle_options[@]}" \
+  "${_yt_dlp_authentication_options[@]}" \
+  "${_yt_dlp_postprocessor_options[@]}" \
+  "${_yt_dlp_sponsorblock_options[@]}" \
+  "${_yt_dlp_extractor_options[@]}" \
+  '*:URL:_urls'
