@@ -24,7 +24,7 @@
 # Description
 # -----------
 #
-#  Completion script for cpm 0.998003 (https://github.com/skaji/cpm)
+#  Completion script for cpm 1.1.5 (https://github.com/skaji/cpm)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -63,6 +63,9 @@ _cpm() {
             '(--pp --pureperl-only)'{--pp,--pureperl-only}'[prefer pureperl only build]' \
             '(--static-install --no-static-install)--static-install[enable the static install]' \
             '(--static-install --no-static-install)--no-static-install[disable the static install]' \
+            '--final-install=[select which dependency-ready distributions are finally installed]:type:(runtime all)' \
+            '(--use-install-command --no-use-install-command)--use-install-command[use make install or ./Build install for final installation]' \
+            '(--use-install-command --no-use-install-command)--no-use-install-command[do not use make install or ./Build install for final installation]' \
             \*{-r,--resolver=}'[specify resolvers]:resolver' \
             '--no-defult-resolvers[Use default resolvers if you specify --resolver option]' \
             '--reinstall[reinstall the distribution even if you already have the latest version installed]' \
@@ -75,9 +78,12 @@ _cpm() {
             '(--retry --no-retry)--retry[retry configure/build/test/install if fails]' \
             '(--retry --no-retry)--no-retry[do not retry]' \
             '--show-build-log-on-failure[show build.log on failure]' \
+            '(--report-perl-version --no-report-perl-version)--report-perl-version[report your local perl version as part of User-Agent]' \
+            '(--report-perl-version --no-report-perl-version)--no-report-perl-version[do not report your local perl version as part of User-Agent]' \
             '--configure-timeout=[specify configure timeout second]:sec' \
             '--build-timeout=[specify build timeout second]:sec' \
             '--test-timeout=[specify test timeout second]:sec' \
+            '--progress=[select the progress mode]:mode:(auto tty plain)' \
             '(--show-progress --no-show-progress)--show-progress[show progress]' \
             '(--show-progress --no-show-progress)--no-show-progress[do not show progress]' \
             '--cpmfile=[specify cpmfile path]: :_files' \
@@ -87,6 +93,9 @@ _cpm() {
             '(- *)'{-V,--version}'[show version]' \
             '(- *)'{-h,--help}'[show help message]' \
             '*--feature=[specify the feature to enable in cpanfile]:feature' \
+            '--top-level-phase=[select pahses from the top-level cpmfile/cpanfile/metafile input]:phase'  \
+            '--top-level-relationship=[select relationships from the top-level cpmfile/cpanfile/metafile input]' \
+            '--experimental-config=[load distribution-specific installation settings from a YAML file]:file:_files' \
             '*:modules' \
             && ret=0
           ;;
