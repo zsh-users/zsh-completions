@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Node.js v26.7.0 (https://nodejs.org)
+#  Completion script for Node.js v26.9.0 (https://nodejs.org)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -140,21 +140,26 @@ _node() {
     '*--env-file-if-exists=[set environment variables from supplied file if exists]:envfile:_files' \
     '(- 1 *)'{-e,--eval}'[evaluate script]:inline JavaScript' \
     '--experimental-addon-modules[enable experimental import support for addons]' \
+    '--experimental-bench[enable experimental node:bench module and benchmark runner]' \
     '--experimental-config-file=[set config file from supplied file]:file:_files' \
     '--experimental-default-config-file[set config file from default config file]' \
     '--experimental-eventsource[enable experimental EventSource API]' \
-    '--experimental-ffi[enable experimental node:ffi module]' \
     '--experimental-import-meta-resolve[experimental ES Module import.meta.resolve() support]' \
     '--experimental-import-text[experimental support for importing source as text with import attributes]' \
     '--experimental-inspector-network-resource[experimental load network resources via the inspector]' \
     '(--loader --experimental-loader)'{--loader,--experimental-loader}'=[Specify the module of a custom ECMAScript Module loader]: :_files' \
     '--experimental-network-inspection[enable experimental network inspection support]' \
+    '--experimental-package-map=[use the specified file for package map resolution]:file:_files' \
     '--experimental-print-required-tla[print pending top-level await]' \
     '--experimental-sea-config=[generate a blob that can be embedded into the single executable application]: :_files' \
-    '--experimental-storage-inspection[experimental storage inspection support]' \
+    '--experimental-storage-inspection[enable experimental storage inspection support]' \
+    '--experimental-stream-iter[enable experimental iterable streams API(node:stream/iter)]' \
     '--experimental-test-coverage[enable code coverage in the test runner]' \
     '--experimental-test-module-mocks[enable module mocking in the test runner]' \
+    '--experimental-test-tag-filter=[run tests matching the given tag filter expression]:tag'\
+    '--experimental-vfs[enable experimental node:vfs module]' \
     '--experimental-vm-modules[experimental ES Module support in vm module]' \
+    '--experimental-web-worker[enable experimental Web Worker API]' \
     '--experimental-worker-inspection[experimental worker inspection support]' \
     '--expose-gc[expose gc extension]' \
     '--force-context-aware[disable loading non-context-aware addons]' \
@@ -187,8 +192,10 @@ _node() {
     '--no-async-context-frame[improve AsyncLocalStorage performance with AsyncContextFrame]' \
     '--no-deprecation[silence deprecation warnings]' \
     '--no-experimental-detect-module[when ambiguous modules fail to evaluate, try again to evaluate them as ES modules]' \
+    '--no-experimental-ffi[disable experimental node:ffi module]' \
     '--no-experimental-global-navigator[expose experimental Navigator API on the global scope]' \
     '--no-experimental-repl-await[disable experimental await keyword support in REPL]' \
+    '--no-experimental-require-module[Legacy alias for --require-module]' \
     '--no-experimental-sqlite[disable experimental node sqlite module]' \
     '--no-experimental-websocket[disable experimental WebSocket API]' \
     '(--webstorage --no-experimental-webstorage)--webstorage[enable experimental Web Storage API]' \
@@ -208,6 +215,8 @@ _node() {
     '--openssl-shared-config[enable OpenSSL shared configuration]' \
     '--permission[enable the permission system]' \
     '--permission-audit[enable audit only for the permission system]' \
+    '--permission-symlinks[preserve symbolic links when resolving]' \
+    '--permission-symlinks-main[preserve symbolic links when resolving the main module]' \
     '--pending-deprecation[emit pending deprecation warnings]' \
     '--preserve-symlinks[preserve symbolic links when resolving]' \
     '--preserve-symlinks-main[preserve symbolic links when resolving the main module]' \
@@ -216,8 +225,8 @@ _node() {
     '--prof-process[process V8 profiler output generated using --prof]' \
     '--redirect-warnings=[write warnings to file instead of stderr]: :_files' \
     '--report-compact[output compact single-line JSON]' \
-    '--report-exclude-env[exclude environment variables when generating report]' \
     '--report-directory=[custom report path]: :_files -/' \
+    '--report-exclude-env[exclude environment variables when generating report]' \
     '--report-exclude-network[exclude network interface diagnostics(default: false)]' \
     '--report-filename=[custom report file name]: :_files' \
     '--report-on-fatalerror[generate diagnostic report on fatal (internal) errors]' \
