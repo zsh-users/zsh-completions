@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Node.js v26.9.0 (https://nodejs.org)
+#  Completion script for Node.js v26.11.0 (https://nodejs.org)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -221,6 +221,7 @@ _node() {
     '--preserve-symlinks[preserve symbolic links when resolving]' \
     '--preserve-symlinks-main[preserve symbolic links when resolving the main module]' \
     '(- 1 *)'{-p,--print}'[evaluate script and print result]:inline JavaScript' \
+    '--process-timeout=[print why the process is still running and exit 124 if it has not exit after given duration]:duration' \
     '--prof[generate V8 profiler output]' \
     '--prof-process[process V8 profiler output generated using --prof]' \
     '--redirect-warnings=[write warnings to file instead of stderr]: :_files' \
