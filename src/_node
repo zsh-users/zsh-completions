@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for Node.js v26.11.0 (https://nodejs.org)
+#  Completion script for Node.js v26.12.0 (https://nodejs.org)
 #
 # ------------------------------------------------------------------------------
 # Authors
@@ -111,6 +111,7 @@ _node() {
     '--allow-ffi[allow use of FFI when any permissions are set]' \
     '--allow-fs-read=[allow permissions to read the filesystem]: :_files' \
     '--allow-fs-write=[allow permissions to write in the filesystem]: :_files' \
+    '--allow-fs-vfs[allow mounting a virtual file system]' \
     '--allow-inspector[allow use of inspector when any permissions are set]' \
     '--allow-net[allow use of network when any permissions are set]' \
     '--allow-wasi[allow wasi when any permissions are set]' \
@@ -293,6 +294,7 @@ _node() {
     "--use-system-ca[Use system's CA store]" \
     '(- 1 *)--v8-options[print v8 command line options]' \
     "--v8-pool-size=[set v8's thread pool size]:number" \
+    '--vfs-load=[mount a directory or archive as a virtual file system]:path:_files' \
     "--watch[run in watch mode]" \
     '--watch-kill-signal=[kill signal to send to the process on watch mode restarts]:signal:_signals -s' \
     "--watch-path=[path to watch]: :_node_files" \
