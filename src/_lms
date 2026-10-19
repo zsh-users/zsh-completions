@@ -1,0 +1,412 @@
+#compdef lms
+
+# ZSH completion for LM Studio's `lms` CLI.
+#
+# Based on obeone's original script:
+#   https://gist.github.com/obeone/e090762d683f1e666caf12902aa74c75
+# Extended to cover the current (2026) command surface per
+# https://lmstudio.ai/docs/cli, including: chat, get, import, runtime,
+# daemon, link, clone, dev, login, push.
+#
+# Two-level command groups (server, log, daemon, link, runtime) use a
+# nested `_arguments -C` dispatch so completion correctly advances past
+# the group name to the actual subcommand's flags, instead of re-offering
+# the subcommand list forever (e.g. `lms log stream <tab>` repeating
+# `stream` instead of completing --source/--filter/etc).
+#
+# Installation:
+#   Place this file (named exactly `_lms`) in a directory on your $fpath,
+#   e.g. /opt/homebrew/share/zsh/site-functions, then run:
+#     rm -f ~/.zcompdump && compinit
+
+# Fetch downloaded model paths from `lms ls --json`
+function _fetch_models_from_lms_ls {
+  local -a model_paths
+  model_paths=("${(@f)$(lms ls --json 2>/dev/null | jq -r '.[].path' 2>/dev/null)}")
+  _describe -t models 'available models' model_paths
+}
+
+# Fetch identifiers of models currently loaded, from `lms ps --json`
+function _fetch_loaded_models_from_lms_ps {
+  local -a model_identifiers
+  model_identifiers=("${(@f)$(lms ps --json 2>/dev/null | jq -r '.[].identifier' 2>/dev/null)}")
+  _describe -t models 'loaded models' model_identifiers
+}
+
+function _lms {
+  local -a commands
+  local -a options
+
+  _arguments -C \
+    '1: :->command' \
+    '*:: :->option'
+
+  case $state in
+    command)
+      commands=(
+        'chat:Start an interactive chat with a model'
+        'get:Search and download models'
+        'import:Import a model file into LM Studio'
+        'load:Load a model'
+        'unload:Unload a model'
+        'ls:List the models available on disk'
+        'ps:List the models currently loaded in memory'
+        'server:Commands for managing the local server'
+        'log:Log incoming and outgoing messages'
+        'runtime:Manage and update the inference runtime'
+        'daemon:Manage the headless llmster daemon'
+        'link:Manage LM Link'
+        'clone:Clone an artifact from LM Studio Hub to a local folder'
+        'push:Uploads the artifact in the current folder to LM Studio Hub'
+        'dev:Starts a plugin dev server in the current folder'
+        'login:Authenticate with LM Studio Hub'
+      )
+      _describe -t commands 'lms subcommands' commands
+      ;;
+    option)
+      case $words[1] in
+        chat)
+          options=(
+            '-p[Send a one-off prompt and print the response to stdout]:prompt:'
+            '--prompt[Send a one-off prompt and print the response to stdout]:prompt:'
+            '-s[Custom system prompt for the chat]:system prompt:'
+            '--system-prompt[Custom system prompt for the chat]:system prompt:'
+            '--stats[Show detailed prediction statistics after each response]'
+            '--ttl[Seconds to keep the model loaded after the chat ends]:seconds:'
+            '--help[Show help]'
+            '*:model:_fetch_models_from_lms_ls'
+          )
+          _arguments $options
+          ;;
+        get)
+          options=(
+            '--mlx[Include only MLX models in search results]'
+            '--gguf[Include only GGUF models in search results]'
+            '-n[Limit the number of model options shown]:limit:'
+            '--limit[Limit the number of model options shown]:limit:'
+            '--always-show-all-results[Always prompt to choose from search results]'
+            '-a[Always prompt to choose a quantization]'
+            '--always-show-download-options[Always prompt to choose a quantization]'
+            '--help[Show help]'
+            '*:model name:'
+          )
+          _arguments $options
+          ;;
+        import)
+          options=(
+            '--user-repo[Set the target folder as <user>/<repo>]:user/repo:'
+            '-y[Skip confirmations and infer model location from file name]'
+            '--yes[Skip confirmations and infer model location from file name]'
+            '-c[Copy the file instead of moving it]'
+            '--copy[Copy the file instead of moving it]'
+            '-L[Create a hard link instead of moving or copying]'
+            '--hard-link[Create a hard link instead of moving or copying]'
+            '-l[Create a symbolic link instead of moving or copying]'
+            '--symbolic-link[Create a symbolic link instead of moving or copying]'
+            '--dry-run[Do not perform the import, just show what would be done]'
+            '--help[Show help]'
+            '*:model file:_files'
+          )
+          _arguments $options
+          ;;
+        load)
+          options=(
+            '--ttl[Unload after this many seconds of inactivity]:seconds:'
+            '--gpu[GPU offload level]:GPU level:(off auto max)'
+            '--context-length[Number of tokens to consider as context]:context length:'
+            '--identifier[Identifier to assign to the loaded model]:identifier:'
+            '--estimate-only[Print a memory estimate and exit without loading]'
+            '--host[Host address of a remote LM Studio instance]:host:'
+            '--help[Show help]'
+            '*:model path:_fetch_models_from_lms_ls'
+          )
+          _arguments $options
+          ;;
+        unload)
+          options=(
+            '--all[Unload all currently loaded models]'
+            '--host[Host address of a remote LM Studio instance]:host:'
+            '--help[Show help]'
+            '*:model identifier:_fetch_loaded_models_from_lms_ps'
+          )
+          _arguments $options
+          ;;
+        ls)
+          options=(
+            '--llm[Show only LLM models]'
+            '--embedding[Show only embedding models]'
+            '--json[Output in JSON format]'
+            '--detailed[Show detailed information]'
+            '--host[Host address of a remote LM Studio instance]:host:'
+            '--help[Show help]'
+          )
+          _arguments $options
+          ;;
+        ps)
+          options=(
+            '--json[Output in JSON format]'
+            '--host[Host address of a remote LM Studio instance]:host:'
+            '--help[Show help]'
+          )
+          _arguments $options
+          ;;
+        clone)
+          options=(
+            '--help[Show help]'
+            ':artifact (owner/name):'
+            ':destination path:_files -/'
+          )
+          _arguments $options
+          ;;
+        push)
+          options=(
+            '--description[Override the artifact description for this push]:description:'
+            '--overrides[JSON string to override manifest fields]:json:'
+            '-y[Suppress confirmations and warnings]'
+            '--yes[Suppress confirmations and warnings]'
+            '--private[Mark the artifact as private when first published]'
+            '--write-revision[Write the returned revision number to manifest.json]'
+            '--help[Show help]'
+          )
+          _arguments $options
+          ;;
+        dev)
+          options=(
+            '-i[Install the plugin into LM Studio instead of running the dev server]'
+            '--install[Install the plugin into LM Studio instead of running the dev server]'
+            '--no-notify[Do not show the "Plugin started" notification]'
+            '--help[Show help]'
+          )
+          _arguments $options
+          ;;
+        login)
+          options=(
+            '--with-pre-authenticated-keys[Authenticate using pre-generated keys (CI/CD)]'
+            '--key-id[Key ID to use with --with-pre-authenticated-keys]:key id:'
+            '--public-key[Public key to use with --with-pre-authenticated-keys]:public key:'
+            '--private-key[Private key to use with --with-pre-authenticated-keys]:private key:'
+            '--help[Show help]'
+          )
+          _arguments $options
+          ;;
+
+        # --- Two-level command groups: nested dispatch ---
+        # Each group re-invokes `_arguments -C` so $words[1] inside the
+        # nested case correctly refers to the *subcommand* (e.g. "start",
+        # "stream"), not the group name. Without this, completion never
+        # advances past the group and just repeats the subcommand list.
+
+        server)
+          local -a subcommands
+          local -a sub_options
+
+          _arguments -C \
+            '1: :->subcommand' \
+            '*:: :->subcommand_option'
+
+          case $state in
+            subcommand)
+              subcommands=(
+                'start:Starts the local server'
+                'status:Displays the status of the local server'
+                'stop:Stops the local server'
+              )
+              _describe -t commands 'lms server subcommands' subcommands
+              ;;
+            subcommand_option)
+              case $words[1] in
+                start)
+                  sub_options=(
+                    '--port[Port to run the server on]:port:'
+                    '--cors[Enable CORS support]'
+                    '--bind[Network address to bind the server to]:bind address:(127.0.0.1 0.0.0.0)'
+                    '--help[Show help]'
+                  )
+                  _arguments $sub_options
+                  ;;
+                status)
+                  sub_options=(
+                    '--json[Output the status in JSON format]'
+                    '--verbose[Enable verbose logging]'
+                    '--quiet[Suppress all logging]'
+                    '--log-level[Specify log level]:log level:(debug info warning error)'
+                    '--help[Show help]'
+                  )
+                  _arguments $sub_options
+                  ;;
+                stop)
+                  sub_options=('--help[Show help]')
+                  _arguments $sub_options
+                  ;;
+              esac
+              ;;
+          esac
+          ;;
+
+        log)
+          local -a subcommands
+          local -a sub_options
+
+          _arguments -C \
+            '1: :->subcommand' \
+            '*:: :->subcommand_option'
+
+          case $state in
+            subcommand)
+              subcommands=('stream:Stream logs from LM Studio')
+              _describe -t commands 'lms log subcommands' subcommands
+              ;;
+            subcommand_option)
+              case $words[1] in
+                stream)
+                  sub_options=(
+                    '-s[Source of logs]:source:(model server)'
+                    '--source[Source of logs]:source:(model server)'
+                    '--stats[Print prediction stats when available]'
+                    '--filter[Filter for model source]:filter:(input output)'
+                    '--json[Output logs as JSON]'
+                    '--help[Show help]'
+                  )
+                  _arguments $sub_options
+                  ;;
+              esac
+              ;;
+          esac
+          ;;
+
+        daemon)
+          local -a subcommands
+          local -a sub_options
+
+          _arguments -C \
+            '1: :->subcommand' \
+            '*:: :->subcommand_option'
+
+          case $state in
+            subcommand)
+              subcommands=(
+                'up:Start llmster'
+                'down:Stop llmster'
+                'status:Check whether llmster is running'
+                'update:Update llmster to the latest version'
+              )
+              _describe -t commands 'lms daemon subcommands' subcommands
+              ;;
+            subcommand_option)
+              case $words[1] in
+                up)
+                  sub_options=(
+                    '--json[Output the result in JSON format]'
+                    '--help[Show help]'
+                  )
+                  _arguments $sub_options
+                  ;;
+                down)
+                  sub_options=('--help[Show help]')
+                  _arguments $sub_options
+                  ;;
+                status)
+                  sub_options=(
+                    '--json[Output the status in JSON format]'
+                    '--help[Show help]'
+                  )
+                  _arguments $sub_options
+                  ;;
+                update)
+                  sub_options=(
+                    '--beta[Update to the latest beta release]'
+                    '--help[Show help]'
+                  )
+                  _arguments $sub_options
+                  ;;
+              esac
+              ;;
+          esac
+          ;;
+
+        link)
+          local -a subcommands
+          local -a sub_options
+
+          _arguments -C \
+            '1: :->subcommand' \
+            '*:: :->subcommand_option'
+
+          case $state in
+            subcommand)
+              subcommands=(
+                'enable:Enable LM Link on this device'
+                'disable:Disable LM Link on this device'
+                'status:Check LM Link connection status and see connected peers'
+                'set-device-name:Rename this device on LM Link'
+                'set-preferred-device:Set the preferred device for model resolution'
+              )
+              _describe -t commands 'lms link subcommands' subcommands
+              ;;
+            subcommand_option)
+              case $words[1] in
+                enable)
+                  sub_options=('--help[Show help]')
+                  _arguments $sub_options
+                  ;;
+                disable)
+                  sub_options=('--help[Show help]')
+                  _arguments $sub_options
+                  ;;
+                status)
+                  sub_options=(
+                    '--json[Output the status in JSON format]'
+                    '--help[Show help]'
+                  )
+                  _arguments $sub_options
+                  ;;
+                set-device-name)
+                  sub_options=(
+                    '--help[Show help]'
+                    ':device name:'
+                  )
+                  _arguments $sub_options
+                  ;;
+                set-preferred-device)
+                  sub_options=(
+                    '--help[Show help]'
+                    ':device identifier:'
+                  )
+                  _arguments $sub_options
+                  ;;
+              esac
+              ;;
+          esac
+          ;;
+
+        runtime)
+          local -a subcommands
+          local -a sub_options
+
+          _arguments -C \
+            '1: :->subcommand' \
+            '*:: :->subcommand_option'
+
+          case $state in
+            subcommand)
+              subcommands=(
+                'ls:List installed runtimes'
+                'get:Download a runtime'
+                'select:Set the active runtime'
+                'remove:Uninstall a runtime'
+                'update:Update an installed runtime'
+              )
+              _describe -t commands 'lms runtime subcommands' subcommands
+              ;;
+            subcommand_option)
+              sub_options=('--help[Show help]')
+              _arguments $sub_options
+              ;;
+          esac
+          ;;
+      esac
+      ;;
+  esac
+}
+
+_lms
