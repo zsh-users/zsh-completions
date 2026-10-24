@@ -1,0 +1,68 @@
+#compdef sdcv
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for sdcv 0.5.5 (https://dushistov.github.io/sdcv/).
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Jelle Römer (https://github.com/jelleromer)
+#
+# ------------------------------------------------------------------------------
+
+_sdcv() {
+  local ret=1
+  local list='-l --list-dicts'
+  local search='-u --use-dict -n --non-interactive -e --exact-search -c --color -0 --utf8-output -1 --utf8-input'
+  local json='-j --json-output --json'
+
+  # Exclusions follow sdcv's own option handling:
+  #  - -l lists dictionaries and exits before searching; only -2, -x and -j
+  #    still affect it, so search options and words are excluded.
+  _arguments -s -S \
+    '(- *)'{-h,--help}'[show help]' \
+    '(- *)'{-v,--version}'[show version]' \
+    "($list $search *)"{-l,--list-dicts}'[list available dictionaries]' \
+    "($list)*"{-u+,--use-dict=}'[search only in the given dictionary]:dictionary:_sdcv_dicts' \
+    "($list -n --non-interactive)"{-n,--non-interactive}'[non-interactive mode, for scripts]' \
+    "($json)"{-j,--json-output,--json}'[print results as JSON]' \
+    "($list -e --exact-search)"{-e,--exact-search}'[exact search only, no fuzzy matching]' \
+    "($list -c --color)"{-c,--color}'[colorize output]' \
+    "($list -0 --utf8-output)"{-0,--utf8-output}'[force UTF-8 output]' \
+    "($list -1 --utf8-input)"{-1,--utf8-input}'[assume input is UTF-8]' \
+    '(-2 --data-dir)'{-2+,--data-dir=}'[use this path as the StarDict data directory]:directory:_directories' \
+    '(-x --only-data-dir)'{-x,--only-data-dir}'[only use dictionaries from --data-dir]' \
+    "($list)*:word: " \
+    && ret=0
+
+  return ret
+}
+
+(( $+functions[_sdcv_dicts] )) ||
+_sdcv_dicts() {
+  emulate -L zsh -o extendedglob
+  local -a dicts datadir expl
+  local line
+
+  # Respect a --data-dir / --only-data-dir given earlier on the command line
+  if (( $+opt_args[-2] )); then
+    datadir=(--data-dir ${(q)opt_args[-2]})
+  elif (( $+opt_args[--data-dir] )); then
+    datadir=(--data-dir ${(q)opt_args[--data-dir]})
+  fi
+  (( $+opt_args[-x] || $+opt_args[--only-data-dir] )) && datadir+=(--only-data-dir)
+
+  # `sdcv -l` prints a header, then "<bookname>    <wordcount>" per line
+  for line in ${(f)"$(_call_program dictionaries sdcv -n -l $datadir 2>/dev/null)"}; do
+    [[ $line == "Dictionary's name"* ]] && continue
+    line=${line%%[[:space:]]##<->}
+    [[ -n $line ]] && dicts+=("$line")
+  done
+
+  _wanted dictionaries expl dictionary compadd -a dicts
+}
+
+_sdcv "$@"
