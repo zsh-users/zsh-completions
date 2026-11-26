@@ -134,7 +134,7 @@ local -a cmake_build_options=(
 (( $+functions[_cmake_generator_options] )) ||
 _cmake_generator_options() {
   # pass only the part of the command line starting at "--" to the completion
-  shift (( $2 - 1 )) words
+  shift $(( $2 - 1 )) words
   (( CURRENT = $CURRENT + 1 - $2 ))
   if [ -f $1/Makefile ]
   then
